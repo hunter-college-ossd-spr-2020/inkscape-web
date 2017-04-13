@@ -55,9 +55,9 @@ class ModeratorDeletedAlert(EditedAlert):
     info     = _("When a user's item or user's own account is deleted.")
     sender   = FlagObject
 
-    subject       = "{% trans 'New comment:' %} {{ instance }}"
-    email_subject = "{% trans 'New comment:' %} {{ instance }}"
-    object_name   = "{% trans 'Comment on Resource' %}"
+    subject       = "{% trans 'Deleted by Moderators:' %} {{ instance.obj }}"
+    email_subject = "{% trans 'Deleted by Moderators:' %} {{ instance.obj }}"
+    object_name   = "{{ object }}"
     default_email = True
 
     subscribe_all = False

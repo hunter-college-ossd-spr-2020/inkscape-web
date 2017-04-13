@@ -1,8 +1,8 @@
 {% load i18n %}
 {% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}
  
-{% blocktrans with sender=instance.user %}Moderators have removed the following: {{ instance }} because of a breach in the code of conduct or website use policy.{% endblocktrans %}
+{% blocktrans %}Moderators have removed "{{ instance.obj }}" because of a breach in Inkscape's Code of Conduct or Website Use Policy.{% endblocktrans %}
 
--------------------------------------
-{% trans "Link" %}: {{ site }}
-
+{% url "contact" as contact_url %}
+{% blocktrans %}If you believe that your upload has been removed in error, you can contact the website administrators at 
+{{site}}{{contact_url}}{% endblocktrans %}
