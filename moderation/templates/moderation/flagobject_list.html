@@ -18,9 +18,7 @@
 	    {% url 'view_profile' object.object_owner.username as profile_url %}
 	    <a href="{{ profile_url }}"><img class="userphoto" src="{% if object.object_owner.photo %}{{ object.object_owner.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
 	    <div>
-	      {% blocktrans trimmed with object.object_owner.name as user_name %}
 		<a href="{{ profile_url }}">{{ user_name }}</a>
-	      {% endblocktrans %}
 	    </div>
 	  </div>
           <div class="index">
