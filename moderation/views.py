@@ -17,12 +17,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 from django.utils import timezone
 from datetime import timedelta
 
 from django.db import utils
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, ListView
+from django.core.urlresolvers import reverse
 
 from .models import *
 from .mixins import *
@@ -76,6 +78,9 @@ class DeleteObject(ModeratorRequired, FunctionView):
 
             return ('error', 'deleted')
         return ('info', 'counted')
+
+    def next_url(self):
+        return reverse('moderation:index')
 
 
 class ApproveObject(ModeratorRequired, FunctionView):
