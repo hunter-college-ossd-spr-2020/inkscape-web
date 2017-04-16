@@ -56,15 +56,24 @@
   {% endif %}
 
   <div class="info">
-    <h2>{{ form.name|placeholder:_("Resource Name") }}
-      {% if item and not form %}
+    {% if form.name %}
+      <h2>{{ form.name|placeholder:_("Resource Name") }}</h2>
+    {% else %}
+      <div class="title">
+        <h2>{{ object.name }}</h2>
         <span class="by">{% trans "by" %}
-          <a href="{{ item.user.get_absolute_url }}">{{ item.user }}</a>
+          <a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a>
         </span>
-      {% endif %}
-    </h2>
+      </div>
+    {% endif %}
     <div class="desc{% if form.desc.errors %} descerr{% endif %}">
-      {{ form.desc|placeholder:_("Description of your artwork or resource") }}
+      {% if form.desc %}
+        {{ form.desc|placeholder:_("Description of your artwork or resource") }}
+      {% else %}
+        {{ object.desc }}
+        <hr/>
+        {{ form.comment|placeholder:_("Curator's comment about what they changed.") }}
+      {% endif %}
     </div>
     <div class="side">
       {% for field in form.auto %}

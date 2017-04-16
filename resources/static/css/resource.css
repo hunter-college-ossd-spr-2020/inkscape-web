@@ -88,6 +88,12 @@
   width: 100%;
   height: 260px;
 }
+.item .info #id_comment {
+  height: 5em;
+}
+.item .info hr {
+  margin: 8px 0px;
+}
 .item .info p.infoerr textarea {
   border: 2px #d00 solid;
 }

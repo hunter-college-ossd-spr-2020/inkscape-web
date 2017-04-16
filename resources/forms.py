@@ -106,8 +106,11 @@ class GalleryMoveForm(ModelForm):
 
 
 class ResourceBaseForm(ModelForm):
-    auto_fields = ['name', 'desc', 'tags', 'download', 'rendering', 'published']
+    auto_fields = ['name', 'desc', 'tags', 'download', 'rendering', 'published', 'comment']
     tags = TagsChoiceField(Tag.objects.all(), required=False)
+
+    # The comment is only used for curators to note what they changed
+    comment = CharField(widget=Textarea)
 
     class Media:
         js = ('js/jquery.validate.js', 'js/additional.validate.js', 'js/resource.validate.js')
@@ -127,6 +130,22 @@ class ResourceBaseForm(ModelForm):
             self.fields.pop('mirror', None)
         if not self.user.gpg_key:
             self.fields.pop('signature', None)
+
+        # The view will protect the form from being used by people who don't
+        # have permission to edit, but this will help protect different fields
+        if self.instance and self.instance.user != self.user:
+            self.is_curated = True
+            self.fields.pop('name', None)
+            self.fields.pop('desc', None)
+            self.fields.pop('download', None)
+            self.fields.pop('published', None)
+            # Default comment not translated from English.
+            self.fields['comment'].initial = "Curated by %s on %s" % (
+                str(self.user),
+                now().strftime("%B %-d %Y %-I:%M %p")
+            )
+        else:
+            self.fields.pop('comment', None)
 
         for field in ('download', 'rendering', 'signature'):
             if field in self.fields:
@@ -261,8 +280,12 @@ class ResourceBaseForm(ModelForm):
 
     def save(self, commit=False, **kwargs):
         obj = ModelForm.save(self, commit=False)
-        if not obj.pk:
+        if not obj.pk and not obj.user:
             obj.user = self.user
+        if 'comment' in self.cleaned_data:
+            if self.cleaned_data['comment']:
+                obj.desc = obj.desc + "\n---\n" + self.cleaned_data['comment']
+
         obj.save(**kwargs)
         obj.tags = self.clean_tags()
         if self.gallery is not None:
