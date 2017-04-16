@@ -1,5 +1,5 @@
 #
-# Copyright 2016, Martin Owens <doctormo@gmail.com>
+# Copyright 2016-2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom 
 # code for the Inkscape project's django-based website.
