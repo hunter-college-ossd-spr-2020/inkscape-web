@@ -68,7 +68,7 @@ class DeleteObject(ModeratorRequired, FunctionView):
             flag.resolution = False
             try:
                 flag.save()
-            except utils.IntegrityError
+            except utils.IntegrityError:
                 # Correct for when users are deleted but the object_owner
                 # still points to the old user. Sometimes a transaction issue.
                 flag.object_owner = None
