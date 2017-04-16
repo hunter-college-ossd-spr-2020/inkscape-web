@@ -79,6 +79,13 @@ class CensureObject(ModeratorRequired, FunctionView):
                 flag.save()
 
             return ('error', 'deleted')
+        elif flag.is_hidden:
+            # is_removed only exists when is_hidden is true.
+            flag.obj.is_removed = True
+            flag.obj.ip_address = None
+            flag.obj.save()
+            return ('warning', 'hidden')
+
         return ('info', 'counted')
 
     def next_url(self):
