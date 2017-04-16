@@ -36,10 +36,11 @@ class UserFlag(UserRequired, FunctionView):
     warning = _('You have already flagged this item for attention.')
 
     def function(self):
-        (flag, created) = self.flag(weight=1)
+        (flag, created) = self.flag(weight=FlagObject.USER_FLAG)
         if not created:
             return ('warning', 'warning')
         return ('success', 'created')
+
 
 
 class Moderation(ModeratorRequired, ListView):
@@ -57,16 +58,17 @@ class ModerateLatest(ModeratorRequired, ListView):
     model = FlagObject
 
 
-class DeleteObject(ModeratorRequired, FunctionView):
-    title = _("Delete Object")
-    confirm = _('Hiding Canceled')
-    counted = _('Your vote to delete has been counted.')
+class CensureObject(ModeratorRequired, FunctionView):
+    title = _("Censure Object")
+    confirm = _('Censure Canceled')
+    counted = _('Your vote to hide or delete has been counted.')
+    hidden = _('Your vote resulted in the item being hidden.')
     deleted = _('Your vote resulted in the item being deleted.')
 
     def function(self, *args):
-        (vote, created) = self.flag(weight=6)
+        (vote, created) = self.flag(weight=FlagObject.MODERATOR_CENSURE)
         flag = vote.target
-        if flag.weight > 9:
+        if flag.is_deleted:
             flag.resolution = False
             try:
                 flag.save()
@@ -88,12 +90,11 @@ class ApproveObject(ModeratorRequired, FunctionView):
     confirm = _('Approve Canceled')
     counted = _('Your vote to approve has been counted.')
     retained = _('Your vote resulted in the item being retained.')
-    weight = -10
 
     def function(self, *args):
-        (flag, created) = self.flag(weight=-10)
+        (flag, created) = self.flag(weight=FlagObject.MODERATOR_APPROVAL)
         flag = vote.target
-        if flag.weight < -8:
+        if flag.is_retained:
             flag.resolution = True
             flag.save()
             return ('success', 'retained')

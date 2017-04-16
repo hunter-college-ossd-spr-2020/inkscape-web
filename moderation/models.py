@@ -70,6 +70,14 @@ class FlagObject(Model):
     """
     The implicated object is a record of this object
     """
+    USER_FLAG = 1
+    MODERATOR_APPROVAL = -8
+    MODERATOR_CENSURE = 7
+
+    RETAIN_THRESHOLD = -10
+    HIDING_THRESHOLD = 5
+    DELETE_THRESHOLD = 10
+
     object_owner = ForeignKey(settings.AUTH_USER_MODEL,
             verbose_name=_('Owning User'), related_name="flagged",
             on_delete=SET_NULL, **null)
@@ -90,20 +98,27 @@ class FlagObject(Model):
         return "Flagged object: %s" % str(self.obj)
 
     @property
-    def delete_votes(self):
-        return self.votes.filter(weight__gt=1).count()
+    def weight(self):
+        return self.votes.all().aggregate(w=Sum('weight'))['w'] or 0
+
+    is_retained = property(lambda self: self.weight < self.RETAIN_THRESHOLD)
+    is_deleted = property(lambda self: self.weight > self.DELETE_THRESHOLD)
+
+    @property
+    def is_hidden(self):
+        return self.weight > self.HIDING_THRESHOLD and hasattr(self.obj, 'is_removed')
+
+    @property
+    def censure_votes(self):
+        return self.votes.filter(weight__gt=self.USER_FLAG).count()
 
     @property
     def approve_votes(self):
-        return self.votes.filter(weight__lt=0).count()
+        return self.votes.filter(weight__lt=self.USER_FLAG).count()
 
     @property
     def flag_votes(self):
-        return self.votes.filter(weight=1).count()
-
-    @property
-    def weight(self):
-        return self.votes.all().aggregate(w=Sum('weight'))['w']
+        return self.votes.filter(weight=self.USER_FLAG).count()
 
 
 class FlagManager(Manager):

@@ -29,14 +29,14 @@ def url_tree(regex, *urls):
     return url(regex, include(patterns('', *urls)))
 
 urlpatterns = patterns('',
-  url(r'^$',                   Moderation(),      name="index"),
+  url(r'^$', Moderation(), name="index"),
 
   url_tree(r'^(?P<app>[\w-]+)/(?P<name>[\w-]+)/',
-    url(r'^latest/$',          ModerateLatest(),  name="latest"),
+    url(r'^latest/$', ModerateLatest(), name="latest"),
 
     url_tree(r'^(?P<pk>\d+)/',
       url(r'^$', UserFlag(), name='flag'),
-      url(r'^delete/$', DeleteObject(), name="delete"),
+      url(r'^censure/$', CensureObject(), name="censure"),
       url(r'^approve/$', ApproveObject(), name="approve"),
     )
   )
