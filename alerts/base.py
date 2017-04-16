@@ -184,22 +184,23 @@ class BaseAlert(object):
     def call(self, sender, signal=None, **kwargs):
         """Connect this method to the post_save signal and it will
            create an alert when the sender edits any object."""
-        users = []
         def send_to(recipient, kind=None):
              if kind is None or isinstance(recipient, kind):
                  ret = self.alert_type.send_to(recipient, **kwargs)
                  if ret and isinstance(ret, list):
-                     users += ret
+                     return ret
+             return []
 
         instance = kwargs['instance']
+        users = []
 
         if self.subscribe_own:
-            send_to(self.get_alert_users(instance), get_user_model())
-            send_to(self.get_alert_groups(instance), Group)
+            users += send_to(self.get_alert_users(instance), get_user_model())
+            users += send_to(self.get_alert_groups(instance), Group)
 
         if self.subscribe_all:
             for sub in self.alert_type.subscriptions.filter(target__isnull=True):
-                send_to(sub.user)
+                users += send_to(sub.user)
 
         if self.subscribe_any:
             target = instance
@@ -207,7 +208,7 @@ class BaseAlert(object):
                 target = getattr(instance, self.target_field)
 
             for sub in self.alert_type.subscriptions.filter(target=target.pk):
-                send_to(sub.user)
+                users += send_to(sub.user)
 
         return self.post_send(*users, **kwargs)
 
