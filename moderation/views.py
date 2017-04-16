@@ -20,6 +20,7 @@
 from django.utils import timezone
 from datetime import timedelta
 
+from django.db import utils
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, ListView
 
@@ -65,7 +66,14 @@ class DeleteObject(ModeratorRequired, FunctionView):
         flag = vote.target
         if flag.weight > 9:
             flag.resolution = False
-            flag.save()
+            try:
+                flag.save()
+            except utils.IntegrityError
+                # Correct for when users are deleted but the object_owner
+                # still points to the old user. Sometimes a transaction issue.
+                flag.object_owner = None
+                flag.save()
+
             # Delete object after so message can be sent to deleted users.
             flag.obj.delete()
             return ('error', 'deleted')
