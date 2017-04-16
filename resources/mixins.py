@@ -72,6 +72,8 @@ class OwnerUpdateMixin(object):
         group = self.get_group()
         if group is not None and group in self.request.user.groups.all():
             return True
+        if self.request.user.has_perm('resources.can_curate'):
+            return True
         return obj.user == self.request.user
 
     def get_group(self):

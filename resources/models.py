@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -113,7 +113,7 @@ class Category(Model):
 
     filterable = BooleanField(default=True,
         help_text=_("This category can be used as a filter in gallery indexes."))
-    
+
     acceptable_licenses = ManyToManyField(License, db_table='resource_category_acceptable_licenses')
 
     acceptable_media_x = CharField(max_length=255, blank=True, null=True)
@@ -135,11 +135,11 @@ class Category(Model):
     @property
     def value(self):
         return self.slug
-    
+
     @property
     def icon(self):
         if self.symbol:
-            return self.symbol.url 
+            return self.symbol.url
         return static('images', 'no-category.svg')
 
     def thumbnail_url(self):
@@ -174,13 +174,13 @@ class Tag(Model):
 
     class Meta:
         ordering = 'name',
-    
+
     def save(self, **kwargs):
         self.name = self.name.lower()
         # we could check here if tag already exists
         ret = super(Tag, self).save(**kwargs)
         return ret
-    
+
     def __unicode__(self):
         return self.name
 
@@ -308,7 +308,7 @@ class Resource(Model):
     category  = ForeignKey(Category, verbose_name=_("Category"), related_name='items', **null)
     tags      = ManyToManyField(Tag, verbose_name=_("Tags"), related_name='resources', blank=True)
 
-    created   = DateTimeField(**null) 
+    created   = DateTimeField(**null)
     edited    = DateTimeField(**null) # End of copyright, last file-edit/updated.
     published = BooleanField(default=False)
 
@@ -348,6 +348,9 @@ class Resource(Model):
 
     class Meta:
         get_latest_by = 'created'
+        permissions = (
+            ("can_curate", "User can curate resources."),
+        )
 
     def __unicode__(self):
         return self.name
@@ -358,14 +361,14 @@ class Resource(Model):
     def summary_string(self):
         return _("%(file_title)s by %(file_author)s (%(years)s)") \
                   % {'file_title': self.name, 'file_author': self.user, 'years': self.years}
-      
+
     @classmethod
     def from_db(cls, db, field_names, values):
         db_instance = super(Resource, cls).from_db(db, field_names, values)
         # cache old value for link
         db_instance._old_link = values[field_names.index('link')]
-        return db_instance 
-      
+        return db_instance
+
     @property
     def parent(self):
         if self.is_pasted:
@@ -390,7 +393,7 @@ class Resource(Model):
         return len(self.desc) > 1000 or '[[...]]' in self.desc
 
     def save(self, **kwargs):
-      
+
         if self.download and not self.download._committed:
             # There is a download file and it has been changed
 
@@ -414,7 +417,7 @@ class Resource(Model):
         elif self.signature and not self.signature._committed:
             self.verified = False
 
-        # mark as edited for link-only resources when they are added 
+        # mark as edited for link-only resources when they are added
         # or when link changes
         if not self.download and ((self._state.adding and self.link) or \
         (not self._state.adding and hasattr(self, '_old_link') and self._old_link != self.link)):
@@ -657,7 +660,7 @@ class ResourceMirror(Model):
     @staticmethod
     def resources():
         """List of all mirrored resources"""
-        return Resource.objects.filter(mirror=True)      
+        return Resource.objects.filter(mirror=True)
 
     @property
     def parent(self):
