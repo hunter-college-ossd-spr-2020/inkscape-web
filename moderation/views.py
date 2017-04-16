@@ -74,8 +74,6 @@ class DeleteObject(ModeratorRequired, FunctionView):
                 flag.object_owner = None
                 flag.save()
 
-            # Delete object after so message can be sent to deleted users.
-            flag.obj.delete()
             return ('error', 'deleted')
         return ('info', 'counted')
 
