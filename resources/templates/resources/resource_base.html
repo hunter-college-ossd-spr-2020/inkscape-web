@@ -35,11 +35,22 @@
     </div>
   {% endif %}
 
+  {% if object.is_removed and not perms.moderation.can_moderate %}
+    <div class="item removed">
+      <div class="image"><img src="{% static "images/removed.svg" %}"/></div>
+      <div class="info">
+	<div class="title"><h2>{% trans "Item Hidden by Moderators" %}</h2></div>
+      </div>
+    </div>
+  {% else %}
   <div class="item{% if form %} edit{% endif %}{% if object and not object.published %} unpublished{% endif %}">
     {% if not form %}
       {% include "resources/resource_view.html" %}
     {% endif %}
 
-    {% block "description" %}{% endblock %}
+    {% if not object.is_hidden %}
+      {% block "description" %}{% endblock %}
+    {% endif %}
   </div>
+  {% endif %}
 {% endblock %}

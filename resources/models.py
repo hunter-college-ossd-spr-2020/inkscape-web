@@ -343,8 +343,10 @@ class Resource(Model):
 
     checked_by = ForeignKey(settings.AUTH_USER_MODEL, related_name='resource_checks', **null)
     checked_sig = FileField(_('Counter Signature'), **upto('sigs'))
+    is_removed = BooleanField(default=False,
+        help_text=_('When checked, resource is removed from view by moderator.'))
 
-    objects   = ResourceManager()
+    objects = ResourceManager()
 
     class Meta:
         get_latest_by = 'created'
