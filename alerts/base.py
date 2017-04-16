@@ -209,9 +209,9 @@ class BaseAlert(object):
             for sub in self.alert_type.subscriptions.filter(target=target.pk):
                 send_to(sub.user)
 
-        return self.finlly(*users, **kwargs):
+        return self.post_send(*users, **kwargs)
 
-    def finally(self, *users, **kwargs):
+    def post_send(self, *users, **kwargs):
         """Complete the call and tidy up if needed"""
         # TODO: we list of users sent to, but we don't log much here.
         return True
