@@ -99,7 +99,7 @@ class ApproveObject(ModeratorRequired, FunctionView):
     retained = _('Your vote resulted in the item being retained.')
 
     def function(self, *args):
-        (flag, created) = self.flag(weight=FlagObject.MODERATOR_APPROVAL)
+        (vote, created) = self.flag(weight=FlagObject.MODERATOR_APPROVAL)
         flag = vote.target
         if flag.is_retained:
             flag.resolution = True
