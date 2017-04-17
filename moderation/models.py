@@ -95,7 +95,7 @@ class FlagObject(Model):
     objects = ObjectQuery.as_manager()
 
     def __str__(self):
-        return "Flagged object: %s" % str(self.obj)
+        return "Flagged object: %d (%s)" % (self.pk, str(self.resolution))
 
     @property
     def weight(self):
