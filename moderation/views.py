@@ -46,11 +46,26 @@ class UserFlag(UserRequired, FunctionView):
 class Moderation(ModeratorRequired, ListView):
     title = _("Moderators' Area")
     model = FlagObject
+    
+    DISPLAY_DAYS = 7
 
     def get_queryset(self):
         return FlagObject.objects.filter(
-            Q(resolution__isnull=True) | Q(updated__gt=now() - timedelta(days=7))
+            Q(resolution__isnull=True) | Q(updated__gt=now() - timedelta(days=self.DISPLAY_DAYS))
         )
+      
+    def get_context_data(self, **kwargs):
+        data = super(Moderation, self).get_context_data(**kwargs)
+        
+        data['user_flag_weight'] = FlagObject.USER_FLAG
+        data['mod_approve_weight'] = FlagObject.MODERATOR_APPROVAL * -1
+        data['mod_censure_weight'] = FlagObject.MODERATOR_CENSURE
+        data['retain_threshold'] = FlagObject.RETAIN_THRESHOLD
+        data['hiding_threshold'] = FlagObject.HIDING_THRESHOLD
+        data['delete_threshold'] = FlagObject.DELETE_THRESHOLD
+        data['display_days'] = self.DISPLAY_DAYS
+        
+        return data
 
 
 class ModerateLatest(ModeratorRequired, ListView):
