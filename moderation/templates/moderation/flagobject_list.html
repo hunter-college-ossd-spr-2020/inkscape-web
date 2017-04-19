@@ -53,7 +53,7 @@
             <a class="censure" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
             <script>popUpLink('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}");</script>
 	  {% endif %}
-          <div class="weight" title="{% trans "when this reaches {{ object_list.model.DELETE_THRESHOLD }}, the item is deleted, when it reaches {{ object_list.model.RETAIN_THRESHOLD }} it is retained." %}">{{ object.weight }}</div>
+          <div class="weight" title="{% trans "when this reaches {{ delete_threshold }}, the item is deleted, when it reaches {{ retain_threshold }} it is retained." %}">{{ object.weight }}</div>
 	  {% if object.resolution == None %}
 	    <a class="approve" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
 	    <script>popUpLink('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}');</script>
