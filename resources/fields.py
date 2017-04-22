@@ -137,12 +137,11 @@ class TagsChoiceField(ModelMultipleChoiceField):
     def get_or_create(self, values):
         from .models import Tag
         for tag in frozenset(values):
-            if isinstance(tag, int) or tag.isdigit():
+            if isinstance(tag, int):
                 yield tag
                 continue
             try:
-                tag = tag.lower()
-                yield Tag.objects.get_or_create(name=tag)[0].pk
+                yield Tag.objects.get_or_create(name=tag.lower())[0]
             except Exception as error:
                 if "value too long" in str(error):
                     raise ValidationError("Tag is too long!")
