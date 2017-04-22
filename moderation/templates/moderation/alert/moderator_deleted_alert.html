@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="body">
+  <div class="text">
+    <p>{% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}</p>
+ 
+    <p>{% blocktrans %}Moderators have removed one of your uploads because of a breach in Inkscape's <a href="/community/coc">Code of Conduct</a> or Website Use Policy.{% endblocktrans %}</p>
+
+    {% url "contact" as contact_url %}
+    <p>{% blocktrans %}If you believe that your upload has been removed in error, you can <a href="{{site}}{{contact_url}}">contact the website administrators</a>.{% endblocktrans %}</p>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="status">{{ instance.id }}</div>
+  <div class="index"><a href="{% url "resources" username=alert.user.username %}">{% trans "Visit my galleries" %}</a></div>
+</div>
+

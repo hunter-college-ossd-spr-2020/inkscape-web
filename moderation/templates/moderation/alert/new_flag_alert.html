@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="body">
+  <div class="text">
+    <p>{% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}</p>
+
+    <p>{% trans "a new moderation flag has been raised. The flagged object might need to be removed from the site and your vote as a moderator is needed." %}</p></div>
+</div>
+<div class="footer">
+    <div class="status">
+    {% if instance.obj %}
+      <a href="{{ instance.get_absolute_url }}" title="{% trans "Visit flagged object" %}">{{ instance.obj }}</a>
+    {% else %}
+      {% trans "Object was deleted" %}
+    {% endif%}
+   </div>
+   <div class="index"><a href="{% url "moderation:index" %}">{% trans "Visit Moderation" %}</a></div>
+</div>
