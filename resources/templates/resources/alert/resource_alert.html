@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="body">
   <div class="preview">
-    <a href="{{ instance.get_absolute_url }}"><img src="{{ instance.icon }}" alt="{% trans "Preview" %}"></a>
+    <a href="{{ instance.get_absolute_url }}"><img src="{{ instance.thumbnail_url }}" alt="{% trans "Preview" %}"></a>
   </div>
   <div class="text">{{ instance.description|urlize|linebreaks }}</div>
 </div>
