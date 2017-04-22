@@ -5,4 +5,4 @@
 
 {% url "contact" as contact_url %}
 {% blocktrans %}If you believe that your upload has been removed in error, you can contact the website administrators at 
-{{site}}{{contact_url}}{% endblocktrans %}
+{{site}}{{contact_url}}.{% endblocktrans %}
