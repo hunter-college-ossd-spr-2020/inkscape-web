@@ -885,14 +885,6 @@
 },
 {
   "fields": {
-    "flag": 1,
-    "name": "Flag Category On"
-  },
-  "model": "moderation.flagcategory",
-  "pk": 1
-},
-{
-  "fields": {
     "info": "",
     "created": "2016-07-07T17:38:38.755Z",
     "howto": "",
@@ -2086,25 +2078,6 @@
   },
   "model": "resources.gallery",
   "pk": 3
-},
-{
-  "fields": {
-    "category": 1,
-    "flagger": 1,
-    "accusation": "-",
-    "flag": 1,
-    "implicated": 1,
-    "flagged": "2016-07-07T17:53:53Z"
-  },
-  "model": "moderation.flag",
-  "pk": 2
-},
-{
-  "fields": {
-    "target": 1
-  },
-  "model": "moderation.resourceflag",
-  "pk": 2
 },
 {
   "fields": {
