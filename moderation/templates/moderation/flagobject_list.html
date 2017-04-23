@@ -5,7 +5,7 @@
   <h1>{% trans "Welcome to the Moderators' Area!" %}</h1>
   <div class="warning">{% trans "Before you start out on your mission to make the Inkscape Website a friendly place, please review our <a href='/community/coc/'>Community Code of Conduct</a>." %}</div>
   <p>{% blocktrans %}Each of the flagged items below has been flagged by a user, or number of users. The count of how many users flagged the item can be seen in the top right next to the flag icon.{% endblocktrans %}</p>
-  <p>{% blocktrans %}You can then choose one of two possible options: "Censure" will put your vote towards hiding and deleting the item, adding {{ mod_censure_weight }} votes on the scale. When the scale reaches {{ hiding_threshold }}, we will attempt to delete the object (but this isn't guaranteed), when it reaches {{ delete_threshold }}, the item is automatically deleted. Alternatively, you can vote to approve the object, this removes {{ mod_approve_weight }} votes from the scale. When it reaches {{ retain_threshold }} the item is automatically retained.{% endblocktrans %}</p>
+  <p>{% blocktrans %}You can then choose one of two possible options: "Censure" will put your vote towards hiding and deleting the item, adding {{ mod_censure_weight }} votes on the scale. When the scale reaches {{ hiding_threshold }}, we will attempt to hide the object (but this isn't guaranteed), when it reaches {{ delete_threshold }}, the item is automatically deleted. Alternatively, you can vote to approve the object, this removes {{ mod_approve_weight }} votes from the scale. When it reaches {{ retain_threshold }} the item is automatically retained.{% endblocktrans %}</p>
   <p>{% blocktrans %}All resolved items are listed for {{ display_days }} days after they have been deleted or retained, but the object itself is always deleted immediately.{% endblocktrans %}</p>
 
   {% for model in object_list.models %}
@@ -53,7 +53,7 @@
             <a class="censure" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
             <script>popUpLink('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}");</script>
 	  {% endif %}
-          <div class="weight" title="{% trans "when this reaches {{ delete_threshold }}, the item is deleted, when it reaches {{ retain_threshold }} it is retained." %}">{{ object.weight }}</div>
+          <div class="weight" title="{% blocktrans %} When this reaches {{ delete_threshold }}, the item is deleted, when it reaches {{ retain_threshold }} it is retained.{% endblocktrans %}">{{ object.weight }}</div>
 	  {% if object.resolution == None %}
 	    <a class="approve" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
 	    <script>popUpLink('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}');</script>
