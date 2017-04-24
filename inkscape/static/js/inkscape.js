@@ -145,7 +145,7 @@ function setupInlinePages() {
   $(".inlinepages > .tabs > li:first-child").click();
 }
 
-function popUp(title, msg, href, cancel, ok, next, note) {
+function popUp(title, msg, href, cancel, ok, next, note, ajax) {
     if(document.getElementById('blanket')) {
       $('#blanket').remove();
       $('#popup').remove();
@@ -169,18 +169,36 @@ function popUp(title, msg, href, cancel, ok, next, note) {
         'top': 'calc(50% - ' + ($('#popup').innerHeight() / 2) + 'px)',
         'left': 'calc(50% - ' + ($('#popup').innerWidth() / 2) + 'px)',
       });
+      if(ajax) {
+        $('#popup form').submit(function(e) {
+          $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            success: ajax,
+          });
+          e.preventDefault();
+          $('#blanket').remove();
+          $('#popup').remove();
+          return false;
+        });
+      }
     } else {
       alert("No title specified!");
       return true;
     }
     return false;
 }
-function popUpLink(msg, cancel, ok, next, note) {
+function popUpLink(msg, cancel, ok, next, note, ajax_class) {
   // Allows a link to fail gracefully.
   var a = document.currentScript.previousElementSibling;
   $( document ).ready( function() {
+    var ajax = undefined;
+    if (ajax_class) {
+      ajax = function(data) { $(a).addClass(ajax_class); }
+    }
     var href = a.href;
-    $(a).click( function() { return popUp(a.title, msg, href, cancel, ok, next, note); } );
+    $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) });
     a.href = '#nowhere'
   });
 }
