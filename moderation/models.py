@@ -207,7 +207,7 @@ class FlagVote(Model):
             return "images/moderation/user_flag.svg"
         elif self.weight == FlagObject.MODERATOR_CENSURE:
             return "images/moderation/moderator_censure.svg"
-        elif self.weight == FlagObject.MODERATOR_APPROVE:
+        elif self.weight == FlagObject.MODERATOR_APPROVAL:
             return "images/moderation/moderator_approve.svg"
         return "images/moderation/unknown_flag.svg"
 
