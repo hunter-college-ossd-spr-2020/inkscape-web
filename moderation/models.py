@@ -110,15 +110,21 @@ class FlagObject(Model):
 
     @property
     def censure_votes(self):
-        return self.votes.filter(weight__gt=self.USER_FLAG).count()
+        return len([1 for flag in self.flags if flag.weight > self.USER_FLAG])
 
     @property
     def approve_votes(self):
-        return self.votes.filter(weight__lt=self.USER_FLAG).count()
+        return len([1 for flag in self.flags if flag.weight < self.USER_FLAG])
 
     @property
     def flag_votes(self):
-        return self.votes.filter(weight=self.USER_FLAG).count()
+        return len([1 for flag in self.flags if flag.weight == self.USER_FLAG])
+
+    @property
+    def flags(self):
+        if not hasattr(self, '_flags'):
+            self._flags = self.votes.all()
+        return self._flags
 
 
 class FlagManager(Manager):
@@ -194,4 +200,14 @@ class FlagVote(Model):
 
     def __str__(self):
         return "%s of %s by %s" % (self.weight, str(self.target), str(self.moderator))
+
+    def weight_icon(self):
+        """Return an image useful for the log"""
+        if self.weight == FlagObject.USER_FLAG:
+            return "images/moderation/user_flag.svg"
+        elif self.weight == FlagObject.MODERATOR_CENSURE:
+            return "images/moderation/moderator_censure.svg"
+        elif self.weight == FlagObject.MODERATOR_APPROVE:
+            return "images/moderation/moderator_approve.svg"
+        return "images/moderation/unknown_flag.svg"
 

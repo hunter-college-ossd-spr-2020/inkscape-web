@@ -83,24 +83,31 @@
   padding: 1px 6px;
 }
 .moderation .bar a.censure {
-  border: 1px solid #9c0000;
-  background-color: #ef4343;
-  padding: 1px 8px;
-}
-.moderation .bar a.censure:hover {
-  text-decoration: none;
   background-color: white;
+  border: 1px solid #9c0000;
+  padding: 1px 8px;
   color: #9c0000;
 }
-.moderation .bar a.approve {
-  border: 1px solid #0c8f0c;
-  background-color: #5ac95a;
-  padding: 1px 8px;
+.moderation .bar a.i_voted {
+  cursor: default !important;
 }
-.moderation .bar a.approve:hover {
+.moderation .bar a.censure:hover,
+.moderation .bar a.censure.i_voted {
   text-decoration: none;
+  background-color: #ef4343;
+  color: white;
+}
+.moderation .bar a.approve {
   background-color: white;
+  border: 1px solid #0c8f0c;
+  padding: 1px 8px;
   color: #0c8f0c;
+}
+.moderation .bar a.approve:hover,
+.moderation .bar a.approve.i_voted {
+  text-decoration: none;
+  background-color: #5ac95a;
+  color: white;
 }
 .moderation .body img {
   vertical-align: middle;

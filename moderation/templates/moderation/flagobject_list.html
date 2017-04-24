@@ -1,5 +1,5 @@
 {% extends "moderation/base.html" %}
-{% load i18n static inkscape moderation %}
+{% load i18n static inkscape moderator %}
 
 {% block content %}
   <h1>{% trans "Welcome to the Moderators' Area!" %}</h1>
@@ -49,19 +49,19 @@
         </div>
         <div class="body">
           <hr/>
-          {% for flag in object|get_flags %}
+          {% for flag in object.flags %}
           <p><img src="{% static flag.weight_icon %}" title="Weight: {{ flag.weight }}"/> <strong>{{ flag.moderator }}</strong> <em>{{ flag.notes|default:"" }} - {{ flag.created|timetag }}</em></p>
           {% endfor %}
         </div>
 	<div class="bar">
           <div class="censure_votes" title="{% trans "Number of people who want to censure this object." %}">{{ object.censure_votes|default:"0" }}</div>
 	  {% if object.resolution == None %}
-            <a class="censure" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
+            <a class="censure{% if object|is_censured:request.user %} i_voted{% endif %}" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
             <script>popUpLink('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}");</script>
 	  {% endif %}
           <div class="weight" title="{% blocktrans %} When this reaches {{ delete_threshold }}, the item is deleted, when it reaches {{ retain_threshold }} it is retained.{% endblocktrans %}">{{ object.weight }}</div>
 	  {% if object.resolution == None %}
-	    <a class="approve" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
+            <a class="approve{% if object|is_approved:request.user %} i_voted{% endif %}" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
 	    <script>popUpLink('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}');</script>
 	  {% endif %}
           <div class="approve_votes" title="{% trans "Number of people who want to retain this object." %}">{{ object.approve_votes|default:"0" }}</div>

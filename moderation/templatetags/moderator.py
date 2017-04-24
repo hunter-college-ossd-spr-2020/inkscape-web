@@ -56,3 +56,17 @@ def is_flagged(obj, user):
         ).count() > 0
     return False
 
+@register.filter
+def is_censured(obj, user):
+    for flag in obj.flags:
+        if flag.moderator == user:
+            if flag.weight == FlagObject.MODERATOR_CENSURE:
+                return True
+
+@register.filter
+def is_approved(obj, user):
+    for flag in obj.flags:
+        if flag.moderator == user:
+            if flag.weight == FlagObject.MODERATOR_APPROVAL:
+                return True
+
