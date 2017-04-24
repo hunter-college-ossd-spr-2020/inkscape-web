@@ -54,7 +54,7 @@ class FunctionView(DetailView):
 
     def flag(self, weight=1):
         return FlagVote.objects.flag(self.request.user, self.get_object(),
-                 notes=self.request.POST.get('notes', None), weight=weight)
+                 notes=self.request.POST.get('note', None), weight=weight)
 
     def next_url(self, **data):
         return self.request.POST.get('next', self.request.META.get('HTTP_REFERER', '/')) or '/'
