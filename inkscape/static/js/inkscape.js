@@ -145,7 +145,7 @@ function setupInlinePages() {
   $(".inlinepages > .tabs > li:first-child").click();
 }
 
-function popUp(title, msg, href, cancel, ok, next) {
+function popUp(title, msg, href, cancel, ok, next, note) {
     if(document.getElementById('blanket')) {
       $('#blanket').remove();
       $('#popup').remove();
@@ -155,6 +155,9 @@ function popUp(title, msg, href, cancel, ok, next) {
       $('body').append( "<div id='popup'/>" );
       $('#popup').append( "<h1>" + title + "</h1>" ).append( "<p>" + msg + "</p>" )
                  .append( "<form class='buttons' action='"+href+"' method='POST'/>");
+      if(note) {
+        $('#popup .buttons').append("<textarea name='note' placeholder='" + note + "'></textarea>");
+      }
       $('#popup .buttons').append("<input type='hidden' name='csrfmiddlewaretoken' value='"+getCookie('csrftoken')+"'/>")
                           .append("<a class='btn btn-cancel'>" + cancel + "</a>");
       if(next) {
@@ -172,12 +175,12 @@ function popUp(title, msg, href, cancel, ok, next) {
     }
     return false;
 }
-function popUpLink(msg, cancel, ok, next) {
+function popUpLink(msg, cancel, ok, next, note) {
   // Allows a link to fail gracefully.
   var a = document.currentScript.previousElementSibling;
   $( document ).ready( function() {
     var href = a.href;
-    $(a).click( function() { return popUp(a.title, msg, href, cancel, ok, next); } );
+    $(a).click( function() { return popUp(a.title, msg, href, cancel, ok, next, note); } );
     a.href = '#nowhere'
   });
 }

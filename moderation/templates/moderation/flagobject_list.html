@@ -1,5 +1,5 @@
 {% extends "moderation/base.html" %}
-{% load i18n static inkscape %}
+{% load i18n static inkscape moderation %}
 
 {% block content %}
   <h1>{% trans "Welcome to the Moderators' Area!" %}</h1>
@@ -46,6 +46,12 @@
           {% else %}
             {{ object }}
           {% endif %}
+        </div>
+        <div class="body">
+          <hr/>
+          {% for flag in object|get_flags %}
+          <p><img src="{% static flag.weight_icon %}" title="Weight: {{ flag.weight }}"/> <strong>{{ flag.moderator }}</strong> <em>{{ flag.notes|default:"" }} - {{ flag.created|timetag }}</em></p>
+          {% endfor %}
         </div>
 	<div class="bar">
           <div class="censure_votes" title="{% trans "Number of people who want to censure this object." %}">{{ object.censure_votes|default:"0" }}</div>

@@ -102,6 +102,10 @@
   background-color: white;
   color: #0c8f0c;
 }
+.moderation .body img {
+  vertical-align: middle;
+  margin: 5px;
+}
 
 .moderation .details .title div {
   margin-left: 50px;

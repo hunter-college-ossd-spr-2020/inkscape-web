@@ -10,7 +10,7 @@
         {% if object.user != request.user %}
           <div class="tog single" id="flag">
             <a href="{% flag_url %}" {% if object|is_flagged:request.user %}class="remove"{% endif %} title="{% trans "Flag Resource to Moderators" %}">&nbsp;</a>
-            <script>popUpLink('{% trans "Are you sure you want to report this resource?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "{{ object.get_absolute_url }}");</script>
+            <script>popUpLink('{% trans "Are you sure you want to report this resource?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "{{ object.get_absolute_url }}", "{% trans "Please note why you are flaggin this resource." %}");</script>
           </div>
         {% endif %}
         

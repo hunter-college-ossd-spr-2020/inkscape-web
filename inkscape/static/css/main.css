@@ -1246,6 +1246,12 @@ div.tooltip {
 }
 
 /* Buttons for popup dialog (copied from Bootstrap) */
+#popup textarea {
+  width: 100%;
+  padding: 3px;
+  margin: 12px 0px;
+  min-height: 4em;
+}
 .btn,
 .btn-disabled {
   display: inline-block;
