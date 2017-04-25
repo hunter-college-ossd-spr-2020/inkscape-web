@@ -204,7 +204,11 @@ class TagsJson(View):
     def get(self, request):
         # We could leverage category to style
         # categorized tags differently in the suggestions list
-        context = {"tags" : [{"name": tag.name, "cat" : str(tag.category)} for tag in Tag.objects.all()]}
+        context = {"tags" : [{
+            "id": tag.pk,
+            "name": tag.name,
+            "cat" : str(tag.category or "") or None,
+          } for tag in Tag.objects.all()]}
         return JsonResponse(context, safe=False, content_type='application/json; charset=utf-8')
 
 
