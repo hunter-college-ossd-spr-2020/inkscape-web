@@ -24,6 +24,9 @@ Signals for resources
 from django.db.models import signals
 from django.apps import AppConfig
 
+# For clearing the cache in a file
+from inkscape.fastly_cache import FastlyCache
+
 class ResourceConfig(AppConfig):
     name = 'resources'
 
@@ -37,6 +40,8 @@ class ResourceConfig(AppConfig):
     def remove_file(instance, **kw):
         for field in ('download', 'signature', 'checked_sig', 'thumbnail', 'rendering'):
             fn = getattr(instance, field)
+            if fn and fn.url:
+                FastlyCache().purge_media(fn)
             try:
                 getattr(instance, field).delete(save=False)
             except Exception as err:

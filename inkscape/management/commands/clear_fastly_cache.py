@@ -1,5 +1,5 @@
 #
-# Copyright 2015, Martin Owens <doctormo@gmail.com>
+# Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
@@ -20,90 +20,17 @@
 """
 Django command for clearing fastly caches.
 """
-
+ 
 import os
-import sys
-import time
-import fastly
-
-# Because python2.7 broke SSL for many computers.
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
-
-from django.conf import settings
+ 
 from django.core.management.base import NoArgsCommand
-from django.templatetags.static import static
-
-def touch(fname, times=None):
-    """Unix like touching of files"""
-    with open(fname, 'a'):
-        os.utime(fname, times)
-
+from inkscape.fastly_cache import FastlyCache
+ 
 class Command(NoArgsCommand):
     """Clear fastly cache based on last clear and modified times"""
     help = "Cleans the static files from a fastly cache"
 
-    def __init__(self, *args, **kwargs):
-        self.api = None
-        super(Command, self).__init__(*args, **kwargs)
 
     def handle_noargs(self, **options):
-        key = settings.FASTLY_CACHE_API_KEY
-        if key:
-            self.api = fastly.API()
-            self.api.authenticate_by_key(key)
-            self.purge_all()
-
-    def purge_all(self, old=False):
-        """
-          Purge all new static files from cache,
-
-          purge old ones too if old=True (all static files)
-        """
-        root = settings.STATIC_ROOT
-
-        if not os.path.isdir(root):
-            return sys.stderr.write("\nStatic directory doesn't exist or is "
-                "empty. Have you run collectstatic yet?\n\n")
-
-        elif not settings.STATIC_URL or '://' not in settings.STATIC_URL:
-            return sys.stderr.write("Fastly not being used for this website."
-                " (set STATIC_URL)\n")
-
-        last_clear = 0
-        last_file = os.path.join(root, '.fastly_cleared')
-        if os.path.isfile(last_file):
-            last_clear = os.path.getmtime(last_file)
-            print "Last cache clear: %s" % time.ctime(last_clear)
-        else:
-            print "Never cleared before (first run)"
-
-        count = 0
-        cleared = 0
-
-        for name, _, files in os.walk(root, topdown=False):
-            for fname in files:
-                path = os.path.join(name, fname)
-                if path == last_file:
-                    continue
-                count += 1
-
-                if old or os.path.getmtime(path) > last_clear:
-                    cleared += 1
-                    self.purge(path.replace(root, '').lstrip('/'))
-
-        print "\n  * %d of %d static files cleared\n\n" % (cleared, count)
-        if not count:
-            print "There weren't any static files, run collectstatic."
-
-        if cleared:
-            touch(last_file)
-
-    def purge(self, path):
-        """Purge any static file from the fastly cache"""
-        # We don't want to just use get static url, because that just points
-        # back to fastly cache which is not what we need for this api
-        url = static(path)
-        (domain, location) = url.split('://', 1)[-1].split('/', 1)
-        self.api.purge_url(domain, '/' + location)
+        cache = FastlyCache().clean_static()
 
