@@ -183,12 +183,12 @@ class TrackCacheMiddleware(BaseMiddleware):
         for key, value in context_items(response.context_data):
             if isinstance(value, Model):
                 # Track this one item being used in the context data
-                response.cache_tracks.append(key)
+                response.cache_tracks.append(value)
             elif isinstance(value, QuerySet):
                 # Track any items that are loaded by wrapping the queryset
                 # and then making a callback as each object is loaded.
                 value = value._clone(klass=QuerySetWrapper, method=response.cache_tracks.append)
-                response.cache_tracks.append(key)
+                response.cache_tracks.append(value)
                 response.context_data[key] = value
 
         return response
@@ -222,14 +222,9 @@ class TrackCacheMiddleware(BaseMiddleware):
             return response
 
         response.cache_key = cache_key
-
-        for key in tracks:
-            if isinstance(key, (str, unicode)):
-                obj = response.context_data[key]
-            else:
-                obj = key
-                key = type(obj).__name__
+        for obj in tracks:
             response.cache_keys |= set(self.track_cache(obj, cache_key))
+
         return response
 
 
