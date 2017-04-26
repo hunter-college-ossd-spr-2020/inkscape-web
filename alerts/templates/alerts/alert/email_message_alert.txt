@@ -5,7 +5,7 @@
 
 {{ instance.subject }}
 ================================================
-{{ instance.body }}
+{{ instance.body|safe }}
 
 
 {% trans "Reply" %}: {{ site }}{% url "message.reply" instance.sender.username instance.pk %}
