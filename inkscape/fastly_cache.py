@@ -40,12 +40,14 @@ def touch(fname, times=None):
         os.utime(fname, times)
 
 KEY = 'FASTLY_CACHE_API_KEY'
+SERVICE = 'FASTLY_CACHE_SERVICE'
 
 class FastlyCache(object):
     """Control a fastly cache, uses default settings if available"""
 
     def __init__(self, *args, **kwargs):
         self.key = kwargs.get('key', getattr(settings, KEY, None))
+        self.service = kwargs.get('service', getattr(settings, SERVICE, None))
         self.api = None
         if self.key is not None:
             self.api = fastly.API()
@@ -94,6 +96,12 @@ class FastlyCache(object):
 
         if cleared:
             touch(last_file)
+
+    def purge_key(self, key):
+        """Take an object key and ask the content to be refreshed"""
+        if self.api is None:
+            sys.stderr.write("No-cache: key %s -> %s\n" % (self.service, key))
+        return self.api.purge_key(self.service, key)
 
     def purge_static(self, path):
         """Takes a static path and purges the resulting url"""
