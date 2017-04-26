@@ -107,6 +107,7 @@ class FastlyCache(object):
         """Take an object key and ask the content to be refreshed"""
         if self.api is None:
             sys.stderr.write("No-cache: key %s -> %s\n" % (self.service, key))
+            return False
         return self.api.purge_key(self.service, key)
 
     def purge_static(self, path):

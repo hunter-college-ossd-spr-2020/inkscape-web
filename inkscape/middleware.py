@@ -37,6 +37,7 @@ from django.utils.cache import get_cache_key
 import logging
 
 from .utils import BaseMiddleware, QuerySetWrapper, to, context_items
+from .fastly_cache import FastlyCache
 
 #
 # Models which are suppressed do not invalidate their caches when they
@@ -64,6 +65,12 @@ class TrackCacheMiddleware(BaseMiddleware):
     cache = caches[settings.CACHE_MIDDLEWARE_ALIAS]
 
     @classmethod
+    def fastly_cache(cls):
+        if not hasattr(cls, '_fastly'):
+            cls._fastly = FastlyCache()
+        return cls._fastly
+
+    @classmethod
     def invalidate(cls, obj, created=False):
         """We invalidate all caches as needed based on the object's identity,
 
@@ -72,15 +79,22 @@ class TrackCacheMiddleware(BaseMiddleware):
 
         """
         caches = set()
+        fastly_keys = []
         if isinstance(obj, Model):
             caches = cls.get_caches(obj, created)
             caches |= cls.get_caches(type(obj))
+            fastly_keys += list(cls.get_keys(obj, created))
+            fastly_keys += list(cls.get_keys(type(obj)))
         elif isclass(obj) and issubclass(obj, Model):
             caches = cls.get_caches(obj)
+            fastly_keys += list(cls.get_keys(obj))
         else:
             logging.warning("!ERR DEL cache, '%s' is not a model." % str(obj))
         #print "Invalidating Keys: %s > %s" % (str(keys), str(caches))
         cls.cache.delete_many(list(caches))
+
+        for key in set(fastly_keys):
+            FastlyCache().purge_key(key)
 
     @classmethod
     def invalidate_all(cls):
