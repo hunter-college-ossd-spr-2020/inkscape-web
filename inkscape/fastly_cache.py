@@ -24,7 +24,13 @@ Dealing with fastly caches.
 import os
 import sys
 import time
-import fastly
+import logging
+
+try:
+    import fastly
+except ImportError:
+    logging.warning("No fastly module installed (skipping)")
+    fastly = None
 
 # Because python2.7 broke SSL for many computers.
 import ssl
@@ -49,7 +55,7 @@ class FastlyCache(object):
         self.key = kwargs.get('key', getattr(settings, KEY, None))
         self.service = kwargs.get('service', getattr(settings, SERVICE, None))
         self.api = None
-        if self.key is not None:
+        if fastly is not None and self.key is not None:
             self.api = fastly.API()
             self.api.authenticate_by_key(self.key)
 
