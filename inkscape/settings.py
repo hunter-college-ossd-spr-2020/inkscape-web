@@ -141,6 +141,11 @@ MIDDLEWARE_CLASSES = (
 
 if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
+    CMS_CACHE_DURATIONS = { 
+        'content': 1, # One second turns caching off for pages
+        'menus': 3600, # One hour for menus which is important
+    }
+
     MIDDLEWARE_CLASSES = \
       ('inkscape.middleware.TrackCacheMiddleware',) + \
       ('django.middleware.cache.UpdateCacheMiddleware',) + \
