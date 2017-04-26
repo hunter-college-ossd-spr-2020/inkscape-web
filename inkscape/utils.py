@@ -76,6 +76,15 @@ class QuerySetWrapper(object):
         c.kwargs = getattr(self, 'kwargs', {})
         return c
 
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['method']
+        return odict
+
+    def __setstate__(self, args):
+        args['method'] = None
+        self.__dict__.update(args)
+
     def get_basic_filter(self):
         """Generator of field/values for all exact matchs in this qs"""
         for child in self.query.where.children:
