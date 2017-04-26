@@ -64,6 +64,7 @@ ENABLE_CACHING = False
 ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DESIGN_TOOLBAR = False
 ENABLE_PROFILER_TOOLBAR = False
+CACHE_PAGE_SETTING = 3600
 
 # Allow realtime updates of pages
 #HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
@@ -141,7 +142,7 @@ MIDDLEWARE_CLASSES = (
 if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
     CMS_CACHE_DURATIONS = { 
-        'content': 1, # One second turns caching off for pages
+        'content': CACHE_PAGE_SETTING,
         'menus': 3600, # One hour for menus which is important
     }
 
