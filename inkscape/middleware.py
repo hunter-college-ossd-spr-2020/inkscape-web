@@ -214,6 +214,13 @@ class TrackCacheMiddleware(BaseMiddleware):
         {% endfor %}
         """
         tracks = getattr(response, 'cache_tracks', [])
+
+        # Caching service fastly can track pages by their Surrogate-Key in a
+        # many-to-many way, allowing for pages to be invalidated smartly.
+        obj_surrogates = set([key for obj in tracks for key in self.get_keys(obj)])
+        if obj_surrogates:
+            response['Surrogate-Key'] = " ".join(obj_surrogates)
+
         if not getattr(request, '_cache_update_cache', False):
             return response
 
