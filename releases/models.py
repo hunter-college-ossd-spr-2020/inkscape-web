@@ -224,6 +224,10 @@ class Platform(Model):
             _from.append(child)
             child.descendants(_from)
         return _from
+      
+    @property
+    def full_name(self):
+        return " : ".join([anc.name for anc in self.ancestors()][::-1])
 
     def __str__(self):
         return self.codename.replace('/', ' : ').replace('_', ' ').title()
