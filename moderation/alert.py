@@ -23,16 +23,17 @@ Moderation alerts
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import Signal
 
-from alerts.base import EditedAlert, CreatedAlert
+from alerts.base import EditedAlert, BaseAlert
 from forums.models import Comment
 
-from .models import FlagObject, FlagVote
+from .models import FlagObject, FlagVote, flag_created
 
-class NewFlagAlert(CreatedAlert):
+class NewFlagAlert(BaseAlert):
     name     = _("Moderation Alert")
     desc     = _("An alert is sent when any item is flagged for moderation.")
     info     = _("When a user flags a resource, user or comment for moderation, you will get an email.")
     sender   = FlagObject
+    signal   = flag_created
 
     subject       = "{% trans 'Moderator Alert:' %} {{ instance }}"
     email_subject = "{% trans 'Moderator Alert:' %} {{ instance }}"

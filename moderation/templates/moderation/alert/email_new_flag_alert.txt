@@ -1,12 +1,13 @@
 {% load i18n %}
 {% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}
 
-{% trans "A new moderation flag has been raised. The flagged object might need to be removed from the site and your vote as a moderator is needed." %}
+{% blocktrans %}A new moderation flag has been raised by {{ mod }}. The flagged object might need to be removed from the site and your vote as a moderator is needed.{% endblocktrans %}
 
-{{ instance.obj }}
+{% trans "Flag Notes" %}: {{ flag.notes|default:"None"}}
+
 -------------------------------------
-{% trans "Owner" %}: {{ instance.object_owner }}
-{% trans "Notes" %}: {{ instance.notes | default:"None"}}
+{% trans "Offending Object" %}: {{ instance.obj }} {% if instance.obj.get_absolute_url %} - {{ site }}{{ instance.obj.get_absolute_url }}{% endif %}
+{% trans "Object's Owner" %}: {{ instance.object_owner }} - {{ site }}{{ instance.object_owner.get_absolute_url }}
 
 {% url "moderation:index" as moderation_url %}
 {% blocktrans %}Visit the moderators' area at {{ site }}{{moderation_url}}{% endblocktrans %}

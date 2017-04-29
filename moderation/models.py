@@ -30,11 +30,14 @@ from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxLengthValidator
+from django.dispatch import Signal
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
+
+flag_created = Signal(providing_args=["instance", "flag", "mod"])
 
 class ObjectQuery(QuerySet):
     """Manage how flagged objects are dealt with."""
@@ -138,7 +141,7 @@ class FlagManager(Manager):
           content_type=ContentType.objects.get_for_model(obj),
           defaults={'object_owner': self.get_owner(obj)},
         )
-        obj_flag, _ = FlagObject.objects.get_or_create(**kw)
+        obj_flag, new_flag = FlagObject.objects.get_or_create(**kw)
 
         kw = dict(
           moderator=user,
@@ -146,6 +149,9 @@ class FlagManager(Manager):
           defaults={'weight': weight, 'notes': notes},
         )
         flag, created = self.get_or_create(**kw)
+
+        if new_flag:
+            flag_created.send(FlagObject, instance=obj_flag, flag=flag, mod=user)
 
         if not created and flag.weight != weight or not flag.notes and notes:
             flag.weight = weight
@@ -175,6 +181,7 @@ class FlagManager(Manager):
         elif len(ret) == 0:
             raise AttributeError("No user field in moderated model")
         return getattr(obj, ret[0].name)
+
 
 
 @python_2_unicode_compatible
