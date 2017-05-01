@@ -15,7 +15,7 @@
       </div>
     {% if object_list.count > 0 %}
       <form class="runner" data-confirm="{% trans "Delete all messages" %}" action="{% url "alert.delete" %}">
-        <button class="button" id="{{ object.pk }}" title="{% trans "Delete all alerts" %}">X</button>
+        <button class="button" id="{{ object.pk }}" title="{% trans "Are you sure that you want to delete all your messages?" %}">X</button>
       </form>
     {% endif %}
     {% if object_list.new.count > 0 %}
