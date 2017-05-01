@@ -29,8 +29,8 @@ function update_screen() {
 $(document).ready(function() {
   update_screen();
   $('.runner').submit(function() {
-    if($(this).hasClass("delete-all")) {
-        if(!confirm("Delete all Messages")){
+    if($(this).data("confirm")) {
+        if(!confirm($(this).data("confirm"))) {
             return false;
         }
     }
