@@ -159,11 +159,13 @@ function popUp(title, msg, href, cancel, ok, next, note, ajax) {
         $('#popup .buttons').append("<textarea name='note' placeholder='" + note + "'></textarea>");
       }
       $('#popup .buttons').append("<input type='hidden' name='csrfmiddlewaretoken' value='"+getCookie('csrftoken')+"'/>")
+      $('#popup .buttons').append("<input type='hidden' name='json' value='1'/>")
                           .append("<a class='btn btn-cancel'>" + cancel + "</a>");
       if(next) {
         $('#popup .buttons').append("<input type='hidden' name='next' value='"+next+"'/>");
       }  
-      $('#popup .buttons').append("<button type='submit' class='btn btn-primary' name='confirm' value='true'>" + ok + "</button>");
+      $('#popup .buttons').append("<input type='hidden' name='confirm' value='1'/>");
+      $('#popup .buttons').append("<button type='submit' class='btn btn-primary'>" + ok + "</button>");
       $('#popup .buttons .btn-cancel').click(popUp);
       $('#popup').css({
         'top': 'calc(50% - ' + ($('#popup').innerHeight() / 2) + 'px)',
@@ -171,10 +173,11 @@ function popUp(title, msg, href, cancel, ok, next, note, ajax) {
       });
       if(ajax) {
         $('#popup form').submit(function(e) {
+          var data = $(this).serialize();
           $.ajax({
             type: $(this).attr('method'),
             url: $(this).attr('action'),
-            data: $(this).serialize(),
+            data: data,
             success: ajax,
           });
           e.preventDefault();
@@ -192,14 +195,37 @@ function popUp(title, msg, href, cancel, ok, next, note, ajax) {
 function popUpLink(msg, cancel, ok, next, note, ajax_class) {
   // Allows a link to fail gracefully.
   var a = document.currentScript.previousElementSibling;
-  $( document ).ready( function() {
+  $(document).ready( function() {
     var ajax = undefined;
     if (ajax_class) {
       ajax = function(data) { $(a).addClass(ajax_class); }
     }
     var href = a.href;
     $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) });
-    a.href = '#nowhere'
+    a.href = '#' + href
+  });
+}
+function popUpModeration(msg, cancel, ok, next, note) {
+  var a = document.currentScript.previousElementSibling;
+  var p = a.parentNode;
+  $(document).ready( function() {
+    var ajax = function(data) {
+      var b = $('.i_voted', p);
+      if(b.length > 0) {
+        b.removeClass('i_voted');
+        var b_vote = $('.'+$(b).attr('class')+'_votes', p);
+        b_vote.text(parseInt(b_vote.text()) - 1);
+      }
+      if(data.weight) {
+        $('.weight', p).text(data.weight);
+      }
+      var a_vote = $('.'+$(a).attr('class')+'_votes', p);
+      a_vote.text(parseInt(a_vote.text()) + 1);
+      $(a).addClass('i_voted');
+    }
+    var href = a.href;
+    $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) });
+    a.href = '#' + href;
   });
 }
 

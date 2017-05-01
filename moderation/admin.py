@@ -41,6 +41,7 @@ class FlagForm(ModelForm):
 
 class FlagAdmin(AjaxSelectAdmin):
     list_filter = ('resolution',)
+    list_display = ('pk', 'obj', 'object_owner', 'flag_votes', 'censure_votes', 'approve_votes')
     inlines = (VoteInline,)
     form = FlagForm
 

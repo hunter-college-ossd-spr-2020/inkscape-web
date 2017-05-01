@@ -29,19 +29,21 @@ from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import DetailView
+from django.http import JsonResponse
 
-from .models import FlagVote
+from .models import FlagVote, FlagObject
 
 class FunctionView(DetailView):
     """Access to moderator objects from urls makes things easier"""
     template_name = 'moderation/flag.html'
 
     def get_object(self):
-        return get_object_or_404(self.get_model(), pk=self.kwargs['pk'])
+        model = self.get_ct().model_class()
+        return get_object_or_404(model, pk=self.kwargs['pk'])
 
-    def get_model(self):
+    def get_ct(self):
         keys = self.kwargs['app'], self.kwargs['name']
-        return ContentType.objects.get_by_natural_key(*keys).model_class()
+        return ContentType.objects.get_by_natural_key(*keys)
 
     def post(self, request, *args, **kwargs):
         confirm = request.POST.get('confirm', False)
@@ -50,6 +52,15 @@ class FunctionView(DetailView):
         else:
             typ, msg = self.function()
             getattr(messages, typ)(request, getattr(self, msg))
+        if request.POST.get('json', False):
+            obj = FlagObject.objects.get(
+                object_id=self.kwargs['pk'],
+                content_type=self.get_ct(),
+            )
+            return JsonResponse({
+                'object': obj.pk,
+                'weight': obj.weight,
+            })
         return redirect(self.next_url())
 
     def flag(self, weight=1):
