@@ -47,10 +47,10 @@
             {{ object }}
           {% endif %}
         </div>
-        <div class="body">
+        <div class="body" id="votes-{{ object.pk }}">
           <hr/>
-          {% for flag in object.flags %}
-          <p><img src="{{ flag.weight_icon }}" title="{{ flag.weight_label }}, Weight: {{ flag.weight }}"/> <strong>{{ flag.moderator }}</strong> <em>{{ flag.notes|default:"" }} - {{ flag.created|timetag }}</em></p>
+          {% for vote in object.flags %}
+          <p id="vote-{{ vote.pk }}"><img src="{{ vote.weight_icon }}" title="{{ vote.weight_label }}, Weight: {{ vote.weight }}"/> <strong>{{ vote.moderator }}</strong> <em>{{ vote.notes|default:"" }} - {{ vote.created|timetag }}</em></p>
           {% endfor %}
         </div>
 	<div class="bar">

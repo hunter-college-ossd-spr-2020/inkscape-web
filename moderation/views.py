@@ -34,9 +34,9 @@ class UserFlag(UserRequired, FunctionView):
     confirm = _('Flagging Canceled')
     created = _('Moderators have been notified of the issue you have reported.')
     warning = _('You have already flagged this item for attention.')
+    weight = FlagObject.USER_FLAG
 
-    def function(self):
-        (flag, created) = self.flag(weight=FlagObject.USER_FLAG)
+    def function(self, flag, vote, created):
         if not created:
             return ('warning', 'warning')
         return ('success', 'created')
@@ -79,10 +79,9 @@ class CensureObject(ModeratorRequired, FunctionView):
     counted = _('Your vote to hide or delete has been counted.')
     hidden = _('Your vote resulted in the item being hidden.')
     deleted = _('Your vote resulted in the item being deleted.')
+    weight = FlagObject.MODERATOR_CENSURE
 
-    def function(self, *args):
-        (vote, created) = self.flag(weight=FlagObject.MODERATOR_CENSURE)
-        flag = vote.target
+    def function(self, flag, vote, created):
         if flag.is_deleted:
             flag.resolution = False
             try:
@@ -110,9 +109,9 @@ class UndecideObject(ModeratorRequired, FunctionView):
     title = _("Undecided")
     confirm = _("Undecided vote Canceled")
     done = _('Your vote has been marked as undecided.')
+    weight = FlagObject.MODERATOR_UNDECIDED
 
-    def function(self, *args):
-        (vote, created) = self.flag(weight=FlagObject.MODERATOR_UNDECIDED)
+    def function(self, flag, vote, created):
         return ('success', 'done')
 
 class ApproveObject(ModeratorRequired, FunctionView):
@@ -120,10 +119,9 @@ class ApproveObject(ModeratorRequired, FunctionView):
     confirm = _('Approve Canceled')
     counted = _('Your vote to approve has been counted.')
     retained = _('Your vote resulted in the item being retained.')
+    weight = FlagObject.MODERATOR_APPROVAL
 
-    def function(self, *args):
-        (vote, created) = self.flag(weight=FlagObject.MODERATOR_APPROVAL)
-        flag = vote.target
+    def function(self, flag, vote, created):
         if flag.is_retained:
             flag.resolution = True
             flag.save()

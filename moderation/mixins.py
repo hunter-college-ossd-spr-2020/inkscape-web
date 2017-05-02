@@ -47,26 +47,34 @@ class FunctionView(DetailView):
 
     def post(self, request, *args, **kwargs):
         confirm = request.POST.get('confirm', False)
-        if not confirm:
-            messages.error(request, self.confirm)
-        else:
-            typ, msg = self.function()
-            getattr(messages, typ)(request, getattr(self, msg))
+        is_json = request.POST.get('json', False)
 
-        if request.POST.get('json', False):
+        if not confirm:
+            if is_json:
+                return JsonResponse({'err': 'Not confirmed'})
+            else:
+                messages.error(request, self.confirm)
+                return redirect(self.next_url())
+
+        (vote, created) = self.flag(weight=self.weight)
+        typ, msg = self.function(vote.target, vote, created)
+        getattr(messages, typ)(request, getattr(self, msg))
+
+        if is_json:
             msgs = [{
               'level': msg.level,
               'tags': msg.tags,
               'text': unicode(msg),
              } for msg in messages.get_messages(request)]
 
-            obj = FlagObject.objects.get(
-                object_id=self.kwargs['pk'],
-                content_type=self.get_ct(),
-            )
             return JsonResponse({
-                'object': obj.pk,
-                'weight': obj.weight,
+                'id': vote.pk,
+                'target': vote.target_id,
+                'weight': vote.weight,
+                'weight_label': vote.weight_label(),
+                'weight_icon': vote.weight_icon(),
+                'notes': vote.notes,
+                'user': str(vote.moderator),
                 'messages': msgs,
             })
         return redirect(self.next_url())

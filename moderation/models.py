@@ -208,6 +208,7 @@ class FlagVote(Model):
     objects = FlagManager()
 
     class Meta:
+        ordering = ('-created',)
         get_latest_by = 'created'
         permissions = (
             ("can_moderate", "User can moderate flagged content."),

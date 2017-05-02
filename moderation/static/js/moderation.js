@@ -15,6 +15,11 @@ function popUpModeration(msg, cancel, ok, next, note) {
       var a_vote = $('.'+$(a).attr('class')+'_votes', p); 
       a_vote.text(parseInt(a_vote.text()) + 1); 
       $(a).addClass('i_voted');
+
+      // Next we look at the vote rolls
+      $('#vote-' + data.id).remove();
+      var mark = $('<p id="vote-'+data.id+'"><img src="'+data.weight_icon+'" title="'+data.weight_label+', Weight: '+data.weight+'"/><strong>'+data.user+'</strong> <em>'+data.notes+' - Just Now</em></p>');
+      $('#votes-'+data.target).append(mark);
     }   
     var href = a.href;
     $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) }); 
