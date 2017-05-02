@@ -106,6 +106,14 @@ class CensureObject(ModeratorRequired, FunctionView):
     def next_url(self):
         return reverse('moderation:index')
 
+class UndecideObject(ModeratorRequired, FunctionView):
+    title = _("Undecided")
+    confirm = _("Undecided vote Canceled")
+    done = _('Your vote has been marked as undecided.')
+
+    def function(self, *args):
+        (vote, created) = self.flag(weight=FlagObject.MODERATOR_UNDECIDED)
+        return ('success', 'done')
 
 class ApproveObject(ModeratorRequired, FunctionView):
     title = _("Approve Object")

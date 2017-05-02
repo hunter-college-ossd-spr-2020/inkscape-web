@@ -29,6 +29,7 @@ from django.apps import apps
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.staticfiles import storage
 from django.core.validators import MaxLengthValidator
 from django.dispatch import Signal
 
@@ -75,7 +76,14 @@ class FlagObject(Model):
     """
     USER_FLAG = 1
     MODERATOR_APPROVAL = -8
+    MODERATOR_UNDECIDED = 0
     MODERATOR_CENSURE = 7
+    FLAGS = {
+      USER_FLAG: 'user_flag',
+      MODERATOR_APPROVAL: 'moderator_approval',
+      MODERATOR_UNDECIDED: 'moderator_undecided',
+      MODERATOR_CENSURE: 'moderator_censure',
+    }
 
     RETAIN_THRESHOLD = -10
     HIDING_THRESHOLD = 5
@@ -210,11 +218,11 @@ class FlagVote(Model):
 
     def weight_icon(self):
         """Return an image useful for the log"""
-        if self.weight == FlagObject.USER_FLAG:
-            return "images/moderation/user_flag.svg"
-        elif self.weight == FlagObject.MODERATOR_CENSURE:
-            return "images/moderation/moderator_censure.svg"
-        elif self.weight == FlagObject.MODERATOR_APPROVAL:
-            return "images/moderation/moderator_approve.svg"
-        return "images/moderation/unknown_flag.svg"
+        key = FlagObject.FLAGS.get(self.weight, 'unknown_flag')
+        name = "images/moderation/%s.svg" % key
+        return storage.staticfiles_storage.url(name)
+
+    def weight_label(self):
+        """Return a standard label for the flag"""
+        return FlagObject.FLAGS.get(self.weight, '_unknown').split('_')[-1].title()
 

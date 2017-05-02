@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     url_tree(r'^(?P<pk>\d+)/',
       url(r'^$', UserFlag(), name='flag'),
       url(r'^censure/$', CensureObject(), name="censure"),
+      url(r'^undecide/$', UndecideObject(), name="undecide"),
       url(r'^approve/$', ApproveObject(), name="approve"),
     )
   )

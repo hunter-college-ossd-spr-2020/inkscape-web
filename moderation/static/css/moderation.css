@@ -75,7 +75,7 @@
   border-color: #9c0000;
   border-style: solid;
 }
-.moderation .bar div.weight {
+.moderation .bar a.weight {
   color: #444;
   background-color: white;
   border-top: 1px #888 solid;

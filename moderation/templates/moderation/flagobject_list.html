@@ -50,7 +50,7 @@
         <div class="body">
           <hr/>
           {% for flag in object.flags %}
-          <p><img src="{% static flag.weight_icon %}" title="Weight: {{ flag.weight }}"/> <strong>{{ flag.moderator }}</strong> <em>{{ flag.notes|default:"" }} - {{ flag.created|timetag }}</em></p>
+          <p><img src="{{ flag.weight_icon }}" title="{{ flag.weight_label }}, Weight: {{ flag.weight }}"/> <strong>{{ flag.moderator }}</strong> <em>{{ flag.notes|default:"" }} - {{ flag.created|timetag }}</em></p>
           {% endfor %}
         </div>
 	<div class="bar">
@@ -59,7 +59,8 @@
             <a class="censure{% if object|is_censured:request.user %} i_voted{% endif %}" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
             <script>popUpModeration('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}", "Why should this item be deleted?");</script>
 	  {% endif %}
-          <div class="weight" title="{% blocktrans %} When this reaches {{ delete_threshold }}, the item is deleted, when it reaches {{ retain_threshold }} it is retained.{% endblocktrans %}">{{ object.weight }}</div>
+          <a class="weight undecide" title="{% trans "Vote as Undecided with a note" %}" href="{% url "moderation:undecide" model.app model.model object.object_id %}">{{ object.weight }}</a>
+          <script>popUpModeration('{% trans "Are you sure you want to mark your vote as undecided?" %}', '{% trans "Cancel" %}', '{% trans "Mark" %}', "{{ request.url }}", "Notes for other moderators about your views.");</script>
 	  {% if object.resolution == None %}
             <a class="approve{% if object|is_approved:request.user %} i_voted{% endif %}" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
 	    <script>popUpModeration('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}', "Why should this item be retained?");</script>
