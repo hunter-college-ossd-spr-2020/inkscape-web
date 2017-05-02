@@ -73,6 +73,7 @@ class FunctionView(DetailView):
                 'weight': vote.weight,
                 'weight_label': vote.weight_label(),
                 'weight_icon': vote.weight_icon(),
+                'status': unicode(vote.target.status_label()),
                 'notes': vote.notes,
                 'user': str(vote.moderator),
                 'messages': msgs,

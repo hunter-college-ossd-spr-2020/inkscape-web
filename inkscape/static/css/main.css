@@ -1095,6 +1095,12 @@ a.roundel img {
   color: white;
   font-weight: bold;
 }
+#messages .floating-msg {
+  position: fixed;
+  bottom: 10px;
+  box-shadow: 3px 4px 4px rgba(0,0,0,0.3);
+  left: 10px;
+}
 
 /* Popup with blanket */
 #blanket {

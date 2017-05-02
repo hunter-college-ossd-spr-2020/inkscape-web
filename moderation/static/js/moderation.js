@@ -20,6 +20,20 @@ function popUpModeration(msg, cancel, ok, next, note) {
       $('#vote-' + data.id).remove();
       var mark = $('<p id="vote-'+data.id+'"><img src="'+data.weight_icon+'" title="'+data.weight_label+', Weight: '+data.weight+'"/><strong>'+data.user+'</strong> <em>'+data.notes+' - Just Now</em></p>');
       $('#votes-'+data.target).append(mark);
+
+      // Next update the status
+      $('#flag-'+data.target+' .moderationstatus').text(data.status);
+
+      messages = $('<ul id="messages"></ul>');
+      $.each(data.messages, function(index, msg) {
+        var msg = $('<li class="floating-msg '+msg.tags+'">'+msg.text+'</li>');
+        $(messages).append(msg);
+        msg.fadeIn('fast').delay(3000).fadeOut('fast');
+      });
+      $('body').append(messages);
+      setTimeout(function() {
+        $('#messages').remove();
+      }, 5000);
     }   
     var href = a.href;
     $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) }); 

@@ -117,7 +117,13 @@ class FlagObject(Model):
 
     @property
     def is_hidden(self):
+        """Return true if it's possible to hide this object"""
         return self.weight > self.HIDING_THRESHOLD and hasattr(self.obj, 'is_removed')
+
+    @property
+    def was_hidden(self):
+        """Returns true if the object was hidden at some point"""
+        return hasattr(self.obj, 'is_removed') and self.obj.is_removed
 
     @property
     def censure_votes(self):
@@ -136,6 +142,15 @@ class FlagObject(Model):
         if not hasattr(self, '_flags'):
             self._flags = self.votes.all()
         return self._flags
+
+    def status_label(self):
+        if self.is_retained:
+            return _("retained")
+        if self.was_hidden:
+            return _("hidden")
+        if self.is_deleted:
+            return _("deleted")
+        return _("undecided")
 
 
 class FlagManager(Manager):

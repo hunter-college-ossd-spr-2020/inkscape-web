@@ -119,9 +119,15 @@ class ApproveObject(ModeratorRequired, FunctionView):
     confirm = _('Approve Canceled')
     counted = _('Your vote to approve has been counted.')
     retained = _('Your vote resulted in the item being retained.')
+    unhide = _('Your vote resulted in the item being unhidden.')
     weight = FlagObject.MODERATOR_APPROVAL
 
     def function(self, flag, vote, created):
+        if flag.was_hidden:
+            flag.obj.is_removed = False
+            flag.obj.ip_address = None
+            flag.obj.save()
+            return ('success', 'unhide')
         if flag.is_retained:
             flag.resolution = True
             flag.save()
