@@ -391,3 +391,9 @@ svg .webhover:hover {
   transition: all 0.8s ease-in-out;
 }
 
+.coc-note {
+  margin: 2px;
+  line-height: 1em;
+  padding-bottom: 8px;
+  color: #999;
+}
