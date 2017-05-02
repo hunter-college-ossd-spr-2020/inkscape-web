@@ -14,7 +14,7 @@
    height="16"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="moderator_approve.svg">
+   sodipodi:docname="moderator_approval.svg">
   <metadata
      id="metadata17">
     <rdf:RDF>
@@ -23,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -45,7 +45,7 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="15.733333"
-     inkscape:cx="7"
+     inkscape:cx="-4.2817799"
      inkscape:cy="7.0000006"
      inkscape:window-x="65"
      inkscape:window-y="24"
@@ -59,7 +59,8 @@
        x2="8"
        y2="13"
        id="Background"
-       gradientUnits="userSpaceOnUse">
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.96666663,0,0,0.96666663,0.24999979,0.25000023)">
       <stop
          style="stop-color:#7eb45a"
          offset="0"
@@ -75,10 +76,10 @@
      transform="matrix(1.1538462,0,0,1.1538462,-0.65384618,-0.65384618)">
     <circle
        id="circle11"
-       style="fill:url(#Background);stroke:#608844;stroke-width:0.86666667"
-       r="6.5"
-       cy="7.5"
-       cx="7.5" />
+       style="fill:url(#Background);stroke:#587c3e;stroke-width:1.29999995;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       r="6.2833333"
+       cy="7.4999995"
+       cx="7.4999995" />
     <path
        id="path13"
        style="fill:none;stroke:#ffffff;stroke-width:1.73333335;stroke-linecap:round;stroke-linejoin:round"

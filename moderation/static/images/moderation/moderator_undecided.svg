@@ -14,7 +14,7 @@
    height="16"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="unknown_flag.svg"
+   sodipodi:docname="moderator_undecided.svg"
    inkscape:export-filename="/home/doctormo/Projects/inkscape/inkscape-web/inkscape/static/images/bullet-pass.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
@@ -43,9 +43,9 @@
      inkscape:window-height="1056"
      id="namedview15"
      showgrid="false"
-     inkscape:zoom="20.794464"
-     inkscape:cx="1.0389464"
-     inkscape:cy="20.430124"
+     inkscape:zoom="1"
+     inkscape:cx="-1.7341751"
+     inkscape:cy="12.601367"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -81,13 +81,19 @@
      style="fill:url(#Background);stroke:#666666;stroke-width:1.14285719;stroke-opacity:1"
      id="circle11" />
   <g
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:-2.05999994px;word-spacing:0px;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     id="text4136"
-     transform="matrix(0.295359,0,0,0.295359,4.6258979,8.4812929)">
+     style="font-style:normal;font-weight:normal;font-size:12.58214283px;line-height:125%;font-family:sans-serif;letter-spacing:-0.64798033px;word-spacing:0px;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     id="text4136">
     <path
-       d="m 8.4061542,9.0673838 3.9648438,0 0,4.9609372 -3.9648438,0 0,-4.9609372 z M 12.25381,6.19629 l -3.7304683,0 0,-3.0078125 q 0,-1.9726562 0.546875,-3.24218748 0.546875,-1.26953122 2.3046873,-2.94921872 L 13.132717,-4.74121 q 1.113281,-1.0351562 1.601562,-1.953125 0.507813,-0.9179687 0.507813,-1.875 0,-1.738281 -1.289063,-2.8125 -1.269531,-1.074219 -3.378906,-1.074219 -1.5429688,0 -3.3007813,0.683594 -1.7382813,0.683594 -3.6328125,1.9921875 l 0,-3.6718745 q 1.8359375,-1.113282 3.7109375,-1.660157 1.8945312,-0.546875 3.9062503,-0.546875 3.59375,0 5.761718,1.894532 2.1875,1.894531 2.1875,4.9999995 0,1.484375 -0.703125,2.8320313 -0.703125,1.328125 -2.460937,3.0078125 l -1.71875,1.6796875 Q 13.406154,-0.32714748 13.015529,0.20019627 12.644435,0.70800877 12.488185,1.19629 12.370998,1.6064463 12.312404,2.1923838 12.25381,2.7783213 12.25381,3.7939463 l 0,2.4023437 z"
-       id="path4141"
-       inkscape:connector-curvature="0"
-       style="fill:#666666;fill-opacity:1" />
+       d="m 4.0191774,7.4345775 1.2963048,0 0,1.5604806 -1.2963048,0 0,-1.5604806 z"
+       style=""
+       id="path4141" />
+    <path
+       d="m 7.3768401,7.4345775 1.2963048,0 0,1.5604806 -1.2963048,0 0,-1.5604806 z"
+       style=""
+       id="path4143" />
+    <path
+       d="m 10.734503,7.4345775 1.296305,0 0,1.5604806 -1.296305,0 0,-1.5604806 z"
+       style=""
+       id="path4145" />
   </g>
 </svg>

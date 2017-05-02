@@ -14,7 +14,7 @@
    height="16"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="bullet-tick.svg">
+   sodipodi:docname="user_flag.svg">
   <metadata
      id="metadata17">
     <rdf:RDF>
@@ -23,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,7 +41,7 @@
      id="namedview15"
      showgrid="false"
      inkscape:zoom="15.733333"
-     inkscape:cx="7.0000005"
+     inkscape:cx="-4.3453387"
      inkscape:cy="7.000001"
      inkscape:window-x="992"
      inkscape:window-y="24"
@@ -60,7 +60,7 @@
        y2="13"
        id="Background"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.1538462,0,0,1.1538462,-0.65384567,-0.6538462)">
+       gradientTransform="matrix(1.1153846,0,0,1.1153846,-0.36538362,-0.3653846)">
       <stop
          style="stop-color:#ff7f2a;stop-opacity:1"
          offset="0"
@@ -74,8 +74,8 @@
   <circle
      cx="8"
      cy="8"
-     r="7.5000005"
-     style="fill:url(#Background);stroke:#e25a00;stroke-width:1;stroke-opacity:1"
+     r="7.25"
+     style="fill:url(#Background);stroke:#cd5200;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="circle11" />
   <g
      id="g3817"
