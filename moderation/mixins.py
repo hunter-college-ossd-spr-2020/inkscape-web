@@ -52,7 +52,13 @@ class FunctionView(DetailView):
         else:
             typ, msg = self.function()
             getattr(messages, typ)(request, getattr(self, msg))
+
         if request.POST.get('json', False):
+            msgs = [{
+              'level': msg.level,
+              'text': unicode(msg),
+             } for msg in messages.get_messages(request)]
+
             obj = FlagObject.objects.get(
                 object_id=self.kwargs['pk'],
                 content_type=self.get_ct(),
@@ -60,6 +66,7 @@ class FunctionView(DetailView):
             return JsonResponse({
                 'object': obj.pk,
                 'weight': obj.weight,
+                'messages': msgs,
             })
         return redirect(self.next_url())
 
