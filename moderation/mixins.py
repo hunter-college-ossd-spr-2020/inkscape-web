@@ -56,6 +56,7 @@ class FunctionView(DetailView):
         if request.POST.get('json', False):
             msgs = [{
               'level': msg.level,
+              'tags': msg.tags,
               'text': unicode(msg),
              } for msg in messages.get_messages(request)]
 
