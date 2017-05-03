@@ -1,0 +1,10 @@
+{% extends "moderation/base.html" %}
+{% load i18n static inkscape moderator %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  {% for object in object_list %}
+    {% include "moderation/flagobject_item.html" %}
+  {% endfor %}
+{% endblock %}
+

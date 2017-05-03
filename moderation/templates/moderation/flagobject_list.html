@@ -9,56 +9,13 @@
   <p>{% blocktrans %}All resolved items are listed for {{ display_days }} days after they have been deleted or retained, but the object itself is always deleted immediately.{% endblocktrans %}</p>
 
   {% for model in object_list.models %}
-    <h2><a href="{% url "moderation:latest" model.app model.model %}">{{ model.label }}</h2>
+    {% if model.objects.count > 0 %}
+      <h2><a href="{% url "moderation:bytype" model.app model.model %}">{{ model.label }}</h2>
 
-    {% for object in model.objects %}
-    <div id="flag-{{ object.pk }}" class="moderation {% if object.is_retained %}retained{% elif object.is_deleted %}deleted{% elif object.is_hidden %}hidden{% else %}undecided{% endif %}">
-        <div class="details">
-	  <div class="title">
-	    {% url 'view_profile' object.object_owner.username as profile_url %}
-	    <a href="{{ profile_url }}"><img class="userphoto" src="{% if object.object_owner.photo %}{{ object.object_owner.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
-	    <div>
-		<a href="{{ profile_url }}">{{ user_name }}</a>
-	    </div>
-	  </div>
-          <div class="index">
-            <div class="moderationstatus">{{ object.status_label }}</div>
-            <div class="index">
-              {{ object.updated|timetag }}
-            </div>
-          </div>
-          <div class="flagcount">{{ object.flag_votes }}</div>
-          <div title='{% trans "Flags" %}' class="flag flagged"></div>
-        </div>
-        <div class="body">
-          {% if model.template %}
-            {% include model.template %}
-          {% else %}
-            {{ object }}
-          {% endif %}
-        </div>
-        <div class="body" id="votes-{{ object.pk }}">
-          <hr/>
-          {% for vote in object.flags %}
-          <p id="vote-{{ vote.pk }}"><img src="{{ vote.weight_icon }}" title="{{ vote.weight_label }}, Weight: {{ vote.weight }}"/> <strong>{{ vote.moderator }}</strong> <em>{{ vote.notes|default:"" }} - {{ vote.created|timetag }}</em></p>
-          {% endfor %}
-        </div>
-	<div class="bar">
-          <div class="censure_votes" title="{% trans "Number of people who want to censure this object." %}">{{ object.censure_votes|default:"0" }}</div>
-	  {% if object.resolution == None %}
-            <a class="censure{% if object|is_censured:request.user %} i_voted{% endif %}" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
-            <script>popUpModeration('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}", "Why should this item be deleted?");</script>
-	  {% endif %}
-          <a class="weight undecide" title="{% trans "Vote as Undecided with a note" %}" href="{% url "moderation:undecide" model.app model.model object.object_id %}">{{ object.weight }}</a>
-          <script>popUpModeration('{% trans "Are you sure you want to mark your vote as undecided?" %}', '{% trans "Cancel" %}', '{% trans "Mark" %}', "{{ request.url }}", "Notes for other moderators about your views.");</script>
-	  {% if object.resolution == None %}
-            <a class="approve{% if object|is_approved:request.user %} i_voted{% endif %}" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
-	    <script>popUpModeration('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}', "Why should this item be retained?");</script>
-	  {% endif %}
-          <div class="approve_votes" title="{% trans "Number of people who want to retain this object." %}">{{ object.approve_votes|default:"0" }}</div>
-	</div>
-      </div>
-    {% endfor %}
+      {% for object in model.objects %}
+        {% include "moderation/flagobject_item.html" %}
+      {% endfor %}
+    {% endif %}
   {% endfor %}
 {% endblock %}
 

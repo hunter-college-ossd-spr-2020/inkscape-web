@@ -32,7 +32,7 @@ urlpatterns = patterns('',
   url(r'^$', Moderation(), name="index"),
 
   url_tree(r'^(?P<app>[\w-]+)/(?P<name>[\w-]+)/',
-    url(r'^latest/$', ModerateLatest(), name="latest"),
+    url(r'^$', ModerateType(), name="bytype"),
 
     url_tree(r'^(?P<pk>\d+)/',
       url(r'^$', UserFlag(), name='flag'),

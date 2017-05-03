@@ -33,17 +33,23 @@ from django.http import JsonResponse
 
 from .models import FlagVote, FlagObject
 
-class FunctionView(DetailView):
+class ModerationMixin(object):
+    @property
+    def contenttype(self):
+        keys = self.kwargs['app'], self.kwargs['name']
+        return ContentType.objects.get_by_natural_key(*keys)
+
+    @property
+    def flag_model(self):
+        return self.contenttype.model_class()
+
+
+class FlagView(ModerationMixin, DetailView):
     """Access to moderator objects from urls makes things easier"""
     template_name = 'moderation/flag.html'
 
     def get_object(self):
-        model = self.get_ct().model_class()
-        return get_object_or_404(model, pk=self.kwargs['pk'])
-
-    def get_ct(self):
-        keys = self.kwargs['app'], self.kwargs['name']
-        return ContentType.objects.get_by_natural_key(*keys)
+        return get_object_or_404(self.flag_model, pk=self.kwargs['pk'])
 
     def post(self, request, *args, **kwargs):
         confirm = request.POST.get('confirm', False)
@@ -88,7 +94,7 @@ class FunctionView(DetailView):
         return self.request.POST.get('next', self.request.META.get('HTTP_REFERER', '/')) or '/'
 
     def get_context_data(self, **data):
-        data = super(FunctionView, self).get_context_data(**data)
+        data = super(FlagView, self).get_context_data(**data)
         data['flag_type'] = self.flag
         return data
 

@@ -29,7 +29,7 @@ from django.core.urlresolvers import reverse
 from .models import *
 from .mixins import *
 
-class UserFlag(UserRequired, FunctionView):
+class UserFlag(UserRequired, FlagView):
     title = _("Flag Object")
     confirm = _('Flagging Canceled')
     created = _('Moderators have been notified of the issue you have reported.')
@@ -42,38 +42,45 @@ class UserFlag(UserRequired, FunctionView):
         return ('success', 'created')
 
 
-
-class Moderation(ModeratorRequired, ListView):
+class Moderation(ModeratorRequired, ModerationMixin, ListView):
     title = _("Moderators' Area")
-    model = FlagObject
-    
-    DISPLAY_DAYS = 7
+    display_days = 7
 
     def get_queryset(self):
-        return FlagObject.objects.filter(
-            Q(resolution__isnull=True) | Q(updated__gt=now() - timedelta(days=self.DISPLAY_DAYS))
-        )
+        new = Q(resolution__isnull=True)
+        recent = Q(updated__gt=now() - timedelta(days=self.display_days))
+        return FlagObject.objects.filter(new | recent)
       
     def get_context_data(self, **kwargs):
         data = super(Moderation, self).get_context_data(**kwargs)
-        
         data['user_flag_weight'] = FlagObject.USER_FLAG
         data['mod_approve_weight'] = FlagObject.MODERATOR_APPROVAL * -1
         data['mod_censure_weight'] = FlagObject.MODERATOR_CENSURE
         data['retain_threshold'] = FlagObject.RETAIN_THRESHOLD
         data['hiding_threshold'] = FlagObject.HIDING_THRESHOLD
         data['delete_threshold'] = FlagObject.DELETE_THRESHOLD
-        data['display_days'] = self.DISPLAY_DAYS
-        
+        data['display_days'] = self.display_days
         return data
 
 
-class ModerateLatest(ModeratorRequired, ListView):
-    title = _("Moderate Latest Items")
-    model = FlagObject
+class ModerateType(ModeratorRequired, ModerationMixin, ListView):
+    template_name = 'moderation/flagobject_bytype.html'
+
+    def get_queryset(self):
+        new = Q(resolution__isnull=True)
+        recent = Q(updated__gt=now() - timedelta(days=14))
+        return FlagObject.objects.filter(new | recent)\
+            .filter(content_type=self.contenttype)
+
+    def get_context_data(self, **kwargs):
+        data = super(ModerateType, self).get_context_data(**kwargs)
+        data['model'] = list(data['object_list'].models)[0]
+        data['title'] = _("Moderate Latest %s") % data['model']['label']
+        data['parent'] = (reverse('moderation:index'), _('Moderation'))
+        return data
 
 
-class CensureObject(ModeratorRequired, FunctionView):
+class CensureObject(ModeratorRequired, FlagView):
     title = _("Censure Object")
     confirm = _('Censure Canceled')
     counted = _('Your vote to hide or delete has been counted.')
@@ -105,7 +112,7 @@ class CensureObject(ModeratorRequired, FunctionView):
     def next_url(self):
         return reverse('moderation:index')
 
-class UndecideObject(ModeratorRequired, FunctionView):
+class UndecideObject(ModeratorRequired, FlagView):
     title = _("Undecided")
     confirm = _("Undecided vote Canceled")
     done = _('Your vote has been marked as undecided.')
@@ -114,7 +121,7 @@ class UndecideObject(ModeratorRequired, FunctionView):
     def function(self, flag, vote, created):
         return ('success', 'done')
 
-class ApproveObject(ModeratorRequired, FunctionView):
+class ApproveObject(ModeratorRequired, FlagView):
     title = _("Approve Object")
     confirm = _('Approve Canceled')
     counted = _('Your vote to approve has been counted.')
