@@ -159,12 +159,14 @@ function popUp(title, msg, href, cancel, ok, next, note, ajax) {
         $('#popup .buttons').append("<textarea name='note' placeholder='" + note + "'></textarea>");
       }
       $('#popup .buttons').append("<input type='hidden' name='csrfmiddlewaretoken' value='"+getCookie('csrftoken')+"'/>")
-      $('#popup .buttons').append("<input type='hidden' name='json' value='1'/>")
-                          .append("<a class='btn btn-cancel'>" + cancel + "</a>");
+      if(ajax) {
+        $('#popup .buttons').append("<input type='hidden' name='json' value='1'/>");
+      }
       if(next) {
         $('#popup .buttons').append("<input type='hidden' name='next' value='"+next+"'/>");
       }  
       $('#popup .buttons').append("<input type='hidden' name='confirm' value='1'/>");
+      $('#popup .buttons').append("<a class='btn btn-cancel'>" + cancel + "</a>");
       $('#popup .buttons').append("<button type='submit' class='btn btn-primary'>" + ok + "</button>");
       $('#popup .buttons .btn-cancel').click(popUp);
       $('#popup').css({
