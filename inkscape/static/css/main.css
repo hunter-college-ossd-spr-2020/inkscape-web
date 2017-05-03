@@ -95,6 +95,13 @@ a.button:active {
   background: white;
   background-image: linear-gradient(to bottom, white, #c6c6c6);
 }
+h1 .button {
+  display: inline-block;
+  line-height: 1em;
+  padding: 8px;
+  width: 50px;
+  box-sizing: border-box;
+}
 
 /* Hyphenation */
 p,

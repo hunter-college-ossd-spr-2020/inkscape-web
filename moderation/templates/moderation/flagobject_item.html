@@ -1,6 +1,6 @@
 {% load i18n static inkscape moderator %}
 
-    <div id="flag-{{ object.pk }}" class="moderation {% if object.is_retained %}retained{% elif object.is_deleted %}deleted{% elif object.is_hidden %}hidden{% else %}undecided{% endif %}">
+<div id="flag-{{ object.pk }}" class="moderation {% if object.is_retained %}retained{% elif object.is_deleted %}deleted{% elif object.is_hidden %}hidden{% else %}undecided{% endif %}{% if object|has_voted:request.user %} has_voted{% endif %}">
         <div class="details">
 	  <div class="title">
 	    {% url 'view_profile' object.object_owner.username as profile_url %}

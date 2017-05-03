@@ -70,3 +70,9 @@ def is_approved(obj, user):
             if flag.weight == FlagObject.MODERATOR_APPROVAL:
                 return True
 
+@register.filter
+def has_voted(obj, user):
+    for flag in obj.flags:
+        if flag.moderator == user:
+            return True
+

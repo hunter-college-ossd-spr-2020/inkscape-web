@@ -23,6 +23,10 @@ function popUpModeration(msg, cancel, ok, next, note) {
 
       // Next update the status
       $('#flag-'+data.target+' .moderationstatus').text(data.status);
+      $('#flag-'+data.target).addClass('has_voted');
+      if($('#hidebutton').text() == 'O') {
+        $('#flag-'+data.target).delay(1000).fadeOut('fast');
+      }
 
       messages = $('<ul id="messages"></ul>');
       $.each(data.messages, function(index, msg) {
@@ -30,6 +34,8 @@ function popUpModeration(msg, cancel, ok, next, note) {
         $(messages).append(msg);
         msg.fadeIn('fast').delay(3000).fadeOut('fast');
       });
+
+      // Add messages
       $('body').append(messages);
       setTimeout(function() {
         $('#messages').remove();
@@ -40,3 +46,17 @@ function popUpModeration(msg, cancel, ok, next, note) {
     a.href = '#' + href;
   }); 
 }
+
+$(document).ready(function() {
+  var btn = $('<a id="hidebutton" class="button" style="float: right;" href="#no">X</a>');
+  $('#content h1').append(btn);
+  btn.click(function() {
+    if($(this).text() == 'X') {
+      $('.has_voted').fadeOut('fast');
+      $(this).text('O');
+    } else {
+      $('.has_voted').fadeIn('fast');
+      $(this).text('X');
+    }
+  }).click();
+});

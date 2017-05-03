@@ -192,18 +192,6 @@ h1 .runner {
   padding: 2px;
 }
 
-h1 .runner .button {
-  display: inline-block;
-  line-height: 1em;
-  padding: 8px;
-  width: 50px;
-  box-sizing: border-box;
-}
-
-h1 .runner a.button {
-  padding-top: 10px; /* no idea why this is needed */
-}
-
 .index form.runner {
   display: inline-block;
 }
