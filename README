@@ -25,3 +25,9 @@ Updating the Website Code:
 Updating the CMS Content:
 
  1) ./utils/refresh-cms
+
+Regenerating the virtual environment (may be needed after system upgrade
+or if you change the path name):
+
+ 1) rm -rf pythonenv
+ 2) ./utils/init
