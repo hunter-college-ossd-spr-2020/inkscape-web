@@ -30,7 +30,7 @@ from .forms import ModelForm
 from .models import *
 
 class CategoryAdmin(ModelAdmin):
-    list_display = ('name', 'filterable', 'selectable', 'restricted_to_groups', 'item_count')
+    list_display = ('name', 'filterable', 'selectable', 'restricted_to_groups', 'item_count', 'order')
     list_filter = ('filterable', 'selectable')
     search_fields = ('name',)
 

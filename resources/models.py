@@ -83,9 +83,6 @@ class License(Model):
 
     replaced = ForeignKey("License", verbose_name=_('Replaced by'), on_delete=SET_NULL, **null)
 
-    class Meta:
-        db_table = 'resource_license'
-
     @property
     def value(self):
         return self.code
@@ -120,6 +117,11 @@ class Category(Model):
     acceptable_media_y = CharField(max_length=255, blank=True, null=True)
     acceptable_types = CharField(max_length=255, blank=True, null=True)
     acceptable_size = CharField(max_length=255, blank=True, null=True)
+
+    order = IntegerField(default=0)
+
+    class Meta:
+        ordering = 'order',
 
     def __str__(self):
         return self.name.encode('utf8')
