@@ -13,7 +13,7 @@
     </div>
     <div class="info">
       <img src="{{ project.logo.url }}" alt="{% trans "Logo for project" %}&quot;{{project.title}}&quot;"/>
-      <div class="image-overlay difficulty{{ project.sort }}"></div> <!--difficulty level, to be filled with background image via CSS-->
+      <div class="image-overlay difficulty{{ project.difficulty }}"></div> <!--difficulty level, to be filled with background image via CSS-->
       
       {% if project.started %}
       <div class="progress" title= "{% trans "Progress" %}">
@@ -30,7 +30,7 @@
       
       <dl>
         <dt>{% trans "Status" %}:</dt> <dd>{{ project.get_status.1 }}</dd>
-        <dt>{% trans "Estimation of difficulty" %}:</dt> <dd>{{ project.get_sort_display }}</dd>
+        <dt>{% trans "Estimation of difficulty" %}:</dt> <dd>{{ project.difficulty }}</dd>
         <!-- The items below will need a corresponding database field -->
         <dt>Potential mentors:</dt> <dd>Tavmjong Bah</dd> <!-- project.manager ?-->
         <dt>Programming skills needed:</dt> <dd>C++</dd>

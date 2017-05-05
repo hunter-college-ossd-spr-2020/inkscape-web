@@ -45,7 +45,7 @@ class ProjectAdmin(AjaxSelectAdmin):
 
     fieldsets = (
         (None, {
-          'fields': ('title', 'project_type', 'banner', 'logo', 'is_fundable', 'is_approved', 'sort')
+          'fields': ('title', 'project_type', 'banner', 'logo', 'is_fundable', 'is_approved', 'difficulty')
         }),
         ('Timing', {
           'classes': ('collapse',),
