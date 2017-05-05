@@ -116,6 +116,10 @@ class FlagObject(Model):
     is_deleted = property(lambda self: self.weight > self.DELETE_THRESHOLD)
 
     @property
+    def was_deleted(self):
+        return self.obj.resolution is False
+
+    @property
     def is_hidden(self):
         """Return true if it's possible to hide this object"""
         return self.weight > self.HIDING_THRESHOLD and hasattr(self.obj, 'is_removed')
@@ -241,4 +245,18 @@ class FlagVote(Model):
     def weight_label(self):
         """Return a standard label for the flag"""
         return FlagObject.FLAGS.get(self.weight, '_unknown').split('_')[-1].title()
+
+
+from django.dispatch import receiver
+@receiver(signals.post_delete)
+def object_deleted(sender, instance, **kwargs):
+    """Clean up any flag objects left dangling."""
+    if not isinstance(instance.pk, int):
+        return
+    FlagObject.objects.filter(
+        resolution__isnull=True,
+        object_id=instance.pk,
+        content_type=ContentType.objects.get_for_model(sender),
+    ).update(resolution=False)
+
 

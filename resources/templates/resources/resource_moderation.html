@@ -1,6 +1,7 @@
 {% load i18n static %}
   {% if object.obj %}
     {% with object.obj as object %}
+      <h2>{{ object }}</h2>
       {% include "resources/resource_info.html" %}
     {% endwith %}
   {% endif %}
