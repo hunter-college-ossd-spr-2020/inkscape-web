@@ -222,6 +222,7 @@ class Team(Model):
     slug = SlugField(_('Team URL Slug'), max_length=32)
     icon = ImageField(_('Display Icon'), upload_to='teams', default=ICON)
 
+    order = IntegerField(default=0)
     intro = TextField(_('Introduction'), validators=[MaxLengthValidator(1024)], **null)
     desc = TextField(_('Full Description'), validators=[MaxLengthValidator(10240)], **null)
     charter = TextField(_('Charter'), validators=[MaxLengthValidator(30240)], **null)
@@ -233,6 +234,9 @@ class Team(Model):
 
     localized_fields = ('name', 'intro', 'desc',  'charter', 'side_bar')
     objects = TeamQuerySet.as_manager()
+
+    class Meta:
+        ordering = ('order',)
 
     @property
     def channels(self):
