@@ -54,11 +54,11 @@ class MailingList(object):
         if not test:
             atexit.register(self.set_position)
 
-    def sync(self, url, user, pwd):
+    def sync(self, url, user, password):
         """Sync the mailbox with the online source"""
         cmd = ['wget', url,
             '--user=' + user,
-            '--password=' + pwd,
+            '--password=' + password,
             '--continue',
             '-O', self.path,
             '-o', '/dev/null'

@@ -36,7 +36,7 @@ from django.core.validators import MaxLengthValidator
 
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.timezone import now
 from django.utils.text import slugify
 from django_comments.models import Comment
@@ -166,7 +166,7 @@ class Forum(Model):
                 user_name=unicode(message.get_username()),
                 user_email=message.get_email(),
                 user_url=message.get_userurl(),
-                comment=unicode(message.get_body()),
+                comment=force_text(message.get_body(), errors='replace'),
                 submit_date=message.get_created(),
                 content_object=topic,
             )
@@ -187,7 +187,7 @@ class Forum(Model):
                     user_name=unicode(message.get_username()),
                     user_email=message.get_email(),
                     user_url='',
-                    comment=unicode(reply.get_body()),
+                    comment=force_text(reply.get_body(), errors='replace'),
                     submit_date=message.get_created(),
                     content_object=topic,
                 )
@@ -265,6 +265,8 @@ class ForumTopic(Model):
         return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
 
     def save(self, **kw):
+        self.subject = self.subject[:120]
+
         if not self.slug:
             self.slug = slugify(self.subject)
             while ForumTopic.objects.filter(slug=self.slug).count():
@@ -289,5 +291,5 @@ class CommentLink(Model):
     extra_data = TextField(null=True, blank=True)
 
     def __str__(self):
-        return "%s: %s" % (self.source_id, self.message_id)
+        return self.message_id
 

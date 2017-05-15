@@ -27,43 +27,46 @@ import logging
 
 from django.apps import apps
 from django.conf import settings
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 from forums.models import Forum
-from forums.mailinglist import MailingList
+from forums.plugins.mailinglist import MailingList
 
 #
 # Note: There's not support for attachments yet.
 #
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Run as a cron job every five minutes to sync mbox from mailing list archive"
-    option_list = BaseCommand.option_list + ( 
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--sync',
             action='store',
             dest='name',
             default=None,
-            help='Name of the configured sync to perform (default is All).'),
-    )  
+            help='Name of the configured sync to perform (default is All).')
+        return parser
 
-    def handle(self, name=None):
+    def handle(self, name=None, **kw):
         app = apps.get_app_config('forums')
         # Select all plugins if not supplied on command line
         try:
-            syncs = [app.plugin[name]] if name else app.plugins
+            syncs = [app.plugin[name]] if name else app.plugin.values()
         except KeyError:
             logging.error("No plugin called '%s' found" % name)
 
         for plugin in syncs:
-            forums = Forums.objects.filter(sync=key)
+            name = plugin.key
+            forums = Forum.objects.filter(sync=plugin.key)
 
             if forums.count() == 0:
-                logging.error(" X Not syncing %s, (no forum targets)" % key)
+                logging.error(" X Not syncing %s, (no forum targets)" % plugin.key)
                 continue
 
-            def save_messages(self, message):
+            def save_messages(message):
                 """Save messages callback run by plugin.'sync'"""
+                sys.stdout.write(".")
+                sys.stdout.flush()
                 for forum in forums:
                     forum.sync_message(message)
 
@@ -76,5 +79,6 @@ class Command(NoArgsCommand):
                     logging.error("Not syncing: %s" % str(err))
                 continue
             except Exception as err:
+                raise
                 logging.error("Exception in %s: %s" % (name, str(err)))
 
