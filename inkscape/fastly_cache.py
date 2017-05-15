@@ -66,7 +66,8 @@ class FastlyCache(object):
           purge old ones too if old=True (all static files)
         """
         if self.api is None:
-            sys.stderr.write("No-cache: cleaning static files (ignored)\n")
+            #sys.stderr.write("No-cache: cleaning static files (ignored)\n")
+            pass
 
         root = settings.STATIC_ROOT
 
@@ -106,7 +107,7 @@ class FastlyCache(object):
     def purge_key(self, key):
         """Take an object key and ask the content to be refreshed"""
         if self.api is None:
-            sys.stderr.write("No-cache: key %s -> %s\n" % (self.service, key))
+            #sys.stderr.write("No-cache: key %s -> %s\n" % (self.service, key))
             return False
         return self.api.purge_key(self.service, key)
 
@@ -133,7 +134,7 @@ class FastlyCache(object):
 
         if self.api is None:
             var = (url, domain, location)
-            sys.stderr.write("No-cache: purging %s -> %s/%s (ignored)\n" % var)
+            #sys.stderr.write("No-cache: purging %s -> %s/%s (ignored)\n" % var)
             return False
 
         return self.api.purge_url(domain, '/' + location)
