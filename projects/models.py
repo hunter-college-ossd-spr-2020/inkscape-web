@@ -88,7 +88,7 @@ class Project(Model):
 
     project_type = ForeignKey(ProjectType)
 
-    is_fundable = BooleanField(default=False)
+    is_fundable = BooleanField(_('Fundable'), default=False)
     is_approved = BooleanField(_('Pre-approved'), default=False)
 
     criteria = ManyToManyField('Criteria', blank=True)
