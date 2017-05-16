@@ -25,10 +25,10 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView
 from django.db.models import Q
 
-from pile.views import DetailView, CategoryListView, CreateView, UpdateView, breadcrumbs
+from pile.views import DetailView, CreateView, UpdateView, breadcrumbs
 from .models import Project, Report
 
-class ProjectList(CategoryListView):
+class ProjectList(ListView):
     model = Project
     cats = (
       ('project_type', 'type'),
@@ -38,7 +38,7 @@ class ProjectList(CategoryListView):
     )
 
     def get_context_data(self, **kwargs):
-        data = CategoryListView.get_context_data(self, **kwargs)
+        data = ListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
             ('projects', 'Projects'),
         )
@@ -119,13 +119,13 @@ class UpdateProject(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('project', kwargs={'slug': self.kwargs['project']})
+        return reverse('project.update', kwargs={'slug': self.kwargs['project']})
 
-class MyProjects(CategoryListView):
+class MyProjects(ListView):
     model = Project
 
     def get_context_data(self, **kwargs):
-        data = CategoryListView.get_context_data(self, **kwargs)
+        data = ListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
             (self.request.user, str(self.request.user.details)),
             'My Projects',
