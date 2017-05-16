@@ -26,11 +26,12 @@ from .views import *
 from person.urls import USER_URLS
 
 urlpatterns = patterns('',
-  url(r'^$',                            ProjectList(),   name="projects"),
-  url(r'^new/$',                        NewProject(),    name="new_project"),
-  url(r'^gsoc/$',                       ProjectGsocList.as_view(), name="projects.gsoc"),
-  url(r'^(?P<project>[\w-]+)/update/$', UpdateProject(), name="update_project"),
+  url(r'^$',                            ProjectList(),   name="project.list"),
+  url(r'^new/$',                        NewProject(),    name="project.new"),
+  url(r'^(?P<project>[\w-]+)/update/$', UpdateProject(), name="project.update"),
   url(r'^(?P<slug>[\w-]+)/$',           ProjectView(),   name="project"),
+
+  url(r'^gsoc/$',                       ProjectGsocList.as_view(), name="project.gsoc.list"),
 )
 
 USER_URLS.url_patterns.extend([

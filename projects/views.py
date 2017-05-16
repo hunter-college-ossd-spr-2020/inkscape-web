@@ -82,7 +82,7 @@ class NewProject(CreateView):
     def get_context_data(self, **kwargs):
         data = CreateView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
-            ('projects', 'Projects'),
+            ('project.new', 'Projects'),
             'Propose Project',
         )
         return data
@@ -94,7 +94,7 @@ class NewProject(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('projects')
+        return reverse('project.new')
   
 class UpdateProject(CreateView):
     model = Report
@@ -107,7 +107,7 @@ class UpdateProject(CreateView):
       data = super(CreateView, self).get_context_data(**kwargs)
       data['project'] = self.get_project()
       data['breadcrumbs'] = breadcrumbs(
-            ('projects', 'Projects'),
+            ('project.update', 'Projects'),
             'Update Project',
         )
       return data
