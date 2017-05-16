@@ -1,7 +1,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -26,14 +26,14 @@ from .views import *
 from person.urls import USER_URLS
 
 urlpatterns = patterns('',
-  url(r'^$',                            ProjectList(),   name="project.list"),
-  url(r'^new/$',                        NewProject(),    name="project.new"),
-  url(r'^(?P<project>[\w-]+)/update/$', UpdateProject(), name="project.update"),
-  url(r'^(?P<slug>[\w-]+)/$',           ProjectView(),   name="project"),
+  url(r'^$',                         ProjectList(),     name="project.list"),
+  url(r'^new/$',                     NewProject(),      name="project.new"),
+  url(r'^(?P<slug>[\w-]+)/update/$', UpdateProject(),   name="project.update"),
+  url(r'^(?P<slug>[\w-]+)/$',        ProjectView(),     name="project.view"),
 
-  url(r'^gsoc/$',                       ProjectGsocList.as_view(), name="project.gsoc.list"),
+  url(r'^gsoc/$',                    ProjectGsocList().as_view(), name="project.gsoc.list"),
 )
 
 USER_URLS.url_patterns.extend([
-  url(r'^/myprojects/$',              MyProjects(),    name="my_projects"),
+  url(r'^/myprojects/$',             MyProjects(),      name="my_projects"),
 ])

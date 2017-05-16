@@ -2,7 +2,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class ProjectGsocList(ListView):
     opts = (
     ('complete', 'completed__isnull'),
     )
- 
+
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
@@ -95,14 +95,14 @@ class NewProject(CreateView):
 
     def get_success_url(self):
         return reverse('project.new')
-  
+
 class UpdateProject(CreateView):
     model = Report
     fields = ('describe', 'image')
-    
+
     def get_project(self):
       return Project.objects.get(slug=self.kwargs['project'])
-    
+
     def get_context_data(self, **kwargs):
       data = super(CreateView, self).get_context_data(**kwargs)
       data['project'] = self.get_project()
@@ -123,7 +123,7 @@ class UpdateProject(CreateView):
 
 class MyProjects(CategoryListView):
     model = Project
-    
+
     def get_context_data(self, **kwargs):
         data = CategoryListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
@@ -131,13 +131,13 @@ class MyProjects(CategoryListView):
             'My Projects',
         )
         return data
-    
+
     def get_queryset(self, **kwargs):
         # can't filter by method, only by db fields
         q = super(MyProjects, self).get_queryset(**kwargs).filter(
-                    Q(workers__user=self.request.user) | 
-                    Q(proposer=self.request.user) | 
-                    Q(manager=self.request.user) | 
-                    Q(reviewer=self.request.user) | 
+                    Q(workers__user=self.request.user) |
+                    Q(proposer=self.request.user) |
+                    Q(manager=self.request.user) |
+                    Q(reviewer=self.request.user) |
                     Q(second=self.request.user)).distinct()
         return q
