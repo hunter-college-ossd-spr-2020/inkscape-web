@@ -35,13 +35,14 @@
     </div>
   
     <div class="label-above">
-      <label for="id_desc" {% if form.desc.errors %}class="error" title="{{ form.desc.errors.as_text }}"{% endif %}>{{ form.desc.label }}{% if form.desc.field.required %} *{% endif %}</label>
-      <div class="formfield">{{ form.desc|placeholder:_("Describe your proposal for a development project here") }}</div>
+      <label for="id_desc" {% if form.description.errors %}class="error" title="{{ form.description.errors.as_text }}"{% endif %}>{{ form.description.label }}{% if form.description.field.required %} *{% endif %}</label>
+      <div class="formfield">{{ form.description|placeholder:_("Describe your proposal for a development project here") }}</div>
     </div>
 
     <div class="button-area">
       <button class="button right" type="submit" name="save" value="1">{% trans "Submit" %}</button>
-      <a class="button right" href="{% url 'project.list' %}">{% trans "Cancel" %}</a>
+      <!-- TODO: use the internal project.list url rather than hardcode to /projects/ -->
+      <a class="button right" href="/projects/">{% trans "Cancel" %}</a>
     </div>
   </form>
 {% endif %}

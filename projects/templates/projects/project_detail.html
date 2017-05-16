@@ -31,7 +31,7 @@
   
   <div id="left-column">
     <h1>{{ object.title }}</h1>
-    <p>{{ object.desc }}</p>
+    <p>{{ object.description }}</p>
 
     {% if object.get_status.0 == 2 %}
       <a class="button" href="application_url">{% trans "Apply for this project" %}</a>
@@ -50,7 +50,7 @@
         {% if update.image %}
           <img class="updateimage" src="{{ update.image.url }}" style="float: left;"/>
         {% endif %}
-        <div class="markdown">{{ update.describe|markdown }}</div>
+        <div class="markdown">{{ update.description|markdown }}</div>
         <hr/>
     {% endfor %}
   </div>

@@ -9,7 +9,7 @@
       <p class="pitch">{% if project.pitch %}{{ project.pitch }}{% else %}{% trans "Review pending" %}{% endif %}</p>
       
       <h3>{% trans "Detailed Description" %}</h3>
-      <div class="markdown">{{ project.desc|markdown }}</div> <!--needs some styling that prevents crazy markup-->
+      <div class="markdown">{{ project.description|markdown }}</div> <!--needs some styling that prevents crazy markup-->
     </div>
     <div class="info">
       <img src="{{ project.logo.url }}" alt="{% trans "Logo for project" %}&quot;{{project.title}}&quot;"/>

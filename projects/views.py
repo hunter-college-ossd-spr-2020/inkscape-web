@@ -77,7 +77,7 @@ class ProjectView(DetailView):
 
 class NewProject(CreateView):
     model = Project
-    fields = ('title', 'project_type', 'desc')
+    fields = ('title', 'project_type', 'description')
 
     def get_context_data(self, **kwargs):
         data = CreateView.get_context_data(self, **kwargs)
@@ -98,7 +98,7 @@ class NewProject(CreateView):
 
 class UpdateProject(CreateView):
     model = Report
-    fields = ('describe', 'image')
+    fields = ('description', 'image')
 
     def get_project(self):
       return Project.objects.get(slug=self.kwargs['project'])
