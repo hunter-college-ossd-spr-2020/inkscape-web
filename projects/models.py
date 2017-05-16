@@ -81,7 +81,7 @@ class Project(Model):
     created  = DateTimeField(auto_now_add=True, db_index=True)
     edited   = DateTimeField(auto_now=True)
 
-    proposer = ForeignKey(settings.AUTH_USER_MODEL, related_name='proposed_projects', default=get_user)
+    proposer = ForeignKey(settings.AUTH_USER_MODEL, related_name='proposes_projects', default=get_user)
     manager  = ForeignKey(settings.AUTH_USER_MODEL, related_name='manages_projects', **null)
     reviewer = ForeignKey(settings.AUTH_USER_MODEL, related_name='reviews_projects', **null)
     second   = ForeignKey(settings.AUTH_USER_MODEL, related_name='seconds_projects', **null)
