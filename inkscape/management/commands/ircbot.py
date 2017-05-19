@@ -138,7 +138,8 @@ class Command(BaseCommand):
         self.connection = self.client.connections[0]
 
         self.log_status("Server Started!", 0)
-        drum = 10 # wait for a minute between beats
+        drum = 60 # wait for a minute between beats
+        knel = 200 # wait 20 seconds before term and join.
 
         while True:
             try:
@@ -153,11 +154,15 @@ class Command(BaseCommand):
                         conn.socket.disconnect()
                 self.log_status("Keyboard Interrupt", 1)
                 drum = 0.1
-            except AssertionError:
+            except AssertionError as err:
                 threads = [t for t in threading.enumerate() if t.name != 'MainThread' and t.isAlive()]
                 for t in threads:
                     # This is for error tracking when treading is messed up
-                    self.log_status("Thread Locked: %s (Alive:%s, Daemon:%s)" % (t.name, t.isAlive(), t.isDaemon()), -10)
+                    self.log_status("Thread Locked: %s (Alive:%s, Daemon:%s)\n%s" % (t.name, t.isAlive(), t.isDaemon(), str(err)), -10)
+                    knel -= 1
+                    if knel < 0:
+                        t.terminate()
+                        t.join()
 
                 if not threads:
                     self.log_status("Socket Disconnected", -1)
@@ -166,7 +171,6 @@ class Command(BaseCommand):
                     drum = 0.1
 
     def log_status(self, msg, status=-1):
-        print msg
         if self.beat.status == 0:
             self.beat.error = msg
             self.beat.status = status
