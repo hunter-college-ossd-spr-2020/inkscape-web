@@ -51,6 +51,7 @@ TEAM_URLS = url_tree(r'^\*(?P<team>[^\/]+)', 'person.views',
   url(r'^/watch/$',          WatchTeam(),        name='team.watch'),
   url(r'^/unwatch/$',        UnwatchTeam(),      name='team.unwatch'),
   url(r'^/chat/$',           ChatWithTeam(),     name='team.chat'),
+  url(r'^/chat/logs/$',      ChatLogs(),         name='team.chatlogs'),
   url(r'^/charter/$',        TeamCharter(),      name='team.charter'),
   
   url_tree(r'^/(?P<username>[^\/]+)/', 'person.views',

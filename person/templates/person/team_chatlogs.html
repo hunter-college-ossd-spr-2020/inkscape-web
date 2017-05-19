@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block "css" %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/chat.css" %}"/>
+{% endblock %}
+
+{% block content %}
+  {% for room in object.ircrooms.all %}
+    <h2>Logs for #{{ room.channel }}</h2>
+    {% for log in room.logs %}
+      <a href="{{ log.url }}">{{ log.name }}</a>
+    {% endfor %}
+  {% endfor %}
+{% endblock %}

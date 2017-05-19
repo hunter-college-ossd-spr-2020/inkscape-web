@@ -70,7 +70,7 @@ class BotCommand(object):
 
     def ready(self):
         """Called when the connection is ready"""
-        pass
+        return True
 
     def __init__(self, caller):
         self.is_ready = False
@@ -86,14 +86,14 @@ class BotCommand(object):
         """Some basic extra filtering for directed commands"""
         self.context = context
         if context.target.startswith('#') != self.is_channel:
-            print " ! Failing channel"
+            print " ! %s expects message from channel, not user." % self.name
             return
 
         if self.is_direct != (
              message.startswith(context.ident.nick + ':') \
              or message.endswith(context.ident.nick)
            ):
-            print " ! Failing directness"
+            print " ! %s expects message to be direct to the bot." % self.name
             return
 
         connection.close_if_unusable_or_obsolete()
@@ -138,8 +138,8 @@ class Command(BaseCommand):
         self.connection = self.client.connections[0]
 
         self.log_status("Server Started!", 0)
-        drum = 60 # wait for a minute between beats
-        knel = 200 # wait 20 seconds before term and join.
+        drum = 2 # wait for two seconds after connecting
+        knel = 200 # wait 20 seconds before term and join on error.
 
         while True:
             try:
@@ -147,6 +147,7 @@ class Command(BaseCommand):
                 self.beat.save()
                 assert(self.connection.socket.connected)
                 self.ready_commands()
+                drum = 60 # wait for a minute for the next heartbeat
             except KeyboardInterrupt:
                 self.client.quit()
                 for x, conn in enumerate(self.client.connections):

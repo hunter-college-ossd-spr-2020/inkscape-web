@@ -20,9 +20,11 @@
 """
 Commands related to Users and Teams
 """
+import time
 
 from django.db.models import Q
 from django.db.models.signals import post_save
+from django.conf import settings
 
 from inkscape.management.commands.ircbot import BotCommand
 
@@ -40,23 +42,43 @@ class WhoisCommand(BotCommand):
         return context.nick + ': ' + _(u'No user with irc nickname "%(nick)s" on the website.') % {'nick': nick}
 
 class TeamChannels(BotCommand):
-    def ready(self):
-        post_save.connect(self.update, sender=Team)
-        self.update()
+    regex = "."
 
-    def update(self, *args, **kw):
+    def __init__(self, *args, **kw):
+        super(TeamChannels, self).__init__(*args, **kw)
+        self.pulse = 0
+
+    def ready(self):
+        """When we're connected we want to update the rooms we're connected to."""
+        if self.pulse > 0:
+            self.pulse -= 1
+            return False
+
         rooms = self.connection.channels.keys()
         for chatroom in TeamChatRoom.objects.all():
-            if '#' + chatroom.channel not in rooms:
-                self.connection.join('#' + chatroom.channel)
-                return False
-        return True
+            room = '#' + chatroom.channel
+            if room not in rooms:
+                self.connection.join(room)
+                time.sleep(0.1)
+            else:
+                rooms.remove(room)
 
-        #if self.context is not None:
-        #    channel_lang = context.target.split('-')[-1]
-        #    users = User.objects.filter(ircnick__iexact=context.ident.nick)
-        #    if users.count() == 1:
-        #        translation.activate(users[0].language)
-        #    elif channel_lang in self.LANGS:
-        #        translation.activate(channel_lang)
+        # Unjoin any rooms not listed
+        for room in rooms:
+            self.connection.part(room, 'I didn\'t know we \'ad a king!')
+
+        # We're never ready, because we want to check again.
+        self.pulse = 10 # Wait 10 minutes before re-checking
+        return False
+
+    def __call__(self, context, message, *args, **kwargs):
+        """Call for any message to this channel"""
+        if not context.target or not context.target.startswith('#'):
+            return
+        if context.msgtype == 'JOIN':
+            # Don't log join requests, because we never get PART or
+            # QUIT messages, so there's not much point in JOIN requests.
+            return
+        for team in TeamChatRoom.objects.filter(channel=context.target[1:]):
+            team.log_chatroom(context.nick, message)
 

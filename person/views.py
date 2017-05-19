@@ -128,6 +128,11 @@ class ChatWithTeam(NeverCacheMixin, LoginRequiredMixin, TeamDetail):
         return data
 
 
+class ChatLogs(TeamDetail):
+    title = _("Chatroom Logs")
+    template_name = 'person/team_chatlogs.html'
+
+
 class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, RedirectView):
     slug_url_kwarg = 'team'
     model          = Team
