@@ -26,7 +26,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
 
 from ajax_select import make_ajax_field, make_ajax_form
-from ajax_select.admin import AjaxSelectAdmin
+from ajax_select.admin import AjaxSelectAdmin, AjaxSelectAdminTabularInline
 
 # Add permission to admin so we can remove old stuff
 class PermissionAdmin(ModelAdmin):
@@ -39,10 +39,10 @@ site.register(Permission, PermissionAdmin)
 from .models import *
 from .forms import TeamForm
 
-class ChatRoomInline(TabularInline):
+class ChatRoomInline(AjaxSelectAdminTabularInline):
     model = TeamChatRoom
-    # XXX admin field can not be added until Ajaxselect works
-    fields = ('channel', 'language')
+    form = make_ajax_form(TeamChatRoom, {'admin': 'user'}, show_help_text=True)
+    fields = ('channel', 'language', 'admin')
 
 class TeamAdmin(AjaxSelectAdmin):
     form = make_ajax_form(Team, {'admin': 'user'}, TeamForm, show_help_text=True)
