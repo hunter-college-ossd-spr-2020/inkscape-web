@@ -19,6 +19,7 @@
 #
 
 import os
+from datetime import datetime
 
 from django.conf import settings
 from django.db.models import *
@@ -196,28 +197,20 @@ class TeamChatRoom(Model):
 
     @property
     def log_path(self):
-        return os.path.join(settings.MEDIA_ROOT, 'irc', self.channel)
-
-    def log_chatroom(self, username, message):
-        """Log a message from IRC to a log filename"""
-        from datetime import datetime
-        dt = datetime.now()
-        fn = str(dt.date()) + '.txt'
-        if not os.path.isdir(self.log_path):
-            os.makedirs(self.log_path)
-        with open(os.path.join(self.log_path, fn), 'a') as fhl:
-            fhl.write('%s|%s|%s\n' % (str(dt), username, message))
+        if hasattr(settings, 'IRC_LOGS'):
+            return os.path.join(settings.IRC_LOGS, self.channel)
 
     def logs(self):
         """Returns a list of logs for this chatroom"""
         path = self.log_path
-        url = path.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
-        if os.path.isdir(path):
-            for fn in sorted(os.listdir(path)):
-                yield {
-                    'url': os.path.join(url, fn),
-                    'name': fn.replace('.txt', ''),
-                }
+        if path is not None:
+            url = path.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
+            if os.path.isdir(path):
+                for fn in sorted(os.listdir(path)):
+                    yield {
+                        'url': os.path.join(url, fn),
+                        'name': fn.replace('.txt', ''),
+                    }
 
 
 class TeamQuerySet(QuerySet):

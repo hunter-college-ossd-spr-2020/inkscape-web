@@ -24,15 +24,18 @@ import signal
 
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+from django.utils import translation
+from django.utils.translation import ugettext as _
 
-from inkscape.management.commands.ircbot import BotCommand
+from inkscape.management.commands.ircbot import BotCommand, url
 
 from .models import Message, UserAlert
 
 class TellCommand(BotCommand):
     regex = "tell (\w+) (.+)$"
+    is_direct = True
 
-    def run_command(self, nick, body):
+    def run_command(self, context, nick, body):
         from_user = get_user_model().objects.filter(ircnick__iexact=context.nick)
         if from_user.count() != 1:
             return _(u'Your irc nickname must be configured on the website. '
@@ -47,7 +50,7 @@ class TellCommand(BotCommand):
         message = Message.objects.create(subject="From IRC", body=body,
                      sender=from_user.get(), recipient=to_user.get())
 
-        return u'%s: ' % context.nick + _('Message Sent')
+        return u'%s: %s' % (context.nick, _('Message Sent'))
 
 
 class RecieveAlert(BotCommand):

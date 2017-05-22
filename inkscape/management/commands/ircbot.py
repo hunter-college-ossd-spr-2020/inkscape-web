@@ -1,5 +1,5 @@
 #
-# Copyright 2015, Martin Owens <doctormo@gmail.com>
+# Copyright 2015-2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom 
 # code for the Inkscape project's django-based website.
@@ -85,21 +85,22 @@ class BotCommand(object):
     def __call__(self, context, message, *args, **kwargs):
         """Some basic extra filtering for directed commands"""
         self.context = context
-        if context.target.startswith('#') != self.is_channel:
-            print " ! %s expects message from channel, not user." % self.name
-            return
+        is_channel = context.target.startswith('#')
+        if not self.is_channel and is_channel:
+            print " ! %s does not accept messages in channel." % self.name
+            return False
 
-        if self.is_direct != (
-             message.startswith(context.ident.nick + ':') \
-             or message.endswith(context.ident.nick)
+        if not self.is_direct and (not is_channel \
+             or message.startswith(self.nick + ':') \
+             or message.endswith(self.nick)
            ):
-            print " ! %s expects message to be direct to the bot." % self.name
-            return
+            print " ! %s does not expect direct message from '%s'." % (self.name, context.ident.nick)
+            return False
 
         connection.close_if_unusable_or_obsolete()
 
         try:
-	    translation.activate(self.get_language())
+            translation.activate(self.get_language())
             return self.run_command(context, *args, **kwargs)
         except OperationalError as error:
             if 'gone away' in str(error):
@@ -111,14 +112,14 @@ class BotCommand(object):
                 context.connection.privmsg(context.target, "There was an error")
             raise
 
+    @property
+    def nick(self):
+        return self.client.connections[0].tried_nick
+
 
 
 class Command(BaseCommand):
     help = 'Starts an irc bot that will join the main channel and interact with the website.'
-
-    @property
-    def nick(self):
-        return self.client.connections[0].tried_nick
 
     def handle(self, *args, **options):
         if not hasattr(settings, 'IRCBOT_PID'):
@@ -223,7 +224,7 @@ class ExitCommand(BotCommand):
     name = "Exit the IRC Bot"
     regex = """The trouble with having an open mind, of course, is that people will insist on coming along and trying to put things in it."""
 
-    def run_command(self):
+    def run_command(self, context):
         if context and context.ident:
             self.caller.log_status("Told to quit by: " + context.ident.nick, 2)
         try:
@@ -235,20 +236,17 @@ class HelloCommand(BotCommand):
     regex = [
       "Hello", "Allo", "Bonjour",
     ]
-    def run_command(self):
-        """Hello"""
+    def run_command(self, context):
         return _("Hello there %(nick)s") % {'nick': context.ident.nick}
 
 class DumpCommand(BotCommand):
     regex = "DumpInfo"
-    def run_command(self):
-        """DumpInfo"""
-        self.context.connection.privmsg(context.ident.nick, "Info: " + \
+    def run_command(self, context):
+        return "Info: " + \
           ', ident:' + context.ident + \
           ', nick:' + context.ident.nick + \
           ', username:' + context.ident.username + \
           ', host:' + context.ident.host + \
           ', msgtype:' + context.msgtype + \
           ', target:' + context.target
-          )
 

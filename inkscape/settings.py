@@ -329,6 +329,7 @@ OPENID_AX_PROVIDER_MAP = {
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 
 GEOIP_PATH = os.path.join(PROJECT_PATH, 'data', 'geoip')
+IRC_LOGS = os.path.join(PROJECT_PATH, 'data', 'irc')
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
