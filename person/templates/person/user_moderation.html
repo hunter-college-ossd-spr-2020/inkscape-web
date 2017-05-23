@@ -27,7 +27,7 @@
        <dt>{% trans "Last Seen" %}</dt>
          <dd>{% if object.obj.last_seen %}{{ object.obj.last_seen|timesince }}{% else %}{% trans "Never" %}{% endif %}</dd>
        <dt>{% trans "Joined On" %}</dt><dd>{{ object.obj.date_joined|timesince }}</dd>
-       <dt>{% trans "All Uploads" %}</dt><dd><a href="{% url "resources" username=object.object_owner.username %}">{% trans "View" %}
+       <dt>{% trans "All Uploads" %}</dt><dd><a href="{% url "resources" username=object.object_owner.username %}">{% trans "View" %}</a>
       </dl>
     </div>
   {% endif %}
