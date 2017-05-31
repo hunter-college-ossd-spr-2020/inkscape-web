@@ -54,7 +54,7 @@ site.register(Team, TeamAdmin)
 
 
 class UserAdmin(UserAdmin):
-    search_fields = ('username', 'first_name', 'last_name', 'bio', 'ircnick')
+    search_fields = ('username', 'first_name', 'last_name', 'bio', 'ircnick', 'email')
     readonly_fields = ('photo_preview',)
     # We make a copy of the fieldsets from the UserAdmin class so we can
     # customise it without any compelxity. Copied from Django 1.8.
