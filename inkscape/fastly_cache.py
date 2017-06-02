@@ -109,7 +109,11 @@ class FastlyCache(object):
         if self.api is None:
             #sys.stderr.write("No-cache: key %s -> %s\n" % (self.service, key))
             return False
-        return self.api.purge_key(self.service, key)
+        try:
+            return self.api.purge_key(self.service, key)
+        except Exception, err:
+            logging.error("Couldn't purge key, %s" % str(err))
+            return False
 
     def purge_static(self, path):
         """Takes a static path and purges the resulting url"""
