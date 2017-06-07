@@ -27,11 +27,11 @@ from person.urls import USER_URLS
 
 urlpatterns = patterns('',
   url(r'^$',                         ProjectList(),     name="project.list"),
+  url(r'^gsoc/$',                    ProjectGsocList(), name="project.gsoc.list"),
+
   url(r'^new/$',                     NewProject(),      name="project.new"),
   url(r'^(?P<slug>[\w-]+)/update/$', UpdateProject(),   name="project.update"),
   url(r'^(?P<slug>[\w-]+)/$',        ProjectView(),     name="project.view"),
-
-  url(r'^gsoc/$',                    ProjectGsocList(), name="project.gsoc.list"),
 )
 
 USER_URLS.url_patterns.extend([
