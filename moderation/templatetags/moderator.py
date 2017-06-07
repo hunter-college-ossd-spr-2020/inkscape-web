@@ -37,7 +37,7 @@ def flag_url(context, obj=None):
         obj = context['object']
     ct = ContentType.objects.get_for_model(obj)
     user = context['request'].user
-    perm = user.has_perm('moderator:can_moderate')
+    perm = user.has_perm('moderation.can_moderate')
     kind = 'censure' if perm else 'flag'
     return reverse("moderation:%s" % kind, kwargs={
         'app': ct.app_label,
