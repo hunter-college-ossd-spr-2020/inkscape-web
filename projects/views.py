@@ -40,7 +40,7 @@ class ProjectList(ListView):
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
-            ('projects', 'Projects'),
+            ('projects:project.list', 'Projects'),
         )
         return data
 
@@ -59,7 +59,7 @@ class ProjectGsocList(ListView):
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
-        ('projects.gsoc', 'Google Summer of Code Projects'),
+            ('projects:projects.gsoc', 'Google Summer of Code Projects'),
         )
         return data
 
@@ -70,7 +70,7 @@ class ProjectView(DetailView):
     def get_context_data(self, **kwargs):
         data = DetailView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
-            ('projects', 'Projects'),
+            ('projects:project.list', 'Projects'),
             data['object'],
         )
         return data
@@ -82,7 +82,7 @@ class NewProject(CreateView):
     def get_context_data(self, **kwargs):
         data = CreateView.get_context_data(self, **kwargs)
         data['breadcrumbs'] = breadcrumbs(
-            ('project.new', 'Projects'),
+            ('projects:project.new', 'Projects'),
             'Propose Project',
         )
         return data
@@ -91,25 +91,22 @@ class NewProject(CreateView):
         obj = form.save(commit=False)
         obj.proposer = self.request.user
         obj.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse('project.new')
+        return HttpResponseRedirect(obj.get_absolute_url())
 
 class UpdateProject(CreateView):
     model = Report
     fields = ('description', 'image')
 
     def get_project(self):
-      return Project.objects.get(slug=self.kwargs['project'])
+      return Project.objects.get(slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
       data = super(CreateView, self).get_context_data(**kwargs)
       data['project'] = self.get_project()
       data['breadcrumbs'] = breadcrumbs(
-            ('project.update', 'Projects'),
+            ('projects:project.update', 'Projects'),
             'Update Project',
-        )
+      )
       return data
 
     def form_valid(self, form):
@@ -119,7 +116,8 @@ class UpdateProject(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('project.update', kwargs={'slug': self.kwargs['project']})
+        k = {'slug': self.kwargs['project']}
+        return reverse('projects:project.update', kwargs=k)
 
 class MyProjects(ListView):
     model = Project

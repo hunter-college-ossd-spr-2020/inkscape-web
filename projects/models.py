@@ -111,7 +111,7 @@ class Project(Model):
         return self.finished and 100.0 or 0.0
 
     def get_absolute_url(self):
-        return reverse('project', kwargs={'slug': self.slug})
+        return reverse('projects:project.view', kwargs={'slug': self.slug})
 
     def get_status(self):
       """Returns a (preliminary) status number / string tuple for displaying in templates
