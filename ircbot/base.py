@@ -39,8 +39,6 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 from django.utils.module_loading import module_has_submodule
 
-from django.core.management.base import BaseCommand, CommandError
-
 from inkscape.models import HeartBeat
 
 def url(item):
@@ -77,6 +75,8 @@ class BotCommand(object):
         self.caller = caller
         self.client = caller.client
         self.context = None
+        if not hasattr(self.caller, 'consumed'):
+            self.caller.consumed = False
 
     def get_language(self):
         """Pick the best language to reply with here, default is 'en'"""
@@ -101,7 +101,16 @@ class BotCommand(object):
 
         try:
             translation.activate(self.get_language())
-            return self.run_command(context, *args, **kwargs)
+            ret = self.run_command(context, *args, **kwargs)
+            if isinstance(ret, bool):
+                self.caller.consumed |= ret
+                return None
+            elif isinstance(ret, (str, unicode)):
+                self.caller.consumed = True
+                return ret
+            else:
+                raise ValueError("Command '%s' should return True/False or a string" % self.name)
+
         except OperationalError as error:
             if 'gone away' in str(error):
                 return "The database is being naughty, reconnecting..."
@@ -118,7 +127,7 @@ class BotCommand(object):
 
 
 
-class Command(BaseCommand):
+class Command(BotCommand):
     help = 'Starts an irc bot that will join the main channel and interact with the website.'
 
     def handle(self, *args, **options):
@@ -193,6 +202,7 @@ class Command(BaseCommand):
 
     def load_irc_commands(self, possible, mod):
         """See if this is an item that is a Bot Command"""
+        self.client.events.msgregex.hookback(".")(FallbackResponse)
         for (name, value) in possible.items():
             if type(value) is type(BotCommand) and \
                  issubclass(value, BotCommand) and \
@@ -219,6 +229,15 @@ class Command(BaseCommand):
             except Exception as err:
                 print "Error getting %s ready: %s" % (command.name, str(err))
 
+class FallbackResponse(object):
+    """Returns a standard response when the command wasn't consumed"""
+    def __init__(self, caller, *args):
+        print "CALLER: %s // %s" % (str(caller), str(args))
+        self.caller = caller
+
+    def __call__(self, context, message, *args, **kwargs):
+        if not getattr(self.caller, 'consumed'):
+            return "I don't know '%s', try 'help' to list commands." % message
 
 class ExitCommand(BotCommand):
     name = "Exit the IRC Bot"

@@ -1,5 +1,5 @@
 #
-# Copyright 2016, Martin Owens <doctormo@gmail.com>
+# Copyright 2015-2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom 
 # code for the Inkscape project's django-based website.
@@ -18,26 +18,28 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-IRC Commands related to resources and artwork.
+Starts an irc bot to join the configured IRC channel.
 """
 
-from ircbot.base import BotCommand
+import os
+import atexit
 
-from .models import Category
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
-class LatestArtCommand(BotCommand):
-    regex = "Get Latest Art"
+from ircbot.bot import InkscapeBot
 
-    def run_command(self):
-        try:
-            artworks = Category.objects.get(name='Artwork')
-        except Category.DoesNotExist:
-            return "No Artworks Category on website"
+class Command(BaseCommand):
+    help = 'Starts an irc bot that will join the main channel and interact with the website.'
 
-        try:
-            art = artworks.items.filter(published=True).latest('created')
-        except Resource.DoesNotExist:
-            return "No Artworks uploaded yet"
+    def handle(self, *args, **options):
+        if not hasattr(settings, 'IRCBOT_PID'):
+            print "Please set IRCBOT_PID to a file location to enable bot."
+            return
 
-        return u"%s by %s: %s" % (unicode(art), unicode(art.user), url(art))
+        with open(settings.IRCBOT_PID, 'w') as pid:
+            pid.write(str(os.getpid()))
+        atexit.register(lambda: os.unlink(settings.IRCBOT_PID))
+        # XXX Filter options and pass into bot
+        InkscapeBot().run()
 

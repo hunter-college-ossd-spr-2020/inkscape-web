@@ -204,6 +204,7 @@ INSTALLED_APPS = (
     'forums',
     'alerts',
     'logbook',
+    'ircbot',
     'markdown_deux',
 )
 

@@ -27,7 +27,7 @@ from django.utils.timezone import now
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from inkscape.management.commands.ircbot import BotCommand, url
+from ircbot.base import BotCommand, url
 
 from .models import Message, UserAlert
 
