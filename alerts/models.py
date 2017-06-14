@@ -35,7 +35,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
+from django.core.mail.message import EmailMultiAlternatives
 from django.utils import translation
+
+from alerts.template_tools import render_template
 
 from collections import defaultdict
 
@@ -256,6 +259,40 @@ class UserAlertQuerySet(QuerySet):
     def delete_all(self):
         return self.visible.update(deleted=now())
 
+    def send_batch_email(self, batch_mode, user_id, alert_ids):
+        """Sends all the selected messages out as a batched email"""
+        qs = self.filter(user_id=user_id, alert_id__in=alert_ids)
+        if qs.count() == 0:
+            return False
+        if qs.count() == 1:
+            return self[0].send_email()
+
+        user = qs[0].user
+        context_data = {
+          'mode': batch_mode,
+          'count': qs.count(),
+          'alerts': qs,
+          'user': user
+        }
+
+        with translation.override(user.language):
+            subject = { 
+              'D': _("Inkscape Daily Notifications (%d)"),
+              'W': _("Inkscape Weekly Notifications (%d)"),
+              'M': _("Inkscape Monthly Notifications (%d)"),
+            }[batch_mode] % qs.count()
+
+            template = "alerts/alert/batch_email.txt"
+
+            kwargs = {
+              'subject': subject,
+              'body': render_template(template, context_data),
+              'to': [user.email],
+            }
+            if EmailMultiAlternatives(**kwargs).send(True):
+                qs.view_all()
+
+
 
 class UserAlertManager(Manager):
     _queryset_class = UserAlertQuerySet
@@ -302,6 +339,7 @@ class UserAlert(Model):
 
     subject = property(lambda self: self.alert.get_subject(self.data))
     body    = property(lambda self: self.alert.get_body(self.data))
+    email_body = property(lambda self: self.alert.get_email_body(self.data))
 
     def view(self):
         if not self.viewed:

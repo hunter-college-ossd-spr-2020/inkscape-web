@@ -273,6 +273,9 @@ class BaseAlert(object):
     def get_body(self, context_data):
         return render_template(self.template, context_data)
 
+    def get_email_body(self, context_data):
+        return render_template(self.email_template, context_data)
+
     def send_irc_msg(self, user):
         """
         Send the running IRC bot a kick up the bum about a new alert.
@@ -300,7 +303,7 @@ class BaseAlert(object):
 
         kwargs.update({
             'subject': subject.strip().replace('\n', ' ').replace('\r', ' '),
-            'body': render_template(self.email_template, context_data),
+            'body': self.get_email_body(context_data),
             'to': [recipient],
         })
 
