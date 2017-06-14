@@ -364,8 +364,8 @@ class UserAlert(Model):
         with translation.override(self.user.language or 'en'):
             data = self.data.copy()
             data.update(kwargs.pop('context_data', {}))
-            return self.alert.send_email(self.user.email, data, **kwargs)
-
+            if self.alert.send_email(self.user.email, data, **kwargs):
+                self.view()
 
 class UserAlertObject(Model):
     alert   = ForeignKey(UserAlert, related_name='objs')
