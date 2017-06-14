@@ -31,6 +31,7 @@ from django.views.generic import ListView, DeleteView, CreateView, UpdateView,\
         TemplateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.auth import get_user_model
+from django.db import models
 
 from .forms import MessageForm, SettingsFormSet
 from .mixins import NeverCacheMixin, UserRequiredMixin, UserMixin, OwnerRequiredMixin
@@ -45,6 +46,8 @@ class AlertsJson(NeverCacheMixin, UserRequiredMixin, View):
         }
         return JsonResponse(context)
 
+class IsNull(models.Func):
+    template = "%(expressions)s IS NULL"
 
 class AlertList(NeverCacheMixin, OwnerRequiredMixin, ListView):
     """Shows a list of user alerts, user only sees their own"""
@@ -60,7 +63,8 @@ class AlertList(NeverCacheMixin, OwnerRequiredMixin, ListView):
         if 'new' in self.request.GET:
             self.title = _("New")
             qs = qs.filter(viewed__isnull=True, deleted__isnull=True)
-        return qs.order_by('viewed', '-created')
+        qs = qs.annotate(not_viewed=IsNull('viewed'))
+        return qs.order_by('-not_viewed', 'viewed', '-created')
 
     def get_context_data(self, **data):
         data = super(AlertList, self).get_context_data(**data)
