@@ -11,7 +11,7 @@
 {% block content %}
   <h1>{{ title }}
       <div class="runner">
-        <a class="button" href="{% url "alert.settings" %}" title="{% trans "Manage alert settings" %}">&#9881;</a>
+        <a class="button" href="{% url "alert.settings" %}" title="{% trans "Manage notification settings" %}">&#9881;</a>
       </div>
     {% if object_list.count > 0 %}
       <form class="runner" data-confirm="{% trans "Delete all notifications" %}" action="{% url "alert.delete" %}">
@@ -60,7 +60,7 @@
     {{ object.body }}
   {% else %}
     <div class="body">
-      <div class="text"><p>{% trans "This alert was for an object that no longer exists. It has been deleted." %}</p></div>
+      <div class="text"><p>{% trans "This notification was for an object that no longer exists. It has been deleted." %}</p></div>
     </div>
   {% endif %}
 </div>

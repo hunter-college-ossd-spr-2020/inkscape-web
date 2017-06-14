@@ -6,5 +6,5 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 {% trans "Unsubscribe:" %}
 
-{% blocktrans %}If you do no longer want to receive these messages, you can edit your subscriptions and messaging settings at {{ site }}{{ message_settings_link }}.{% endblocktrans %}
+{% blocktrans %}If you do no longer want to receive these messages, you can edit your subscriptions and notification settings at {{ site }}{{ message_settings_link }}.{% endblocktrans %}
 
