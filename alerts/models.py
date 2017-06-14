@@ -136,7 +136,8 @@ class AlertType(Model):
             for (key, value) in kwargs.items():
                 alert.add_value(key, value)
             # Do this after saving objects and values so email can use them.
-            alert.send_email(context_data=kwargs)
+            if alert.config.batch is None:
+                alert.send_email(context_data=kwargs)
             alert.send_irc_msg()
             return alert
         return None
