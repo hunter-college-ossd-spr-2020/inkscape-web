@@ -270,6 +270,7 @@ class UserAlertQuerySet(QuerySet):
         user = qs[0].user
         context_data = {
           'mode': batch_mode,
+          'types': len(alert_ids),
           'count': qs.count(),
           'alerts': qs,
           'user': user

@@ -2,7 +2,7 @@
 {% blocktrans %}You have {{ count }} notifications from Inkscape's website{% endblocktrans %}
 
 {% for alert in alerts %}
-  {{ forloop.counter }}. {{ alert.subject }} [{{alert.alert}}] {% if mode == 'D' %}{{ alert.created|date:"P"}}{% elif mode == "W" %}{{ alert.created|date:"l"}}{% else %}{{ alert.created|date:"jS F"}}{% endif %}{% endfor %}
+  {{ forloop.counter }}. {{ alert.subject }}{% if types > 1 %}[{{alert.alert}}]{% endif %} {% if mode == 'D' %}{{ alert.created|date:"P"}}{% elif mode == "W" %}{{ alert.created|date:"l"}}{% else %}{{ alert.created|date:"jS F"}}{% endif %}{% endfor %}
 
 ================================================
 
