@@ -544,6 +544,24 @@
     }, 
     "url": "message.new?username"
   }, 
+  "message.outbox": {
+    "breadcrumbs": [
+      [
+        "/en/~admin", 
+        "Testing Admin"
+      ], 
+      [
+        "/en/alerts/", 
+        "Messages"
+      ], 
+      [
+        null, 
+        "Outbox"
+      ]
+    ], 
+    "cache_keys": [], 
+    "url": "message.outbox"
+  }, 
   "message.reply?username+pk": {
     "breadcrumbs": [
       [
@@ -565,24 +583,6 @@
       "username": "admin"
     }, 
     "url": "message.reply?username+pk"
-  }, 
-  "message.sent": {
-    "breadcrumbs": [
-      [
-        "/en/~admin", 
-        "Testing Admin"
-      ], 
-      [
-        "/en/alerts/sent/", 
-        "Messages"
-      ], 
-      [
-        null, 
-        "Outbox"
-      ]
-    ], 
-    "cache_keys": [], 
-    "url": "message.sent"
   }, 
   "mirror": {
     "breadcrumbs": [
