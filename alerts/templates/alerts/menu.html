@@ -12,9 +12,9 @@
         data-trans="{% trans "(SOME_NUMBER new)" %}"></span>
       </a>
     </p>
-    <p><a id="sent_messages" href="{% url "message.sent" %}">{% trans "Outbox" %}</a></p>
+    <p><a id="sent_messages" href="{% url "message.outbox" %}">{% trans "Outbox" %}</a></p>
     <hr/>
-    <p><a href="{% url "alert.settings" %}">{% trans "Message Settings" %}</a></p>
+    <p><a href="{% url "alert.settings" %}">{% trans "Notification Settings" %}</a></p>
     <script type="text/javascript">
     $(document).ready(function() {
       var originalTitle = document.title;
@@ -50,7 +50,7 @@
                 if(!window_focus) {
                   titleTimer = window.setInterval(function() {
                     document.title = document.title == originalTitle
-                              ? "{% trans "New Message!" %}" : originalTitle;
+                              ? "{% trans "New Notification!" %}" : originalTitle;
                   }, 1200);
                   $(window).on("focus",function() {
                     document.title = originalTitle;

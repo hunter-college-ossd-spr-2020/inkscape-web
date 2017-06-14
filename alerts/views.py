@@ -55,7 +55,7 @@ class AlertList(NeverCacheMixin, OwnerRequiredMixin, ListView):
             self.parent = get_object_or_404(AlertType, slug=self.kwargs['slug'])
             qs = qs.filter(alert__slug=self.kwargs['slug'])
         else:
-            self.parent = (reverse('alerts'), _('Alerts'))
+            self.parent = (reverse('alerts'), _('Inbox'))
 
         if 'new' in self.request.GET:
             self.title = _("New")
@@ -166,7 +166,7 @@ class Unsubscribe(NeverCacheMixin, OwnerRequiredMixin, DeleteView):
 
 
 class SettingsList(NeverCacheMixin, UserMixin, UpdateView):
-    title = _('Your Alert Settings')
+    title = _('Notification Settings')
     form_class = SettingsFormSet
     template_name = 'alerts/alertsettings.html'
 

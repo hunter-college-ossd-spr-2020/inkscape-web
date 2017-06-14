@@ -14,8 +14,8 @@
         <a class="button" href="{% url "alert.settings" %}" title="{% trans "Manage alert settings" %}">&#9881;</a>
       </div>
     {% if object_list.count > 0 %}
-      <form class="runner" data-confirm="{% trans "Delete all messages" %}" action="{% url "alert.delete" %}">
-        <button class="button" id="{{ object.pk }}" title="{% trans "Are you sure that you want to delete all your messages?" %}">X</button>
+      <form class="runner" data-confirm="{% trans "Delete all notifications" %}" action="{% url "alert.delete" %}">
+        <button class="button" id="{{ object.pk }}" title="{% trans "Are you sure that you want to delete all your notifications?" %}">X</button>
       </form>
     {% endif %}
     {% if object_list.new.count > 0 %}
@@ -25,7 +25,7 @@
     {% endif %}
   </h1>
 
-  <h2 id="empty" style="display: none;">{% trans "No messages or alerts to view" %}</h2>
+  <h2 id="empty" style="display: none;">{% trans "No notifications to view" %}</h2>
 
 <div id="items">
   {% autopaginate object_list 15 as items %}
@@ -40,7 +40,7 @@
         <img src="{% static "images/deleted.png" %}" alt="{% trans "Deleted" %}"/>
         <del>{{ data.instance_deleted }}</del>
       {% elif not object.viewed %}
-        <img src="{% static "images/email.png" %}" alt="{% trans "New" %}" title="{% trans "New Message" %}"/>
+        <img src="{% static "images/email.png" %}" alt="{% trans "New" %}" title="{% trans "New Notification" %}"/>
         {{ object.subject }}
       {% else %}
         {{ object.subject }}

@@ -43,7 +43,7 @@ urlpatterns = patterns('',
 
   url(r'^$',                         AlertList.as_view(), name="alerts"),
   url(r'^json/$',                    AlertsJson.as_view(), name="alerts.json"),
-  url(r'^sent/$',                    SentMessages.as_view(), name="message.sent"),
+  url(r'^outbox/$',                  SentMessages.as_view(), name="message.outbox"),
   url_tree(r'^(?P<slug>[^\/]+)/',
     url(r'^$',                       AlertList.as_view(), name="alert.category"),
     url_tree(r'^subscribe/',

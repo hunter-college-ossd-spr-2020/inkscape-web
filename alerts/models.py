@@ -148,7 +148,7 @@ class AlertType(Model):
         return self._url('category', slug=self.slug)
 
     def breadcrumb_parent(self):
-        return (reverse('alerts'), _('Alerts'))
+        return (reverse('alerts'), _('Inbox'))
 
     def _url(self, view, **kwargs):
         kwargs = dict((a,b) for (a,b) in kwargs.items() if b is not None)
@@ -449,7 +449,7 @@ class MessageQuerySet(QuerySet):
         return _("Messages")
 
     def get_absolute_url(self):
-        return reverse("message.sent")
+        return reverse("alerts")
 
 class Message(Model):
     """
