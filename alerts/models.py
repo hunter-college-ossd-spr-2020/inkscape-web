@@ -357,6 +357,8 @@ class UserAlert(Model):
 
     def send_email(self, **kwargs):
         """Send alert email is user's own language"""
+        if not self.config.email:
+            return False
         with translation.override(self.user.language or 'en'):
             data = self.data.copy()
             data.update(kwargs.pop('context_data', {}))
