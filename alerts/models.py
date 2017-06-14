@@ -353,6 +353,8 @@ class UserAlert(Model):
             UserAlertValue(alert=self, name=name, target=unicode(value)).save()
 
     def send_irc_msg(self):
+        if not self.config.irc:
+            return False
         return self.alert.send_irc_msg(self)
 
     def send_email(self, **kwargs):
