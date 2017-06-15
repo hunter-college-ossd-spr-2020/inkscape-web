@@ -16,5 +16,29 @@
   <h1>{% block title %}{{ object.title }}{% endblock %}</h1>
   <p class="postdate">{{ object.pub_date }}</p>
   {{ object.content|safe }}
-{% endblock %}
 
+{% if object.backlinks.count > 0 %}
+
+<hr/>
+
+<div class="backlinks">
+  <h5>Social Media Posts</h5>
+  <div class="social">
+    {% for link in object.backlinks.all %}
+      {% if link.social_media %}
+        <a href="{{ link.url }}"><img src="{{ link.social_media.icon.url }}" title="{{ link.social_media.name }}"/></a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <h5>News Backlinks</h5>
+  <div class="links">
+    {% for link in object.backlinks.all %}
+      {% if not link.social_media %}
+        <li><a href="{{ link.url }}">{{ link.url|truncatechars:80 }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

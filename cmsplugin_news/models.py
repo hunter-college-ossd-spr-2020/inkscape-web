@@ -22,6 +22,7 @@ from django.utils import timezone
 
 from django.db.models import *
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.conf import settings
 from .settings import OTHER_LANGS, DEFAULT_LANG, \
@@ -74,6 +75,10 @@ class News(Model):
 
     is_published = BooleanField(_('Published'), default=False)
     pub_date = DateTimeField(_('Publication date'), default=timezone.now)
+    group = ForeignKey(Group, null=True, blank=True,
+        help_text=_('News group indicates that this news is exclusive to '
+          'this group only. This usually means it won\'t be visible on '
+          'the main news listings, but instead is listed elsewhere.'))
 
     created = DateTimeField(auto_now_add=True, editable=False)
     updated = DateTimeField(auto_now=True, editable=False)
@@ -177,10 +182,40 @@ class News(Model):
         return reverse('news:item', kwargs={'pk': self.pk})
 
 
+class SocialMediaType(Model):
+    """
+    A place online where this news was shared.
+    """
+    name = CharField(max_length=255)
+    icon = ImageField(upload_to='news/icons')
+
+    def __str__(self):
+        return self.name
+
+
+class NewsBacklink(Model):
+    """
+    How this news was shared with the world.
+    """
+    news = ForeignKey(News, related_name='backlinks')
+    url = URLField()
+    social_media = ForeignKey(SocialMediaType, null=True, blank=True)
+    delibrate = BooleanField(default=True,
+        help_text=_('Was this post done by a known contributor?'))
+
+    def __str__(self):
+        return self.url
+
+
 class LatestNewsPlugin(CMSPlugin):
     """
         Model for the settings when using the latest news cms plugin
     """
     limit = PositiveIntegerField(_('Number of news items to show'),
                     help_text=_('Limits the number of items that will be displayed'))
+    group = ForeignKey(Group, blank=True, null=True,
+        help_text=_('Limit this news plugin to this group only. If set to '
+          ' "None" then this plugin will only show news with NO group.'))
+
+
 

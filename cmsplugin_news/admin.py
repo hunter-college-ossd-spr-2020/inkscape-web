@@ -20,21 +20,29 @@
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
-from django.contrib.admin import site, ModelAdmin
+from django.contrib.admin import site, ModelAdmin, TabularInline
 from django.contrib.auth import get_permission_codename
 
 from cms.utils import get_language_from_request as get_lang
 from cmsplugin_news.forms import NewsAdminForm, TranslationForm
-from cmsplugin_news.models import News
+from cmsplugin_news.models import News, NewsBacklink, SocialMediaType
+
+site.register(SocialMediaType)
+
+class BacklinkInline(TabularInline):
+    fields = ['url', 'social_media', 'delibrate']
+    model = NewsBacklink
+    extra = 1
 
 class NewsAdmin(ModelAdmin):
     """Admin for news"""
     date_hierarchy = 'pub_date'
-    list_display = ('title', 'language', 'translation_of', 'is_published')
+    list_display = ('title', 'language', 'translation_of', 'is_published', 'group')
     list_editable = ('is_published',)
     list_filter = ('is_published', 'language')
     search_fields = ['title', 'excerpt', 'content']
     prepopulated_fields = {'slug': ('title',)}
+    inlines = [BacklinkInline]
     form = NewsAdminForm
 
     actions = ['make_published', 'make_unpublished']

@@ -44,7 +44,7 @@ class CMSLatestNewsPlugin(CMSPluginBase):
         """
         language = get_language_from_request(context['request'])
         News.published.select_language(language)
-        latest = News.published.all()[:instance.limit]
+        latest = News.published.filter(group__isnull=True)[:instance.limit]
         context.update({
             'instance': instance,
             'latest': latest,
