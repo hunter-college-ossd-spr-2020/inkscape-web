@@ -1,10 +1,19 @@
 
-# This updates from bzr every hour (for staging)
-11 * * * * /var/www/.../utils/update
+# This updates from git every hour (for staging)
+11 2 * * * /var/www/.../utils/deploy-update
+45 4 * * * /var/www/.../utils/deploy-docs
 
 # This creates a database dump once per day (backups).
 40 0 * * * /var/www/.../utils/backup
 
 # This updates the search index each night
 45 0 * * * /var/www/.../utils/manage update_index
+
+# This clears user sessions for the website
+33 * * * * /var/www/.../utils/manage clearsessions
+
+# This batches up any alerts and emails them to users over a Day, Week or Month scale
+0 8 * * * /var/www/.../utils/manage batch_alerts --mode=D
+0 6 * * 6 /var/www/.../utils/manage batch_alerts --mode=W
+0 12 1 * * /var/www/.../utils/manage batch_alerts --mode=M
 
