@@ -43,6 +43,10 @@ class RequestToJoinAlert(AddedAlert):
     subscribe_any = False
     subscribe_own = True
 
+    # XXX In the future it'd be nice to show the setting if the user is a team
+    # admin or peer and thus able to get a message from the system.
+    show_settings = False
+
     def get_alert_users(self, instance):
         """Returns either admin or a list of peers depending on enrolement"""
         return instance.team.peers
