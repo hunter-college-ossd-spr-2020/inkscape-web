@@ -29,7 +29,6 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-
 from alerts.template_tools import has_template, render_template, render_directly
 
 from signal import SIGUSR1
@@ -189,6 +188,10 @@ class BaseAlert(object):
                  ret = self.alert_type.send_to(recipient, **kwargs)
                  if ret and isinstance(ret, list):
                      return ret
+             elif isinstance(recipient, list):
+                 ret = []
+                 for item in recipient:
+                     ret += send_to(item, kind=kind)
              return []
 
         instance = kwargs['instance']
@@ -319,6 +322,7 @@ class BaseAlert(object):
 
 
 class EditedAlert(BaseAlert):
+    """Special alert type, when any item is edited"""
     def call(self, sender, instance, **kwargs):
         if not kwargs.get('created', False):
             return super(EditedAlert, self).call(sender, instance=instance, **kwargs)
@@ -326,10 +330,30 @@ class EditedAlert(BaseAlert):
 
 
 class CreatedAlert(BaseAlert):
+    """Special alert type, when any item is created"""
     def call(self, sender, instance, **kwargs):
         if kwargs.get('created', False):
             return super(CreatedAlert, self).call(sender, instance=instance, **kwargs)
         return False
+
+
+class AddedAlert(BaseAlert):
+    """Special alert type, when an item is added to a many to many relationship"""
+    signal = django_signals.m2m_changed
+    m2m_action = 'post_add'
+    m2m_reverse = False
+
+    def call(self, sender, instance, action, reverse, **kwargs):
+        if action == self.m2m_action and reverse == self.m2m_reverse:
+            return super(AddedAlert, self).call(sender, instance=instance, **kwargs)
+        return False
+
+
+class RemovedAlert(AddedAlert):
+    """Special alert type, when an item is removed from a many to many relationship"""
+    m2m_action = 'pre_remove'
+
+
 
 #@receiver(django_signals.pre_delete)
 def objects_deleted(sender, instance, **kwargs):
