@@ -343,8 +343,18 @@ class AddedAlert(BaseAlert):
     m2m_action = 'post_add'
     m2m_reverse = False
 
-    def call(self, sender, instance, action, reverse, **kwargs):
+    @property
+    def sender(self):
+        return self.m2m_sender.through
+
+    @property
+    def m2m_sender(self):
+        raise NotImplementedError("MAny to Many sender must be specified")
+
+    def call(self, sender, pk_set, instance, action, reverse, **kwargs):
         if action == self.m2m_action and reverse == self.m2m_reverse:
+            att = self.m2m_sender.field.attname
+            kwargs['items'] = getattr(instance, att).filter(pk__in=pk_set)
             return super(AddedAlert, self).call(sender, instance=instance, **kwargs)
         return False
 
