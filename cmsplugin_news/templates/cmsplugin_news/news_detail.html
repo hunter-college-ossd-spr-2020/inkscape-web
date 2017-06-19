@@ -31,13 +31,13 @@
     {% endfor %}
   </div>
   <h5>News Backlinks</h5>
-  <div class="links">
+  <ul class="links">
     {% for link in object.backlinks.all %}
       {% if not link.social_media %}
         <li><a href="{{ link.url }}">{{ link.url|truncatechars:80 }}</a></li>
       {% endif %}
     {% endfor %}
-  </div>
+  </ul>
 </div>
 {% endif %}
 
