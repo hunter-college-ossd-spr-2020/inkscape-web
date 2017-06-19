@@ -1,0 +1,7 @@
+{% load i18n %}
+{% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}
+ 
+{% for user in items %}
+ * {% blocktrans with username=user %}{{ username }} has requested to join team {{ instance }}.{% endblocktrans %}{% endfor %}
+
+{% blocktrans %}Visit Team page{% endblocktrans %}: {{ site }}{% url "team" instance.slug %}
