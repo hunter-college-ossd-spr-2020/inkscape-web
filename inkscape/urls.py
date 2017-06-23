@@ -70,3 +70,8 @@ for e in ('403','404','500'):
     locals()['handler'+e] = Error.as_error(e)
     urlpatterns += patterns('', url('^error/%s/$' % e, Error.as_error(e)))
 
+if settings.ENABLE_DEBUG_TOOLBAR:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )

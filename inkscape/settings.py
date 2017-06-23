@@ -132,6 +132,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
+    'cmsdiff.middleware.LogContentMiddleware',
     'cmsdiff.middleware.ObjectToolbarMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'person.middleware.SetLastVisitMiddleware',
@@ -181,6 +182,7 @@ INSTALLED_APPS = (
     'haystack',
     'pile',
     'treebeard',
+    'cmsdiff',
     'cms',
     'menus',
     'sekizai',
@@ -193,7 +195,6 @@ INSTALLED_APPS = (
     'cmsplugin_search',
     'cmsplugin_news',
     'cmsplugin_image',
-    'cmsdiff',
     'cmstabs',
     'docs',
     'resources',
@@ -360,6 +361,10 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
             'filters': ['ratelimit'],
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         }
     },
     'filters': {
@@ -373,6 +378,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        #'django.db.backends': {'level': 'DEBUG', 'handlers': ['console']},
     },
 }
 
@@ -405,6 +411,7 @@ DEBUG_TOOLBAR_PANELS = (
 if ENABLE_DEBUG_TOOLBAR:
     # We're not even going to trust debug_toolbar on live
     INSTALLED_APPS += 'debug_toolbar',
+    MIDDLEWARE_CLASSES += 'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     if ENABLE_PROFILER_TOOLBAR:
         INSTALLED_APPS += 'debug_toolbar_line_profiler',
