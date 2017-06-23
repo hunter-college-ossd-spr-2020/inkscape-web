@@ -25,7 +25,7 @@
 
               <input type="hidden" name="msie11bug" value="http://stackoverflow.com/questions/20149751/ie11-only-submit-bug" />
 
-              {% if next or request.GET.next %}
+              {% if next or request.GET and request.GET.next %}
                 <input type="hidden" name="next" value="{{ next|default:request.GET.next }}" />
               {% endif %}
 
