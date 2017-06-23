@@ -55,7 +55,7 @@ class UserGPGKey(UserDetail):
     template_name = 'person/gpgkey.txt'
     content_type = "text/plain"
 
-class MyProfile(UserMixin, UserDetail):
+class MyProfile(NeverCacheMixin, UserMixin, UserDetail):
     pass
   
 class Welcome(UserMixin, TemplateView):
