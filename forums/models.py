@@ -129,7 +129,7 @@ class Forum(Model):
 
     def save(self, **kw):
         if not self.slug:
-            self.slug = slugify(unidecode(name))
+            self.slug = slugify(unidecode(self.name))
         return super(Forum, self).save(**kw)
 
     @property
