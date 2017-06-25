@@ -22,7 +22,7 @@
 <hr/>
 
 <div class="backlinks">
-  <h5>Social Media Posts</h5>
+  <h5>{% trans "Social Media Posts" %}</h5>
   <div class="social">
     {% for link in object.backlinks.all %}
       {% if link.social_media %}
@@ -30,7 +30,7 @@
       {% endif %}
     {% endfor %}
   </div>
-  <h5>News Backlinks</h5>
+  <h5>{% trans "News Backlinks" %}</h5>
   <ul class="links">
     {% for link in object.backlinks.all %}
       {% if not link.social_media %}
