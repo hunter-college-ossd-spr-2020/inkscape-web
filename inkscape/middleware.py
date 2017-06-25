@@ -344,9 +344,12 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
             name = obj.name
         else:
             try:
-                name = smart_unicode(unicode(obj), errors='ignore')
+                name = smart_unicode(obj, errors='ignore')
             except UnicodeEncodeError:
-                name = "Name Error"
+                try:
+                    name = unicode(obj)
+                except UnicodeEncodeError:
+                    name = "Name Error"
         if hasattr(obj, 'get_absolute_url'):
             url = obj.get_absolute_url()
         if name is not None and name.startswith('['):
