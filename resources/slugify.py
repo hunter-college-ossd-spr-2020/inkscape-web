@@ -18,6 +18,8 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from unidecode import unidecode
+
 from django.utils.text import slugify
 from django.db.models import Q
 
@@ -36,7 +38,7 @@ def set_slug(obj, field='slug', source='name'):
     """Sets a slug attribute smartly"""
 
     original = (getattr(obj, field, '') or '').rsplit('+', 1)[0]
-    proposed = slugify(unicode(getattr(obj, source)))
+    proposed = slugify(unidecode(unicode(getattr(obj, source))))
 
     if not original or proposed != original:
         setattr(obj, field, unique_slug(type(obj), proposed, field=field))
