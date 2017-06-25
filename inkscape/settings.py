@@ -132,7 +132,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'cmsdiff.middleware.LogContentMiddleware',
+    #'cmsdiff.middleware.LogContentMiddleware',
     'cmsdiff.middleware.ObjectToolbarMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'person.middleware.SetLastVisitMiddleware',
