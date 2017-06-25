@@ -48,7 +48,7 @@ class RequestToJoinAlert(AddedAlert):
     show_settings = False
 
     def get_alert_users(self, instance):
-        """Returns either admin or a list of peers depending on enrolement"""
+        """Returns either admin or a list of peers depending on enrollment"""
         return instance.team.peers
 
     @property

@@ -349,7 +349,7 @@ class AddedAlert(BaseAlert):
 
     @property
     def m2m_sender(self):
-        raise NotImplementedError("MAny to Many sender must be specified")
+        raise NotImplementedError("Many to Many sender must be specified")
 
     def call(self, sender, pk_set, instance, action, reverse, **kwargs):
         if action == self.m2m_action and reverse == self.m2m_reverse:

@@ -1,5 +1,5 @@
 
-# This updates from git every hour (for staging)
+# This updates from git every hour
 11 2 * * * /var/www/.../utils/deploy-update
 45 4 * * * /var/www/.../utils/deploy-docs
 
