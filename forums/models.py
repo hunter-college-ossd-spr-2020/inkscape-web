@@ -24,6 +24,7 @@ shouldn't be much functionality contained within this app.
 
 import json
 
+from unidecode import unidecode
 from collections import OrderedDict
 
 from django.db.models import *
@@ -128,7 +129,7 @@ class Forum(Model):
 
     def save(self, **kw):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = slugify(unidecode(name))
         return super(Forum, self).save(**kw)
 
     @property
@@ -262,15 +263,19 @@ class ForumTopic(Model):
         return bool(self.sticky)
 
     def get_absolute_url(self):
-        return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
+        if self.slug:
+            return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
+        else:
+            return "error"
 
     def save(self, **kw):
         self.subject = self.subject[:120]
 
         if not self.slug:
-            self.slug = slugify(self.subject)
+            original = slugify(unidecode(self.subject))
+            self.slug = original
             while ForumTopic.objects.filter(slug=self.slug).count():
-                self.slug = slugify(self.subject) + '_' + get_random_string(length=5)
+                self.slug = original + '_' + get_random_string(length=5)
 
         return super(ForumTopic, self).save(**kw)
 
