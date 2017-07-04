@@ -17,11 +17,13 @@
     <div id="bio">{% block "bio" %}{{ object.intro|linebreaks }}{% endblock %}</div>
   </div>
 
-  <div id="right-sidebar">
-    <div id="sidecategory">{% block "side" %}{% endblock %}</div>
-  </div>
+  {% block "allcontent" %}
+    <div id="right-sidebar">
+      <div id="sidecategory">{% block "side" %}{% endblock %}</div>
+    </div>
 
-  <div id="left-column">
-    {% block "content" %}{% endblock %}
-  </div>
+    <div id="left-column">
+      {% block "content" %}{% endblock %}
+    </div>
+  {% endblock %}
 {% endblock %}

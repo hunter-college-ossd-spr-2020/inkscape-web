@@ -1,36 +1,34 @@
 {% extends 'person/base.html' %}
 {% load i18n static extras sekizai_tags %}
 
-{% block title %}{{ object.name }} {% trans "Charter" %}{% endblock %} 
-
 {% block "profile" %}
   <a href="{{ object.get_absolute_url }}"><img id="photo" src="{{ object.icon.url }}"/></a>
 {% endblock %}
 
-{% block "name" %}{{ object.name }} {% trans "Charter" %}{% endblock %}
 {% block "bio" %}
   <p>
     {% trans "Each Inkscape team has responsibilities, rules and specific privileges. These are documented here, so all teams understand how they are supposed to work and what may be required of them." %}
   </p>
 {% endblock %}
 
-{% block "side" %}
-  {{ object.side_bar|safe }}
-{% endblock %}
+{% if object.charter %}
+  {% if object.side_bar %}
+    {% block "side" %}
+      {{ object.side_bar|safe }}
+    {% endblock %}
 
-{% block "content" %}
-  {% if object.desc %}
-    <h2>{% trans "Team Details" %}</h2>
-    <div class="info">
-      {{ object.desc|safe }}
-    </div>
+    {% block "content" %}
+      <h2>{% trans "Team Charter" %}</h2>
+      <div class="info">
+        {{ object.charter|safe }}
+      </div>
+    {% endblock %}
+  {% else %}
+    {% block "allcontent" %}
+      <h2>{% trans "Team Charter" %}</h2>
+      <div class="info">
+        {{ object.charter|safe }}
+      </div>
+    {% endblock %}
   {% endif %}
-  {% if object.charter %}
-    <h2>{% trans "Charter Document" %}</h2>
-    <div class="info">
-      {{ object.charter|safe }}
-    </div>
-  {% endif %}
-
-{% endblock %}
-
+{% endif %}
