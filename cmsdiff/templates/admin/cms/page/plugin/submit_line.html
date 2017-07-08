@@ -12,7 +12,7 @@
   $(document).ready(function() {
     $('.cms-modal-frame > iframe', parent.document).load(function() {
       var bs = $('.cms-modal-buttons-inner', parent.document);
-      bs.append($('<div class="cms-modal-item-buttons"><input type="text" id="modal_comment" placeholder="Comment" style="min-width: 400px; border: 1px solid #ddd; height: 30px; padding: 4px;"></div>', parent.document));
+      bs.append($('<div class="cms-modal-item-buttons"><input type="text" id="modal_comment" placeholder="{% trans "Comment" %}" style="min-width: 400px; border: 1px solid #ddd; height: 30px; padding: 4px;"></div>', parent.document));
       $('.submit-row').append($('<input name="comment" id="comment" placeholder="{% trans "Revision Comment" %}"/>'));
       $('#modal_comment', parent.document).change(function() {
         $('#comment').val($(this).val());

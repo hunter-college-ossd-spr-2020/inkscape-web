@@ -31,7 +31,7 @@ class NewNewsAlert(BaseAlert):
     sender   = News
 
     name     = _("News Published")
-    desc     = _("The site has new published news you will get a notification.")
+    desc     = _("When the site has new published news, you will get a notification.")
     info     = _("When the website publishes news articles, this notification can send you emails about it. An RSS feed is available as an alternative.")
 
     subject       = "{% trans 'Inkscape News:' %} {{ instance.title }}"
