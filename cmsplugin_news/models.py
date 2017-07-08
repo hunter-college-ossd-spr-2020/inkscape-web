@@ -25,7 +25,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.conf import settings
 from .settings import OTHER_LANGS, DEFAULT_LANG, \
     LINK_AS_ABSOLUTE_URL, USE_LINK_ON_EMPTY_CONTENT_ONLY
-from django.utils.timezone import now
+from django.utils import timezone
 
 from cms.utils.permissions import get_current_user as get_user
 from cms.models import CMSPlugin
@@ -60,21 +60,20 @@ class PublishedManager(Manager):
             untranslated = english.exclude(translations__language=self.language)
             qs = untranslated | qs.filter(language=self.language)
         if not is_staff:
-            qs = qs.filter(is_published=True, pub_date__lte=now())
+            qs = qs.filter(is_published=True, pub_date__lte=timezone.now())
         return qs
 
 
 class News(Model):
     title = CharField(_('Title'), max_length=255)
-    slug = SlugField(_('Slug'), null=True,
+    slug = SlugField(_('Slug'), unique_for_date='pub_date', null=True,
            help_text=_('A slug is a short name which provides a unique url.'))
 
     excerpt = TextField(_('Excerpt'), blank=True)
     content = TextField(_('Content'), blank=True)
 
     is_published = BooleanField(_('Published'), default=False)
-    is_notified = BooleanField(default=False)
-    pub_date = DateTimeField(_('Publication date'), null=True)
+    pub_date = DateTimeField(_('Publication date'), default=timezone.now)
     group = ForeignKey(Group, null=True, blank=True,
         help_text=_('News group indicates that this news is exclusive to '
           'this group only. This usually means it won\'t be visible on '
@@ -156,8 +155,6 @@ class News(Model):
 
     def save(self, **kw):
         """Keep translations fields up to date with master english version"""
-        if self.is_published and not self.pub_date:
-            self.pub_date = now()
         if self.translation_of:
             self.is_published = self.translation_of.is_published
             self.pub_date = self.translation_of.pub_date
