@@ -94,14 +94,16 @@ class BaseAlert(object):
     # Target is the attribute on the instance which subscriptions are bound
     target_field = None
 
-    def __new__(cls, slug, *args, **kw):
+    def __new__(cls, slug=None, *args, **kw):
         # Global registration so this is a singleton.
-        if slug not in ALL_ALERTS:
-            ALL_ALERTS[slug] = super(BaseAlert, cls).__new__(cls, slug, *args, **kw)
-            #raise KeyError("Alert can not be registered twice: %s" % slug)
-        return ALL_ALERTS[slug]
+        if not hasattr(cls, 'singleton'):
+            if slug is None:
+                raise KeyError("You must specify a slug when creating an Alert")
+            cls.singleton = super(BaseAlert, cls).__new__(cls, slug, *args, **kw)
+            ALL_ALERTS[slug] = cls.singleton
+        return cls.singleton
 
-    def __init__(self, slug, is_test=False, is_migrate=False, **kwargs):
+    def __init__(self, slug=None, is_test=False, is_migrate=False, **kwargs):
         if hasattr(self, 'slug'):
             # Already initialised (just passed in from __new__)
             return;
@@ -171,6 +173,11 @@ class BaseAlert(object):
             from alerts.models import AlertType
             self._alert_type = AlertType.objects.get(slug=self.slug)
         return self._alert_type
+
+    @classmethod
+    def get_alert_type(cls):
+        """Return alert_type when we only have the alert class"""
+        return cls.singleton.alert_type
 
     def get_alert_users(self, instance):
         """Returns a user of a list of users to send emails to"""
