@@ -47,7 +47,8 @@ class NewFlagAlert(BaseAlert):
     subscribe_own = False
 
     # Only show is user has permissions
-    permission = "moderation.can_moderate"
+    def show_settings_now(self, user):
+        return user.has_perm("moderation.can_moderate")
 
 
 class ModeratorDeletedAlert(EditedAlert):

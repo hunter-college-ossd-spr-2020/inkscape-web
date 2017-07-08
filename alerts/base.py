@@ -91,9 +91,6 @@ class BaseAlert(object):
     # Should settings be disabled and the defaults for all
     show_settings = True
 
-    # Is there a permission requirement to see this setting
-    permission = None
-
     # Target is the attribute on the instance which subscriptions are bound
     target_field = None
 
@@ -147,6 +144,9 @@ class BaseAlert(object):
         from alerts.models import UserAlert, AlertSubscription
         setattr(self.sender, self.related_name, Lookup(self, UserAlert))
         setattr(self.sender, self.related_sub, Lookup(self, AlertSubscription))
+
+    def show_settings_now(self, user):
+        return self.show_settings
 
     def connect_signals(self):
         """Attempts to start the signals late"""

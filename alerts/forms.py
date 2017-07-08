@@ -56,9 +56,8 @@ class SettingsBaseFormSet(BaseModelFormSet):
     def get_queryset(self):
         """Return a fixed list of alert_settings (not a queryset)"""
         for alert in AlertType.objects.all().order_by('slug'):
-            if not alert.permission or self.user.has_perm(alert.permission):
-                if alert.show_settings:
-                    yield alert.settings.for_user(self.user)
+            if alert.show_settings_now(self.user):
+                yield alert.settings.for_user(self.user)
 
     def _construct_form(self, i, **kwargs):
         # Link POST forms to their alert_types, so override when is_bound.
