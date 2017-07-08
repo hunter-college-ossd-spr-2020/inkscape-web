@@ -34,6 +34,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from cms.utils import get_language_from_request
 
 from .models import News
+from .alert import NewNewsAlert
 
 class PublishedNewsMixin(object):
     """
@@ -69,6 +70,10 @@ class PublishedNewsMixin(object):
             result.append((None, _('Unpublished')))
         return result
 
+    def get_context_data(self, **kw):
+        data = super(PublishedNewsMixin, self).get_context_data(**kw)
+        data['alert'] = NewNewsAlert.get_alert_type()
+        return data
 
 class NeverCacheMixin(object):
     @method_decorator(never_cache)

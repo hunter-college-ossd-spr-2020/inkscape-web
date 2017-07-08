@@ -29,6 +29,8 @@ from cmsplugin_news import settings
 from cms.utils import get_language_from_request
 from django.db.models import Q
 
+from .alert import NewNewsAlert
+
 
 class CMSLatestNewsPlugin(CMSPluginBase):
     """
@@ -48,6 +50,7 @@ class CMSLatestNewsPlugin(CMSPluginBase):
         context.update({
             'instance': instance,
             'latest': latest,
+            'alert': NewNewsAlert.get_alert_type(),
             'placeholder': placeholder,
         })
         return context

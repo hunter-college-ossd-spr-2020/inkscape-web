@@ -1,5 +1,6 @@
 {% load i18n static %}
-<a style="float: right;" href="{% url "news:rss" %}"><img src="{% static "images/rss.png" %}" alt="{% trans "RSS Feed" %}"/></a>
+<a style="float: right; padding: 5px;" href="{% url "news:rss" %}"><img src="{% static "images/rss.png" %}" alt="{% trans "RSS Feed" %}"/></a>
+<a style="float: right; padding: 5px;" href="{{ alert.subscribe_url }}"><img src="{% static "images/email.png" %}" alt="{% trans "Get Email Notifications" %}"/></a>
 <div class="cmsplugin-news">
   <div class="content">
 {% if latest %}
