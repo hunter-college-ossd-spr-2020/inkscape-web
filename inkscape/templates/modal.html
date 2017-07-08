@@ -25,8 +25,10 @@
 
               <input type="hidden" name="msie11bug" value="http://stackoverflow.com/questions/20149751/ie11-only-submit-bug" />
 
-              {% if next or request.GET and request.GET.next %}
-                <input type="hidden" name="next" value="{{ next|default:request.GET.next }}" />
+              {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+              {% elif request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}" />
               {% endif %}
 
               {% if form.fieldsets %}
@@ -44,7 +46,7 @@
                 {{ formset.management_form }}
                 <div class="tabs">
                   {% for form in formset %}
-                    <label class="tab" for="tab{{ forloop.counter }}">{{ form.label }}</label>
+                  <label class="tab{% if form.instance.slug %}{% if request.GET.tab == form.instance.slug %} selected{% endif %}" id="tab_{{ form.instance.slug }}{% endif %}" for="tab{{ forloop.counter }}">{{ form.label }}</label>
                   {% endfor %}
                   {% block "extra-tabs" %}{% endblock %}
                 </div>

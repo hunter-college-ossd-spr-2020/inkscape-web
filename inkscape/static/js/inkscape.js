@@ -30,7 +30,11 @@ $(document).ready(function() {
   $(".ellipses-button").show();
   $(".modal-dialog .tab").click(modalfieldsets);
   $(".modal-dialog .fields").hide();
-  $(".modal-dialog .tab:first-child").click();
+  var selected = $(".modal-dialog .tab.selected");
+  if(selected.length == 0) {
+    selected = $(".modal-dialog .tab:first-child");
+  }
+  selected.click();
   close_elements();
 });
 

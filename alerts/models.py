@@ -215,6 +215,10 @@ class UserAlertSetting(Model):
         return unicode(self.alert)
 
     @property
+    def slug(self):
+        return self.alert.slug
+
+    @property
     def subscriptions(self):
         """Returns related subscriptions based on the user and alert"""
         return self.alert.subscriptions.filter(user_id=self.user_id)

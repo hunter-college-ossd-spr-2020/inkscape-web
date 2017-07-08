@@ -21,7 +21,7 @@
 import json
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -135,7 +135,7 @@ class Subscribe(NeverCacheMixin, UserRequiredMixin, CreateView):
         b and messages.warning(request, _("Deleted %d previous subscription(s) (superseded)") % b)
         a and messages.info(request, _('Subscription created!'))
         not a and messages.warning(request, _('Already subscribed to this!'))
-        return redirect('alert.settings')
+        return HttpResponseRedirect(reverse('alert.settings') + '?tab=' + data['alert'].slug)
 
 
 class Unsubscribe(NeverCacheMixin, OwnerRequiredMixin, DeleteView):
