@@ -31,6 +31,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from alerts.template_tools import has_template, render_template, render_directly
 
+import logging
 from signal import SIGUSR1
 import os
 
@@ -245,6 +246,8 @@ class BaseAlert(object):
         n = "%s/alert/email_%s.txt" % tuple(self.slug.split('.', 1))
         if has_template(n):
             return n
+        else:
+            logging.warning("Template: '%s' doesn't exist." % n)
         return "alerts/email_default.txt"
 
     @property

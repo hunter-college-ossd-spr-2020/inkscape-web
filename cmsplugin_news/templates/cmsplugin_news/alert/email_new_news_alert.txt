@@ -1,0 +1,9 @@
+{% load i18n %}
+{{ instance.title }}
+-------------------------------------
+
+{{ instance.excerpt|striptags }}
+
+-------------------------------------
+{% trans "Read More" %}: {{ site }}{{ instance.get_absolute_url }}
+
