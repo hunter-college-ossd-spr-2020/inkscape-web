@@ -34,12 +34,12 @@
     </div>
   {% endif %}
 </div>
-
-      {% paginate %}
     {% endwith %}
   {% empty %}
     <h2>{% trans "No sent messages" %}</h2>
   {% endfor %}
+
+  {% paginate %}
 
 {% endblock %}
 
