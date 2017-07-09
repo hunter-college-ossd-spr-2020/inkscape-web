@@ -230,6 +230,7 @@ class BaseAlert(object):
 
     def _filter_subscriber(self, user, kw):
         if self.filter_field:
+            from alerts.models import UserAlertSetting
             try:
                 setting = user.alert_settings.get(alert__slug=self.slug)
             except UserAlertSetting.DoesNotExist:

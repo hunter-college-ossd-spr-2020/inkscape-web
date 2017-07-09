@@ -231,7 +231,8 @@ class UserAlertSetting(Model):
           and self.owner == self.alert.subscribe_own \
           and self.email == self.alert.default_email \
           and self.irc == self.alert.default_irc \
-          and self.batch == self.alert.default_batch:
+          and self.batch == self.alert.default_batch \
+          and self.filter_value in [None, '']:
             return
         super(UserAlertSetting, self).save(**kw)
 
