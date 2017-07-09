@@ -373,9 +373,24 @@ class ResourceList(CategoryListView):
         return ['resources/resourcegallery_general.html']
 
     def extra_filters(self):
-        if self.get_value('username') != self.request.user.username:
+        if not self.is_user and not self.in_team:
             return dict(published=True)
         return {}
+
+    @property
+    def is_user(self):
+        if not hasattr(self, '_is_user'):
+            username = self.request.user.username
+            self._is_user = self.get_value('username') == username
+        return self._is_user
+
+    @property
+    def in_team(self):
+        if not hasattr(self, '_in_team'):
+            slug = self.get_value('team')
+            teams = self.request.user.teams
+            self._in_team = teams.filter(slug=slug).count() == 1
+        return self._in_team
 
     def get_licenses(self):
         return License.objects.filter(filterable=True)
@@ -404,9 +419,10 @@ class ResourceList(CategoryListView):
         if 'team' in data and data['team']:
             # Our options are not yet returning the correct item
             data['team'] = get_object_or_404(Group, team__slug=data['team'])
-            data['team_member'] = self.request.user in data['team'].user_set.all()
+            data['team_member'] = self.in_team
             data['object_list'].instance = data['team']
         elif 'username' in self.kwargs:
+            data['is_user'] = self.is_user
             if 'username' not in data or not data['username']:
                 raise Http404("User not found")
             data['object_list'].instance = data['username']
@@ -436,8 +452,7 @@ class ResourceList(CategoryListView):
         if 'tags' in data:
             data['tag_clear_url'] = self.get_url(exclude='tags')
 
-        if data['username'] == self.request.user \
-          or ('galleries' in data and data.get('team_member', False)):
+        if self.is_user or ('galleries' in data and self.in_team):
             k = {}
             if data.get('galleries', None) is not None:
                 k['gallery_id'] = data['galleries'].pk
