@@ -208,6 +208,8 @@ class UserAlertSetting(Model):
     batch   = CharField(_("Batch Alerts"), max_length=1,
         choices=BATCH_MODES, blank=True, null=True, 
         help_text=_("Save all alerts and send as one email, only affects email alerts."))
+    filter_value = CharField(max_length=255, blank=True, null=True,
+        help_text=_("An extra filter variable which can be different for each alert."))
     
     objects = SettingsQuerySet.as_manager()
 
@@ -411,6 +413,7 @@ class UserAlert(Model):
             if self.alert.send_email(self.user.email, data, **kwargs):
                 self.view()
 
+
 class UserAlertObject(Model):
     alert   = ForeignKey(UserAlert, related_name='objs')
     name    = CharField(max_length=32)
@@ -421,6 +424,7 @@ class UserAlertObject(Model):
 
     def __str__(self):
         return "AlertObject %s=%s" % (self.name, str(self.o_id))
+
 
 class UserAlertValue(Model):
     alert  = ForeignKey(UserAlert, related_name='values')

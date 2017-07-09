@@ -95,6 +95,9 @@ class BaseAlert(object):
     # Target is the attribute on the instance which subscriptions are bound
     target_field = None
 
+    # Optional filter data that can be populated by the settings (e.g. language).
+    filter_field = None
+
     def __new__(cls, slug=None, *args, **kw):
         # Global registration so this is a singleton.
         if not hasattr(cls, 'singleton'):
@@ -211,7 +214,8 @@ class BaseAlert(object):
 
         if self.subscribe_all:
             for sub in self.alert_type.subscriptions.filter(target__isnull=True):
-                users += send_to(sub.user)
+                if self._filter_subscriber(sub.user, kwargs):
+                    users += send_to(sub.user)
 
         if self.subscribe_any:
             target = instance
@@ -219,9 +223,23 @@ class BaseAlert(object):
                 target = getattr(instance, self.target_field)
 
             for sub in self.alert_type.subscriptions.filter(target=target.pk):
-                users += send_to(sub.user)
+                if self._filter_subscriber(sub.user, kwargs):
+                    users += send_to(sub.user)
 
         return self.post_send(*users, **kwargs)
+
+    def _filter_subscriber(self, user, kw):
+        if self.filter_field:
+            try:
+                setting = user.alert_settings.get(alert__slug=self.slug)
+            except UserAlertSetting.DoesNotExist:
+                setting = None
+            return self.filter_subscriber(user, setting, kw)
+        return True
+
+    def filter_subscriber(self, user, setting, kw):
+        """Do actual filtering of the user for this object"""
+        raise NotImplementedError("You should filter using the value from filter_field")
 
     def post_send(self, *users, **kwargs):
         """Complete the call and tidy up if needed"""

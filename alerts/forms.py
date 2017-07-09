@@ -81,7 +81,7 @@ class SettingsForm(ModelForm):
 
     class Meta:
         model = UserAlertSetting
-        fields = ('alert', 'email', 'irc', 'batch', 'owner', 'suball')
+        fields = ('alert', 'email', 'irc', 'batch', 'owner', 'suball', 'filter_value')
 
     def __init__(self, *args, **kw):
         super(SettingsForm, self).__init__(*args, **kw)
@@ -102,6 +102,11 @@ class SettingsForm(ModelForm):
             self.fields['suball'].initial = self.suball.count() == 1
         else:
             self.fields.pop('suball')
+        # Apply the filter field widget/field as needed
+        if self.instance.alert.filter_field:
+            self.fields['filter_value'] = self.instance.alert.filter_field
+        else:
+            self.fields.pop('filter_value')
 
         if self.instance.alert.subscribe_any:
             for sub in self.subs.filter(target__isnull=False):
