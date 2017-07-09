@@ -27,6 +27,7 @@
     {% load sekizai_tags %}{% render_block "css" %}{% render_block "js" %}
 
     {% if form %}{{ form.media }}{% endif %}
+    {% if formset %}{{ formset.media }}{% endif %}
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" type="text/css" href="{% static "css/mobile-device.css" %}"

@@ -70,6 +70,14 @@ class SettingsBaseFormSet(BaseModelFormSet):
             return super(BaseModelFormSet, self)._construct_form(i, **kwargs)
 	return super(SettingsBaseFormSet, self)._construct_form(i, **kwargs)
 
+    @property
+    def media(self):
+        """We want all the forms media added together"""
+        media = super(SettingsBaseFormSet, self).media
+        for form in self.forms[1:]:
+            media += form.media
+        return media
+
 
 
 class SettingsForm(ModelForm):
