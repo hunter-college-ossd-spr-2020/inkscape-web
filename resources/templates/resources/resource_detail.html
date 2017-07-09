@@ -89,8 +89,12 @@
       </dl>
 
       {% if object.license %}
-        <a class="license" href="{{ object.license.link }}">
-          <img src="{{ object.license.icon.url }}" alt="{{ object.license }}" title="{% if object.owner %}Copyright © {{ object.years }} {{ object.user.name }}{% endif %} {{ object.license }}"/>
+        <a class="license" {% if object.license.link %}href="{{ object.license.link }}"{% endif %}>
+          {% if object.license.icon %}
+            <img src="{{ object.license.icon.url }}" alt="{{ object.license }}" title="{% if object.owner %}Copyright © {{ object.years }} {{ object.user.name }}{% endif %} {{ object.license }}"/>
+          {% else %}
+            <p>{{ object.license }}</p>
+          {% endif %}
         </a>
       {% endif %}
 
