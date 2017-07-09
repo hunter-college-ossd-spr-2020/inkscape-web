@@ -112,6 +112,17 @@ class CensureObject(ModeratorRequired, FlagView):
     def next_url(self):
         return reverse('moderation:index')
 
+
+class NoteObject(ModeratorRequired, FlagView):
+    title = _("Change Notes")
+    confirm = _('Notes Unchanged!')
+    changed = _('Your notes have been changed.')
+    weight  = None
+
+    def function(self, flag, vote, created):
+        return ('info', 'changed')
+
+
 class UndecideObject(ModeratorRequired, FlagView):
     title = _("Undecided")
     confirm = _("Undecided vote Canceled")

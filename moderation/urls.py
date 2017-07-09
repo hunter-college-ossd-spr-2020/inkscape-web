@@ -39,6 +39,7 @@ urlpatterns = patterns('',
       url(r'^censure/$', CensureObject(), name="censure"),
       url(r'^undecide/$', UndecideObject(), name="undecide"),
       url(r'^approve/$', ApproveObject(), name="approve"),
+      url(r'^notes/$', NoteObject(), name="note"),
     )
   )
 )

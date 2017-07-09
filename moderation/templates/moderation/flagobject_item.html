@@ -1,6 +1,7 @@
 {% load i18n static inkscape moderator %}
 
-<div id="flag-{{ object.pk }}" class="moderation {% if object.is_retained %}retained{% elif object.is_deleted %}deleted{% elif object.is_hidden %}hidden{% else %}undecided{% endif %}{% if object|has_voted:request.user %} has_voted{% endif %}">
+{% with object|get_flag:request.user as flag %}
+      <div id="flag-{{ object.pk }}" class="moderation {% if object.is_retained %}retained{% elif object.is_deleted %}deleted{% elif object.is_hidden %}hidden{% else %}undecided{% endif %}{% if flag %} flag{% endif %}">
         <div class="details">
 	  <div class="title">
 	    {% url 'view_profile' object.object_owner.username as profile_url %}
@@ -34,15 +35,35 @@
 	<div class="bar">
           <div class="censure_votes" title="{% trans "Number of people who want to censure this object." %}">{{ object.censure_votes|default:"0" }}</div>
 	  {% if object.resolution == None %}
-            <a class="censure{% if object|is_censured:request.user %} i_voted{% endif %}" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
-            <script>popUpModeration('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}", '{% trans "Why should this item be deleted?" %}');</script>
+            {% if flag.is_censured %}
+              <a class="censure i_voted" title="{% trans "You have voted to Censure" %}">{% trans "Censured" %}</a>
+            {% elif flag %}
+              <a class="censure" title="{% trans "Change vote to Censure" %}" href='{% url "moderation:censure" model.app model.model object.object_id %}'>{% trans "Change to Censure" %}</a>
+              <script>popUpModeration('{% trans "Are you sure you want to change your vote to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Change to Censure" %}', '{{ request.url }}', ['{% trans "Why should this item be deleted?" %}', "{{ flag.notes }}"]);</script>
+            {% else %}
+              <a class="censure" title="{% trans "Vote to Censure" %}" href="{% url "moderation:censure" model.app model.model object.object_id %}" >{% trans "Censure" %}</a>
+              <script>popUpModeration('{% trans "Are you sure you want to censure this object?" %}', '{% trans "Cancel" %}', '{% trans "Censure" %}', "{{ request.url }}", '{% trans "Why should this item be deleted?" %}');</script>
+            {% endif %}
 	  {% endif %}
-          <a class="weight undecide" title="{% trans "Vote as Undecided with a note" %}" href="{% url "moderation:undecide" model.app model.model object.object_id %}">{{ object.weight }}</a>
-          <script>popUpModeration('{% trans "Are you sure you want to mark your vote as undecided?" %}', '{% trans "Cancel" %}', '{% trans "Mark" %}', "{{ request.url }}", '{% trans "Notes for other moderators about your views." %}');</script>
+          {% if flag %}
+            <a class="weight undecide{% if flag.is_undecided %} i_voted{% endif %}" title="{% trans "Change your voting note" %}" href="{% url "moderation:note" model.app model.model object.object_id %}">{{ object.weight }}</a>
+            <script>popUpModeration('{% trans "Are you sure you want to change your note?" %}', '{% trans "Cancel" %}', '{% trans "Change" %}', "{{ request.url }}", ['{% trans "Notes for other moderators about your views." %}', "{{ flag.notes }}"]);</script>
+          {% else %}
+            <a class="weight undecide" title="{% trans "Vote as Undecided with a note" %}" href="{% url "moderation:undecide" model.app model.model object.object_id %}">{{ object.weight }}</a>
+            <script>popUpModeration('{% trans "Are you sure you want to mark your vote as undecided?" %}', '{% trans "Cancel" %}', '{% trans "Mark" %}', "{{ request.url }}", '{% trans "Notes for other moderators about your views." %}');</script>
+          {% endif %}
 	  {% if object.resolution == None %}
-            <a class="approve{% if object|is_approved:request.user %} i_voted{% endif %}" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
-	    <script>popUpModeration('{% trans "Are you sure you want to retain this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}', '{% trans "Why should this item be retained?" %}');</script>
+            {% if flag.is_approved %}
+              <a class="approve i_voted" title="{% trans "You have voted to Approve" %}">{% trans "Approved" %}</a>
+            {% elif flag %}
+              <a class="approve" title="{% trans "Change vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Change to Approve" %}</a>
+              <script>popUpModeration('{% trans "Are you sure you want to change your vote to approve this object?" %}', '{% trans "Cancel" %}', '{% trans "Change to Approve" %}', '{{ request.url }}', ['{% trans "Why should this item be retained?" %}', "{{ flag.notes }}"]);</script>
+            {% else %}
+              <a class="approve" title="{% trans "Vote to Approve" %}" href='{% url "moderation:approve" model.app model.model object.object_id %}'>{% trans "Approve" %}</a>
+	      <script>popUpModeration('{% trans "Are you sure you want to approve this object?" %}', '{% trans "Cancel" %}', '{% trans "Approve" %}', '{{ request.url }}', '{% trans "Why should this item be retained?" %}');</script>
+            {% endif %}
 	  {% endif %}
-          <div class="approve_votes" title="{% trans "Number of people who want to retain this object." %}">{{ object.approve_votes|default:"0" }}</div>
+          <div class="approve_votes" title="{% trans "Number of people who want to approve this object." %}">{{ object.approve_votes|default:"0" }}</div>
 	</div>
       </div>
+{% endwith %}

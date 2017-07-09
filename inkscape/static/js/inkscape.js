@@ -160,7 +160,11 @@ function popUp(title, msg, href, cancel, ok, next, note, ajax) {
       $('#popup').append( "<h1>" + title + "</h1>" ).append( "<p>" + msg + "</p>" )
                  .append( "<form class='buttons' action='"+href+"' method='POST'/>");
       if(note) {
-        $('#popup .buttons').append("<textarea name='note' placeholder='" + note + "'></textarea>");
+        if(Array.isArray(note)) {
+          $('#popup .buttons').append("<textarea name='note' placeholder='" + note[0] + "'>"+note[1]+"</textarea>");
+        } else {
+          $('#popup .buttons').append("<textarea name='note' placeholder='" + note + "'></textarea>");
+        }
       }
       $('#popup .buttons').append("<input type='hidden' name='csrfmiddlewaretoken' value='"+getCookie('csrftoken')+"'/>")
       if(ajax) {

@@ -181,7 +181,8 @@ class FlagManager(Manager):
             flag_created.send(FlagObject, instance=obj_flag, flag=flag, mod=user)
 
         if not created and flag.weight != weight or not flag.notes and notes:
-            flag.weight = weight
+            if weight is not None:
+                flag.weight = weight
             flag.notes = notes
             flag.save()
         return flag, created
@@ -225,6 +226,10 @@ class FlagVote(Model):
     notes = TextField(validators=[MaxLengthValidator(1024)], **null)
 
     objects = FlagManager()
+
+    is_censured = property(lambda self: self.weight == FlagObject.MODERATOR_CENSURE)
+    is_approved = property(lambda self: self.weight == FlagObject.MODERATOR_APPROVAL)
+    is_undecided = property(lambda self: self.weight == FlagObject.MODERATOR_UNDECIDED)
 
     class Meta:
         ordering = ('-created',)
