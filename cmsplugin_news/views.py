@@ -24,6 +24,8 @@ News views (non-staff views)
 from django.views.generic import ListView, DetailView, DateDetailView, \
         YearArchiveView, MonthArchiveView, DayArchiveView
 
+from django.http import Http404, HttpResponseRedirect
+from django.utils import translation
 from django.shortcuts import get_object_or_404
 
 from .models import News
@@ -79,6 +81,17 @@ class ArchiveIndexView(PublishedNewsMixin, ListView):
 class DetailView(PublishedNewsMixin, DateDetailView):
     template_name = 'cmsplugin_news/news_detail.html'
     allow_future = True
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return super(DetailView, self).get(request, *args, **kwargs)
+        except Http404:
+            # Do a lookup for this slug and redirect if possible
+            for obj in News.objects.filter(slug=kwargs['slug']):
+                with translation.override(obj.language or 'en'):
+                    return HttpResponseRedirect(obj.get_absolute_url())
+            raise
+
 
 class YearArchiveView(PublishedNewsMixin, YearArchiveView):
     template_name = 'cmsplugin_news/news_archive_year.html'
