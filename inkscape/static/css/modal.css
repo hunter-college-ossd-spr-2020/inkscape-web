@@ -147,7 +147,8 @@ small, .small {
 }
 .modal-dialog .form-group > input:not([type="checkbox"]):not([type="radio"]),
 .modal-dialog .form-group > textarea,
-.modal-dialog .form-group > select {
+.modal-dialog .form-group > select,
+.modal-dialog .form-group > .SumoSelect > p{
   margin: 0px;
   display: block;
   width: 100%;
@@ -163,7 +164,16 @@ small, .small {
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   font-family: inherit;
 }
-.modal-dialog select {
+.modal-dialog .SumoSelect {
+  display: block;
+  width: 100%;
+}
+.modal-dialog .SumoSelect label > i {
+  display: none !important;
+}
+.modal-dialog select,
+.modal-dialog .form-group > .SumoSelect > p
+{
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

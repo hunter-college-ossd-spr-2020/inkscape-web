@@ -1,5 +1,5 @@
 #
-# Copyright 2015, Martin Owens <doctormo@gmail.com>
+# Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom 
 # code for the Inkscape project's django-based website.
@@ -21,14 +21,15 @@
 CMS alerts
 """
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
+from django.conf import settings
 
 from cms.models import Page
-from django.utils.translation import get_language
+from cms.signals import post_publish
 
 from alerts.base import BaseAlert
+from .fields import MultipleCheckboxField
 
-from cms.signals import post_publish
 
 class PagePublishedAlert(BaseAlert):
     name     = _("Website Page Published")
@@ -46,8 +47,19 @@ class PagePublishedAlert(BaseAlert):
     subscribe_any = True
     subscribe_own = False
 
+    filter_field = MultipleCheckboxField(label=_('Language'), choices=settings.LANGUAGES,
+        help_text=_('Limit the notifications to this language only. Default is all languages.'))
+
     def call(self, *args, **kwargs):
         if 'language' not in kwargs:
             kwargs['language'] = get_language()
         super(PagePublishedAlert, self).call(*args, **kwargs)
+
+    def filter_subscriber(self, user, setting, kw):
+        """
+        Filter by language, if the setting is not set, or the language setting is blank,
+        this counts as 'all languages' and we send to all.
+        """
+        lang = '|%(language)s|' % kw
+        return setting is None or setting.filter_value in ['', None] or lang in setting.filter_value
 
