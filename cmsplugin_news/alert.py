@@ -22,8 +22,11 @@ Notification of new news being published.
 """
 
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from alerts.base import BaseAlert, django_signals
+from cmsdiff.fields import MultipleCheckboxField
+
 from .models import News
 
 
@@ -42,6 +45,9 @@ class NewNewsAlert(BaseAlert):
     subscribe_any = False
     subscribe_own = False
 
+    filter_field = MultipleCheckboxField(label=_('News Language'), choices=settings.LANGUAGES,
+                    help_text=_('Limit the news to this language only. Default is all news languages.'))
+
     def call(self, sender, instance, **kwargs):
         if instance.is_published:
             return super(NewNewsAlert, self).call(sender, instance=instance, **kwargs)
@@ -49,3 +55,9 @@ class NewNewsAlert(BaseAlert):
 
     def show_settings_now(self, user):
         return user.alert_subscriptions.filter(alert__slug=self.slug).count() > 0
+
+    def filter_subscriber(self, user, setting, kw):
+        """Same as CMSDIFF alert"""
+        lang = '|%s|' % (kw['instance'].language or 'en')
+        return setting is None or setting.filter_value in ['', None] or lang in setting.filter_value
+
