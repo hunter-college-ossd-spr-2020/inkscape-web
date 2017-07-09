@@ -121,10 +121,11 @@
               <li><a href="{{ item.url }}"><label>{{ item.name|default:item}}</label><span>{{ item.count }}</span></a></li>
             {% endif %}
           {% endfor %}
-          {% if username == request.user %}
+          {% if username == request.user or request.user in team.user_set.all %}
             <form method="POST" action="{% url "new_gallery" %}">
               {% csrf_token %}
               <input name="name" value="" placeholder="{% trans "New Gallery" %}"/>
+              {% if team %}<input name="group" value="{{ team.pk }}" type="hidden"/>{% endif %}
               <button type="submit">+</button>
             </form>
           {% endif %}
