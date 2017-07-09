@@ -253,6 +253,8 @@
 
 .license img {
   padding: 8px;
+  max-width: 150px;
+  max-height: 300px;
 }
 .uploader input[type="file"] {
   display: none;
