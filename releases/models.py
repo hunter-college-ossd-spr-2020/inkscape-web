@@ -37,7 +37,7 @@ from django.core.cache import caches
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 
-from pile.fields import ResizedImageField
+from inkscape.fields import ResizedImageField
 
 null = dict(null=True, blank=True)
 DEFAULT_LANG = settings.LANGUAGE_CODE.split('-')[0]

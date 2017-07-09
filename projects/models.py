@@ -34,11 +34,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 
-from pile.models import null
-from pile.fields import ResizedImageField
+from inkscape.fields import ResizedImageField
 
 # Thread-safe current user middleware getter.
 from cms.utils.permissions import get_current_user as get_user
+
+null = dict(null=True, blank=True)
 
 class ProjectType(Model):
     value = CharField(_('Type Name'), max_length=128)

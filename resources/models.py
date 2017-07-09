@@ -37,9 +37,10 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from person.models import Team
 
-from pile.fields import ResizedImageField
+from person.models import Team
+from inkscape.fields import ResizedImageField
+
 from .storage import resource_storage
 from .slugify import set_slug
 from .utils import *

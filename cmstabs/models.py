@@ -35,7 +35,7 @@ from django.contrib.auth.models import Group
 
 from cms.models import CMSPlugin
 
-from pile.fields import ResizedImageField
+from inkscape.fields import ResizedImageField
 
 from resources.models import License
 

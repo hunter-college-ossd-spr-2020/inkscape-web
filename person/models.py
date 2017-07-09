@@ -21,6 +21,7 @@
 import os
 from datetime import datetime
 
+
 from django.conf import settings
 from django.db.models import *
 from django.db.models.signals import m2m_changed, post_save
@@ -35,7 +36,7 @@ from django.core.validators import MaxLengthValidator
 from django.contrib.sessions.models import Session
 
 from django.contrib.auth.models import Group, AbstractUser
-from pile.fields import ResizedImageField, AutoOneToOneField
+from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True)
 
