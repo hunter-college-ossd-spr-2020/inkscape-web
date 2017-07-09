@@ -387,8 +387,11 @@ class ResourceList(CategoryListView):
     @property
     def in_team(self):
         if not hasattr(self, '_in_team'):
+            if self.request.user.is_authenticated():
+                teams = self.request.user.teams
+            else:
+                teams = Team.objects.none()
             slug = self.get_value('team')
-            teams = self.request.user.teams
             self._in_team = teams.filter(slug=slug).count() == 1
         return self._in_team
 
