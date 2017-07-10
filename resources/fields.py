@@ -33,6 +33,8 @@ class FilterSelect(Select):
 
     def render(self, name, value, attrs=None, choices=()):
         attrs = attrs or {}
+        if value is None:
+            attrs['novalue'] = 'true'
         attrs['data-filter_by'] = self.filter_by
         return super(FilterSelect, self).render(name, value, attrs, choices)
 
@@ -63,6 +65,12 @@ class DisabledSelect(Select):
 
 class CategorySelect(Select):
     """Provide extra data for validating a resource within the option"""
+    def render(self, name, value, attrs=None, choices=()):
+        attrs = attrs or {}
+        if value is None:
+            attrs['novalue'] = 'true'
+        return super(CategorySelect, self).render(name, value, attrs, choices)
+
     def render_option(self, selected_choices, obj, label):
         label = force_text(label)
         value = force_text(obj or '')

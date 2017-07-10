@@ -28,6 +28,9 @@ String.prototype.toProperCase = function () {
 $(document).ready(function() {
   setupUpload();
   setupImageFullscreen();
+  $('select[novalue=true]').each(function() {
+    this.selectedIndex = -1;
+  });
 });
 
 function checkLink() {
