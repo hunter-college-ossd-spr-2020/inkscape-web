@@ -21,6 +21,7 @@
 Signals for resources
 """
 
+import logging
 from django.db.models import signals
 from django.apps import AppConfig
 
@@ -45,7 +46,7 @@ class ResourceConfig(AppConfig):
             try:
                 getattr(instance, field).delete(save=False)
             except Exception as err:
-                sys.stderr.write("IOError: %s\n" % str(err))
+                loggin.error("IOError: %s\n" % str(err))
 
     def ready(self):
         from .models import Resource
