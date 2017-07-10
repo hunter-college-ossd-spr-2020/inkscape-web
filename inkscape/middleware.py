@@ -184,6 +184,9 @@ class TrackCacheMiddleware(BaseMiddleware):
             cls.cache.set(key, caches, int(cls.cache_timeout * 1.5))
 
     def process_template_response(self, request, response):
+        if settings.DEBUG:
+            response['Access-Control-Allow-Origin'] = "*"
+
         if not request.method in ('GET', 'HEAD') \
               or not hasattr(response, 'context_data'):
             return response
