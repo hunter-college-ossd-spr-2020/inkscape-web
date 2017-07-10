@@ -141,7 +141,7 @@ class TagsChoiceField(ModelMultipleChoiceField):
                 yield tag
                 continue
             try:
-                yield Tag.objects.get_or_create(name=tag.lower())[0]
+                yield Tag.objects.get_or_create(name=tag.lower())[0].pk
             except Exception as error:
                 if "value too long" in str(error):
                     raise ValidationError("Tag is too long!")
