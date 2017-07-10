@@ -24,7 +24,7 @@ function popUpModeration(msg, cancel, ok, next, note) {
       // Next update the status
       $('#flag-'+data.target+' .moderationstatus').text(data.status);
       $('#flag-'+data.target).addClass('has_voted');
-      if($('#hidebutton').text() == 'O') {
+      if($('#hidebutton').data('hidden')) {
         $('#flag-'+data.target).delay(1000).fadeOut('fast');
       }
 
@@ -48,15 +48,17 @@ function popUpModeration(msg, cancel, ok, next, note) {
 }
 
 $(document).ready(function() {
-  var btn = $('<a id="hidebutton" class="button" style="float: right;" href="#no">X</a>');
-  $('#content h1').append(btn);
-  btn.click(function() {
-    if($(this).text() == 'X') {
+  $('#hidebutton').click(function() {
+    if($(this).data('hidden')) {
       $('.has_voted').fadeOut('fast');
-      $(this).text('O');
+      $(this).data('hidden', false)
+      $(this).text($(this).data('show'));
+      $(this).removeClass('hide');
     } else {
       $('.has_voted').fadeIn('fast');
-      $(this).text('X');
+      $(this).data('hidden', true)
+      $(this).text($(this).data('hide'));
+      $(this).addClass('hide');
     }
   }).click();
 });

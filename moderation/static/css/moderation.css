@@ -296,3 +296,27 @@
   margin-right:8px;
   color:#888;
 }
+
+#hidebutton {
+  padding: 1px;
+  float: right;
+  color: white;
+  cursor: pointer;
+  margin-bottom: -13px;
+  font-size: 12pt;
+  color: #444;
+  background-color: white;
+  border: 2px #888 solid;
+  border-radius: 8px;
+  padding: 1px 6px;
+  outline: 0;
+}
+#hidebutton.hide {
+  text-decoration: none;
+  background-color: #ef4343;
+  color: white;
+  border: 2px solid #9c0000;
+}
+a:hover {
+  text-decoration: none !important;
+}

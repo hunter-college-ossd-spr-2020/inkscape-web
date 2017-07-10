@@ -2,7 +2,7 @@
 {% load i18n static inkscape moderator %}
 
 {% block content %}
-  <h1>{% trans "Welcome to the Moderators' Area!" %}</h1>
+<h1>{% trans "Welcome to the Moderators' Area!" %} <a id="hidebutton" href="#no" data-hide="{% trans "Hide Flagged" %}" data-show="{% trans "Show All" %}" title="{% trans "This toggle allows you to hide the items you've already voted on, allowing you to focus on things you've not voted on yet." %}"></a></h1>
   <div class="warning">{% trans "Before you start out on your mission to make the Inkscape Website a friendly place, please review our <a href='/community/coc/'>Community Code of Conduct</a>." %}</div>
   <p>{% blocktrans %}Each of the flagged items below has been flagged by a user, or number of users. The count of how many users flagged the item can be seen in the top right next to the flag icon.{% endblocktrans %}</p>
   <p>{% blocktrans %}You can then choose one of two possible options: "Censure" will put your vote towards hiding and deleting the item, adding {{ mod_censure_weight }} votes on the scale. When the scale reaches {{ hiding_threshold }}, we will attempt to hide the object (but this isn't guaranteed), when it reaches {{ delete_threshold }}, the item is automatically deleted. Alternatively, you can vote to approve the object, this removes {{ mod_approve_weight }} votes from the scale. When it reaches {{ retain_threshold }} the item is automatically retained.{% endblocktrans %}</p>
