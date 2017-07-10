@@ -56,11 +56,13 @@
           {% endif %}
         </dd>
         {% if object.download %}    
-          {% if object.mime.is_image %}
-            <dt>{% trans "Area" %}</dt><dd> {{ object.media_x }}x{{ object.media_y }}</dd>
-          {% elif object.mime.is_text %}
-            <dt>{% trans "Lines" %}</dt><dd> {{ object.media_x }}</dd>
-            <dt>{% trans "Words" %}</dt><dd> {{ object.media_y }}</dd>
+          {% if object.media_x and object.media_y %}
+            {% if object.mime.is_image %}
+              <dt>{% trans "Area" %}</dt><dd> {{ object.media_x }}x{{ object.media_y }}</dd>
+            {% elif object.mime.is_text %}
+              <dt>{% trans "Lines" %}</dt><dd> {{ object.media_x }}</dd>
+              <dt>{% trans "Words" %}</dt><dd> {{ object.media_y }}</dd>
+            {% endif %}
           {% endif %}
           {% if object.is_available %}
             <dt>{% trans "Size" %}</dt><dd>{{ object.download.size|filesizeformat }}</dd>
