@@ -46,7 +46,7 @@ class ResourceConfig(AppConfig):
             try:
                 getattr(instance, field).delete(save=False)
             except Exception as err:
-                loggin.error("IOError: %s\n" % str(err))
+                logging.error("IOError: %s\n" % str(err))
 
     def ready(self):
         from .models import Resource
