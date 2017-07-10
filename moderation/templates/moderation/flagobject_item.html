@@ -30,7 +30,7 @@
           <hr/>
           {% for vote in object.flags %}
             <p id="vote-{{ vote.pk }}">
-              <img src="{{ vote.weight_icon }}" title="{{ vote.weight_label }}, Weight: {{ vote.weight }}"/>
+              <img src="{{ vote.weight_icon }}" title='{{ vote.weight_label }}, {% trans "Weight:" %} {{ vote.weight }}'/>
               <strong>{{ vote.moderator }}</strong>
               <em>
               {% if flag == vote %}
