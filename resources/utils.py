@@ -106,7 +106,7 @@ class MimeType(object):
     tr = {
       'application': {
        'document': ['pdf','rtf','word','powerpoint','excel','spreadsheet','text','presentation','chart'],
-       'compressed': ['bzip','zip','gzip','tar'],
+       'archive': ['bzip','zip','gzip','tar'],
        'text': ['xml','plain'],
        'code': ['c++','javascript'],
       },
