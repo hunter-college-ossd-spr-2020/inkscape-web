@@ -131,11 +131,11 @@ class FlagObject(Model):
 
     @property
     def censure_votes(self):
-        return len([1 for flag in self.flags if flag.weight > self.USER_FLAG])
+        return len([1 for flag in self.flags if flag.weight == self.MODERATOR_CENSURE])
 
     @property
     def approve_votes(self):
-        return len([1 for flag in self.flags if flag.weight < self.USER_FLAG])
+        return len([1 for flag in self.flags if flag.weight == self.MODERATOR_APPROVAL])
 
     @property
     def flag_votes(self):

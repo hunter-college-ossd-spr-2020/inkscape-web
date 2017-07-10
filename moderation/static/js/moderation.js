@@ -1,4 +1,4 @@
-function popUpModeration(msg, cancel, ok, next, note) {
+function popUpModeration(msg, cancel, ok, next, note, remove) {
   var a = document.currentScript.previousElementSibling;
   var p = a.parentNode;
   $(document).ready( function() {
@@ -24,7 +24,7 @@ function popUpModeration(msg, cancel, ok, next, note) {
       // Next update the status
       $('#flag-'+data.target+' .moderationstatus').text(data.status);
       $('#flag-'+data.target).addClass('has_voted');
-      if($('#hidebutton').data('hidden')) {
+      if(!$('#hidebutton').data('hidden') && remove) {
         $('#flag-'+data.target).delay(1000).fadeOut('fast');
       }
 
