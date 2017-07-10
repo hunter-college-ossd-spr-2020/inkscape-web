@@ -345,7 +345,7 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
         else:
             try:
                 name = smart_unicode(obj, errors='ignore')
-            except UnicodeEncodeError:
+            except (UnicodeEncodeError, TypeError) as err:
                 try:
                     name = unicode(obj)
                 except UnicodeEncodeError:
