@@ -16,6 +16,12 @@ from django.core.urlresolvers import reverse
 from .validators import Range
 
 class FilterSelect(Select):
+    """
+    A select dropdown with extra data-filter attributes which
+    are picked up by javascript to provide client-side filtering.
+
+    Options which are not applicable are disabled by default.
+    """
     def __init__(self, qs, m2m_field, filter_by, replace):
         self.filter_by = filter_by
         self.filters = defaultdict(list)
@@ -36,7 +42,8 @@ class FilterSelect(Select):
         html = ' selected="selected"' if value in selected_choices else ''
         if value and int(value) in self.filters:
             html += ' data-filter="%s"' % str(self.filters[int(value)])
-        return '<option value="%s"%s>%s</option>' % (value, html, label)
+            return '<option value="%s"%s>%s</option>' % (value, html, label)
+        return ''
 
 
 class DisabledSelect(Select):
