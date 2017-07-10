@@ -36,49 +36,58 @@ $(document).ready(function() {
 function checkLink() {
   // Check the link for details and fill in information as needed.
   var url = $('#id_link').val();
+  function error(msg) {
+    $("<p style='color: #F00;'>"+msg+"</p>").appendTo("#video-data-1");
+  }
   if(url.indexOf('youtube') >= 0) {
-		$("#video-data-1").empty();
-		var matches = url.match(/^https:\/\/www\.youtube\.com\/.*[?&]v=([^&]+)/i) || url.match(/^https:\/\/youtu\.be\/([^?]+)/i) || url.match(/^http:\/\/www\.youtube\.com\/.*[?&]v=([^&]+)/i) || url.match(/^http:\/\/youtu\.be\/([^?]+)/i);
-		if (matches) {
-			url = matches[1];
-		}
-		console.log(url);
-		if (url.match(/^[a-z0-9_-]{11}$/i) == null) {
-			$("<p style='color: #F00;'>Unable to parse Video ID/URL.</p>").appendTo("#video-data-1");
-			return;
-		}
-		$.getJSON("https://www.googleapis.com/youtube/v3/videos", {
-			key: $('meta[name=description]').attr('content'),
-			part: "snippet,status",
-			id: url
-		}, function(data) {
-		if (data.items.length === 0) {
-			$("<p style='color: #F00;'>Video not found.</p>").appendTo("#video-data-1");
-			return;
-		}
-			$("#id_name").val(data.items[0].snippet.title);
-			$("#id_desc").val(data.items[0].snippet.description);
-			$('[name=category] option').filter(function() { 
-					return ($(this).text() == 'Tutorial'); //To select tutorial
-			}).prop('selected', true); 
-			$('[name=license] option').filter(function() { 
-					return ($(this).text() == 'All Rights Reserved ((C))'); //To select All Rights Reserved ((C))
-			}).prop('selected', true);
-		}).fail(function(jqXHR, textStatus, errorThrown) {
-			$("<p style='color: #F00;'></p>").text(jqXHR.responseText || errorThrown).appendTo("#video-data-1");
-		});
-	}
-	else{
-	var query = 'select * from html where url="' + url + '" and xpath="html"';
-  var url = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(query);
-	console.log(url);
-  $.get(url, function(data) {
-    var html = $(data).find('html');
-    console.log(html);
-    $("<h3></h3>").text("Title:" + html.find('title').text() || 'no title found').appendTo("#video-data-1");
-    $("<h3></h3>").text("Description:" + html.find('meta[name=description]').attr('content') || 'no description found').appendTo("#video-data-1");
-  });
-	}
+
+    $("#video-data-1").empty();
+    var matches = url.match(/^https:\/\/www\.youtube\.com\/.*[?&]v=([^&]+)/i)
+        || url.match(/^https:\/\/youtu\.be\/([^?]+)/i)
+        || url.match(/^http:\/\/www\.youtube\.com\/.*[?&]v=([^&]+)/i)
+        || url.match(/^http:\/\/youtu\.be\/([^?]+)/i);
+
+    if (!matches || matches[1].match(/^[a-z0-9_-]{11}$/i) == null) {
+        return error("Unable to parse video url");
+    }
+    var video_id = matches[1];
+    var api_key = $('head meta[name=youtube-key]').attr('content');
+
+    $.getJSON('https://www.googleapis.com/youtube/v3/videos?part=snippet,status&id=' + video_id + '&fields=items/snippet,items/status/license&key='+api_key,
+      function(data,status,xhr){
+        if (data.items.length === 0) {
+          return error("No video found");
+        }
+        $("#id_name").val(data.items[0].snippet.title);
+        $("#id_desc").val(data.items[0].snippet.description);
+          $('[name=category] option').filter(function() { 
+            return (data.items[0].snippet.tags.indexOf($(this).text()) != -1);
+          }).prop('selected', true); 
+          $('[name=license] option').filter(function() { 
+            if(data.items[0].status.license == 'creativeCommon') {
+              return $(this).text().endsWith('(CC-BY)');
+            }
+            return $(this).text().endsWith('((C))');
+          }).prop('selected', true);
+
+          console.log(data.items[0]);
+          data.items[0].snippet.tags.forEach(function(tag, index) {
+              $('#id_tags').tagsinput('add', tag);
+          });
+
+      }).fail(function(jqXHR, status, errorThown) {
+        var jsonResponse = JSON.parse(jqXHR.responseText);
+        return error(jsonResponse['error']['message']);
+      });
+
+  } else {
+    $.get(url, function(data) {
+      // This doesn't work, even though every guide online says it should.
+      var html = $(data);
+      $("#id_name").val($('title', html).text());
+      $("#id_desc").val($('meta[name=description]', html).attr('content'));
+    });
+  }
 }
 
 function setupUpload() {
