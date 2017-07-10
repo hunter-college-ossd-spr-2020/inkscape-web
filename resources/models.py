@@ -364,8 +364,10 @@ class Resource(Model):
         return self.name.encode('utf8')
 
     def summary_string(self):
-        return _("%(file_title)s by %(file_author)s (%(years)s)") \
-                  % {'file_title': self.name, 'file_author': self.user, 'years': self.years}
+        kw = {'title': self.name, 'user': self.user, 'years': self.years, 'owner': self.owner_name}
+        if not self.owner:
+            return _("%(title)s by %(owner)s posted by %(user)s (%(years)s)") % kw
+        return _("%(title)s by %(user)s (%(years)s)") % kw
 
     @classmethod
     def from_db(cls, db, field_names, values):
