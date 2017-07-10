@@ -196,7 +196,10 @@ class ViewResource(DetailView):
     def get(self, request, *args, **kwargs):
         ret = super(ViewResource, self).get(request, *args, **kwargs)
         if self.object.is_new:
-            return redirect("edit_resource", self.object.pk)
+            if self.object.user == request.user:
+                return redirect("edit_resource", self.object.pk)
+            else:
+                raise Http404()
         return ret
 
 
