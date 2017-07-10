@@ -39,6 +39,7 @@ class ReleaseAdmin(AjaxSelectAdmin):
     form = ReleaseForm
     inlines = (PlatformInline, TranslationsInline)
     list_display = ('version', 'parent', 'release_date', 'manager')
+    list_filter = ('version', 'status')
 
 class PlatformAdmin(AjaxSelectAdmin):
     form = PlatformForm
@@ -46,6 +47,7 @@ class PlatformAdmin(AjaxSelectAdmin):
 
 class ReleasePlatformAdmin(AjaxSelectAdmin):
     form = ReleasePlatformForm
+    list_filter = ('release', 'release__status')
 
 site.register(Release, ReleaseAdmin)
 site.register(Platform, PlatformAdmin)

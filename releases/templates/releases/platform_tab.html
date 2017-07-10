@@ -3,13 +3,15 @@
 {% if platform.release %}
   <li class="download">
     <a href="{{ platform.release.get_download_url }}">
-      <strong>{{ platform.desc }}</strong>
-      {% if platform.icon %}
+      <strong>{{ platform.release.platform.desc }}</strong>
+      {% if platform.release.platform.icon %}
+        <img src="{{ platform.release.platform.icon.url }}"/>
+      {% elif platform.icon %}
         <img src="{{ platform.icon.url }}"/>
       {% else %}
         <img src="{% static "images/download.svg" %}"/>
       {% endif %}
-      {{ platform.name }}
+      {{ platform.release.platform.name }}
     </a>
   </li>
 {% else %}
