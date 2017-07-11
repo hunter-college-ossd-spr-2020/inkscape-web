@@ -236,7 +236,10 @@ class TrackCacheMiddleware(BaseMiddleware):
         # many-to-many way, allowing for pages to be invalidated smartly.
         obj_surrogates = set([key for obj in tracks for key in self.get_keys(obj)])
         if obj_surrogates:
-            response['Surrogate-Key'] = " ".join(obj_surrogates)
+            # This will currently make the header WAY too big for nginx. So a new method
+            # is needed to keep track of cached items and their changes in fastly.
+            #response['Surrogate-Key'] = " ".join(obj_surrogates)
+            pass
 
         if not getattr(request, '_cache_update_cache', False):
             return response
