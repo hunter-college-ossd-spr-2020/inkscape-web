@@ -204,6 +204,7 @@
 .edit .image img {
   max-width: 350px;
   max-height: 150px;
+  min-height: 50px;
 }
 .edit .image label > img {
   background-color: transparent;
@@ -215,9 +216,32 @@
   padding: 20px;
   border-radius: 5px;
   cursor: pointer;
+  position: relative;
+}
+.edit .image input[type=checkbox] {
+  display: none;
+}
+.edit .image label strong {
+  display: none;
+  position: absolute;
+  border: 1px inset transparent;
+  padding: 11px 5px;
+  right: 20px;
+  top: 10px;
+}
+.edit .image label strong:before {
+  content: '✕';
+}
+.edit .image label strong:hover {
+  background-color: #1a1a1a;
+  border: 1px inset #333;
+  border-radius: 6px;
 }
 .edit .image label:hover {
   background-color: #333;
+}
+.edit .image label:hover strong {
+  display: inline-block;
 }
 .edit .image input {
   width: 100%;
@@ -399,3 +423,5 @@ svg .webhover:hover {
   padding-bottom: 8px;
   color: #999;
 }
+
+

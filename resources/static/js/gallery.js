@@ -103,11 +103,27 @@ function setupUpload() {
       }
   });
 
-  $('.uploader input').on('change', function() {
+  $('.uploader input[type=file]').each(function() {
+    var input = $(this);
+    var clear = $('input[name=' + input.attr('name') + '-clear]');
+    var label = $('label[for='+this.id+']');
+    var x = $('<strong class="clear"></strong>');
+     x.click(function(e) {
+      $(this).hide();
+      input.val(null);
+      input.change();
+      return false;
+    }).appendTo(label);
+    if(clear.length == 0) { x.hide(); }
+  }).on('change', function() {
+    var label = $('label[for="' + this.id + '"]');
+    var clear = $('input[name=' + $(this).attr('name') + '-clear]');
+    var st = $('img', label).data('static');
     if (this.files && this.files[0]) {
-      var label = $('label[for="'+$(this).attr('id')+'"]');
       var file = this.files[0];
       var icon = get_mime_icon(file.type);
+      clear.prop('checked', false);
+      $('strong', label).show();
 
       if (icon == 'image' && file.size < max_size) {
         // File Reader allows us to show a preview image
@@ -117,7 +133,7 @@ function setupUpload() {
         }
         reader.readAsDataURL(file);
       } else {
-        $('img', label).attr('src', $('img', label).data('static') + 'mime/' + icon + '.svg');
+        $('img', label).attr('src', st + 'mime/' + icon + '.svg');
       }
       $('p', label).html(file.name);
       
@@ -127,6 +143,11 @@ function setupUpload() {
           name = name.substr(0, name.lastIndexOf('.'));
           $('#id_name').val(name.toProperCase());
       }
+    } else {
+      clear.prop('checked', true);;
+      $('strong', label).hide();
+      $('img', label).attr('src', st + 'images/upload.svg');
+      $('p', label).html(label.data('label'));
     }
   });
 

@@ -104,6 +104,10 @@ class GalleryMoveForm(ModelForm):
             self.instance.galleries.remove(self.source)
         self.instance.galleries.add(self.cleaned_data['target'])
 
+class ResourceFileInput(ClearableFileInput):
+    template_with_initial = '%(input)s %(clear_template)s'
+    template_with_clear = '%(clear)s'
+
 
 class ResourceBaseForm(ModelForm):
     auto_fields = ['name', 'desc', 'tags', 'download', 'rendering', 'published', 'comment']
@@ -150,7 +154,7 @@ class ResourceBaseForm(ModelForm):
         for field in ('download', 'rendering', 'signature'):
             if field in self.fields:
                 if isinstance(self.fields[field].widget, ClearableFileInput):
-                    self.fields[field].widget = FileInput()
+                    self.fields[field].widget = ResourceFileInput()
 
         if 'category' in self.fields:
             f = self.fields['category']
@@ -302,6 +306,8 @@ class ResourceBaseForm(ModelForm):
         # Turn the rendering into a thumbnail for gallery display
         if not obj.thumbnail.name and obj.rendering.name:
             obj.thumbnail.save(obj.rendering.name, obj.rendering)
+        elif obj.thumbnail.name and not obj.rendering.name:
+            obj.thumbnail.delete(False)
 
         return obj
 

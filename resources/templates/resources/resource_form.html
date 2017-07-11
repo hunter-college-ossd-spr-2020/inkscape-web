@@ -9,7 +9,7 @@
     <div class="image {% if form.link_mode %}linker{% elif form.paste_mode %}paster{% else %}uploader{% endif %}">
       {% if form.download %}
         {% if not form.paste_mode %}
-          <label for="id_download" {% if object.download %}data-filename="{{ object.filename }}"{% endif %}>
+          <label for="id_download" {% if object.download %}data-filename="{{ object.filename }}"{% endif %} data-label="{% trans "Choose a file..." %}">
             {% if object.mime.is_image %}
               <img src="{{ object.thumbnail_url }}" data-static="{% static "" %}"/>
               <p>{% trans "Replace image:" %} {{ object.filename }}</p>
@@ -35,12 +35,12 @@
 	</label>
         <div id="linker">{{ form.link|placeholder:_("Paste your URL here") }}</div>
       {% elif form.rendering %}
-	<label for="id_rendering">
+	<label for="id_rendering" data-label="{% trans "Choose visible image..." %}">
 	  {% if object.rendering and object.is_resource %}
-	    <img src="{{ object.rendering.url }}" alt="{% trans "Click to change" %}">
+            <img src="{{ object.rendering.url }}" alt="{% trans "Click to change" %}" data-static="{% static "" %}">
 	    <p>{% trans "Replace visible image:" %} {{ object.rendering_name }}</p>
 	  {% else %}
-	    <img src="{% static "images/upload.svg" %}" alt="{% trans "Click to select file" %}">
+            <img src="{% static "images/upload.svg" %}" alt="{% trans "Click to select file" %}" data-static="{% static "" %}">
 	    <p>{% trans "Choose visible image..." %}</p>
 	  {% endif %}
 	</label>
