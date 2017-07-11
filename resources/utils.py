@@ -100,7 +100,7 @@ def cached(f):
 # The server is older than your desktop machine, so we add some extra to the mimetypes
 mimetypes.add_type('application/x-msi', 'msi')
 mimetypes.add_type('application/x-7z-compressed', '7z')
-mimetypes.add_type('application/x-gimp-pallette', '.gpl')
+mimetypes.add_type('application/x-gimp-palette', '.gpl')
 
 class MimeType(object):
     tr = {
@@ -109,7 +109,7 @@ class MimeType(object):
        'archive': ['bzip','zip','gzip','tar'],
        'text': ['xml','plain'],
        'code': ['c++','javascript'],
-       'pallette': ['gimp-pallette'],
+       'palette': ['gimp-palette'],
       },
       'text': {
        'document': ['rtf', 'html'],
