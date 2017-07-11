@@ -53,7 +53,7 @@ class DownloadRedirect(RedirectView):
         # have no parent at all, or the parent MUST also have a release date
         qs = Release.objects.filter(release_date__isnull=False)
         qs = qs.filter(Q(parent__isnull=True) | Q(parent__release_date__isnull=False))
-        release = qs.latest()
+        release = qs.exclude(codename__icontains='pre').latest()
         platforms = list(release.platforms.for_os(family, version, bits))
 
         if len(platforms) == 1:
@@ -143,7 +143,7 @@ class ReleaseView(DetailView):
         is_before = False
 
         for item in data['releases'][REVS][LIST]:
-            if is_released:
+            if is_released or 'pre' in item.codename:
                 # If the parent is released and the selected is before
                 # tell the html to hide this item (we can use js to enable)
                 item.hide = True

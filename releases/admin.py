@@ -52,3 +52,4 @@ class ReleasePlatformAdmin(AjaxSelectAdmin):
 site.register(Release, ReleaseAdmin)
 site.register(Platform, PlatformAdmin)
 site.register(ReleasePlatform, ReleasePlatformAdmin)
+site.register(ReleaseStatus)
