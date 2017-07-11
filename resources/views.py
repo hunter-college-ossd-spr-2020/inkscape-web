@@ -42,8 +42,7 @@ from django.template import RequestContext
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import RedirectView
 
-
-from person.models import User
+from person.models import User, Team
 from pile.views import *
 
 from .mixins import *
