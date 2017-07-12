@@ -35,7 +35,7 @@
               <em>
               {% if flag == vote %}
                 <a href="{% url "moderation:note" model.app model.model object.object_id %}" title="{% trans "Change your note" %}">{{ vote.notes|default:"Add note" }}</a>
-                <script>popUpModeration('{% trans "Change notes for other moderators explining your views." %}', '{% trans "Cancel" %}', '{% trans "Change" %}', "{{ request.url }}", ['{% trans "Notes" %}', "{{ flag.notes }}"]);</script>
+                <script>popUpModeration('{% trans "Change notes for other moderators explaining your views." %}', '{% trans "Cancel" %}', '{% trans "Change" %}', "{{ request.url }}", ['{% trans "Notes" %}', "{{ flag.notes }}"]);</script>
               {% else %}
                 {{ vote.notes|default:"" }}
               {% endif %} - {{ vote.created|timetag }}</em>
