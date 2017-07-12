@@ -366,7 +366,7 @@ class Resource(Model):
     def summary_string(self):
         kw = {'title': self.name, 'user': self.user, 'years': self.years, 'owner': self.owner_name}
         if not self.owner:
-            return _("%(title)s by %(owner)s posted by %(user)s (%(years)s)") % kw
+            return _("%(title)s by %(owner)s, posted by %(user)s (%(years)s)") % kw
         return _("%(title)s by %(user)s (%(years)s)") % kw
 
     @classmethod
