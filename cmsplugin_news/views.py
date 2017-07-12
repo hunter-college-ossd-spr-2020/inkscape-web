@@ -88,8 +88,15 @@ class DetailView(PublishedNewsMixin, DateDetailView):
         except Http404:
             # Do a lookup for this slug and redirect if possible
             for obj in News.objects.filter(slug=kwargs['slug']):
-                with translation.override(obj.language or 'en'):
-                    return HttpResponseRedirect(obj.get_absolute_url())
+                # Does translation already exists?
+                item = obj.get_translation(translation.get_language())
+                if item is None:
+                    # Translation doesn't exist, so go somewhere useful.
+                    if obj.translation_of:
+                        item = obj.translation_of
+                    item.language = translation.get_language()
+                with translation.override(item.language or 'en'):
+                    return HttpResponseRedirect(item.get_absolute_url())
             raise
 
 
