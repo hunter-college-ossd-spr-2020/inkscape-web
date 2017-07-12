@@ -479,7 +479,7 @@ class Resource(Model):
         return self.verified and self.ENDORSE_HASH or self.ENDORSE_NONE
 
     def rendering_url(self):
-        if self.rendering:
+        if self.rendering and os.path.exists(self.rendering.path):
             return self.rendering.url
         if self.download and self.mime().is_image():
             return self.download.url
