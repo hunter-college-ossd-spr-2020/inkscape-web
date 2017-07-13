@@ -381,21 +381,21 @@ class ResourceList(CategoryListView):
 
     @property
     def is_user(self):
-        if not hasattr(self, '_is_user'):
+        if not hasattr(self.request, '_is_user'):
             username = self.request.user.username
-            self._is_user = self.get_value('username') == username
-        return self._is_user
+            self.request._is_user = self.get_value('username') == username
+        return self.request._is_user
 
     @property
     def in_team(self):
-        if not hasattr(self, '_in_team'):
+        if not hasattr(self.request, '_in_team'):
             if self.request.user.is_authenticated():
                 teams = self.request.user.teams
             else:
                 teams = Team.objects.none()
             slug = self.get_value('team')
-            self._in_team = teams.filter(slug=slug).count() == 1
-        return self._in_team
+            self.request._in_team = teams.filter(slug=slug).count() == 1
+        return self.request._in_team
 
     def get_licenses(self):
         return License.objects.filter(filterable=True)
