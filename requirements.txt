@@ -42,6 +42,8 @@ django-pile==0.8.0
 django-contrib-comments==1.6.2
 django-autotest-command==1.5.3
 django-markdown-deux==1.0.5
+#django-notification>=0.9
+-e git://github.com/doctormo/django-notification.git#egg=alerts
 
 # Django-CMS Plugins
 django_sekizai==0.9.0
@@ -55,7 +57,12 @@ djangocms-history>=0.3.0
 
 cmsplugin-filery==1.0.1
 cmsplugin-search==0.7.3
-cmsplugin-objects>=1.0
+#cmsplugin-objects>=1.0
+-e git://github.com/doctormo/django-cmsplugin-objects.git#egg=cmsplugin_objects
+#cmsplugin-diff>=0.7
+-e git://github.com/doctormo/django-cmsplugin-diff.git#egg=cmsplugin_diff
+#cmsplugin-alerts>=1.0
+-e git://github.com/doctormo/django-cmsplugin-alerts.git#egg=cmsplugin_alerts
 
 
 # We'd enable this, but the system requires the geoip-devel package
