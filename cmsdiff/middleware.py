@@ -1,5 +1,5 @@
 #
-# Copyright 2016, Martin Owens <doctormo@gmail.com>
+# Copyright 2016-2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
@@ -21,100 +21,91 @@
 Provide middleware items for django-cms
 """
 
-from django.db.models import QuerySet
+from django.utils.translation import ugettext_lazy as _, get_language
+from django.contrib.auth import get_user_model
 
-from django.core.urlresolvers import NoReverseMatch, reverse
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
+from cms.signals import post_publish
+from cms.models import CMSPlugin
 
-from cms.utils import get_language_from_request as get_lang
-from cms.toolbar.items import Menu
-from cms.constants import LEFT
+from .utils import generate_content
 
+class LogContentMiddleware(object):
+    """When CMS is edited"""
+    def process_request(self, request):
+        """Just before a plugin is saved"""
+        if request.method == 'POST' and '/admin/cms/' in request.path_info:
+            ps = request.path_info.split('/')
+            ps = ps[ps.index('cms')+1:-1]
+            if ps[0] == 'page' and ps[1] == 'edit-plugin':
+                self.previous = self.record_plugin(int(ps[-1]))
 
-class ObjectToolbarMiddleware(object):
-    """Adds an Objects menu item for quick admin access to current context"""
-    def admin_link(self, model, method='change', obj=None):
-        ct = ContentType.objects.get_for_model(model)
-        bits = (ct.app_label, ct.model, method)
-        args = (obj.pk,) if obj else ()
-        perm = '%s.%s_%s' % (ct.app_label, method, ct.model)
-        if self.request.user.has_perm(perm):
-            return reverse('admin:%s_%s_%s' % bits, args=args)
-        raise NoReverseMatch("No permission")
-
-    def menu_item(self, label, action, then, obj=None, model=None):
-        if obj and not model:
-            model = type(obj)
-
-        bits = {'otype': model.__name__}
-        self.menu.name = self.menu.name % bits
-        try:
-            url = self.admin_link(model, action, obj=obj)
-        except NoReverseMatch:
-            return None
-        self.items += 1
-        return self.menu.add_modal_item(label % bits, url=url, on_close=then)
-
-    def add_object_menu(self, obj):
-        if type(obj).__name__ == 'SimpleLazyObject':
-            obj = obj._wrapped
-
-        if not obj:
-            return
-
-        br = None
-        model = type(obj)
-
-        then = getattr(model, 'get_list_url', lambda: False)
-        if self.menu_item(_('New %(otype)s'), 'add', then, model=model):
-            br = self.menu.add_break()
-
-        if self.language not in ('en', None):
-            then = getattr(obj, 'get_absolute_url', lambda: 'REFRESH_PAGE')()
-            if self.menu_item(_('Translate %(otype)s'), 'translate', then, obj):
-                br = self.menu.add_break()
-
-        then = getattr(obj, 'get_absolute_url', lambda: 'REFRESH_PAGE')()
-        ed = self.menu_item(_('Edit %(otype)s'), 'change', then, obj)
-
-        then = getattr(model, 'get_list_url', lambda: '/')
-        de = self.menu_item(_('Delete %(otype)s'), 'delete', then, obj)
-
-        if not (ed or de) and br:
-            self.menu.remove_item(br)
-
-    def add_list_menu(self, lst):
-        model = None
-
-        if isinstance(lst, QuerySet):
-            model = lst.model
-        elif lst:
-            for item in lst:
-                model = type(item)
-                break
-        else:
-            return
-
-        if model:
-            then = getattr(model, 'get_list_url', lambda: False)
-            self.menu_item(_('New %(otype)s'), 'add', then, model=model)
-
-    def process_template_response(self, request, response):
-        if request.user.is_authenticated() and request.user.is_staff:
-            self.items = 0
-            self.request = request
-            self.language = get_lang(request)
-            self.toolbar = request.toolbar
-            self.menu = Menu("%(otype)s", self.toolbar.csrf_token, side=LEFT)
-
-            context = getattr(response, 'context_data', {})
-            self.add_object_menu(context.get('object', None))
-            self.add_list_menu(context.get('object_list', None))
-
-            if self.items:
-                self.toolbar.menus['object-menu'] = self.menu
-                self.toolbar.add_item(self.menu, position=None)
-
+    def process_response(self, request, response):
+        """When the saving of plugin content is complete"""
+        if hasattr(self, 'previous'):
+            comment = request.POST.get('comment', None)
+            self.record_plugin(self.previous, comment, request.user)
         return response
+ 
+    # Note: Do not make 'Inital' comment translatable.
+    def record_plugin(self, plugin_id, comment='Initial', user=None):
+        """Record an editing event"""
+        from .models import EditHistory
+        plugin = CMSPlugin.objects.get(pk=plugin_id)
+        if not plugin.placeholder_id:
+            # If it's not a part of a page
+            return
+
+        content = generate_content(plugin)
+        if content is None:
+            # There wasn't any content for this plugin
+            return
+
+        if isinstance(plugin_id, int):
+            # We're looking at an initalisation request.
+            history = EditHistory.objects.filter(plugin_id=plugin_id)
+            if history.count() > 0:
+                return history.latest()
+            User = get_user_model()
+            try:
+                username = plugin.placeholder.page.changed_by
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                pass
+        elif content == plugin_id.content:
+            # Nothing changed, even though the user saved.
+            return
+        else:
+            # Turn back into a proper plugin_id 
+            plugin_id = plugin_id.plugin_id
+
+        # We save the content BEFORE it was changed by the new content.
+        return EditHistory.objects.create(
+            user_id=user.pk,
+            plugin_id=plugin_id,
+            comment=comment,
+            page=plugin.placeholder.page,
+            language=get_language(),
+            content=content,
+        )
+
+
+@receiver(post_publish, sender=Page)
+def record_history(sender, instance, **kwargs):
+    """When a page is published, make a new PublishHistory object"""
+    history = EditHistory.filter(page_id=instance.id, published_in__isnull=True) 
+    if history.count() == 0:
+        # No changes happened, skip!
+        return
+
+    User = get_user_model()
+    try:
+        user = User.objects.get(username=instance.changed_by)
+    except User.DoesNotExist:
+        return
+
+    return PublishHistory.objects.create(
+        page=instance,
+        user=user,
+        language=,
+        editings=history)
 
