@@ -25,7 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from alerts.base import BaseAlert, django_signals
-from cmsdiff.fields import MultipleCheckboxField
+from alerts.fields import MultipleCheckboxField
 
 from .models import News
 
