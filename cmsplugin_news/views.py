@@ -86,6 +86,11 @@ class DetailView(PublishedNewsMixin, DateDetailView):
         try:
             return super(DetailView, self).get(request, *args, **kwargs)
         except Http404:
+            # We don't know why the import from django util would return
+            # None, but it does for some of our news artciles.
+            if translation is None:
+                raise
+
             # Do a lookup for this slug and redirect if possible
             for obj in News.objects.filter(slug=kwargs['slug']):
                 # Does translation already exists?
