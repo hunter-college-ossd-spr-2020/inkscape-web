@@ -80,9 +80,6 @@ class Migration(migrations.Migration):
                 ('visible', models.BooleanField(default=True)),
                 ('replaced', models.ForeignKey(verbose_name='Replaced by', blank=True, to='resources.License', null=True)),
             ],
-            options={
-                'db_table': 'resource_license',
-            },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
