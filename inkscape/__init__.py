@@ -58,7 +58,7 @@ class MyAdminSite(admin.AdminSite):
       'user_sessions': 'auth',
       'registration': 'auth',
       'social_auth': 'auth',
-      'cmsdiff': 'cms',
+      'cmsplugin_diff': 'cms',
       'cmsplugin_news': 'cmstabs',
       'redirects': 'sites',
       'django_comments': 'forums',
