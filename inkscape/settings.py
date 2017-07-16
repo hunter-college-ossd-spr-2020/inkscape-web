@@ -210,6 +210,30 @@ INSTALLED_APPS = (
     'markdown_deux',
 )
 
+TRANSLATED_APPS = (
+    'alerts',
+    'autotest',
+    'cmstabs',
+    'cmsplugin_alerts',
+    'cmsplugin_diff',
+    'cmsplugin_image',
+    'cmsplugin_news',
+    'cmsplugin_search',
+    'cmsplugin_toc',
+    'docs',
+    'forums',
+    'haystack',
+    'inkscape',
+    'ircbot',
+    'logbook',
+    'moderation',
+    'person',
+    'pile',
+    'projects',
+    'releases',
+    'resources',
+)
+
 COMMENTS_APP = 'forums'
 
 MODERATED_MODELS = (

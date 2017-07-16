@@ -20,11 +20,14 @@
 """
 Django command for clearing fastly caches.
 """
+
 import os
+import logging
 
 from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.core.management.commands.makemessages import Command as BaseCommand
 
 class Command(BaseCommand):
@@ -33,14 +36,29 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.pop('all', True):
             options['locale'] = zip(*settings.LANGUAGES)[0]
-        self.apps = options.pop('apps', None)
-
+        self.apps = list(self.parse_apps(options.pop('apps', None)))
+        if self.apps:
+            print("Selecting apps: %s" % ", ".join(self.apps))
         super(Command, self).handle(*args, **options)
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
         parser.add_argument('--app', '-m', default=[], dest='apps', action='append',
             help='Only scan the contents of these apps, default will scan all folders.')
+
+    @staticmethod
+    def parse_apps(in_apps):
+        for app in list(set(settings.INSTALLED_APPS) & set(in_apps)):
+            in_apps.remove(app)
+            yield app
+
+        for app in in_apps:
+            if hasattr(settings, app.upper()):
+                lst = getattr(settings, app.upper())
+                for item in lst:
+                    yield item
+            else:
+                raise CommandError("App or setting not found '%s'" % app)
 
     def find_files(self, root):
         if self.apps:
