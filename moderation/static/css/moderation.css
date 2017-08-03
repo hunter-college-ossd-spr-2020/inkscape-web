@@ -202,6 +202,20 @@
   vertical-align: middle;
 }
 
+hr {
+  margin: 15px 0px 10px;
+}
+
+.info {
+  background-color: #3465a4;
+  border: 2px solid #00009c;
+  border-color: #204a87;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 8px 2px;
+  color: #ccf;
+}
+
 .warning {
   color: black;
   border: 2px solid #9c0000;
@@ -209,7 +223,7 @@
   border-radius: 8px;
   padding: 10px;
 }
-.warning a {
+.warning a, .info a {
   color: white;
 }
 /* Resource review */
