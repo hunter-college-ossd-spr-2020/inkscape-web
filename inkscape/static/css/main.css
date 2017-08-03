@@ -1451,50 +1451,6 @@ div.donationlogo {
   font-family: LinuxLibertineORegular, "Trebuchet MS", Ubuntu, "Liberation Sans", FreeSans, sans-serif;
 }
 
-/* Diff */
-div.diff div.page,
-div.diff table.page {
-  border: 2px solid #ddd;
-  background-color: #eee;
-  padding: 10px;
-  margin-bottom: 20px;
-}
-div.diff table.page th {
-  background-color: white;
-  padding-right: 5px;
-  border: 2px solid #ddd;
-}
-div.diff table.page td {
-  padding: 2px 8px;
-  border: 2px solid #ddd;
-}
-div.diff ins {
-  color: black;
-  background-color: green;
-}
-div.diff del {
-  color: black;
-  background-color: red;
-}
-div.diff del a,
-div.diff ins a {
-  color: black;
-}
-div.diff ins,
-div.diff del {
-  border: 2px solid #ddd;
-  padding: 3px;
-  text-decoration: none;
-}
-div.diff .ins {
-  background-color: #8d9;
-  padding: 4px;
-}
-div.diff .del {
-  background-color: #f88;
-  padding: 4px;
-}
-
 /* Line profiler */
 #djDebug .line_tb {
   border: 1px red solid;
