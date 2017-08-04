@@ -42,7 +42,7 @@ from inkscape.middleware import TrackCacheMiddleware
 
 __all__ = ('GalleryForm', 'GalleryMoveForm', 'ResourceForm',
         'ResourceEditPasteForm', 'ResourcePasteForm', 'ResourceAddForm',
-        'MirrorAddForm', 'ResourceLinkForm')
+        'MirrorAddForm', 'ResourceLinkForm', 'ResourceBaseForm')
 
 TOO_SMALL = [
     "Image is too small for %s category (Minimum %sx%s)",
@@ -112,6 +112,7 @@ class ResourceFileInput(ClearableFileInput):
 class ResourceBaseForm(ModelForm):
     auto_fields = ['name', 'desc', 'tags', 'download', 'rendering', 'published', 'comment']
     tags = TagsChoiceField(Tag.objects.all(), required=False)
+    form_priority = 1
 
     # The comment is only used for curators to note what they changed
     comment = CharField(widget=Textarea)
@@ -318,9 +319,24 @@ class ResourceBaseForm(ModelForm):
                 continue
             yield field
 
+    is_valid_form = classmethod(lambda cls,obj: False)
+
+    @classmethod
+    def get_form_class(cls, obj):
+        return sorted(cls._get_forms(obj), key=lambda o: o.form_priority)[-1]
+
+    @classmethod
+    def _get_forms(cls, obj):
+        for child in cls.__subclasses__():
+            for subchild in child._get_forms(obj):
+                yield subchild
+            if child.is_valid_form(obj):
+		yield child
+
 
 class ResourceForm(ResourceBaseForm):
     published = BooleanField(label=_('Publicly Visible'), required=False)
+    is_valid_form = classmethod(lambda cls,obj: True)
 
     class Meta:
         model = Resource
@@ -333,6 +349,7 @@ class ResourceForm(ResourceBaseForm):
 class ResourceLinkForm(ResourceBaseForm):
     auto_fields = ['name', 'desc', 'tags', 'link', 'rendering']
     youtube_key = getattr(settings, 'YOUTUBE_API_KEY', 'NO_KEY')
+    form_priority = 5
     link_mode = True
 
     class Meta:
@@ -348,6 +365,10 @@ class ResourceLinkForm(ResourceBaseForm):
             obj.save()
         return obj
 
+    @classmethod
+    def is_valid_form(cls, obj):
+        """Only show for link type resources"""
+        return obj.link and not obj.download
 
 class ResourcePasteForm(ResourceBaseForm):
     media_type = ChoiceField(label=_('Text Format'), choices=ALL_TEXT_TYPES)
@@ -398,6 +419,8 @@ class ResourcePasteForm(ResourceBaseForm):
 
 
 class ResourceEditPasteForm(ResourcePasteForm):
+    form_priority = 10
+
     def __init__(self, data=None, *args, **kwargs):
         # Fill the text field with the text, not the text file name
         i = dict(download=kwargs['instance'].as_text())
@@ -408,6 +431,11 @@ class ResourceEditPasteForm(ResourcePasteForm):
 
         super(ResourcePasteForm, self).__init__(data, *args, **kwargs)
     
+    @classmethod
+    def is_valid_form(cls, obj):
+        """Only show for items in the pastebin category"""
+        return getattr(obj.category, 'slug', '') == 'pastebin'
+
 
 class ResourceAddForm(ResourceBaseForm):
     class Meta:
@@ -419,6 +447,7 @@ class ResourceAddForm(ResourceBaseForm):
         if name and name[0] == '$':
             self.cleaned_data['name'] = name[1:].rsplit('.',1)[0].replace('_',' ').replace('-',' ').title()[:64]
         return self.cleaned_data['name']
+
 
 
 class MirrorAddForm(ModelForm):

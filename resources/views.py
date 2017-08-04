@@ -78,11 +78,7 @@ class EditResource(OwnerUpdateMixin, UpdateView):
     title = _("Edit")
 
     def get_form_class(self):
-        if getattr(self.object.category, 'slug', '') == 'pastebin':
-            return ResourceEditPasteForm
-        elif self.object.link and not self.object.download:
-            return ResourceLinkForm
-        return ResourceForm
+        return ResourceBaseForm.get_form_class(self.object)
 
     def get_form_kwargs(self):
         kw = super(EditResource, self).get_form_kwargs()
