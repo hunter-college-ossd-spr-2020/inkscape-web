@@ -1,13 +1,81 @@
+#
+# Copyright 2015-2017, Martin Owens <doctormo@gmail.com>
+#
+# This file is part of the software inkscape-web, consisting of custom 
+# code for the Inkscape project's django-based website.
+#
+# inkscape-web is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# inkscape-web is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-import sys
-
-from django.forms import ModelForm, BaseInlineFormSet, inlineformset_factory
+from django.forms import *
 from ajax_select import make_ajax_field
 
-# This dependance is fairly harsh, replace is possible.
+# This dependance is fairly harsh, replace if possible.
 from djangocms_text_ckeditor.widgets import TextEditorWidget
+from django.utils.translation import ugettext_lazy as _
+
+# This is used to add a custom form to resources when editing
+# an Inkscape Release upload.
+from resources.forms import ResourceBaseForm, Resource
 
 from .models import Release, Platform, ReleaseTranslation
+
+
+class ResourceReleaseForm(ResourceBaseForm):
+    form_priority = 10
+    release = ModelChoiceField(queryset=Release.objects.all())
+    platform = ModelChoiceField(queryset=Platform.objects.all())
+
+    def __init__(self, data=None, *args, **kwargs):
+        kwargs['initial'] = kwargs.pop('initial', {})
+        if 'instance' in kwargs:
+	    for rp in kwargs['instance'].releases.all():
+                kwargs['initial']['release'] = rp.release
+                kwargs['initial']['platform'] = rp.platform
+                break
+        super(ResourceReleaseForm, self).__init__(data, *args, **kwargs)
+
+    @classmethod
+    def is_valid_form(cls, obj):
+        """When editing an inkscape package with the right user permissions"""
+        cat = getattr(obj.category, 'slug', '') == 'inkscape-package'
+        return cat and obj.user and obj.user.has_perm('releases.change_release')
+
+    def clean(self):
+        super(ResourceReleaseForm, self).clean()
+        release = self.cleaned_data['release']
+        platform = self.cleaned_data['platform']
+        (rp, created) = release.platforms.get_or_create(platform=platform)
+        if rp.resource and rp.resource != self.instance:
+            raise ValidationError(_("Release Platform '%s' already has a package resource assigned.") % unicode(rp))
+        self.cleaned_data['release_platform'] = rp
+
+    def save(self, **kw):
+        obj = super(ResourceReleaseForm, self).save(**kw)
+        if obj.pk:
+            rp = self.cleaned_data['release_platform']
+            rp.resource = obj
+            rp.howto = obj.link
+            rp.info = obj.desc
+            rp.save()
+        return obj
+
+    class Meta:
+        model = Resource
+        fields = ['name', 'desc', 'tags', 'license', 'link', 'release', 'platform', 'download', 'published']
+        required = ['name', 'license', 'release', 'platform']
+
 
 class QuerySetMixin(object):
     """Allow querysets in forms to be redefined easily"""
