@@ -288,7 +288,7 @@ class ResourceBaseForm(ModelForm):
         if not obj.pk and not obj.user:
             obj.user = self.user
         if 'comment' in self.cleaned_data:
-            if self.cleaned_data['comment']:
+            if self.cleaned_data['comment'] and obj.desc:
                 obj.desc = obj.desc + "\n---\n" + self.cleaned_data['comment']
 
         obj.save(**kwargs)

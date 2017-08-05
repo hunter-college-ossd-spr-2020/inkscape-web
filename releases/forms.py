@@ -73,7 +73,8 @@ class ResourceReleaseForm(ResourceBaseForm):
 
     class Meta:
         model = Resource
-        fields = ['name', 'desc', 'tags', 'license', 'link', 'release', 'platform', 'download', 'published']
+        fields = ['name', 'desc', 'tags', 'release', 'platform', 'license',
+            'link', 'signature', 'download', 'rendering', 'published']
         required = ['name', 'license', 'release', 'platform']
 
 
