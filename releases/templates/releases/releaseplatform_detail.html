@@ -20,7 +20,7 @@
       <h1>{{ title }}</h1>
       <p>{% trans "Thank you for downloading Inkscape." %}
       <p>{% blocktrans with object.get_resource_url as link %}Your download should start in 2 seconds, if not, please <a href="{{ link }}">click here</a> to start.{% endblocktrans %}</p>
-    {% if object.instructions %}
+    {% elif object.instructions %}
       {{ object.instructions|safe }}
     {% else %}
       <h1>{% trans "Download Failed" %}</h1>
