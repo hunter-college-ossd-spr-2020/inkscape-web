@@ -89,7 +89,8 @@ class Release(Model):
     codename = CharField(_('Codename'), max_length=32, db_index=True, **null)
 
     release_notes = TextField(_('Release notes'), **null)
-    release_date = DateField(_('Release date'), db_index=True, **null)
+    release_date = DateField(_('Release date'), db_index=True,
+        help_text=_("ONLY set this when THIS release is ready to go. Set pre-release dates on pre-releases and remember, as soon as this is released, it will take over the default redirection and users will start downloading this release."), **null)
     status = ForeignKey(ReleaseStatus, **null)
 
     edited = DateTimeField(_('Last edited'), auto_now=True)
@@ -171,6 +172,10 @@ class Platform(Model):
     manager    = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
     codename   = CharField(max_length=255, **null)
     order      = PositiveIntegerField(default=0)
+    instruct   = TextField(_('Instructions'), blank=True, null=True,
+        help_text=_("If supplied, this text will appear after the tabs,"
+                    " but before the release notes. Will propergate to"
+                    " all child platforms that do not have their own."))
 
     match_family = CharField(max_length=32, db_index=True,
             help_text=_('User agent os match, whole string.'), **null)
@@ -224,7 +229,18 @@ class Platform(Model):
             _from.append(child)
             child.descendants(_from)
         return _from
-      
+
+    @property
+    def instructions(self):
+        """Get the nearest instructions for this platform"""
+        if not hasattr(self, '_instr'):
+            self._instr = None
+            for anc in self.ancestors():
+                if anc.instruct:
+                    self._instr = anc.instruct
+                    break
+        return self._instr
+
     @property
     def full_name(self):
         return " : ".join([anc.name for anc in self.ancestors()][::-1])
@@ -319,3 +335,9 @@ class ReleasePlatform(Model):
 
     def breadcrumb_name(self):
         return self.platform.name
+
+    @property
+    def instructions(self):
+        if self.info:
+            return self.info
+        return self.platform.instructions
