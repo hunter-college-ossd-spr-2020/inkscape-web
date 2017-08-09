@@ -28,6 +28,9 @@ class PlatformInline(StackedInline):
     model = ReleasePlatform
     extra = 1
 
+    def get_formset(self, request, obj=None, **kwargs):
+        return PlatformInlineFormSet
+
 class TranslationsInline(StackedInline):
     model = ReleaseTranslation
     extra = 1

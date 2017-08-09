@@ -29,7 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 # an Inkscape Release upload.
 from resources.forms import ResourceBaseForm, Resource
 
-from .models import Release, Platform, ReleaseTranslation
+from .models import Release, Platform, ReleasePlatform, ReleaseTranslation
 
 
 class ResourceReleaseForm(ResourceBaseForm):
@@ -116,7 +116,15 @@ class ReleasePlatformForm(ModelForm):
         super(ReleasePlatformForm, self).__init__(*args, **kwargs)
         if 'info' in self.fields:
             self.fields['info'].widget = TextEditorWidget()
+        if 'resource' in self.fields:
+            qs = self.fields['resource'].queryset
+            qs = qs.filter(category__slug='inkscape-package')
+            self.fields['resource'].queryset = qs
 
+
+PlatformInlineFormSet = inlineformset_factory(
+    Release, ReleasePlatform, form=ReleasePlatformForm, extra=1,
+)
 
 class TranslationForm(ModelForm):
     class Meta:
@@ -148,3 +156,4 @@ class PlatformForm(QuerySetMixin, ModelForm):
         super(PlatformForm, self).__init__(*args, **kwargs)
         if 'instruct' in self.fields:
             self.fields['instruct'].widget = TextEditorWidget()
+
