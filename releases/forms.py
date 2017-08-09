@@ -144,3 +144,7 @@ class PlatformForm(QuerySetMixin, ModelForm):
             return qs.exclude(pk__in=non_parents)
         return qs
 
+    def __init__(self, *args, **kwargs):
+        super(PlatformForm, self).__init__(*args, **kwargs)
+        if 'instruct' in self.fields:
+            self.fields['instruct'].widget = TextEditorWidget()
