@@ -38,14 +38,13 @@ class DownloadRedirect(RedirectView):
         if bits:
             key += '-%d' % bits
 
-        url = None #CACHE.get(key)
+        url = CACHE.get(key)
         if not url:
             url = self.get_url(family, version, bits)
             CACHE.set(key, url, 2 * 3600) # Two hours
 
         if settings.DEBUG:
             url += '?os=' + key
-
         return url
 
     def get_url(self, family, version, bits=None):
