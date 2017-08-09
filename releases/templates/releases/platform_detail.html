@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static i18n %}
 
-{% block title %}Download for {{ object.name }}{% endblock %}
+{% block title %}{{ object }}{% endblock %}
 
 {% block "css" %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "css/shield.css" %}"/>
