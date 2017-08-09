@@ -193,6 +193,7 @@ class PlatformView(DetailView):
         except ReleasePlatform.MultipleObjectsReturned:
             data['object'] = None
 
+        data['object-bar'] = ['platform', 'release']
         return data
 
 
