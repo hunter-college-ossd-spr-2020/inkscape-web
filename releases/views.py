@@ -20,7 +20,7 @@
 #
 
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
@@ -33,8 +33,9 @@ class DownloadRedirect(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kw):
+        language = get_language()
         (family, version, bits) = self.get_os()
-        key = slugify('download-%s-%s' % (family, str(version)))
+        key = slugify('download-%s-%s-%s' % (language, family, str(version)))
         if bits:
             key += '-%d' % bits
 
