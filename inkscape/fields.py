@@ -92,7 +92,7 @@ class ResizedImageFieldFile(ImageFieldFile):
 
         if hasattr(img, '_getexif') and img._getexif():
             exif = dict(img._getexif().items())
-            orientation = exif[TAGS['Orientation']]
+            orientation = exif.get(TAGS.get('Orientation', None), None)
             for tr in CorrectOre.get(orientation, []):
                 img = img.transpose(tr)
 
