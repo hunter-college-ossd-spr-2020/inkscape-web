@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n i18n_fields %}
 
 {% block title %}Download {{ object }}{% endblock %}
 
@@ -30,7 +30,7 @@
   <div id="left-column" class="notes">
     {% if object %}
       <h1>Release Notes</h1>
-      <p>{{ object.get_notes|safe|default:"No Release Notes" }}</p>
+      <p>{{ object|translate_field:"release_notes"|safe|default:"No Release Notes" }}</p>
     {% else %}
       <h1>No Public Release Yet</h1>
     {% endif %}

@@ -27,7 +27,7 @@ from collections import defaultdict
 from django.db.models import *
 from django.conf import settings
 
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils.text import slugify
 
@@ -38,10 +38,9 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 
 from inkscape.fields import ResizedImageField
+from inkscape.templatetags.i18n_fields import OTHER_LANGS, translate_field
 
 null = dict(null=True, blank=True)
-DEFAULT_LANG = settings.LANGUAGE_CODE.split('-')[0]
-OTHER_LANGS = list(i for i in settings.LANGUAGES if i[0].split('-')[0] != DEFAULT_LANG)
 User = settings.AUTH_USER_MODEL
 
 CACHE = caches['default']
@@ -130,16 +129,6 @@ class Release(Model):
         (par, dat) = (self.parent, self.release_date)
         return par and dat and (not par.release_date or par.release_date > dat)
 
-    def get_notes(self):
-        """Returns a translated release notes"""
-        lang = get_language()
-        if not lang or lang == DEFAULT_LANG:
-            return self.release_notes
-        try:
-            return self.translations.get(language=lang).translated_notes
-        except ReleaseTranslation.DoesNotExist:
-            return self.release_notes
-
     @property
     def revisions(self):
         return Release.objects.filter(Q(parent_id=self.pk) | Q(id=self.pk))
@@ -161,7 +150,10 @@ class ReleaseTranslation(Model):
     release = ForeignKey(Release, related_name='translations')
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
-    translated_notes = TextField(_('Release notes'))
+    release_notes = TextField(_('Release notes'))
+
+    class Meta:
+        unique_together = ('release', 'language')
 
 
 class Platform(Model):
@@ -233,20 +225,30 @@ class Platform(Model):
     @property
     def instructions(self):
         """Get the nearest instructions for this platform"""
-        if not hasattr(self, '_instr'):
-            self._instr = None
-            for anc in self.ancestors():
-                if anc.instruct:
-                    self._instr = anc.instruct
-                    break
-        return self._instr
+        for anc in self.ancestors():
+            if anc.instruct:
+                return translate_field(anc, 'instruct')
 
     @property
     def full_name(self):
-        return " : ".join([anc.name for anc in self.ancestors()][::-1])
+        return " : ".join([translate_field(anc, 'name') for anc in self.ancestors()][::-1])
 
     def __str__(self):
         return self.codename.replace('/', ' : ').replace('_', ' ').title()
+
+
+class PlatformTranslation(Model):
+    """A translation of a Platform"""
+    platform = ForeignKey(Platform, related_name='translations')
+    language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
+                         help_text=_("Which language is this translated into."))
+
+    name       = CharField(_('Name'), max_length=64)
+    desc       = CharField(_('Description'), max_length=255)
+    instruct   = TextField(_('Instructions'), blank=True, null=True)
+
+    class Meta:
+        unique_together = ('platform', 'language')
 
 
 class PlatformQuerySet(QuerySet):
@@ -302,6 +304,9 @@ class ReleasePlatform(Model):
 
     objects = PlatformQuerySet.as_manager()
 
+    class Meta:
+        ordering = ('platform__name',)
+
     def __str__(self):
         return "%s - %s" % (self.release, self.platform)
 
@@ -334,10 +339,23 @@ class ReleasePlatform(Model):
         return self.release
 
     def breadcrumb_name(self):
-        return self.platform.name
+        return translate_field(self.platform, 'name')
 
     @property
     def instructions(self):
         if self.info:
-            return self.info
+            return translate_field(self, 'info')
         return self.platform.instructions
+
+
+class ReleasePlatformTranslation(Model):
+    release_platform = ForeignKey(ReleasePlatform, related_name='translations')
+    language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
+                         help_text=_("Which language is this translated into."))
+
+    howto = URLField(_('Instructions Link'), **null)
+    info = TextField(_('Release Platform Information'), **null)
+
+    class Meta:
+        unique_together = ('release_platform', 'language')
+

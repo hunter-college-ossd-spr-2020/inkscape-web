@@ -1,9 +1,9 @@
-{% load i18n static %}
+{% load i18n static i18n_fields %}
 
 {% if platform.release %}
   <li class="download">
     <a href="{{ platform.release.get_download_url }}">
-      <strong>{{ platform.release.platform.desc }}</strong>
+      <strong>{{ platform.release.platform|translate_field:"desc" }}</strong>
       {% if platform.release.platform.icon %}
         <img src="{{ platform.release.platform.icon.url }}"/>
       {% elif platform.icon %}
@@ -11,17 +11,17 @@
       {% else %}
         <img src="{% static "images/download.svg" %}"/>
       {% endif %}
-      {{ platform.release.platform.name }}
+      {{ platform.release.platform|translate_field:"name" }}
     </a>
   </li>
 {% else %}
   <li>
     <a href="{% url "releases:platform" release.version platform.codename %}">
-      <strong>{{ platform.name }}</strong>
+      <strong>{{ platform|translate_field:"name" }}</strong>
       {% if platform.icon %}
         <img src="{{ platform.icon.url }}"/>
       {% endif %}
-      {{ platform.desc }}
+      {{ platform|translate_field:"desc" }}
     </a>
   </li>
 {% endif %}

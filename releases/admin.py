@@ -44,13 +44,31 @@ class ReleaseAdmin(AjaxSelectAdmin):
     list_display = ('version', 'parent', 'release_date', 'manager')
     list_filter = ('version', 'status')
 
+
+class PlatformTranslationsInline(StackedInline):
+    model = PlatformTranslation
+    extra = 1
+
+    def get_formset(self, request, obj=None, **kwargs):
+        return PlatformTranslationInlineFormSet
+
 class PlatformAdmin(AjaxSelectAdmin):
     form = PlatformForm
     list_display = ('__str__', 'codename', 'desc', 'manager')
+    inlines = (PlatformTranslationsInline,)
+
+
+class ReleasePlatformTranslationsInline(StackedInline):
+    model = ReleasePlatformTranslation
+    extra = 1
+
+    def get_formset(self, request, obj=None, **kwargs):
+        return ReleasePlatformTranslationInlineFormSet
 
 class ReleasePlatformAdmin(AjaxSelectAdmin):
     form = ReleasePlatformForm
     list_filter = ('release', 'release__status')
+    inlines = (ReleasePlatformTranslationsInline,)
 
 site.register(Release, ReleaseAdmin)
 site.register(Platform, PlatformAdmin)

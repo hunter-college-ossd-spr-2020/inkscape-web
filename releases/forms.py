@@ -29,8 +29,10 @@ from django.utils.translation import ugettext_lazy as _
 # an Inkscape Release upload.
 from resources.forms import ResourceBaseForm, Resource
 
-from .models import Release, Platform, ReleasePlatform, ReleaseTranslation
-
+from .models import (
+    Release, Platform, ReleasePlatform, ReleaseTranslation,
+    PlatformTranslation, ReleasePlatformTranslation,
+)
 
 class ResourceReleaseForm(ResourceBaseForm):
     form_priority = 10
@@ -128,12 +130,12 @@ PlatformInlineFormSet = inlineformset_factory(
 
 class TranslationForm(ModelForm):
     class Meta:
-        fields = ('language', 'translated_notes')
+        fields = ('language', 'release_notes')
 
     def __init__(self, *args, **kwargs):
         super(TranslationForm, self).__init__(*args, **kwargs)
-        if 'translated_notes' in self.fields:
-            self.fields['translated_notes'].widget = TextEditorWidget()
+        if 'release_notes' in self.fields:
+            self.fields['release_notes'].widget = TextEditorWidget()
 
 TranslationInlineFormSet = inlineformset_factory(
     Release, ReleaseTranslation, form=TranslationForm, extra=1,
@@ -156,4 +158,32 @@ class PlatformForm(QuerySetMixin, ModelForm):
         super(PlatformForm, self).__init__(*args, **kwargs)
         if 'instruct' in self.fields:
             self.fields['instruct'].widget = TextEditorWidget()
+
+
+class PlatformTranslationForm(ModelForm):
+    class Meta:
+        fields = ('language', 'name', 'desc', 'instruct')
+
+    def __init__(self, *args, **kwargs):
+        super(PlatformTranslationForm, self).__init__(*args, **kwargs)
+        if 'instruct' in self.fields:
+            self.fields['instruct'].widget = TextEditorWidget()
+
+PlatformTranslationInlineFormSet = inlineformset_factory(
+    Platform, PlatformTranslation, form=PlatformTranslationForm, extra=1,
+)
+
+
+class ReleasePlatformTranslationForm(ModelForm):
+    class Meta:
+        fields = ('language', 'howto', 'info')
+
+    def __init__(self, *args, **kwargs):
+        super(ReleasePlatformTranslationForm, self).__init__(*args, **kwargs)
+        if 'info' in self.fields:
+            self.fields['info'].widget = TextEditorWidget()
+
+ReleasePlatformTranslationInlineFormSet = inlineformset_factory(
+    ReleasePlatform, ReleasePlatformTranslation, form=ReleasePlatformTranslationForm, extra=1,
+)
 

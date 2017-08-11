@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static i18n %}
+{% load static i18n i18n_fields %}
 
 {% block title %}{{ object }}{% endblock %}
 
@@ -14,7 +14,7 @@
 {% block content %}
   <div>
     {% if object.platform.image %}
-      <img src="{{ object.platform.image.url }}" title="{{ object.platform }}" style="float: left;"/>
+      <img src="{{ object.platform.image.url }}" title="{{ object.platform|translate_field:"name" }}" style="float: left;"/>
     {% endif %}
     {% if object.resource or object.download %}
       <h1>{{ title }}</h1>
@@ -47,7 +47,7 @@
 
   <p>{% trans "This release has further instructions for installation. It is highly recommended that you read the instructions to make sure your installation will work and work well on your computer." %}</p>
 
-  <a href="{{ object.howto }}">{% trans "Instructions Page" %}</a>
+  <a href="{{ object|translate_field:"howto" }}">{% trans "Instructions Page" %}</a>
 
   {% endif %}
 
