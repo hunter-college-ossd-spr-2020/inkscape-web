@@ -305,7 +305,7 @@ class ReleasePlatform(Model):
     objects = PlatformQuerySet.as_manager()
 
     class Meta:
-        ordering = ('platform__name',)
+        ordering = ('platform__parent_id',)
 
     def __str__(self):
         return "%s - %s" % (self.release, self.platform)
