@@ -65,8 +65,12 @@ class DownloadRedirect(RedirectView):
     def get_os(self):
         # We would use user_agent parsing, but to fair, it's dreadful at os
         # giving enough data for very basic stats, but not for downloads.
-        ua = self.request.META.get('HTTP_USER_AGENT', '').lower()
+        return self._get_os(self.request.META.get('HTTP_USER_AGENT', ''))
 
+    @staticmethod
+    def _get_os(ua):
+        """Parse out the operating system from the user agent"""
+        ua = ua.lower().replace(')', ';')
         if 'windows' in ua:
             bits = 64 if 'wow64' in ua or 'win64' in ua else 32
             version = ua.split(' nt ', 1)[-1].split(';', 1)[0]
@@ -74,7 +78,7 @@ class DownloadRedirect(RedirectView):
         elif 'mac os x' in ua:
             version = ua.split('mac os x ')[-1].split(';')[0].replace('_', '.')
             # Limit to a single decimal version (e.g. 10.9.3 -> 10.9)
-            version = version.rsplit('.', version.count('.') - 1)[0]
+            version = version.rsplit('.', version.count('.') - 1)[0].strip()
             return ('Mac OS X', version, 64)
         elif 'linux' in ua:
             bits = ua.split('linux')[-1].split(';')[0]
