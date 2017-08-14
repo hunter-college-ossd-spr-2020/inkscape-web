@@ -145,7 +145,7 @@ def is_active_check(sender, instance, **kwargs):
         for session in Session.objects.all():
             # There is google-oauth sessions which aren't cleared here
             try:
-                if int(session.get_decoded().get(SESSION_KEY), -1) == instance.pk:
+                if int(session.get_decoded().get(SESSION_KEY, -1)) == instance.pk:
                     session.delete()
             except Exception:
                 pass
