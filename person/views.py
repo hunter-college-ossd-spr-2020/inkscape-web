@@ -163,7 +163,7 @@ class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, Redirect
                 messages.error(self.request, _("This user has not requested membership."))
 
         elif team.enrole in 'PT' and actor == user:
-            (obj, created) = team.update_membership(user, expired=None, requested=now())
+            (obj, created) = team.update_membership(user, expired=None, joined=None, requested=now())
             if created:
                 return messages.info(self.request, _("Membership Request Received."))
             elif obj.joined:

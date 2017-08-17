@@ -181,6 +181,14 @@ class TeamPeerTests(TeamBase, ExtraTestCase):
         self.assertNotAction('c_team', 'approve',
             msg='Can\'t add user to team', username='team_requester')
 
+    def test_07_leave_and_cant_rejoin(self):
+        self.assertAction('t_team', 'leave')
+        self.assertNotAction('t_team', 'join')
+
+    def test_08_leave_and_rejoin(self):
+        self.assertAction('o_team', 'leave')
+        self.assertAction('o_team', 'join')
+
 
 class TeamWatcherTests(TeamBase, ExtraTestCase):
     credentials = dict(username='team_watcher', password=True)
