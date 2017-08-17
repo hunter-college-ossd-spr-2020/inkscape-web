@@ -72,7 +72,8 @@ class Command(django.core.management.commands.loaddata.Command):
 
         for filename in (not_found - is_found):
             if filename not in GLOBAL_WARN: # _IsWarning_
-                self.stderr.write(" [skipping] Expected file: %s" % filepath)
+                if filename[0] != '/':
+                    self.stderr.write(" [skipping] Expected file: %s" % filepath)
                 GLOBAL_WARN.add(filename)
 
     def handle(self, *fixture_labels, **options):
