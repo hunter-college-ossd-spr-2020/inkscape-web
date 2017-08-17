@@ -1,9 +1,7 @@
 /* License: AGPLv3 or later (http://www.gnu.org/licenses/), Copyright 2015, Jabiertxof <jtx@jtx.marker.es> */
 .notes {
-  line-height: 1.3em;
   min-height: 200px;
   margin: 12px 0px;
-  line-height: 16px;
   border: 1px dotted #eee;
   background: #FFF none repeat scroll 0% 0%;
   overflow: hidden;

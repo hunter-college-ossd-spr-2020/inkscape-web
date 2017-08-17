@@ -670,8 +670,11 @@ div.toc ol,
   margin-bottom: 32px;
   background-color: white;
   background-image: linear-gradient(to bottom, #eee, #fff 100px);
-  line-height: 150%;
   min-height: 500px;
+}
+#content,
+#left-column {
+  line-height: 150%;
 }
 #content .summary {
   font-size: 12pt;
