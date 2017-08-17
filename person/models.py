@@ -273,11 +273,18 @@ class TeamMembership(Model):
         """Control the group of users (which grants permissions)"""
         super(TeamMembership, self).save(**kw)
         if self.id:
-            user_group = self.team.group.user_set
-            if not self.expired and self.joined:
-                user_group.add(self.user)
-            else:
-                user_group.remove(self.user)
+            self.update_group()
+
+    def update_group(self):
+        """
+        Makes sure the user is registered in the right group. Keeping
+        the team membership and the group permissions sync'ed.
+        """
+        user_group = self.team.group.user_set
+        if not self.expired and self.joined:
+            user_group.add(self.user)
+        else:
+            user_group.remove(self.user)
 
 
 class TeamQuerySet(QuerySet):
