@@ -3,7 +3,7 @@
 
 {"pk": 1, "model": "person.user", "fields":
   {"username": "admin", "first_name": "Testing", "last_name": "Admin",
-   "is_active": true, "is_superuser": true, "is_staff": true, "groups": [],
+   "is_active": true, "is_superuser": true, "is_admin": true, "groups": [],
    "password": "pbkdf2_sha256$10000$AozqrFhqhk7h$F9yWi4T6FsHx7hnf1WTe/pqsW3h4W8+XoS4L3lIBiQQ=",
    "email": "admin@testers.com",
    "bio": "BIO_ADMIN",
@@ -12,7 +12,7 @@
 }},
 {"pk": 2, "model": "person.user", "fields":
   {"username": "staff", "first_name": "Testing", "last_name": "Staff",
-   "is_active": true, "is_superuser": false, "is_staff": true, "groups": [ 1 ],
+   "is_active": true, "is_superuser": false, "is_admin": true, "groups": [ 1 ],
    "password": "pbkdf2_sha256$10000$AozqrFhqhk7h$F9yWi4T6FsHx7hnf1WTe/pqsW3h4W8+XoS4L3lIBiQQ=",
    "email": "staff@testers.com",
    "bio": "BIO_STAFF",
@@ -21,7 +21,7 @@
 }},
 {"pk": 3, "model": "person.user", "fields":
   {"username": "tester", "first_name": "Testing", "last_name": "User",
-   "is_active": true, "is_superuser": false, "is_staff": false, "groups": [ 2 ],
+   "is_active": true, "is_superuser": false, "is_admin": false, "groups": [ 2 ],
    "password": "pbkdf2_sha256$10000$AozqrFhqhk7h$F9yWi4T6FsHx7hnf1WTe/pqsW3h4W8+XoS4L3lIBiQQ=",
    "email": "user@testers.com",
    "bio": "BIO_USER", "photo": "test/user.svg"
