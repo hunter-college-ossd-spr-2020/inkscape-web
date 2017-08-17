@@ -67,7 +67,7 @@ class UserForm(ModelForm):
     class Meta:
         model = User
         exclude = ('user_permissions', 'is_superuser', 'groups', 'last_login',
-                   'is_staff', 'is_active', 'date_joined', 'visits', 'last_seen',
+                   'is_admin', 'is_active', 'date_joined', 'visits', 'last_seen',
                    'password')
 
     def fieldsets(self):

@@ -22,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.forms import *
 from django.contrib.admin import *
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Permission
 
 from ajax_select import make_ajax_field, make_ajax_form
@@ -52,8 +52,10 @@ class TeamAdmin(AjaxSelectAdmin):
 site.register(Team, TeamAdmin)
 
 
-class UserAdmin(UserAdmin):
+class UserAdmin(BaseUserAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'bio', 'ircnick', 'email')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_admin')
+    list_filter = ('is_admin', 'is_superuser', 'is_active', 'groups')
     readonly_fields = ('photo_preview',)
     # We make a copy of the fieldsets from the UserAdmin class so we can
     # customise it without any compelxity. Copied from Django 1.8.
@@ -62,7 +64,7 @@ class UserAdmin(UserAdmin):
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'language',
                               'bio', 'gpg_key', 'photo_preview', 'photo')}),
         (_('Groups and Permissions'),
-            {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups',
+            {'fields': ('is_active', 'is_admin', 'is_superuser', 'groups',
                 'user_permissions'), 'classes': ('collapse', 'close'),}),
         (_('Social Networks'),
             {'fields': ('ircnick', 'dauser', 'ocuser', 'tbruser'),

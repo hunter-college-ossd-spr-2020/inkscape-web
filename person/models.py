@@ -39,8 +39,19 @@ from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True)
 
+def WithoutFields(cls, *args):
+    """Rip an abstract model's field out, not needed in django>=1.10"""
+    if cls._meta.abstract:
+        remove_fields = [f for f in cls._meta.local_fields if f.name in args]
+        for f in remove_fields:
+            cls._meta.local_fields.remove(f)
+        return cls
+    else:
+        raise Exception("Not an abstract model")
+
+
 @python_2_unicode_compatible
-class User(AbstractUser):
+class User(WithoutFields(AbstractUser, 'is_staff')):
     bio   = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
     photo = ResizedImageField(_('Photograph (square)'), null=True, blank=True,
               upload_to='photos', max_width=190, max_height=190)
@@ -66,6 +77,14 @@ class User(AbstractUser):
     last_seen = DateTimeField(**null)
     visits    = IntegerField(default=0)
 
+    # Replaces is_staff from the parent abstractuser
+    is_admin = BooleanField(_('staff status'), default=False, db_column='is_staff',
+      help_text=_('Designates whether the user can log into this admin site.'))
+
+    @property
+    def is_staff(self):
+       return self.is_admin or self.has_perm('person.is_staff')
+
     def __str__(self):
         return self.name
 
@@ -79,6 +98,7 @@ class User(AbstractUser):
         permissions = [
             ("use_irc", _("IRC Chat Training Complete")),
             ("website_cla_agreed", _("Agree to Website License")),
+            ("is_staff", "Staff permissions are automatically granted."),
         ]
         db_table = 'auth_user'
 
