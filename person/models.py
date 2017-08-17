@@ -240,7 +240,11 @@ class TeamMembership(Model):
     title = CharField(_('Role Title'), max_length=128, **null)
     style = CharField(_('Role Style'), max_length=64, **null)
 
-    user_group = property(lambda self: self.team.group.user_set)
+    is_watcher = property(lambda self: not self.requested and not self.joined and not self.expired)
+    is_requester = property(lambda self: bool(self.requested) and not self.joined and not self.expired)
+    is_member = property(lambda self: self.joined and not self.expired)
+    is_expired = property(lambda self: bool(self.expired))
+
 
     class Meta:
         unique_together = ('team', 'user')
@@ -249,10 +253,11 @@ class TeamMembership(Model):
         """Control the group of users (which grants permissions)"""
         super(TeamMembership, self).save(**kw)
         if self.id:
+            user_group = self.team.group.user_set
             if not self.expired and self.joined:
-                self.user_group.add(self.user)
+                user_group.add(self.user)
             else:
-                self.user_group.remove(self.user)
+                user_group.remove(self.user)
 
 
 class TeamQuerySet(QuerySet):
@@ -312,7 +317,7 @@ class Team(Model):
     @property
     def peers(self):
         if self.enrole == 'P':
-            return list(self.members.all()) + [self.admin]
+            return [member.user for member in self.members] + [self.admin]
         return [self.admin]
 
     def get_absolute_url(self):
