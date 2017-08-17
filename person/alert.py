@@ -30,7 +30,8 @@ from alerts.base import AddedAlert
 from .models import Team
 
 
-class RequestToJoinAlert(AddedAlert):
+#class RequestToJoinAlert(AddedAlert):
+def _disabled():
     name     = _("Request to Join Team")
     desc     = _("A user has asked to join a team.")
     info     = _("When a user requests to join a team, but the team requires approval, a notification is sent to admins.")
@@ -53,5 +54,5 @@ class RequestToJoinAlert(AddedAlert):
 
     @property
     def m2m_sender(self):
-        return Team.requests
+        return Team.memberships
 
