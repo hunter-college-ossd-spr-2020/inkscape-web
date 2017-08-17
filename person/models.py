@@ -21,7 +21,6 @@
 import os
 from datetime import datetime
 
-
 from django.conf import settings
 from django.db.models import *
 from django.db.models.signals import m2m_changed, post_save
@@ -214,6 +213,48 @@ class TeamChatRoom(Model):
                     }
 
 
+class TeamMembership(Model):
+    """
+    A team membership exists when a user joins a team, existance doesn't mean
+    they are a member of that team, just that they were, are or will be one.
+
+    It functions as a record of when a user joined a team, when they should
+    expire from the team and what date time they did expire.
+
+    Joining a team sets the 'joined' datetime, which tags this user as
+    a current member. It will also unset the 'expired' field.
+
+    Leaving a team (manually or automatically) sets the 'expired' datetime
+    which tags this user as being a 'past' member.
+    """
+    team = ForeignKey('Team', related_name='memberships')
+    user = ForeignKey(User, related_name='memberships')
+
+    requested = DateTimeField(**null)
+    joined = DateTimeField(**null)
+    expired = DateTimeField(**null)
+
+    added_by = ForeignKey(User, related_name='has_added_users', **null)
+    removed_by = ForeignKey(User, related_name='has_removed_users', **null)
+
+    title = CharField(_('Role Title'), max_length=128, **null)
+    style = CharField(_('Role Style'), max_length=64, **null)
+
+    user_group = property(lambda self: self.team.group.user_set)
+
+    class Meta:
+        unique_together = ('team', 'user')
+
+    def save(self, **kw):
+        """Control the group of users (which grants permissions)"""
+        super(TeamMembership, self).save(**kw)
+        if self.id:
+            if not self.expired and self.joined:
+                self.user_group.add(self.user)
+            else:
+                self.user_group.remove(self.user)
+
+
 class TeamQuerySet(QuerySet):
     def breadcrumb_name(self):
         return _('Inkscape Community Teams')
@@ -234,8 +275,6 @@ class Team(Model):
 
     admin = ForeignKey(User, related_name='admin_teams', **null)
     group = AutoOneToOneField(Group, related_name='team')
-    watchers = ManyToManyField(User, related_name='watches', blank=True)
-    requests = ManyToManyField(User, related_name='team_requests', blank=True)
 
     name = CharField(_('Team Name'), max_length=32)
     slug = SlugField(_('Team URL Slug'), max_length=32)
@@ -263,10 +302,6 @@ class Team(Model):
                 .values('language', 'channel')
 
     @property
-    def members(self):
-        return self.group.user_set
-
-    @property
     def parent(self):
         return type(self).objects.all()
 
@@ -290,47 +325,43 @@ class Team(Model):
             self.slug = slugify(self.name)
         return super(Team, self).save(**kwargs)
 
+    def get_members(self, joined=True, expired=False, requested=None, **kw):
+        """
+        Returns a QuerySet containing the given memberships as they related to
+        this team. See convience functions below.
+
+        Default is to return all joined (real) members of a team.
+        """
+        kw['joined__isnull'] = not joined
+        kw['expired__isnull'] = not expired
+        if requested is not None:
+            kw['requested__isnull'] = not requested
+        return self.memberships.filter(**kw)
+
+    requests = property(lambda self: self.get_members(joined=False, requested=True))
+    watchers = property(lambda self: self.get_members(joined=False, requested=False))
+    members = property(lambda self: self.get_members(joined=True, expired=False))
+
+    old_requests = property(lambda self: self.get_members(joined=False, expired=True, requested=True))
+    old_watchers = property(lambda self: self.get_members(joined=False, expired=True, requested=False))
+    old_members = property(lambda self: self.get_members(joined=True, expired=True))
+
+    def has_member(self, user):
+        return self.members.filter(user_id=user.id).count() == 1
+
+    def has_requester(self, user):
+        return self.requests.filter(user_id=user.id).count() == 1
+
+    def has_watcher(self, user):
+        return self.watchers.filter(user_id=user.id).count() == 1
+
+    def update_membership(self, user, **kw):
+        """Generic update function for views to change membership"""
+        return self.memberships.update_or_create(user=user, defaults=kw)
+
     def __unicode__(self):
         return self.name
 
-
-def subscribe_to_list(action, team, user):
-    pass # Re-enable when we are using mailman3
-#    if action == 'pre_remove':
-#        team.mailman.unsubscribe(user.email)
-#    elif action == 'post_add':
-#        team.mailman.subscribe(user.email, user.first_name, user.last_name)
-
-def update_mailinglist(model, pk_set, instance, action, **kwargs):
-    """Subscribe member to mailing list if needed"""
-    pass
-#    if not hasattr(instance, 'team'):
-#        return
-#    team = instance.team
-#    team.mailman_users = []
-#    if not pk_set or not pk_set | {None}:
-#        return
-#    for user in model.objects.filter(pk__in=pk_set):
-#        if user.email and team.mailman:
-#            try:
-#                subscribe_to_list(action, team, user)
-#            except Exception:
-#                team.mailman_users.append(user.pk)
-#            finally:
-#                team.mailman_users.append(user)
-
-def exclusive_subscription(model, pk_set, instance, action, reverse=False, **kwargs):
-    if action == 'post_add' and reverse:
-        instance.team.watchers.remove(*list(pk_set))
-
-def exclusive_watching(model, pk_set, instance, action, reverse=False, **kwargs):
-    if action == 'post_add' and reverse:
-        instance.team.group.user_set.remove(*list(pk_set))
-
-m2m_changed.connect(update_mailinglist, sender=Team.watchers.through)
-m2m_changed.connect(update_mailinglist, sender=User.groups.through)
-m2m_changed.connect(exclusive_watching, sender=Team.watchers.through)
-m2m_changed.connect(exclusive_subscription, sender=User.groups.through)
 
 # Patch in the url so we get a better front end view from the admin.
 def get_team_url(self):

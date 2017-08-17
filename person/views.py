@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-
 #
-# Copyright 2014, Martin Owens <doctormo@gmail.com>
+# Copyright 2014-2017, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom 
 # code for the Inkscape project's django-based website.
@@ -23,9 +22,9 @@
 from django.views.generic import UpdateView, DetailView, ListView, RedirectView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import ugettext_lazy as _
-from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
 from .models import User, Team
 from .forms import UserForm, AgreeToClaForm, Permission
@@ -97,7 +96,7 @@ class TeamList(ListView):
 
 class TeamDetail(DetailView):
     slug_url_kwarg = 'team'
-    model          = Team
+    queryset = Team.objects.exclude(enrole='S')
 
 class TeamCharter(TeamDetail):
     title = _("Team Charter")
@@ -144,54 +143,59 @@ class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, Redirect
         return self.request.user
 
     def get_redirect_url(self, **kwargs):
-        self.action(self.get_object(), self.get_user(), self.request.user)
+        try:
+            self.action(self.get_object(), self.get_user(), self.request.user)
+        except (Team.DoesNotExist, User.DoesNotExist) as err:
+            raise Http404(str(err))
         return self.get_object().get_absolute_url()
 
     def action(self, team, user, actor=None):
-        if getattr(self, 'no', False):
-            messages.warning(self.request, _("User Request Removed."))
-
-        elif team.enrole == 'O' or \
+        if team.enrole == 'O' or \
           (actor == team.admin and team.enrole in 'PT') or \
-          (actor in team.members.all() and team.enrole == 'P'):
-            team.members.add(user)
-            if self.mailing_list_modified(team, user):
-                messages.info(self.request, _("Team membership added and user subscribed to mailing list."))
+          (team.has_member(actor) and team.enrole == 'P'):
+            if user == actor or team.has_requester(user):
+                if team.has_member(user):
+                    messages.error(self.request, _("You are already a member."))
+                else:
+                    team.update_membership(user, expired=None, joined=now(), added_by=actor)
+                    messages.info(self.request, _("Team membership sucessfully added."))
             else:
-                messages.info(self.request, _("Team membership sucessfully added."))
+                messages.error(self.request, _("This user has not requested membership."))
+
         elif team.enrole in 'PT' and actor == user:
-            if actor not in team.members.all():
-                team.requests.add(user)
+            (obj, created) = team.update_membership(user, expired=None, requested=now())
+            if created:
                 return messages.info(self.request, _("Membership Request Received."))
-            else:
+            elif obj.joined:
                 return messages.info(self.request, _("You are already a member of this team."))
+            else:
+                return messages.info(self.request, _("You have already requested a membership to this team."))
         else:
             return messages.error(self.request, _("Can't add user to team. (not allowed)"))
-        team.requests.remove(user)
-
-    def mailing_list_modified(self, team, user):
-        return user in getattr(team, 'mailman_users', [])
 
 class RemoveMember(AddMember):
     def action(self, team, user, actor=None):
         if actor in [user, team.admin]:
-            team.members.remove(user)
-            if self.mailing_list_modified(team, user):
-                return messages.info(self.request, _("User removed from team and mailing list."))
-            return messages.info(self.request, _("User removed from team."))
+            if team.has_member(user):
+                team.update_membership(user, expired=now(), removed_by=actor)
+                return messages.info(self.request, _("User removed from team."))
+            elif team.has_requester(user):
+                team.update_membership(user, expired=now(), removed_by=actor)
+                return messages.info(self.request, _("User removed from membership requests."))
+            elif team.has_watcher(user):
+                team.update_membership(user, expired=now(), removed_by=actor)
+                return messages.info(self.request, _("User removed from watching team."))
         messages.error(self.request, _("Cannot remove user from team. (not allowed)"))
 
 class WatchTeam(AddMember):
     def action(self, team, user, actor=None):
-        team.watchers.add(user)
-        if self.mailing_list_modified(team, user):
-            return messages.info(self.request, _("Now watching this team and subscribed to its mailing list."))
+        if team.enrole == 'S':
+            return messages.error(self.request, _("You can't watch this team."))
+        team.update_membership(user, expired=None, requested=None, joined=None)
         messages.info(self.request, _("Now watching this team."))
 
 class UnwatchTeam(AddMember):
     def action(self, team, user, actor=None):
-        team.watchers.remove(user)
-        if self.mailing_list_modified(team, user):
-            return messages.info(self.request, _("No longer watching this team or its mailing list."))
+        team.update_membership(user, expired=now(), removed_by=actor)
         messages.info(self.request, _("No longer watching this team."))
 

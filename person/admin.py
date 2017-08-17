@@ -48,7 +48,6 @@ class TeamAdmin(AjaxSelectAdmin):
     form = make_ajax_form(Team, {'admin': 'user'}, TeamForm, show_help_text=True)
     list_display = ('name', 'group', 'admin', 'enrole')
     inlines = (ChatRoomInline,)
-    readonly_fields = ('watchers', 'requests')
 
 site.register(Team, TeamAdmin)
 

@@ -1,0 +1,57 @@
+[
+{"pk": 35, "model": "auth.group", "fields": {"name": "Secret Team Group"}},
+{"pk": 36, "model": "auth.group", "fields": {"name": "Closed Team Group"}},
+{"pk": 37, "model": "auth.group", "fields": {"name": "Admin Team Group"}},
+{"pk": 38, "model": "auth.group", "fields": {"name": "Peer Team Group"}},
+{"pk": 39, "model": "auth.group", "fields": {"name": "Open Team Group"}},
+
+{"pk": 25, "model": "person.user", "fields": {"username": "team_admin"}},
+{"pk": 26, "model": "person.user", "fields": {
+    "username": "team_peer", "groups": [35, 36, 37, 38, 39]}},
+{"pk": 27, "model": "person.user", "fields": {"username": "team_watcher"}},
+{"pk": 28, "model": "person.user", "fields": {"username": "team_requester"}},
+
+  {"model": "person.team", "pk": 15, "fields": {
+"admin": 25, "group": 35, "name": "Atlanis", "slug": "s_team", "enrole": "S"}},
+  {"model": "person.team", "pk": 16, "fields": {
+"admin": 25, "group": 36, "name": "England", "slug": "c_team", "enrole": "C"}},
+  {"model": "person.team", "pk": 17, "fields": {
+"admin": 25, "group": 37, "name": "France", "slug": "t_team", "enrole": "T"}},
+  {"model": "person.team", "pk": 18, "fields": {
+"admin": 25, "group": 38, "name": "Spain", "slug": "p_team", "enrole": "P"}},
+  {"model": "person.team", "pk": 19, "fields": {
+"admin": 25, "group": 39, "name": "Iceland", "slug": "o_team", "enrole": "O"}},
+
+  {"model": "person.teammembership", "fields":
+      {"user": 26, "team": 15, "joined": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 26, "team": 16, "joined": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 26, "team": 17, "joined": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 26, "team": 18, "joined": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 26, "team": 19, "joined": "2017-08-16T01:44:09.300Z"}},
+
+  {"model": "person.teammembership", "fields":
+      {"user": 27, "team": 15}},
+  {"model": "person.teammembership", "fields":
+      {"user": 27, "team": 16}},
+  {"model": "person.teammembership", "fields":
+      {"user": 27, "team": 17}},
+  {"model": "person.teammembership", "fields":
+      {"user": 27, "team": 18}},
+  {"model": "person.teammembership", "fields":
+      {"user": 27, "team": 19}},
+
+  {"model": "person.teammembership", "fields":
+      {"user": 28, "team": 15, "requested": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 28, "team": 16, "requested": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 28, "team": 17, "requested": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 28, "team": 18, "requested": "2017-08-16T01:44:09.300Z"}},
+  {"model": "person.teammembership", "fields":
+      {"user": 28, "team": 19, "requested": "2017-08-16T01:44:09.300Z"}}
+]

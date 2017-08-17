@@ -76,10 +76,12 @@
           <h2>{% trans "Join Requests" %}</h2>
           <ul>
           {% for user in object.requests.all %}     
-            <li><label><a href="{{ user.get_absolute_url }}" title="{% trans "Visit profile" %}">{{ user }}</a></label>
+            {% if user.username %}
+              <li><label><a href="{{ user.get_absolute_url }}" title="{% trans "Visit profile" %}">{{ user }}</a></label>
               <span><a href="{% url "team.approve" object.slug user.username %}">&#10003;</a>
                     <a href="{% url "team.disapprove" object.slug user.username %}" class="no">&#10006;</a></span>
-            </li>
+              </li>
+            {% endif %}
           {% empty %}
             <p>None</p>
           {% endfor %}
@@ -106,11 +108,13 @@
           <a class="link" href="{{ user.get_absolute_url }}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
           <p title="Full User Details"><a href="{{ user.get_absolute_url }}">{% if user == object.admin %} *{% endif %} {{ user }}</a></p>
           {% if user == request.user or object.admin == request.user %}
-            <p class="minitabs">
-              <a href="{% url "team.remove" object.slug user.username %}">
-                <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Remove Membership" %}">
-              </a>
-            </p>
+            {% if user.username %}
+              <p class="minitabs">
+                <a href="{% url "team.remove" object.slug user.username %}">
+                  <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Remove Membership" %}">
+                </a>
+              </p>
+            {% endif %}
           {% endif %}
         </div>
       {% endfor %}
