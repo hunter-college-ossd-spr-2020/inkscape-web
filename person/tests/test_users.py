@@ -22,6 +22,8 @@ Test team functions
 """
 from autotest.base import ExtraTestCase
 
+from django.contrib.auth.models import Permission
+
 from ..models import User
 from django.contrib.sessions.models import Session
 
@@ -47,4 +49,17 @@ class UserTests(ExtraTestCase):
         self.assertEqual(Session.objects.all().count(), 0)
         response = self.assertGet('admin:index', status=302, follow=False)
 
+    def test_23_staff_permission(self):
+        """Having the staff permission grants staff access"""
+        user = User.objects.get(username='staff')
+        self.assertFalse(user.has_perm('person.is_staff'))
+        self.assertTrue(user.is_admin)
+        self.assertTrue(user.is_staff)
+
+        user = User.objects.get(username='tester')
+        user.user_permissions.add(Permission.objects.get(codename='is_staff'))
+
+        self.assertTrue(user.has_perm('person.is_staff'))
+        self.assertFalse(user.is_admin)
+        self.assertTrue(user.is_staff)
 
