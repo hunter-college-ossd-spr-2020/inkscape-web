@@ -108,16 +108,21 @@
        {% with user=member.user %}
         <div class="galleryitem">
           <a class="link" href="{{ user.get_absolute_url }}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
-          <p title="Full User Details"><a href="{{ user.get_absolute_url }}">{% if user == object.admin %} *{% endif %} {{ user }}</a></p>
-          {% if user == request.user or object.admin == request.user %}
-            {% if user.username %}
-              <p class="minitabs">
+          <p title="Full User Details"><a href="{{ user.get_absolute_url }}">{{ user }}</a></p>
+          <div class="minitabs">
+            {% if member.title %}
+              {% with text=member.title style=member.style %}
+                {% include "ribbon.html" %}
+              {% endwith %}
+            {% endif %}
+            {% if user == request.user or object.admin == request.user %}
+              {% if user.username %}
                 <a href="{% url "team.remove" object.slug user.username %}">
                   <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Remove Membership" %}">
                 </a>
-              </p>
+              {% endif %}
             {% endif %}
-          {% endif %}
+          </div>
         </div>
        {% endwith %}
       {% endfor %}

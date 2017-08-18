@@ -157,7 +157,7 @@
 }
 .galleryitem span.ribbon p {
   position: absolute;
-  top: -27px;
+  top: -29px;
   width: 165px;
   text-align: center;
   color: white;
@@ -169,6 +169,12 @@ svg.ribbon path.part_c { fill:#494949; }
 .winner svg.ribbon path.part_a { fill:#e1b000; }
 .winner svg.ribbon path.part_b { fill:#fbc400; }
 .winner svg.ribbon path.part_c { fill:#a97610; }
+.purple svg.ribbon path.part_a { fill:#614266; }
+.purple svg.ribbon path.part_b { fill:#845a8b; }
+.purple svg.ribbon path.part_c { fill:#413044; }
+.blue svg.ribbon path.part_a { fill:#2e5a92; }
+.blue svg.ribbon path.part_b { fill:#3a71b8; }
+.blue svg.ribbon path.part_c { fill:#243c5a; }
 .galleryitem .minitabs .blank {
   width: 50px;
   text-align: center;
