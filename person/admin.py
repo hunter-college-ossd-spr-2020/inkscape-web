@@ -76,3 +76,14 @@ class UserAdmin(BaseUserAdmin):
 
 site.register(User, UserAdmin)
 
+class MembershipAdmin(AjaxSelectAdmin):
+    readonly_fields = ('team', 'user', 'added_by', 'removed_by')
+    list_filter = ('joined', 'requested', 'expired', 'team')
+    list_display = ('repr', 'requested', 'joined', 'expired', 'title')
+
+    def repr(self, obj):
+        return "%s membership of %s" % (unicode(obj.user), unicode(obj.team))
+
+
+site.register(TeamMembership, MembershipAdmin)
+
