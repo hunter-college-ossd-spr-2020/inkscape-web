@@ -372,13 +372,13 @@ class Team(Model):
             kw['requested__isnull'] = not requested
         return self.memberships.filter(**kw)
 
-    requests = property(lambda self: self.get_members(joined=False, requested=True))
+    requests = property(lambda self: self.get_members(joined=False, requested=True).order_by('-requested'))
     watchers = property(lambda self: self.get_members(joined=False, requested=False))
-    members = property(lambda self: self.get_members(joined=True, expired=False))
+    members = property(lambda self: self.get_members(joined=True, expired=False).order_by('joined'))
 
-    old_requests = property(lambda self: self.get_members(joined=False, expired=True, requested=True))
+    old_requests = property(lambda self: self.get_members(joined=False, expired=True, requested=True).order_by('-expired'))
     old_watchers = property(lambda self: self.get_members(joined=False, expired=True, requested=False))
-    old_members = property(lambda self: self.get_members(joined=True, expired=True))
+    old_members = property(lambda self: self.get_members(joined=True, expired=True).order_by('-expired'))
 
     def has_member(self, user):
         return self.members.filter(user_id=user.id).count() == 1
@@ -392,6 +392,7 @@ class Team(Model):
     def update_membership(self, user, **kw):
         """Generic update function for views to change membership"""
         obj, created = self.memberships.update_or_create(user=user, defaults=kw)
+        return obj, created
 
     def expire_if_needed(self, dt):
 	delta = timedelta(days=self.auto_expire)
