@@ -265,7 +265,6 @@ class TeamMembership(Model):
     is_member = property(lambda self: self.joined and not self.expired)
     is_expired = property(lambda self: bool(self.expired))
 
-
     class Meta:
         unique_together = ('team', 'user')
 
@@ -321,6 +320,9 @@ class Team(Model):
     mailman = CharField(_('Email List'), max_length=32, null=True, blank=True,
         help_text='The name of the pre-configured mailing list for this team')
     enrole = CharField(_('Enrollment'), max_length=1, default='O', choices=ENROLES)
+
+    auto_expire = IntegerField(default=0,
+        help_text=_('Number of days that members are allowed to be a member.'))
 
     localized_fields = ('name', 'intro', 'desc',  'charter', 'side_bar')
     objects = TeamQuerySet.as_manager()
@@ -389,7 +391,21 @@ class Team(Model):
 
     def update_membership(self, user, **kw):
         """Generic update function for views to change membership"""
-        return self.memberships.update_or_create(user=user, defaults=kw)
+        obj, created = self.memberships.update_or_create(user=user, defaults=kw)
+
+    def expire_if_needed(self, dt):
+	delta = timedelta(days=self.auto_expire)
+	for membership in team.members:
+	    if membership.joined + delta < now():
+                self.update_membership(membership.user, expired=now(), removed_by=None)
+                yield membership.user
+
+    def warn_if_needed(self, dt, days):
+        delta = timedelta(days=team.auto_expire - days)
+	for membership in team.members:
+	    if (membership.joined + warn_delta).date == now().date:
+		# XXX Send warning email
+                yield membership.user
 
     def __unicode__(self):
         return self.name
