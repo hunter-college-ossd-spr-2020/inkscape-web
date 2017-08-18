@@ -26,16 +26,17 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import get_language
 from django.db.models.signals import m2m_changed
 
-from alerts.base import AddedAlert
-from .models import Team
+from alerts.base import BaseAlert
+from .models import Team, TeamMembership
 
 
-#class RequestToJoinAlert(AddedAlert):
-def _disabled():
+class RequestToJoinAlert(BaseAlert):
     name     = _("Request to Join Team")
     desc     = _("A user has asked to join a team.")
     info     = _("When a user requests to join a team, but the team requires approval, a notification is sent to admins.")
 
+    signal        = None
+    sender        = TeamMembership
     subject       = "{% trans 'Team request:' %} {{ instance.team }}"
     email_subject = "{% trans 'Team request:' %} {{ instance.team }}"
     object_name   = "Team '{{ object.team }}' join request"
@@ -44,15 +45,19 @@ def _disabled():
     subscribe_any = False
     subscribe_own = True
 
-    # XXX In the future it'd be nice to show the setting if the user is a team
-    # admin or peer and thus able to get a message from the system.
-    show_settings = False
+    def show_settings_now(self, user):
+        """
+        Show settings if the user is an admin for any team or is a peer in a
+        peer enrolement team.
+        """
+        if user.admin_teams.count() > 0:
+            return True
+        for membership in user.memberships.objects.filter(team__enrole='P'):
+            if membership.joined and not membership.expired:
+                return True
+        return False
 
     def get_alert_users(self, instance):
         """Returns either admin or a list of peers depending on enrollment"""
         return instance.team.peers
-
-    @property
-    def m2m_sender(self):
-        return Team.memberships
 
