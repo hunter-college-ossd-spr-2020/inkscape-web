@@ -20,7 +20,10 @@
 """
 Test team functions
 """
+from datetime import timedelta
 from autotest.base import ExtraTestCase
+
+from django.utils.timezone import now
 
 from ..models import Team, Group, User
 
@@ -131,7 +134,6 @@ class TeamTests(TeamBase, ExtraTestCase):
         """Random other user can not remove from team"""
         self.assertNotAction('o_team', 'remove', msg='not-removed', username='team_peer')
 
-
 class TeamAdminTests(TeamBase, ExtraTestCase):
     credentials = dict(username='team_admin', password=True)
 
@@ -188,6 +190,24 @@ class TeamPeerTests(TeamBase, ExtraTestCase):
     def test_08_leave_and_rejoin(self):
         self.assertAction('o_team', 'leave')
         self.assertAction('o_team', 'join')
+
+    def test_09_expires_future(self):
+        """An expiration in the future"""
+        membership = self.user.memberships.get(team__slug='o_team')
+        self.assertTrue(membership.expired is None)
+        self.assertEqual(membership.team.members.count(), 1)
+        membership.expired = now() + timedelta(days=1)
+        membership.save()
+        self.assertFalse(membership.expired is None)
+        self.assertFalse(membership.is_expired)
+        self.assertEqual(membership.team.members.count(), 1)
+        self.user.save()
+        self.assertIn(self.user, membership.team.group.user_set.all())
+        membership.expired = now() - timedelta(days=1)
+        membership.save()
+        self.assertTrue(membership.is_expired)
+        self.assertEqual(membership.team.members.count(), 0)
+        self.assertNotIn(self.user, membership.team.group.user_set.all())
 
 
 class TeamWatcherTests(TeamBase, ExtraTestCase):

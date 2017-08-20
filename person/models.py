@@ -260,10 +260,13 @@ class TeamMembership(Model):
     title = CharField(_('Role Title'), max_length=128, **null)
     style = CharField(_('Role Style'), max_length=64, **null)
 
-    is_watcher = property(lambda self: not self.requested and not self.joined and not self.expired)
-    is_requester = property(lambda self: bool(self.requested) and not self.joined and not self.expired)
-    is_member = property(lambda self: self.joined and not self.expired)
-    is_expired = property(lambda self: bool(self.expired))
+    is_watcher = property(lambda self: not self.requested and not self.joined and not self.is_expired)
+    is_requester = property(lambda self: bool(self.requested) and not self.joined and not self.is_expired)
+    is_member = property(lambda self: self.joined and not self.is_expired)
+
+    @property
+    def is_expired(self):
+        return not (self.expired is None or self.expired > timezone.now())
 
     class Meta:
         unique_together = ('team', 'user')
@@ -280,7 +283,7 @@ class TeamMembership(Model):
         the team membership and the group permissions sync'ed.
         """
         user_group = self.team.group.user_set
-        if not self.expired and self.joined:
+        if not self.is_expired and self.joined:
             user_group.add(self.user)
         else:
             user_group.remove(self.user)
@@ -366,11 +369,16 @@ class Team(Model):
 
         Default is to return all joined (real) members of a team.
         """
-        kw['joined__isnull'] = not joined
-        kw['expired__isnull'] = not expired
+        q = Q()
+        if expired is True:
+            q &= Q(expired__lt=timezone.now())
+        elif expired is False:
+            q &= (Q(expired__isnull=True) | Q(expired__gt=timezone.now()))
         if requested is not None:
-            kw['requested__isnull'] = not requested
-        return self.memberships.filter(**kw)
+            q &= Q(requested__isnull=not requested)
+        if joined is not None:
+            q &= Q(joined__isnull=not joined)
+        return self.memberships.filter(q)
 
     requests = property(lambda self: self.get_members(joined=False, requested=True).order_by('-requested'))
     watchers = property(lambda self: self.get_members(joined=False, requested=False))
