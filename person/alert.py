@@ -52,7 +52,7 @@ class RequestToJoinAlert(BaseAlert):
         """
         if user.admin_teams.count() > 0:
             return True
-        for membership in user.memberships.objects.filter(team__enrole='P'):
+        for membership in user.memberships.filter(team__enrole='P'):
             if membership.joined and not membership.expired:
                 return True
         return False
