@@ -137,6 +137,10 @@
   position: absolute;
   text-align: right;
   margin-top: 2px;
+  z-index: -1;
+}
+.galleryitem:hover .minitabs {
+  z-index: unset;
 }
 .galleryitem .minitabs > img,
 .galleryitem .minitabs > a {
