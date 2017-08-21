@@ -30,6 +30,9 @@ from django.core.urlresolvers import reverse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+
 from .models import Resource, Gallery, Model, Group, Q, QuerySet
 
 class NotAllowed(KeyError):
@@ -79,6 +82,7 @@ class OwnerUpdateMixin(object):
     def get_group(self):
         return getattr(self.get_object(), 'group', None)
 
+    @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         """ Making sure that only authors can update stories """
         if not self.is_allowed():
