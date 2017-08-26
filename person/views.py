@@ -147,7 +147,8 @@ class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, Redirect
             self.action(self.get_object(), self.get_user(), self.request.user)
         except (Team.DoesNotExist, User.DoesNotExist) as err:
             raise Http404(str(err))
-        return self.get_object().get_absolute_url()
+        next_url = self.get_object().get_absolute_url()
+        return self.request.GET.get('next', next_url)
 
     def action(self, team, user, actor=None):
         if team.enrole == 'O' or \
