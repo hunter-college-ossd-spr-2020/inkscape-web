@@ -304,6 +304,7 @@ class Team(Model):
       ('T', _('Admin Approval')),
       ('C', _('Closed')),
       ('S', _('Secret')),
+      ('E', _('Elected')),
     )
     ICON = os.path.join(settings.STATIC_URL, 'images', 'team.svg')
 
