@@ -88,6 +88,19 @@
           </ul>
         {% endif %}
       </ul>
+      {% if object.enrole == 'E' %}
+        <h2>Elections</h2>
+        <ul>
+          {% for election in object.elections.all %}
+            <li>
+              <a href="{{ election.get_absolute_url }}">
+                <label>{{ election.voting_from.year }}</label>
+                <span>{{ election.state.name }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
   {% endwith %}
 {% endblock %}
