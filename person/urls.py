@@ -53,6 +53,8 @@ TEAM_URLS = url_tree(r'^\*(?P<team>[^\/]+)', 'person.views',
   url(r'^/chat/$',           ChatWithTeam(),     name='team.chat'),
   url(r'^/chat/logs/$',      ChatLogs(),         name='team.chatlogs'),
   url(r'^/charter/$',        TeamCharter(),      name='team.charter'),
+
+  url(r'^/elections/', include('elections.urls', namespace='elections')),
   
   url_tree(r'^/(?P<username>[^\/]+)/', 'person.views',
     url(r'^remove/$',        RemoveMember(),      name='team.remove'),

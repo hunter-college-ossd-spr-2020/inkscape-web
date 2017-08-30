@@ -249,6 +249,7 @@ class TeamMembership(Model):
     """
     team = ForeignKey('Team', related_name='memberships')
     user = ForeignKey(User, related_name='memberships')
+    email = CharField(max_length=256, **null)
 
     requested = DateTimeField(**null)
     joined = DateTimeField(**null)
