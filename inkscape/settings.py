@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'autotest',
     'inkscape', # Goes first
     'person', # Goes next
+    'elections',
     'django.contrib.sites',
     'django.contrib.auth',
     'registration',

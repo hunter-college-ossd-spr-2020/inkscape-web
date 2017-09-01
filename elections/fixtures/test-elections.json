@@ -1,0 +1,21 @@
+[
+{
+  "fields": {
+    "status": ".",
+    "log": null,
+    "places": 1,
+    "called_by": 1,
+    "for_team": 20,
+    "constituents": 21,
+    "notes": "Lore was wrong to kidnap data",
+    "called_on": "2010-12-01T01:01:00.037Z",
+    "invite_from": "2011-01-01",
+    "accept_from": "2011-02-01",
+    "voting_from": "2011-03-01",
+    "finish_on": "2011-04-01",
+    "slug": "test-election-2011"
+  },
+  "model": "elections.election",
+  "pk": 1
+}
+]

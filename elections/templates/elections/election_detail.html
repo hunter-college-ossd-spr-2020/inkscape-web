@@ -1,0 +1,226 @@
+{% extends 'person/base.html' %}
+{% load i18n extras static memberships pagination_tags %}
+
+{% block title %}{{ object.name }}{% endblock %} 
+{% block "css" %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/gallery.css" %}"/>
+<style>
+  .galleryitem span.vote {
+    pointer-events: none;
+    position: absolute;
+    margin-top: 2px;
+  }
+  .galleryitem span.vote p {
+    font-size: 160%;
+    position: relative;
+    top: -222px;
+    left: 30px;
+    border-radius: 22px;
+    width: 32px;
+    height: 29px;
+    padding-top: 3px;
+    border: 2px solid #c00;
+    background-color: #a40000;
+    color: white;
+    font-weight: bold;
+    line-height: 110%;
+  }
+</style>
+{% endblock %}
+
+{% block "js" %}
+  <script type="text/javascript" src="{% static "js/sortable.js" %}"></script>
+  {{ block.super }}
+{% endblock %}
+
+{% block "profile" %}
+  <img id="photo" src="{{ object.for_team.icon.url }}"/>
+{% endblock %}
+
+{% block "side" %}
+  {% with constituent=election.constituents|membership:request.user state=object.state %}
+
+      <h2>{% trans "Election Official" %}</h2>
+      <ul>
+        <li>
+          <a href="{{ object.called_by.get_absolute_url }}">
+            {{ object.called_by }}
+          </a>
+        </li>
+      </ul>
+      <h2>{% trans "Information" %}</h2>
+      <ul>
+        <li title="{% trans "Number of people to elect in with this ballot." %}">
+          <a>
+            <label>{% trans "Places" %}</label>
+            <span>{{ object.places|default:1 }}</span>
+          </a>
+        </li>
+        <li>
+          <a title="{% trans "Number of candidates accepted vs. invited" %}">
+            <label>{% trans "Candidates" %}</label>
+            {% if not object.status in 'VF' %}
+              <span>{{ object.candidates.count }}/{{ object.invites.count }}</span>
+            {% else %}
+              <span>{{ object.candidates.count }}</span>
+            {% endif %}
+          </a>
+        </li>
+        <li><a title="{% trans "Number of team members who have voted vs. those that can vote in this election." %}">
+          <label>{% trans "Constituents" %}</label>
+          {% if object.status in 'VF' %}
+            <span>{{ object.voters.count }}/{{ object.ballots.count }}</span>
+          {% else %}
+            <span>{{ object.constituents.members.count }}</span>
+          {% endif %}
+        </a></li>
+      </ul>
+      <h2>{% trans "Process" %}</h2>
+      <ul class="election-process" style="white-space: nowrap;">
+        {% for step in state.process %}
+          <li class="{% if state.index == step.index %}subtle active{% elif state.index < step.index %}subtle{% endif %}" title="{{ step.desc }}">
+            <a>
+              <label>{{ step.name }}</label>
+              {% if state.index > step.index %}
+                <span>&#10004;</span>
+              {% elif state.index != step.index %}
+                <span>{% blocktrans with days=step.days %}In {{ days }} days{% endblocktrans %}</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endwith %}
+{% endblock %}
+
+{% block "content" %}
+  {% with constituent=election.constituents|membership:request.user state=object.state %}
+  <h1>{{ object.state.desc }}</h1>
+
+  {% if state.code == '.' %}
+    <p>{% blocktrans with days=state.N.days %}This election is currently being planned. Please come back in {{ days }} days for the nomination process when you will be able to invite members to stand in the election.{% endblocktrans %}<p>
+  {% elif state.code == 'N' %}
+  <p>{% blocktrans with team=object.constituents link=object.constituents.get_absolute_url days=state.S.days %}The <a href="{{ link }}">{{ team }} team</a> can now invite members to stand as candidates in this election. You have {{ days }} days to nominate the people who you think would serve the team best.{% endblocktrans %}<p>
+    {% if constituent.is_member %}
+      {% if invitation %}
+        <strong>{% trans "Your Invitation sent to:" %} </strong> {{ invitation.user.username }} {% if invitation.accepted %}(accepted){% elif invitation.responded %}(rejected){% endif %}</em>
+      {% else %}
+        <p>{% blocktrans %}Type in the username or email address of the person who you would like to invite. If the user doesn't already exist on the website, an invitation will be sent out regardless so use this form with care. You can invite <strong>one person only</strong>, so try and prioritise who you want to stand in the election.{% endblocktrans %}</p>
+
+        <form method="GET" action="">
+          <input type="text" name="q" value="" placeholder="Email Address or Username"/>
+          <button type="submit" class="btn btn-primary">{% trans "Search for Member" %}</button>
+        </form>
+      {% endif %}
+
+      {% if search and search.count > 0 %}
+        <h3>Search Results</h3>
+        <p>{% trans "Please select the user you want to invite. Once invited, you will not be able to invite again." %}<p>
+        <div class="photos"/>
+          {% for user in search %}
+            <div class="galleryitem">
+              <a class="link" href="{% url "elections:invite" election.for_team.slug election.slug user.pk %}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="{% trans "Send Invitation" %}"/></a>
+              <p title="{% trans "Send Invitation" %}"><a href="{{ user.get_absolute_url }}">{% blocktrans %}Invite {{ user }}{% endblocktrans %}</a></p>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% elif request.user.is_authenticated %}
+      <a href="{% url "team.join" object.constituents.slug %}?next={{ request.path }}" class="btn btn-default">{% trans "Join Team to Send Invitation" %}</a>
+    {% else %}
+      <a href="{% url "auth_login" %}?next={{ request.path }}" class="btn btn-danger">{% trans "Login to Send Invitation" %}</a>
+    {% endif %}
+  {% elif state.code == 'S' %}
+    <p>{% blocktrans with days=state.V.days %}Candidates who have been invited to stand in this election have {{ days }} days to accept or reject their invitation before votin begins.{% endblocktrans %}</p>
+  {% elif state.code == 'V' %}
+  <p>{% blocktrans with team=object.for_team days=state.F.days %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ days }} days</strong> to cast your vote for this election.{% endblocktrans %}</p>
+  <p>{% trans "Each candidate should be placed in rank order from first to last as you would prefer to have them. If your first choice does not get enough votes then your second choice will be selected. This process continues until there are only number of winners plus one candidates remaining." %}</p>
+  <p>{% trans "Drag candidates around to number them, if you move a candidate to the end their rank will be removed. You do not have to rank all candidates if you don't want to." %}</p>
+    {% if ballot %}
+      <form method="post" action="{% url "elections:vote" team=election.for_team.slug slug=object.slug hash=ballot.slug %}">
+      {% csrf_token %}
+    {% endif %}
+  {% endif %}
+
+  {% if object.candidates.count > 0 %}
+    {% if state.code in 'NS' %}
+      <h2>{% trans "Candidates so far" %}</h2>
+    {% elif state.code == 'V' %}
+    <h2>{% trans "Your Ballot Paper" %}{% if ballot.responded %} ({% trans "Saved" %}){% endif %}</h2>
+    {% endif %}
+    <noscript>
+      <p>{% trans "You have javascript switched off (or unavailable), please type in the ranking number 1 to n manually. Do not repeat a number of you will get an error." %}</p>
+    </noscript>
+    <div class="photos" id="ballot-block"/>
+      {% for candidate, vote in candidates %}
+       {% with user=candidate.user %}
+         <div class="galleryitem" id="item_{{ candidate.pk }}">
+           <input type="text" name="vote_{{ candidate.pk }}" id="item_{{ candidate.pk }}_in" value="{{ vote.rank|default:'' }}" placeholder="Rank"/>
+           <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+           <p>{{ user }}</p>
+           <span class="vote"><p id="item_{{ candidate.pk }}_num">1</p></span>
+        </div>
+       {% endwith %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if state.code == 'V' and ballot %}
+    <button type="submit" class="btn btn-primary">{% if ballot.responded %}{% trans "Update Ballot" %}{% else %}{% trans "Submit Ballot" %}{% endif %}</button>
+    <script>
+      $('.galleryitem input').attr('type', 'hidden');
+      var ballot = document.getElementById("ballot-block");
+      var len = ballot.children.length;
+      function update_num() {
+        for(var i = 0; i < len; i++) {
+            var id = ballot.children[i].id;
+            var el = document.getElementById(id+'_in');
+            var num = document.getElementById(id+'_num');
+            if(el.value == '') {
+              num.setAttribute('style', 'display: none;');
+              num.innerText = 'X';
+            } else {
+              num.setAttribute('style', 'display: block;');
+              num.innerText = el.value;
+            }
+
+        }
+      }
+      update_num();
+      Sortable.create(ballot, {
+        onUpdate: function (evt){
+          var item = evt.item;
+          var item_i = -1;
+          for (var i = 0; i < len; i++) {
+            var id = ballot.children[i].id;
+            if(evt.item.id == id) {
+              item_i = i;
+              // Set the value to NONE if we moved this item to the end.
+              if(len == item_i + 1) {
+                document.getElementById(id+'_in').value = '';
+              }
+            }
+          }
+          for (var i = 0; i < len; i++) {
+            var id = ballot.children[i].id;
+            var el = document.getElementById(id+'_in');
+            if(el.value == '' && (item_i < i || item_i + 1 == len)) {
+              break;
+            }
+            el.value = i + 1;
+          }
+          update_num();
+        },
+      });
+    </script>
+    </form>
+  {% endif %}
+  <hr/>
+  <p>{% blocktrans with link=object.called_by.get_absolute_url official=object.called_by %}If you have any questions, please contact the election Election Official '<a href="{{ link }}">{{ official }}</a>'.{% endblocktrans %}</p>
+
+  <br/>
+
+  {% endwith %}
+{% endblock %}
+

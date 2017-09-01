@@ -1,0 +1,10 @@
+{% load i18n %}
+{% with team=instance.constituents %}
+{% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
+ 
+{% blocktrans %}The election for {{ for_team }} is now concluded.{% blocktrans %}
+
+XXX Add results to email here.
+
+----
+{% trans "Full Results:" %} {{site}}{{ instance.get_absolute_url }}
