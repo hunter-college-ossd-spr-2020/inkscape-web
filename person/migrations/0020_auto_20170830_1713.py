@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='teammembership',
+            model_name='team',
             name='email',
             field=models.CharField(max_length=256, null=True, blank=True),
         ),

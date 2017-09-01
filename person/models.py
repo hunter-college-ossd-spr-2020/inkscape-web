@@ -249,7 +249,6 @@ class TeamMembership(Model):
     """
     team = ForeignKey('Team', related_name='memberships')
     user = ForeignKey(User, related_name='memberships')
-    email = CharField(max_length=256, **null)
 
     requested = DateTimeField(**null)
     joined = DateTimeField(**null)
@@ -311,6 +310,7 @@ class Team(Model):
 
     admin = ForeignKey(User, related_name='admin_teams', **null)
     group = AutoOneToOneField(Group, related_name='team')
+    email = CharField(max_length=256, **null)
 
     name = CharField(_('Team Name'), max_length=32)
     slug = SlugField(_('Team URL Slug'), max_length=32)
