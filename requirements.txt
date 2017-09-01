@@ -20,7 +20,6 @@ html5lib<0.99999999
 # Web libraries
 python-openid==2.2.4
 easy-thumbnails==2.0.1
-diff-match-patch==20110725.1
 
 # Django libraries
 Django==1.8.17
@@ -70,3 +69,4 @@ cmsplugin-search==0.7.3
 
 -e git://github.com/doctormo/easyirc.git#egg=easyirc
 
+python-vote-core>=20120423.0
