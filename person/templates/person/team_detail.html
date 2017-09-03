@@ -42,6 +42,9 @@
       {% elif object.enrole == 'C' %}
         <a class="btn" disabled title=
           "{% trans "This team uses another mode of determining its members." %}">{% trans "Membership Closed" %}</a>
+      {% elif object.enrole == 'E' %}
+        <a class="btn" disabled title=
+          "{% trans "This team uses an election to pick it's members." %}">{% trans "Elected Membership" %}</a>
       {% endif %}
     {% endif %}
 
@@ -89,13 +92,19 @@
         {% endif %}
       </ul>
       {% if object.enrole == 'E' %}
-        <h2>Elections</h2>
+        <h2>{% trans "Elections" %}</h2>
         <ul>
           {% for election in object.elections.all %}
             <li>
               <a href="{{ election.get_absolute_url }}">
                 <label>{{ election.voting_from.year }}</label>
                 <span>{{ election.state.name }}</span>
+              </a>
+            </li>
+          {% empty %}
+            <li>
+              <a href="{% url "elections:list" object.slug %}">
+                <label>{% trans "All Elections" %}</label>
               </a>
             </li>
           {% endfor %}
