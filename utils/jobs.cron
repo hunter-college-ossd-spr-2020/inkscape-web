@@ -17,3 +17,6 @@
 0 6 * * 6 /var/www/.../utils/manage batch_alerts --mode=W
 0 12 1 * * /var/www/.../utils/manage batch_alerts --mode=M
 
+# Advance elections when needed
+10 3 * * * /var/www/.../utils/manage process-election
+

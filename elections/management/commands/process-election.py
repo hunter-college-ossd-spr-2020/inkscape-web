@@ -28,13 +28,14 @@ class Command(NoArgsCommand):
     help = "Advance Election"
 
     def handle_noargs(self, **options):
+        today = now().date()
         for election in Election.objects.exclude(status='F'):
-            if election.status == 'P' and election.invite_from < now():
+            if election.status == 'P' and election.invite_from < today:
                 election.invitation_open()
-            elif election.status == 'I' and election.accept_from < now():
+            elif election.status == 'I' and election.accept_from < today:
                 election.invitation_close()
-            elif election.status == 'A' and election.voting_from < now():
+            elif election.status == 'A' and election.voting_from < today:
                 election.voting_open()
-            elif election.status == 'V' and election.finish_on < now():
+            elif election.status == 'V' and election.finish_on < today:
                 election.voting_close()
 
