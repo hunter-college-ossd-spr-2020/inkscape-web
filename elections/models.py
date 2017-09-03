@@ -141,7 +141,7 @@ class Election(Model):
 
         # Create one ballot for each member of the constituent team
         for membership in self.constituents.members:
-            self.ballots.create(user=membership.user)
+            self.ballots.get_or_create(user=membership.user)
 
         # Set the status mode to VOTING
         self.status = VOTING
