@@ -134,7 +134,7 @@
   {% elif state.code == 'S' %}
     <p>{% blocktrans with days=state.V.days %}Candidates who have been invited to stand in this election have {{ days }} days to accept or reject their invitation before votin begins.{% endblocktrans %}</p>
   {% elif state.code == 'V' %}
-  <p>{% blocktrans with team=object.for_team days=state.F.days %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ days }} days</strong> to cast your vote for this election.{% endblocktrans %}</p>
+  <p>{% blocktrans with team=object.constituents days=state.F.days %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ days }} days</strong> to cast your vote for this election.{% endblocktrans %}</p>
   <p>{% trans "Each candidate should be placed in rank order from first to last as you would prefer to have them. If your first choice does not get enough votes then your second choice will be selected. This process continues until there are only number of winners plus one candidates remaining." %}</p>
   <p>{% trans "Drag candidates around to number them, if you move a candidate to the end their rank will be removed. You do not have to rank all candidates if you don't want to." %}</p>
     {% if ballot %}
