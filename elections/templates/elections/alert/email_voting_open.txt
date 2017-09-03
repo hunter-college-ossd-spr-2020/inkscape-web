@@ -1,9 +1,7 @@
-{% load i18n %}
-{% with team=instance.constituents %}
-{% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
+{% load i18n %}{% with team=instance.constituents %}{% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
  
-{% blocktrans with days=election.state.F.days for_team=instance.for_team %}The election for {{ for_Team }} is now open for voting. Please go to the link below to fill in your ballot. Only members of the {{ team }} have ballots and members who join after this point will not be added to the election.{% endblocktrans %}
+{% blocktrans with days=election.state.F.days for_team=instance.for_team %}The election for the {{ for_team }} team is now open for voting. Please go to the link below to fill in your ballot. Only members of the {{ team }} team have ballots and members who join after this point will not be added to the election.{% endblocktrans %}
 
 ----
-{% trans "Vote:" %} {{site}}{{ instance.get_absolute_url }}
+{% trans "Vote:" %} {{ site }}{{ instance.get_absolute_url }}
 {% endwith %}
