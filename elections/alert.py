@@ -54,7 +54,12 @@ class CandidateInvitationAlert(CreatedAlert):
 
 def send_team_email(team, subject, template, **context):
     """Sends a team email to everyone"""
-    return send_email(team.email, subject, template, **context)
+    email = team.email
+    if not email:
+        email = team.admin.email
+        # Do not translate this text to the administrator
+        subject = "ADMIN WARNING! No group email set for team '%s'" % team.name
+    return send_email(email, subject, template, **context)
 
 def send_email(email, subject, template, **context):
     return EmailMultiAlternatives(
