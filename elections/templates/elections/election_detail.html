@@ -156,10 +156,12 @@
       {% for candidate, vote in candidates %}
        {% with user=candidate.user %}
          <div class="galleryitem" id="item_{{ candidate.pk }}">
-           <input type="text" name="vote_{{ candidate.pk }}" id="item_{{ candidate.pk }}_in" value="{{ vote.rank|default:'' }}" placeholder="Rank"/>
            <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
            <p>{{ user }}</p>
-           <span class="vote"><p id="item_{{ candidate.pk }}_num">1</p></span>
+           {% if state.code == 'V' and ballot %}
+             <span class="vote"><p id="item_{{ candidate.pk }}_num">1</p></span>
+             <input type="text" name="vote_{{ candidate.pk }}" id="item_{{ candidate.pk }}_in" value="{{ vote.rank|default:'' }}" placeholder="Rank"/>
+           {% endif %}
         </div>
        {% endwith %}
       {% endfor %}
