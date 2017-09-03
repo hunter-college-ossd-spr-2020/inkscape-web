@@ -22,8 +22,9 @@ Election Alerts, this section is fairly important as elections MUST keep
 everyone up to date about what stage the election is at and what they
 must do next.
 """
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import override as tr_override, ugettext_lazy as _
 from django.core.mail.message import EmailMultiAlternatives
+from django.conf import settings
 
 from alerts.base import EditedAlert, CreatedAlert
 from alerts.template_tools import render_template, render_directly
@@ -61,12 +62,16 @@ def send_team_email(team, subject, template, **context):
         subject = "ADMIN WARNING! No group email set for team '%s'" % team.name
     return send_email(email, subject, template, **context)
 
-def send_email(email, subject, template, **context):
-    return EmailMultiAlternatives(
-      to=[email],
-      body=render_template(template, context),
-      subject=render_directly(subject, context)\
-        .strip().replace('\n', ' ').replace('\r', ' '),
-    ).send(True)
+DEFAULT_LANG = getattr(settings, 'LANGUAGE_CODE', 'en')
+
+def send_email(email, subject, template, lang=DEFAULT_LANG, **context):
+    with tr_override(lang):
+        context['site'] = settings.SITE_ROOT
+        return EmailMultiAlternatives(
+          to=[email],
+          body=render_template(template, context),
+          subject=render_directly(subject, context)\
+            .strip().replace('\n', ' ').replace('\r', ' '),
+        ).send(True)
 
 
