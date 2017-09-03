@@ -90,7 +90,6 @@ class ElectionTests(ExtraTestCase):
             response = self.assertPost('elections:vote', team='e_team',
                 slug='test-election-2011', hash=ballot.slug, data=votes)
             self.assertContains(response, 'ballot has been saved')
-        #election.ballots.all()[0].
 
         # XXX Votes can be submitted
         # XXX invitations and invitation acceptions don't matter
