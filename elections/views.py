@@ -115,6 +115,18 @@ class ElectionInvite(TeamMemberMixin, SingleObjectMixin, RedirectView):
         next_url = self.get_object().get_absolute_url()
         return self.request.GET.get('next', next_url)
 
+class ElectionInviteMessage(TeamMemberMixin, DetailView):
+    template_name = 'elections/alert/email_candidate_invitation_alert.txt'
+    content_type = 'text/plain'
+    model = Election
+
+    def get_context_data(self, **kw):
+        data = super(ElectionInviteMessage, self).get_context_data(**kw)
+        user = get_user_model().objects.get(pk=self.kwargs['user_id'])
+        data['instance'] = {'election': self.get_object()}
+        data['alert'] =  {'user': user}
+        return data
+
 
 class ElectionAccept(SingleObjectMixin, RedirectView):
     slug_url_kwarg = 'hash'

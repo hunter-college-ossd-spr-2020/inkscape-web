@@ -120,7 +120,8 @@
         <div class="photos"/>
           {% for user in search %}
             <div class="galleryitem">
-              <a class="link" href="{% url "elections:invite" election.for_team.slug election.slug user.pk %}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="{% trans "Send Invitation" %}"/></a>
+              <a class="link" href="{% url "elections:invite" election.for_team.slug election.slug user.pk %}" title="{% trans "Send Invitation" %}" data-other-link="{% url "elections:invite-msg" election.for_team.slug election.slug user.pk %}" data-other-text="{% trans "View Message" %}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+              <script>popUpLink("{% blocktrans %}Are you sure you want to invite {{ user }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Invite" %}', "{{ user.get_absolute_url }}");</script>
               <p title="{% trans "Send Invitation" %}"><a href="{{ user.get_absolute_url }}">{% blocktrans %}Invite {{ user }}{% endblocktrans %}</a></p>
             </div>
           {% endfor %}

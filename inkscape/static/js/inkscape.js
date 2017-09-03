@@ -211,7 +211,14 @@ function popUpLink(msg, cancel, ok, next, note, ajax_class) {
       ajax = function(data) { $(a).addClass(ajax_class); }
     }
     var href = a.href;
-    $(a).click(function() { return popUp(a.title, msg, href, cancel, ok, next, note, ajax) });
+    $(a).click(function() {
+      var ret = popUp(a.title, msg, href, cancel, ok, next, note, ajax);
+      var link2 = $(a).data('other-link');
+      if(link2) {
+        $('#popup .buttons').prepend('<a class="btn btn-default" href="' + link2 + '">' + $(a).data('other-text') + '</a>');
+      }
+      return ret;
+    });
     a.href = '#' + href
   });
 }
