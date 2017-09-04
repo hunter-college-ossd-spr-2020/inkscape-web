@@ -88,7 +88,10 @@ class ElectionVote(TeamMemberMixin, SingleObjectMixin, RedirectView):
                 )
         ballot.responded = has_vote
         ballot.save()
-        messages.success(self.request, _('Your ballot has been saved'))
+        if has_vote:
+            messages.success(self.request, _('Your ballot has been saved'))
+        else:
+            messages.warning(self.request, _('Your votes have been cleared'))
         return self.get(request, **kw)
 
     def get_redirect_url(self, **kw):
