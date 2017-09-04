@@ -40,16 +40,14 @@ Calculate the results of an election easily.
 import json
 from django.contrib.auth import get_user_model
 
+class LogEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
+
 def make_log(**items):
-    """
-    This should be replaced by a json Decoder/Encoder pair.
-    """
-    res = items['results']
-    res['winners'] = list(res['winners'])
-    res['candidates'] = list(res['candidates'])
-    for round_ in res['rounds']:
-        round_['winners'] = list(round_['winners'])
-    return json.dumps(items)
+    return json.dumps(items, cls=LogEncoder)
 
 def get_log(log):
     User = get_user_model()
