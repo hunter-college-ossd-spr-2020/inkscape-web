@@ -175,10 +175,12 @@ class Election(Model):
 
         # Add new users to target team
         for candidate in self.candidates:
-            if 'winner' in candidate:
-                self.for_team.update_membership(candidate['user'],
+            if candidate.user.pk in res.winners:
+                self.for_team.update_membership(
+                    candidate.user,
                     expired=None, joined=now(),
-                    added_by=self.called_by)
+                    added_by=self.called_by
+                )
 
         self.status = FINISHED
         self.save()
