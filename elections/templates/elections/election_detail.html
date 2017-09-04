@@ -93,6 +93,20 @@
           </li>
         {% endfor %}
       </ul>
+      <h2>Voting System</h2>
+      <div style="text-align: center;">
+      {% with system=object.ballot_type.system %}
+      <a href="{{ system.link }}">
+        <img src="{% static system.icon %}" title="{{ system.name }}"/>
+      </a>
+      {% endwith %}
+      {% with lib=object.ballot_type.library %}
+      <br/>
+      <a href="{{ lib.link }}">
+         {{ lib.name }} ({{ lib.module }})
+      </a>
+      {% endwith %}
+      </div>
     </div>
   {% endwith %}
 {% endblock %}

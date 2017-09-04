@@ -39,7 +39,7 @@ from collections import Counter
 from random import choice
 from string import ascii_letters
 
-from .results import get_log, make_log
+from .results import BALLOT_TYPES, get_log, make_log
 
 User = settings.AUTH_USER_MODEL
 
@@ -93,7 +93,7 @@ class Election(Model):
     # as soon as the log is generated and saved. This also records all the
     # candidates. (see STV log for example of the kind of output we could have)
     # probably in json format.
-    log    = TextField(**null)
+    log = TextField(**null)
 
     parent = property(lambda self: self.for_team)
     intro = property(lambda self: self.notes)
@@ -103,6 +103,10 @@ class Election(Model):
 
     def __str__(self):
         return self.slug
+
+    @property
+    def ballot_type(self):
+        return BALLOT_TYPES['pyvotecore.stv']
 
     def state(self):
         ret = dict(process=[], index=RESTAT[0].index(self.status))

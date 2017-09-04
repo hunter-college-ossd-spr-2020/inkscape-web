@@ -39,6 +39,23 @@ Calculate the results of an election easily.
 
 import json
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
+
+# This part can be expanded in the future if we ever need different voting
+BALLOT_TYPES = {
+  'pyvotecore.stv': {
+    'system': {
+      'name': _("Single Transferable Vote"),
+      'link': 'http://en.wikipedia.org/wiki/Single_transferable_vote',
+      'icon': 'images/vote/stv.svg',
+    },
+    'library': {
+      'name': 'pyvotecore',
+      'link': 'https://github.com/bradbeattie/python-vote-core',
+      'module': 'stv',
+    },
+  }
+}
 
 class LogEncoder(json.JSONEncoder):
     def default(self, obj):
