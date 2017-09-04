@@ -12,18 +12,21 @@
   }
   .galleryitem span.vote p {
     font-size: 160%;
-    position: relative;
-    top: -222px;
-    left: 30px;
     border-radius: 22px;
     width: 32px;
     height: 29px;
-    padding-top: 3px;
     border: 2px solid #c00;
     background-color: #a40000;
     color: white;
     font-weight: bold;
     line-height: 110%;
+  }
+  .galleryitem span.vote img,
+  .galleryitem span.vote p {
+    position: relative;
+    top: -222px;
+    left: 30px;
+    padding-top: 3px;
   }
 </style>
 {% endblock %}
@@ -142,6 +145,21 @@
       <form method="post" action="{% url "elections:vote" team=election.for_team.slug slug=object.slug hash=ballot.slug %}">
       {% csrf_token %}
     {% endif %}
+  {% elif state.code == 'F' %}
+    <h2>{% trans "Results" %}</h2>
+    {% with log=object.get_log %}
+      <div class="photos">
+        {% for user in log.candidates %}
+          <div class="galleryitem">
+            <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+            <p>{{ user }}</p>
+            {% if user.winner %}
+              <span class="vote"><img src="{% static "images/elected.svg" %}"/></span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endwith %}
   {% endif %}
 
   {% if object.candidates.count > 0 %}
@@ -153,7 +171,7 @@
     <noscript>
       <p>{% trans "You have javascript switched off (or unavailable), please type in the ranking number 1 to n manually. Do not repeat a number of you will get an error." %}</p>
     </noscript>
-    <div class="photos" id="ballot-block"/>
+    <div class="photos" id="ballot-block">
       {% for candidate, vote in candidates %}
        {% with user=candidate.user %}
          <div class="galleryitem" id="item_{{ candidate.pk }}">
