@@ -31,7 +31,7 @@ from .models import User, Team
 
 class TeamForm(ModelForm):
     class Meta:
-        exclude = ()
+        exclude = ('mailman',)
         model = Team
 
     def __init__(self, *args, **kw):
