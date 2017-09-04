@@ -64,7 +64,7 @@ class ElectionDetail(DetailView):
             for item in ballot.votes.all():
                 yield (item.candidate, item)
         else:
-            for item in self.get_object().candidates:
+            for item in self.get_object().candidates.order_by('?'):
                 yield (item, None)
 
 
