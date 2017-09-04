@@ -69,6 +69,7 @@ def make_log(**items):
 def get_log(log):
     User = get_user_model()
     items = json.loads(log)
+    user_log = dict([(v['user_id'], v) for v in items['votes']])
     res = items['results']
 
     # Build a list of candidate user objects
@@ -77,8 +78,14 @@ def get_log(log):
         try:
 	    user = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            # XXX Reconstruct user from details in log
-            user = User(username='anon_%d' % pk)
+            # Reconstruct user from details in log
+            details = user_log[int(pk)]
+            user = User(
+              username=details['username'],
+              first_name=details['first_name'],
+              first_name=details['last_name'],
+              email=details['email'],
+            )
             
 	user.winner = pk in res['winners']
         candidates[user.pk] = user
