@@ -161,8 +161,7 @@ class Election(Model):
     def voting_close(self):
         """Move from VOTED to FINISHED"""
         res = STV(list(self.ballots.get_votes()), required_winners=self.places)
-        res = res.as_dict()
-        log = make_log(
+        self.log = make_log(
             candidates=list(self._candidates.log()),
             results=res.as_dict(),
             votes=list(self.ballots.log()),
@@ -212,6 +211,7 @@ class CandidateManager(Manager):
               'user_id': candidate.user.pk,
               'first_name': candidate.user.first_name,
               'last_name': candidate.user.last_name,
+              'username': candidate.user.username,
               'email': candidate.user.email,
               'invitor': candidate.invitor_id,
               'responded': candidate.responded,
@@ -242,6 +242,7 @@ class BallotManager(Manager):
               'user_id': ballot.user.pk,
               'first_name': ballot.user.first_name,
               'last_name': ballot.user.last_name,
+              'username': ballot.user.username,
               'email': ballot.user.email,
               'responded': ballot.responded,
               'paper': list(ballot.get_vote()),

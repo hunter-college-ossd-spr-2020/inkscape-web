@@ -160,8 +160,8 @@
       {% csrf_token %}
     {% endif %}
   {% elif state.code == 'F' %}
-    <h2>{% trans "Results" %}</h2>
     {% with log=object.get_log %}
+      <h2>{% trans "Results" %}</h2>
       <div class="photos">
         {% for user in log.candidates %}
           <div class="galleryitem">
@@ -173,6 +173,15 @@
           </div>
         {% endfor %}
       </div>
+      <h2>{% trans "Voting Rounds" %}</h2>
+      {% for round in log.results.rounds %}
+        <h3>{% blocktrans with x=forloop.counter %}Round {{ x }}{% endblocktrans %}
+        <ol>
+          {% for user, score in round.tallies %}
+            <li><strong>{{ user }}</strong>: {{ score }}</li>
+          {% endfor %}
+        </ol>
+      {% endfor %}
     {% endwith %}
   {% endif %}
 

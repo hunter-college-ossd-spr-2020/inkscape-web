@@ -64,13 +64,15 @@ class LogEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def make_log(**items):
-    return json.dumps(items, cls=LogEncoder)
+    return json.dumps(items, cls=LogEncoder, sort_keys=True, indent=4)
 
 def get_log(log):
     User = get_user_model()
     items = json.loads(log)
     res = items['results']
-    cands = []
+
+    # Build a list of candidate user objects
+    candidates = {}
     for pk in res['candidates']:
         try:
 	    user = User.objects.get(pk=pk)
@@ -79,8 +81,19 @@ def get_log(log):
             user = User(username='anon_%d' % pk)
             
 	user.winner = pk in res['winners']
-        cands.append(user)
-    items['candidates'] = sorted(cands, key=lambda x: not x.winner)
+        candidates[user.pk] = user
+
+    for r in res['rounds']:
+        r['tallies'] = [(candidates[int(uid)], score) for uid, score in r['tallies'].items()]
+        if 'loser' in r:
+            r['loser'] = candidates[r['loser']]
+        if 'winners' in r:
+            r['winners'] = [candidates[uid] for uid in r['winners']]
+        if 'tied_losers' in r:
+            r['tied_losers'] = [candidates[uid] for uid in r['tied_losers']]
+        
+    items['type'] = BALLOT_TYPES[items['type']]
+    items['candidates'] = sorted(candidates.values(), key=lambda x: not x.winner)
     return items
 
 

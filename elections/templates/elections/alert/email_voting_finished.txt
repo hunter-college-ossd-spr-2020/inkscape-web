@@ -2,9 +2,10 @@
 {% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
  
 {% blocktrans with for_team=instance.for_team %}The election for {{ for_team }} is now concluded.{% endblocktrans %}
-{% with log=object.get_log %}{% for user in log.candidates %}
- * {{ user }} {% if user.winner %} (Elected){% endif %}
-{% endfor %}{% endwith %}
+
+-- RESULTS --
+{% for user in instance.get_log.candidates %} * {{ user }} {% if user.winner %} (Elected){% endif %}
+{% endfor %}
 
 ----
 {% trans "Full Results:" %} {{site}}{{ instance.get_absolute_url }}{% endwith %}
