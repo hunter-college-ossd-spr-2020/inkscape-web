@@ -35,8 +35,11 @@ from django.db.models import *
 
 from person.models import Team
 
+from collections import Counter
 from random import choice
 from string import ascii_letters
+
+from .results import get_log, make_log
 
 User = settings.AUTH_USER_MODEL
 
@@ -96,6 +99,7 @@ class Election(Model):
     intro = property(lambda self: self.notes)
     name = property(lambda self: _("Election for %s (%d)") % (
         self.for_team, self.voting_from.year))
+    get_log = property(lambda self: get_log(self.log))
 
     def __str__(self):
         return self.slug
@@ -152,17 +156,19 @@ class Election(Model):
 
     def voting_close(self):
         """Move from VOTED to FINISHED"""
-        self.log = json.dumps({
-            'candidates': self._candidates.log(),
-            'results': STV(self.ballots.get_votes()),
-            'votes': self.ballots.log(),
-            'type': 'pyvotecore.stv',
-        })
+        res = STV(list(self.ballots.get_votes()), required_winners=self.places)
+        res = res.as_dict()
+        log = make_log(
+            candidates=list(self._candidates.log()),
+            results=res.as_dict(),
+            votes=list(self.ballots.log()),
+            type='pyvotecore.stv',
+        )
         self.save()
 
         # Delete candidate and ballot objects out of the database
-        self._candidates.delete()
-        self.ballots.delete()
+        self._candidates.all().delete()
+        self.ballots.all().delete()
 
         # Add new users to target team
         for candidate in self.candidates:
@@ -176,14 +182,6 @@ class Election(Model):
 
         # Send a message annoucing the results.
         self.send_team_email('Results', 'voting_finished')
-
-    @property
-    def get_log(self):
-        """Loads the log which contains the results once they have been run"""
-        try:
-            json.loads(self.log)
-        except:
-            return {}
 
     @property
     def candidates(self):
@@ -207,7 +205,6 @@ class CandidateManager(Manager):
         """Create a list of candidates and add to log"""
         for candidate in self.get_queryset():
             yield {
-              'id': candidate.pk,
               'user_id': candidate.user.pk,
               'first_name': candidate.user.first_name,
               'last_name': candidate.user.last_name,
@@ -238,7 +235,6 @@ class BallotManager(Manager):
         """Collect votes and save to log"""
         for ballot in self.get_queryset():
             yield {
-              'hash': ballot.slug,
               'user_id': ballot.user.pk,
               'first_name': ballot.user.first_name,
               'last_name': ballot.user.last_name,
@@ -249,8 +245,14 @@ class BallotManager(Manager):
 
     def get_votes(self):
         """Returns a list of lists with ranked votes for IRV"""
+        result = Counter()
         for ballot in self.get_queryset().filter(responded=True):
-            yield list(ballot.get_vote())
+            # Add each ballot to the ballot count
+            result.update((tuple(sorted(ballot.get_vote())),))
+
+        for ballot in result:
+            # Return in grouped ballot format
+            yield {'count': result[ballot], 'ballot': list(ballot)}
 
 
 class Ballot(Model):
@@ -273,7 +275,7 @@ class Ballot(Model):
         # force the database to give us non-null results first.
         qs = self.votes.all()
         for null in (False, True):
-            for v in qs.filter(rank__isnull=null).values_list('candidate_id'):
+            for v in qs.filter(rank__isnull=null).values_list('candidate__user_id'):
                 yield v[0]
 
 
