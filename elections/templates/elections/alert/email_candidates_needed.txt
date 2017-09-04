@@ -1,12 +1,11 @@
-{% load i18n %}
-{% with team=instance.constituents %}
+{% load i18n %}{% with team=instance.constituents %}
 {% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
  
-{% blocktrans with days=election.state.S.days for_team=instance.for_team num=instance.places %}There is a new election underway to elect {{ num }} new member to {{ for_team }}, you have {{ days }} days to invite members of the community to stand for the election.{% endblocktrans %}
+{% blocktrans with days=instance.state.S.days for_team=instance.for_team num=instance.places %}There is a new election underway to elect {{ num }} new member to {{ for_team }}, you have {{ days }} days to invite members of the community to stand for the election.{% endblocktrans %}
 
 ----
 
-{{ instance.election.notes }}
+{{ instance.notes }}
 
 ----
 {% trans "You must be a member of the team on the website in order to vote or invite candidates to stand. You must make sure that your team membership status is settled before the vote opens in order for your ballot to be created in time." %}
