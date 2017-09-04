@@ -74,18 +74,19 @@ class ElectionVote(TeamMemberMixin, SingleObjectMixin, RedirectView):
 
     def post(self, request, **kw):
         ballot = get_object_or_404(Ballot, slug=kw['hash'])
-        ballot.votes.all().delete()
+        has_vote = False
         for key, value in request.POST.items():
             if key.startswith('vote_'):
                 try:
                     value = int(value)
+                    has_vote = True
                 except ValueError:
                     value = None
                 ballot.votes.update_or_create(
                     candidate_id=key[5:],
                     defaults={'rank': value},
                 )
-        ballot.responded = True
+        ballot.responded = has_vote
         ballot.save()
         messages.success(self.request, _('Your ballot has been saved'))
         return self.get(request, **kw)
