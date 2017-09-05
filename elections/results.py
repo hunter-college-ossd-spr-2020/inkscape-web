@@ -83,7 +83,7 @@ def get_log(log):
             user = User(
               username=details['username'],
               first_name=details['first_name'],
-              first_name=details['last_name'],
+              last_name=details['last_name'],
               email=details['email'],
             )
             

@@ -52,6 +52,56 @@
         </li>
       </ul>
       <h2>{% trans "Information" %}</h2>
+      {% if object.status == 'F' %}
+        {% with log=object.get_log %}
+
+      <ul>
+        <li title="{% trans "Number of people who won this election" %}"> 
+          <a>
+            <label>{% trans "Winners" %}</label>
+            <span>{{ object.places|default:1 }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of people who were invited to stand" %}"> 
+          <a>
+            <label>{% trans "Invites" %}</label>
+            <span>{{ log.counts.invites|default:"?" }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of people who accepted to be candidates" %}"> 
+          <a>
+            <label>{% trans "Candidates" %}</label>
+            <span>{{ log.counts.candidates|default:"?" }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of people who ignored the invitation" %}"> 
+          <a>
+            <label>{% trans "Invites Ignored" %}</label>
+            <span>{{ log.counts.ignored|default:"?" }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of people who didn't want to stand" %}"> 
+          <a>
+            <label>{% trans "Invites Rejected" %}</label>
+            <span>{{ log.counts.rejected|default:"?" }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of eligable ballots created" %}"> 
+          <a>
+            <label>{% trans "Ballots" %}</label>
+            <span>{{ log.counts.ballots|default:"?" }}</span>
+          </a>
+        </li>
+        <li title="{% trans "Number of people who used their ballot to vote" %}"> 
+          <a>
+            <label>{% trans "Voters" %}</label>
+            <span>{{ log.counts.voters|default:"?" }}</span>
+          </a>
+        </li>
+      </ul>
+
+        {% endwith %}
+      {% else %}
       <ul>
         <li title="{% trans "Number of people to elect in with this ballot." %}">
           <a>
@@ -78,6 +128,7 @@
           {% endif %}
         </a></li>
       </ul>
+      {% endif %}
       <h2>{% trans "Process" %}</h2>
       <ul class="election-process" style="white-space: nowrap;">
         {% for step in state.process %}

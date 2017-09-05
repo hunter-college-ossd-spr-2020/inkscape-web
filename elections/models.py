@@ -166,10 +166,22 @@ class Election(Model):
             results=res.as_dict(),
             votes=list(self.ballots.log()),
             type='pyvotecore.stv',
+            counts=dict(
+              candidates=self.candidates.count(),
+              invites=self.invites.count(),
+              ignored=self.ignored.count(),
+              rejected=self.rejected.count(),
+              ballots=self.ballots.count(),
+              voters=self.voters.count(),
+            ),
         )
         self.save()
 
-        # Delete candidate and ballot objects out of the database
+        # Delete candidate and ballot objects out of the database, you may ask
+        # Martin: why would you ever delete the voting record. This is because
+        # django objects can be easily edited and are harder to backup. Plus
+        # the nature of the log means we want to make sure ALL our results code
+        # uses the log for it's information and not any residual stale objects.
         self._candidates.all().delete()
         self.ballots.all().delete()
 
@@ -188,13 +200,10 @@ class Election(Model):
         # Send a message annoucing the results.
         self.send_team_email('Results', 'voting_finished')
 
-    @property
-    def candidates(self):
-        return self._candidates.filter(accepted=True)
-
-    @property
-    def invites(self):
-        return self._candidates.all()
+    invites = property(lambda self: self._candidates.all())
+    candidates = property(lambda self: self.invites.filter(accepted=True))
+    ignored = property(lambda self: self.invites.filter(responded=False))
+    rejected = property(lambda self: self.invites.filter(responded=True, accepted=False)
 
     def voters(self):
         return self.ballots.filter(responded=True)
@@ -267,7 +276,7 @@ class Ballot(Model):
     A vote is any user's capacity to vote on an election. 
     """
     slug = SlugField(default=get_hash, unique=True)
-    user = ForeignKey(User)
+    user = ForeignKey(User, related_name='ballots')
     election = ForeignKey(Election, related_name='ballots')
     responded = BooleanField(default=False)
 
