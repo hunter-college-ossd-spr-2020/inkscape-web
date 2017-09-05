@@ -133,6 +133,8 @@ class Election(Model):
                 data['failed'] = self.status == FAILURE.get(data['code'], -1)
                 if data['failed']:
                     ret['fail'] = x
+            else:
+                data['failed'] = True
 
             if x == ret['index']:
                 ret.update(data)

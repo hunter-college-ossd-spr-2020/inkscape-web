@@ -98,7 +98,7 @@
             <li>
               <a href="{{ election.get_absolute_url }}">
                 <label>{{ election.voting_from.year }}</label>
-                <span>{{ election.state.name }}</span>
+                <span{% if election.state.failed %} class="failed"{% endif %}>{{ election.state.name }}</span>
               </a>
             </li>
           {% empty %}
