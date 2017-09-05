@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='election',
             name='min_votes',
-            field=models.PositiveIntegerField(default=2, help_text='A minimum number of votes required to make this a fair election. Insufficiant votes will force the election to fail and be canceled.'),
+            field=models.PositiveIntegerField(default=2, help_text='A minimum number of votes required to make this a fair election. Insufficient votes will force the election to fail and be canceled.'),
         ),
         migrations.AlterField(
             model_name='ballot',

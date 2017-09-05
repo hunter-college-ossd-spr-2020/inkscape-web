@@ -56,8 +56,8 @@ STATUSES = [
     ('S', _('Selecting'), _('Candidates accepting to stand')),
     ('V', _('Voting'), _('Voting is open to constituents')),
     ('F', _('Finished'), _('Voting is closed, Results announced')),
-    ('!', _('Insufficiant Candidates'), _('Electing Canceled, Failed to get enough candidates.')),
-    ('*', _('Insufficiant Votes'), _('Electing Canceled, Failed to get enough voters to vote.')),
+    ('!', _('Insufficient Candidates'), _('Electing Canceled, Failed to get enough candidates.')),
+    ('*', _('Insufficient Votes'), _('Electing Canceled, Failed to get enough voters to vote.')),
 ]
 RESTAT = zip(*STATUSES)
 (PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, INCAN, INVOT) = RESTAT[0]
@@ -91,7 +91,7 @@ class Election(Model):
         ' that are available to be won in this election. If fewer candidates'
         ' are available to stand, this election will fail and be canceled'))
     min_votes = PositiveIntegerField(default=2, help_text=_('A minimum number'
-        ' of votes required to make this a fair election. Insufficiant votes'
+        ' of votes required to make this a fair election. Insufficient votes'
         ' will force the election to fail and be canceled.'))
     notes  = TextField(help_text=_('Any notes about this election, why it was'
         ' called or why new people are needed. Message is sent to constituents'
