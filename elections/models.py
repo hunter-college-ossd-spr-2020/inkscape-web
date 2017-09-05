@@ -60,6 +60,7 @@ STATUSES = [
 ]
 RESTAT = zip(*STATUSES)
 (PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, INCAN, INVOT) = RESTAT[0]
+FAILURE = {'S': '!', 'V': '*'}
 
 class Election(Model):
     slug = SlugField(max_length=32, help_text=_('Unique name used to identify'
@@ -110,16 +111,29 @@ class Election(Model):
         return BALLOT_TYPES['pyvotecore.stv']
 
     def state(self):
-        ret = dict(process=[], index=RESTAT[0].index(self.status))
+        ret = dict(process=[], index=RESTAT[0].index(self.status), fail=99)
         dates = (now().date(), self.invite_from, self.accept_from,
                  self.voting_from, self.finish_on, now().date())
+
         for x, data in enumerate(STATUSES):
-            data = zip(['code', 'name', 'desc'], data)
-            ret[data[0][1]] = dict(data)
-            if data[0][1] not in '!*':
-                ret['process'].append(ret[data[0][1]]) 
-                ret['process'][-1]['index'] = x
-                ret['process'][-1]['days'] = (dates[x] - now().date()).days
+            data = dict(zip(['code', 'name', 'desc'], data))
+            if data['code'] not in '!*':
+                # Generate some extra data about this state
+                data['index'] = x
+                data['date'] = dates[x]
+                data['days'] = (dates[x] - now().date()).days
+
+                # Save the data under it's code for easy template access
+                ret[data['code']] = data
+
+                # Append this to the process chain
+                ret['process'].append(data)
+
+                # Set the failure flag if required
+                data['failed'] = self.status == FAILURE.get(data['code'], -1)
+                if data['failed']:
+                    ret['fail'] = x
+
             if x == ret['index']:
                 ret.update(data)
         return ret

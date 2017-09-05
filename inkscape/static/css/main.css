@@ -933,6 +933,9 @@ p#final-footer #dev-stamp:hover {
   border: none;
   text-shadow: none;
 }
+#sidecategory li > a > span.failed {
+  background-color: #c4443a;
+}
 #sidecategory li.subtle > a > span {
   background-color: #f5f5f5;
   color: #666;
