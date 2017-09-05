@@ -228,11 +228,18 @@
       {% for round in log.results.rounds %}
         <h3>{% blocktrans with x=forloop.counter %}Round {{ x }}{% endblocktrans %}
         <ol>
-          {% for user, score in round.tallies %}
-            <li><strong>{{ user }}</strong>: {{ score }}</li>
+          {% for tally in round.tallies %}
+            <li><strong>{{ tally.user }}</strong>: {{ tally.score }}
+              {% if tally.winner %}
+                ({% trans "Winner" %})
+              {% elif tally.loser %}
+                ({% trans "Loser" %})
+              {% endif %}
+            </li>
           {% endfor %}
         </ol>
       {% endfor %}
+      <p>{% trans "A full log of all votes and the ballot rounds is available on request from the election official." %}</p>
     {% endwith %}
   {% endif %}
 

@@ -91,14 +91,18 @@ def get_log(log):
         candidates[user.pk] = user
 
     for r in res['rounds']:
-        r['tallies'] = [(candidates[int(uid)], score) for uid, score in r['tallies'].items()]
-        if 'loser' in r:
-            r['loser'] = candidates[r['loser']]
-        if 'winners' in r:
-            r['winners'] = [candidates[uid] for uid in r['winners']]
-        if 'tied_losers' in r:
-            r['tied_losers'] = [candidates[uid] for uid in r['tied_losers']]
-        
+        tals = []
+        for user_id, score in r['tallies'].items():
+            user_id = int(user_id)
+            tals.append({
+              'user': candidates[user_id],
+              'score': score,
+              'winner': user_id in r.get('winners', []),
+              'loser': user_id in r.get('tied_losers', []) \
+                    or user_id == r.get('loser', '')
+            })
+        r['tallies'] = tals
+
     items['type'] = BALLOT_TYPES[items['type']]
     items['candidates'] = sorted(candidates.values(), key=lambda x: not x.winner)
     return items
