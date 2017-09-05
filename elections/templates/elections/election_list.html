@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block content %}
-  <h1>All Elections</h2>
+  <h1>{% trans "All Elections" %}</h2>
   {% for election in object_list %}
     <a href="{{ election.get_absolute_url }}">{{ election.name }}</a>
   {% endfor %}

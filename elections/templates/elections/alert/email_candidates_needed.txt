@@ -1,7 +1,10 @@
 {% load i18n %}{% with team=instance.constituents %}
 {% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
- 
-{% blocktrans with days=instance.state.S.days for_team=instance.for_team num=instance.places %}There is a new election underway to elect {{ num }} new member to {{ for_team }}, you have {{ days }} days to invite members of the community to stand for the election.{% endblocktrans %}
+{% with state=instance.state.S %}
+{% spaceless %}
+{% blocktrans with for_team=instance.for_team count counter=instance.places %}There is a new election underway to elect a new member to {{ for_team }},{% plural %}There is a new election underway to elect {{ counter }} new members to {{ for_team }},{% endblocktrans %}
+{% blocktrans with date=state.date count counter=state.days %} you have {{ counter }} day ({{ date }}) to invite members of the community to stand for the election.{% plural %} you have {{ counter }} days ({{ date }}) to invite members of the community to stand for the election.{% endblocktrans %}{% endspaceless %}
+{% endwith %}
 
 ----
 

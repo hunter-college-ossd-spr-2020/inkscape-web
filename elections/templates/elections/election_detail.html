@@ -140,7 +140,7 @@
               {% elif state.index > step.index and state.fail > step.index %}
                 <span>&#10004;</span>
               {% elif state.index != step.index and state.fail > step.index %}
-                <span>{% blocktrans with days=step.days %}In {{ days }} days{% endblocktrans %}</span>
+              <span title="{{ step.date }}">{% blocktrans with days=step.days %}In {{ days }} days{% endblocktrans %}</span>
               {% endif %}
             </a>
           </li>
