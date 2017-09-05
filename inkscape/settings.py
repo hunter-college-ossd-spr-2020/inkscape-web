@@ -229,6 +229,7 @@ TRANSLATED_APPS = (
     'logbook',
     'moderation',
     'person',
+    'elections',
     'pile',
     'projects',
     'releases',
