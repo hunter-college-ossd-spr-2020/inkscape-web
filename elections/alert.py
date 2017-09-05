@@ -32,9 +32,9 @@ from alerts.template_tools import render_template, render_directly
 from .models import Candidate
 
 class CandidateInvitationAlert(CreatedAlert):
-    name   = _("Inivitation to Stand")
+    name   = _("Invitation to Stand")
     desc   = _("An alert is sent when a user invites another to stand in an election.")
-    info   = _("When a member of a team selection another user to stand, you get an email.")
+    info   = _("When a member of a team selects another user to stand, you get an email.")
     sender = Candidate
 
     email_subject = "{% trans 'Stand for Election:' %} {{ instance.election }}"

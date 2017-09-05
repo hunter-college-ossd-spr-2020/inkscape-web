@@ -81,7 +81,7 @@ class Election(Model):
     invite_from = DateField(help_text=_('Start the nominations process on this'
         ' date, invitations are collected (UTC).'))
     accept_from = DateField(help_text=_('Invitation process stops and emails'
-        ' sent out to potential candidates. (UTC)'))
+        ' will be sent out to potential candidates. (UTC)'))
     voting_from = DateField(help_text=_('Finish the nominations and start'
         ' voting (UTC).'))
     finish_on = DateField(help_text=_('Finish the contest, voting closed,'
