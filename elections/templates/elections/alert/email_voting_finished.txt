@@ -3,7 +3,7 @@
  
 {% blocktrans with for_team=instance.for_team %}The election for {{ for_team }} is now concluded.{% endblocktrans %}
 
--- RESULTS --
+-- {% trans "RESULTS" %} --
 {% for user in instance.get_log.candidates %} * {{ user }} {% if user.winner %} (Elected){% endif %}
 {% endfor %}
 
