@@ -86,7 +86,12 @@ class Election(Model):
     finish_on = DateField(help_text=_('Finish the contest, voting closed,'
         ' winners announced (UTC).'))
 
-    places = PositiveIntegerField(default=1)
+    places = PositiveIntegerField(default=1, help_text=_('The number of places'
+        ' that are available to be won in this election. If fewer candidates'
+        ' are available to stand, this election will fail and be canceled'))
+    min_votes = PositiveIntegerField(default=2, help_text=_('A minimum number'
+        ' of votes required to make this a fair election. Insufficiant votes'
+        ' will force the election to fail and be canceled.'))
     notes  = TextField(help_text=_('Any notes about this election, why it was'
         ' called or why new people are needed. Message is sent to constituents'
         ' during the invitation and voting periods.'), **null)
@@ -175,10 +180,11 @@ class Election(Model):
             candidate.slug = get_hash()
             candidate.save()
 
-        if self.candidates.count() == self.places:
+        count = self.candidates.count()
+        if count == self.places:
             winners = self.candidates.values_list('user_id', flat=True)
             return voting_close(winners)
-        elif self.candidates.count() < self.places:
+        elif count < self.places:
             return self.failed_to_invite()
 
         # Create one ballot for each member of the constituent team
@@ -202,7 +208,7 @@ class Election(Model):
     def voting_close(self, ballot=None):
         """Move from VOTED to FINISHED"""
         votes = list(self.ballots.get_votes())
-        if len(votes) == 0:
+        if len(votes) < self.min_votes:
             if ballot:
                 votes = [{'count': 1.0, 'ballot': ballot}]
             else:
