@@ -294,6 +294,14 @@ class Ballot(Model):
             for v in qs.filter(rank__isnull=null).values_list('candidate__user_id'):
                 yield v[0]
 
+    def random_vote(self):
+        """Apply a random vote to this ballot (for testing)"""
+        from random import shuffle
+        self.votes.all().delete()
+        for x, user in enumerate(shuffle(self.election.candidates)):
+            self.votes.update_or_create(candidate=user, defaults={'rank': x+1})
+            self.responded = True
+            self.save()
 
 class Vote(Model):
     """
