@@ -55,10 +55,11 @@ STATUSES = [
     ('S', _('Selecting'), _('Candidates accepting to stand')),
     ('V', _('Voting'), _('Voting is open to constituents')),
     ('F', _('Finished'), _('Voting is closed, Results announced')),
-    ('!', _('Failed'), _('Electing Canceled, Failed.')),
+    ('!', _('Insufficiant Candidates'), _('Electing Canceled, Failed to get enough candidates.')),
+    ('*', _('Insufficiant Votes'), _('Electing Canceled, Failed to get enough voters to vote.')),
 ]
 RESTAT = zip(*STATUSES)
-(PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, FAILED) = RESTAT[0]
+(PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, INCAN, INVOT) = RESTAT[0]
 
 class Election(Model):
     slug = SlugField(max_length=32, help_text=_('Unique name used to identify'
@@ -112,22 +113,23 @@ class Election(Model):
         ret = dict(process=[], index=RESTAT[0].index(self.status))
         dates = (now().date(), self.invite_from, self.accept_from,
                  self.voting_from, self.finish_on, now().date())
-        for x, data in enumerate(STATUSES[:-1]):
+        for x, data in enumerate(STATUSES):
             data = zip(['code', 'name', 'desc'], data)
-            ret['process'].append(dict(data)) 
-            ret['process'][-1]['index'] = x
-            ret['process'][-1]['days'] = (dates[x] - now().date()).days
-            ret[data[0][1]] = ret['process'][-1]
+            ret[data[0][1]] = dict(data)
+            if data[0][1] not in '!*':
+                ret['process'].append(ret[data[0][1]]) 
+                ret['process'][-1]['index'] = x
+                ret['process'][-1]['days'] = (dates[x] - now().date()).days
             if x == ret['index']:
                 ret.update(data)
         return ret
 
-    def send_team_email(self, subject, tmp):
+    def send_team_email(self, subject, tmp, **kw):
         from .alert import send_team_email
         send_team_email(self.constituents,
             "Election {{ instance.for_team }}: {{ add }}",
             "elections/alert/email_%s.txt" % tmp,
-            add=subject, instance=self)
+            add=subject, instance=self, **kw)
 
     def invitation_open(self):
         """Move from PLANNING to NOMINATING"""
@@ -137,8 +139,18 @@ class Election(Model):
 
     def invitation_close(self):
         """Move from NOMINATING to SELECTING"""
+        if self._candidates.count() < self.places:
+            return self.failed_to_invite()
+
         self.status = SELECTING
         self.save()
+
+    def failed_to_invite(self):
+        """This election doesn't have enough candidates"""
+        self.status = INCAN
+        self.save()
+        # Send a message saying the election failed.
+        self.send_team_email(_('Not enough candidates'), 'failed_candidates')
 
     def voting_open(self):
         """Move from ACCEPTED to VOTED"""
@@ -146,6 +158,12 @@ class Election(Model):
         for candidate in self._candidates.all():
             candidate.slug = get_hash()
             candidate.save()
+
+        if self.candidates.count() == self.places:
+            winners = self.candidates.values_list('user_id', flat=True)
+            return voting_close(winners)
+        elif self.candidates.count() < self.places:
+            return self.failed_to_invite()
 
         # Create one ballot for each member of the constituent team
         for membership in self.constituents.members:
@@ -158,9 +176,23 @@ class Election(Model):
         # Send a message advertising that voting is open
         self.send_team_email('Voting Open', 'voting_open')
 
-    def voting_close(self):
+    def failed_to_vote(self):
+        """This election doesn't have enough candidates"""
+        self.status = INVOT
+        self.save()
+        # Send a message saying the election failed.
+        self.send_team_email(_('Not enough voters'), 'failed_votes')
+
+    def voting_close(self, ballot=None):
         """Move from VOTED to FINISHED"""
-        res = STV(list(self.ballots.get_votes()), required_winners=self.places)
+        votes = list(self.ballots.get_votes())
+        if len(votes) == 0:
+            if ballot:
+                votes = [{'count': 1.0, 'ballot': ballot}]
+            else:
+                return self.failed_to_vote()
+
+        res = STV(votes, required_winners=self.places)
         self.log = make_log(
             candidates=list(self._candidates.log()),
             results=res.as_dict(),
@@ -203,7 +235,7 @@ class Election(Model):
     invites = property(lambda self: self._candidates.all())
     candidates = property(lambda self: self.invites.filter(accepted=True))
     ignored = property(lambda self: self.invites.filter(responded=False))
-    rejected = property(lambda self: self.invites.filter(responded=True, accepted=False)
+    rejected = property(lambda self: self.invites.filter(responded=True, accepted=False))
 
     def voters(self):
         return self.ballots.filter(responded=True)

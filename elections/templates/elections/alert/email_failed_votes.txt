@@ -1,0 +1,7 @@
+{% load i18n %}{% with team=instance.constituents %}{% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
+ 
+{% blocktrans with for_team=instance.for_team %}The election for the {{ for_team }} team has failed to get enough votes. A new election might be called, but this election is now finished.{% endblocktrans %}
+
+----
+{% trans "Result:" %} {{ site }}{{ instance.get_absolute_url }}
+{% endwith %}

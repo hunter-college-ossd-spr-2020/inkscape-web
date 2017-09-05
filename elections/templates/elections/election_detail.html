@@ -241,6 +241,10 @@
       {% endfor %}
       <p>{% trans "A full log of all votes and the ballot rounds is available on request from the election official." %}</p>
     {% endwith %}
+  {% elif object.status == '!' %}
+    <p>{% trans "This election has failed to get enough candidates to be run, it has been canceled and may be re-run in the future." %}</p>
+  {% elif object.status == '*' %}
+    <p>{% trans "This election has failed to get enough votes to make a fair decision, it has been canceled and may be re-run in the future." %}</p>
   {% endif %}
 
   {% if object.candidates.count > 0 %}
