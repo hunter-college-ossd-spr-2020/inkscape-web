@@ -22,6 +22,7 @@ Hold elections for group memberships.
 """
 
 import json
+from random import sample
 from pyvotecore.irv import IRV
 from pyvotecore.stv import STV
 
@@ -208,7 +209,7 @@ class Election(Model):
     def voting_close(self, ballot=None):
         """Move from VOTED to FINISHED"""
         votes = list(self.ballots.get_votes())
-        if len(votes) < self.min_votes:
+        if self.ballots.count() < self.min_votes:
             if ballot:
                 votes = [{'count': 1.0, 'ballot': ballot}]
             else:
@@ -258,9 +259,7 @@ class Election(Model):
     candidates = property(lambda self: self.invites.filter(accepted=True))
     ignored = property(lambda self: self.invites.filter(responded=False))
     rejected = property(lambda self: self.invites.filter(responded=True, accepted=False))
-
-    def voters(self):
-        return self.ballots.filter(responded=True)
+    voters = property(lambda self: self.ballots.filter(responded=True))
 
     def get_absolute_url(self):
         return reverse('elections:item', kwargs={
@@ -295,6 +294,9 @@ class Candidate(Model):
 
     objects = CandidateManager()
 
+    def __str__(self):
+        return "Candidate: %s" % str(self.user)
+
     class Meta:
         unique_together = (('election', 'user'), ('election', 'invitor'))
 
@@ -318,7 +320,7 @@ class BallotManager(Manager):
         result = Counter()
         for ballot in self.get_queryset().filter(responded=True):
             # Add each ballot to the ballot count
-            result.update((tuple(sorted(ballot.get_vote())),))
+            result.update((tuple(ballot.get_vote()),))
 
         for ballot in result:
             # Return in grouped ballot format
@@ -345,14 +347,14 @@ class Ballot(Model):
         # force the database to give us non-null results first.
         qs = self.votes.all()
         for null in (False, True):
-            for v in qs.filter(rank__isnull=null).values_list('candidate__user_id'):
+            for v in qs.filter(rank__isnull=null).values_list('candidate__user_id').order_by('rank'):
                 yield v[0]
 
     def random_vote(self):
         """Apply a random vote to this ballot (for testing)"""
-        from random import shuffle
         self.votes.all().delete()
-        for x, user in enumerate(shuffle(self.election.candidates)):
+        users = list(self.election.candidates)
+        for x, user in enumerate(sample(users, len(users))):
             self.votes.update_or_create(candidate=user, defaults={'rank': x+1})
             self.responded = True
             self.save()
