@@ -75,6 +75,10 @@ class ElectionVote(TeamMemberMixin, SingleObjectMixin, RedirectView):
     def post(self, request, **kw):
         ballot = get_object_or_404(Ballot, slug=kw['hash'])
         has_vote = False
+        # We MUST delete the votes, because re-ordering can cause
+        # the unique database checks to flag as we re-save the new
+        # posissions. Do not change to update_or_create pattern.
+        ballot.votes.all().delete()
         for key, value in request.POST.items():
             if key.startswith('vote_'):
                 try:
@@ -82,10 +86,8 @@ class ElectionVote(TeamMemberMixin, SingleObjectMixin, RedirectView):
                     has_vote = True
                 except ValueError:
                     value = None
-                ballot.votes.update_or_create(
-                    candidate_id=key[5:],
-                    defaults={'rank': value},
-                )
+                ballot.votes.create(candidate_id=key[5:], rank=value)
+
         ballot.responded = has_vote
         ballot.save()
         if has_vote:

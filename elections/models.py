@@ -347,7 +347,8 @@ class Ballot(Model):
         # force the database to give us non-null results first.
         qs = self.votes.all()
         for null in (False, True):
-            for v in qs.filter(rank__isnull=null).values_list('candidate__user_id').order_by('rank'):
+            for v in qs.filter(rank__isnull=null)\
+              .values_list('candidate__user_id').order_by('rank'):
                 yield v[0]
 
     def random_vote(self):
@@ -358,6 +359,7 @@ class Ballot(Model):
             self.votes.update_or_create(candidate=user, defaults={'rank': x+1})
             self.responded = True
             self.save()
+
 
 class Vote(Model):
     """
