@@ -105,8 +105,8 @@ class Election(Model):
 
     parent = property(lambda self: self.for_team)
     intro = property(lambda self: self.notes)
-    name = property(lambda self: _("Election for %s (%d)") % (
-        self.for_team, self.voting_from.year))
+    name = property(lambda self: _("Election for %(team)s (%(year)d)") % {
+        'team': unicode(self.for_team), 'year': self.voting_from.year})
     get_log = property(lambda self: get_log(self.log))
 
     def __str__(self):
