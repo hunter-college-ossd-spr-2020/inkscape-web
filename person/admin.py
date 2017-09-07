@@ -67,7 +67,7 @@ class UserAdmin(BaseUserAdmin):
             {'fields': ('is_active', 'is_admin', 'is_superuser', 'groups',
                 'user_permissions'), 'classes': ('collapse', 'close'),}),
         (_('Social Networks'),
-            {'fields': ('ircnick', 'dauser', 'ocuser', 'tbruser'),
+            {'fields': ('website', 'ircnick', 'dauser', 'ocuser', 'tbruser'),
                 'classes': ('collapse', 'close')}),
         (_('Important dates'),
             {'fields': ('last_login', 'date_joined', 'last_seen', 'visits'),

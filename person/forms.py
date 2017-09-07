@@ -77,7 +77,7 @@ class UserForm(ModelForm):
         yield _("Personal Details"), [ d[k]
             for k in ['first_name', 'last_name', 'bio', 'photo', 'gpg_key']]
         yield _("Social Settings"), [ d[k]
-            for k in ['ircnick', 'dauser', 'ocuser', 'tbruser']] # ircpass
+            for k in ['website', 'ircnick', 'dauser', 'ocuser', 'tbruser']] # ircpass
 
     def clean(self):
         password1 = self.cleaned_data['password1']

@@ -63,6 +63,7 @@ class User(WithoutFields(AbstractUser, 'is_staff')):
     dauser  = CharField(_('deviantArt User'), max_length=64, **null)
     ocuser  = CharField(_('Openclipart User'), max_length=64, **null)
     tbruser = CharField(_('Tumblr User'), max_length=64, **null)
+    website = URLField(_('Website or Blog'), **null)
     gpg_key = TextField(_('GPG Public Key'),
         help_text=_('<strong>Signing and Checksums for Uploads</strong><br/> '
                     'Either fill in a valid GPG key, so you can sign your uploads, '
