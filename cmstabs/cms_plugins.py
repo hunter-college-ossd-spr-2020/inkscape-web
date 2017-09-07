@@ -86,9 +86,15 @@ class CMSGroupBioPlugin(CMSPluginBase):
 
         context.update({
             'users'      : instance.source.user_set.all(),
+            'group'      : instance.source,
             'instance'   : instance,
             'placeholder': placeholder,
+            'random_user': self.random_user(instance.source.user_set.all()),
         })
         return context
+
+    def random_user(self, users):
+        from random import randint
+        yield users[randint(0, users.count() - 1)]
 
 plugin_pool.register_plugin(CMSGroupBioPlugin)

@@ -1,0 +1,10 @@
+{% load static %}
+<div class="sponsors silver">
+  {% for user in users %}
+      <a href="{{ user.webste }}" title="{{ user }}" class="sponsor_user">
+        <span>
+          <img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/sponsor.png" %}{% endif %}"/></a>
+        </span>
+      </a>
+  {% endfor %}
+</div>
