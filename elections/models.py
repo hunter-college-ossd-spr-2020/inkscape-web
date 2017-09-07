@@ -184,7 +184,7 @@ class Election(Model):
         count = self.candidates.count()
         if count == self.places:
             winners = self.candidates.values_list('user_id', flat=True)
-            return voting_close(winners)
+            return self.voting_close(winners)
         elif count < self.places:
             return self.failed_to_invite()
 
