@@ -161,7 +161,8 @@ class GroupPhotoPlugin(CMSPlugin):
       ('B', _('Photo Bios')),
       ('0', _('Random Sponsor')),
       ('1', _('Full View Sponsors')),
-      ('2', _('Link Only Sponsors')),
+      ('2', _('Icon Only Sponsors')),
+      ('3', _('Link Only Sponsors')),
     )   
 
     source = ForeignKey(Group)
