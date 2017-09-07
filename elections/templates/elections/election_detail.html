@@ -179,14 +179,18 @@
         <p>{% blocktrans %}Type in the username or email address of the person who you would like to invite. If the user doesn't already exist on the website, an invitation will be sent out regardless so use this form with care. You can invite <strong>one person only</strong>, so try and prioritise who you want to stand in the election.{% endblocktrans %}</p>
 
         <form method="GET" action="">
-          <input type="text" name="q" value="" placeholder="Email Address or Username"/>
+          <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Email Address or Username"/>
           <button type="submit" class="btn btn-primary">{% trans "Search for Member" %}</button>
         </form>
       {% endif %}
 
-      {% if search and search.count > 0 %}
+      {% if request.GET.q %}
         <h3>{% trans "Search Results" %} ({{ search.count }}/{{ search_count }})</h3>
+        {% if search.count > 0 %}
         <p>{% trans "Please select the user you want to invite. Once invited, you will not be able to invite again." %}<p>
+        {% else %}
+        <p>{% trans "No results were found, please adjust the search so that it is EXACTLY the username, the email address or first and last names. There is no fuzzy searching here." %}</p>
+        {% endif %}
         <div class="photos"/>
           {% for user in search %}
             <a class="link" href="{% url "elections:invite" election.for_team.slug election.slug user.pk %}" title="{% trans "Send Invitation" %}" data-other-link="{% url "elections:invite-msg" election.for_team.slug election.slug user.pk %}" data-other-text="{% trans "View Message" %}">
