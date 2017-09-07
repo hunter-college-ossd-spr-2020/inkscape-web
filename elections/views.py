@@ -53,9 +53,17 @@ class ElectionDetail(DetailView):
 
         if 'q' in self.request.GET:
             q = self.request.GET['q']
-            data['search'] = get_user_model().objects.filter(
-                Q(username__iexact=q) | Q(email__iexact=q)
+            name_query = Q(first_name__iexact=q) | Q(last_name__iexact=q)
+            if ' ' in q:
+                (first, last) = q.split(' ', 1)
+                name_query = Q(first_name__iexact=first) & Q(last_name__iexact=last)
+
+            qs = get_user_model().objects.filter(
+                Q(username__iexact=q) | Q(email__iexact=q) | name_query
             )
+            data['search_count'] = qs.count()
+            qs = qs[:50]
+            data['search'] =  qs
         return data
 
     def candidates(self, ballot):
