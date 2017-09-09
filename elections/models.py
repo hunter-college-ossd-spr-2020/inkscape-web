@@ -84,7 +84,7 @@ class Election(Model):
         ' will be sent out to potential candidates. (UTC)'))
     voting_from = DateField(help_text=_('Finish the nominations and start'
         ' voting (UTC).'))
-    finish_on = DateField(help_text=_('Finish the contest, voting closed,'
+    finish_on = DateField(help_text=_('Finish the election, voting closed,'
         ' winners announced (UTC).'))
 
     places = PositiveIntegerField(default=1, help_text=_('The number of places'
