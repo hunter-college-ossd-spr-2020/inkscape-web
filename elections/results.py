@@ -76,26 +76,29 @@ def get_log(log):
     candidates = {}
     for pk in res['candidates']:
         try:
+            details = user_log[int(pk)]
 	    user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             # Reconstruct user from details in log
-            details = user_log[int(pk)]
             user = User(
               username=details['username'],
               first_name=details['first_name'],
               last_name=details['last_name'],
               email=details['email'],
             )
+        except KeyError:
+            user = None
             
-	user.winner = pk in res['winners']
-        candidates[user.pk] = user
+        if user is not None:
+            user.winner = pk in res['winners']
+            candidates[user.pk] = user
 
     for r in res['rounds']:
         tals = []
         for user_id, score in r['tallies'].items():
             user_id = int(user_id)
             tals.append({
-              'user': candidates[user_id],
+              'user': candidates.get(user_id, None),
               'score': score,
               'winner': user_id in r.get('winners', []),
               'loser': user_id in r.get('tied_losers', []) \
