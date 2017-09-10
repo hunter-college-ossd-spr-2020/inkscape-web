@@ -2,6 +2,11 @@
 {% load i18n %}
 
 {% block "page-title" %}{% block "title" %}{% trans "User Login" %}{% endblock %}{% endblock %}
+{% block "dialog-subtitle" %}
+  {% if "@" in request.POST.username %}
+    <ul class="errorlist nonfield"><li>{% trans "You may be trying to use your email address instead of your username. Your username IS NOT your email address and if you have lost your username you can reset your password which will email you your username." %}</li></ul>
+  {% endif %}
+{% endblock %}
 
 {% block "form-buttons" %}
   <a class="btn btn-default" href="{% url "password_reset" %}">{% trans "Reset Password" %}</a>
