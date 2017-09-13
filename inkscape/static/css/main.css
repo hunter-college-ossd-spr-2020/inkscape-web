@@ -187,6 +187,8 @@ h4 {
   clear: both;
 }
 p.pclear {
+  margin: 0;
+  height: 0;
   clear: both;
 }
 
