@@ -1,6 +1,6 @@
 {% load i18n %}{% with team=instance.election.for_team election=instance.election %}{% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}
 {% with state=election.state.V %}
-{% blocktrans with days=state.days date=state.date %}You have been invited to stand for the election to {{ team }}, you have {{ days }} days ({{ date }}) to accept this invitation.{% endblocktrans %}
+{% blocktrans with date=state.date count counter=state.days %}You have been invited to stand for the election to {{ team }}, you have {{ counter }} day ({{ date }}) to accept this invitation.{% plural %}You have been invite to stand for the election to {{ team }}, you have {{ counter }} days ({{ date }}) to accept this invitation.{% endblocktrans %}
 {% endwith %}
 ----
 

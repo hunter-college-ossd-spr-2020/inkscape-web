@@ -169,9 +169,9 @@
   <h1>{{ object.state.desc }}</h1>
 
   {% if state.code == '.' %}
-    <p>{% blocktrans with days=state.N.days %}This election is currently being planned. Please come back in {{ days }} days for the nomination process when you will be able to invite members to stand in the election.{% endblocktrans %}<p>
+  <p>{% trans "This election is currently being planned." %} {% blocktrans count counter=state.N.days %}Please come back in {{ counter }} day for the nomination process when you will be able to invite members to stand in the election.{% plural %}Please come back in {{ counter }} days for the nomination process when you will be able to invite members to stand in the election.{% endblocktrans %}<p>
   {% elif state.code == 'N' %}
-  <p>{% blocktrans with team=object.constituents link=object.constituents.get_absolute_url days=state.S.days %}The <a href="{{ link }}">{{ team }} team</a> can now invite members to stand as candidates in this election. You have {{ days }} days to nominate the people who you think would serve the team best.{% endblocktrans %}<p>
+  <p>{% blocktrans with team=object.constituents link=object.constituents.get_absolute_url %}The <a href="{{ link }}">{{ team }} team</a> can now invite members to stand as candidates in this election.{% endblocktrans %} {% blocktrans count counter=state.S.days %}You have {{ counter }} day to nominate the people who you think would serve the team best.{% plural %}You have {{ counter }} days to nominate the people who you think would serve the team best.{% endblocktrans %}<p>
     {% if constituent.is_member %}
       {% if invitation %}
         <strong>{% trans "Your Invitation sent to:" %} </strong> {{ invitation.user.username }} {% if invitation.accepted %}(accepted){% elif invitation.responded %}(rejected){% endif %}</em>
@@ -209,9 +209,9 @@
       <a href="{% url "auth_login" %}?next={{ request.path }}" class="btn btn-danger">{% trans "Login to Send Invitation" %}</a>
     {% endif %}
   {% elif state.code == 'S' %}
-    <p>{% blocktrans with days=state.V.days %}Candidates who have been invited to stand in this election have {{ days }} days to accept or reject their invitation before votin begins.{% endblocktrans %}</p>
+  <p>{% blocktrans count counter=state.V.days %}Candidates who have been invited to stand in this election have {{ counter }} day to accept or reject their invitation before votin begins.{% plural %}Candidates who have been invited to stand in this election have {{ counter }} days to accept or reject their invitation before votin begins.{% endblocktrans %}</p>
   {% elif state.code == 'V' %}
-  <p>{% blocktrans with team=object.constituents days=state.F.days %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ days }} days</strong> to cast your vote for this election.{% endblocktrans %}</p>
+  <p>{% blocktrans with team=object.constituents count counter=state.F.days %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ counter }} day</strong> to cast your vote for this election.{% plural %}If you are a member of <strong>{{ team }}</strong> you have <strong>{{ counter }} days</strong> to cast your vote for this election.{% endblocktrans %}</p>
   <p>{% trans "Each candidate should be placed in rank order from first to last as you would prefer to have them. If your first choice does not get enough votes then your second choice will be selected. This process continues until there are only number of winners plus one candidates remaining." %}</p>
   <p>{% trans "Drag candidates around to number them, if you move a candidate to the end their rank will be removed. You do not have to rank all candidates if you don't want to." %}</p>
     {% if ballot %}

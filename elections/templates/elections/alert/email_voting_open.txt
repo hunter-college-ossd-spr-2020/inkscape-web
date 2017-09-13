@@ -1,6 +1,6 @@
 {% load i18n %}{% with team=instance.constituents %}{% blocktrans with team=team.name %}Dear {{ team }},{% endblocktrans %}
 {% with state=instance.state.F %} 
-{% blocktrans with days=state.days date=state.date for_team=instance.for_team %}The election for the {{ for_team }} team is now open for voting. Please go to the link below to fill in your ballot. You have {{ days }} days ({{ date }}) to complete your ballot. Only members of the {{ team }} team have ballots and members who join after this point will not be added to the election.{% endblocktrans %}
+{% blocktrans with for_team=instance.for_team %}The election for the {{ for_team }} team is now open for voting. Please go to the link below to fill in your ballot.{% endblocktrans %} {% blocktrans count counter=state.days %}You have {{ counter }} day ({{ date }}) to complete your ballot.{% plural %}You have {{ counter }} days ({{ date }}) to complete your ballot.{% endblocktrans %} {% blocktrans %}Only members of the {{ team }} team have ballots and members who join after this point will not be added to the election.{% endblocktrans %}
 {% endwith %}
 ----
 {% trans "Vote:" %} {{ site }}{{ instance.get_absolute_url }}
