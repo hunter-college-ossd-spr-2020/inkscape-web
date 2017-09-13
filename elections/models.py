@@ -53,7 +53,7 @@ null = dict(null=True, blank=True)
 STATUSES = [
     ('.', _('Planning'), _('Planning the election.')),
     ('N', _('Nominating'), _('Nominating candidates to stand.')),
-    ('S', _('Selecting'), _('Candidates extra time accept an nomination')),
+    ('S', _('Selecting'), _("Candidates' extra time for accepting a nomination")),
     ('V', _('Voting'), _('Voting is open to constituents')),
     ('F', _('Finished'), _('Voting is closed, Results announced')),
     ('!', _('Insufficient Candidates'), _('Electing Canceled, Failed to get enough candidates.')),
@@ -80,7 +80,7 @@ class Election(Model):
 
     invite_from = DateField(help_text=_('Start the nominations process on this'
         ' date, emails are sent out as invites are created (UTC).'))
-    accept_from = DateField(help_text=_('Invitation process stops and invites'
+    accept_from = DateField(help_text=_('Invitation process stops and invitees'
         ' have this extra amount of time to accept their invitations. (UTC)'))
     voting_from = DateField(help_text=_('Finish the nominations and start'
         ' voting (UTC).'))
