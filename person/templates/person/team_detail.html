@@ -78,11 +78,11 @@
         {% if request.user in object.peers %}
           <h2>{% trans "Join Requests" %}</h2>
           <ul>
-          {% for user in object.requests %}     
-            {% if user.username %}
-              <li><label><a href="{{ user.get_absolute_url }}" title="{% trans "Visit profile" %}">{{ user }}</a></label>
-              <span><a href="{% url "team.approve" object.slug user.username %}">&#10003;</a>
-                    <a href="{% url "team.disapprove" object.slug user.username %}" class="no">&#10006;</a></span>
+          {% for member in object.requests %}     
+            {% if member.user.username %}
+              <li><label><a href="{{ membr.user.get_absolute_url }}" title="{% trans "Visit profile" %}">{{ member.user }}</a></label>
+              <span><a href="{% url "team.approve" object.slug member.user.username %}">&#10003;</a>
+                    <a href="{% url "team.disapprove" object.slug member.user.username %}" class="no">&#10006;</a></span>
               </li>
             {% endif %}
           {% empty %}
