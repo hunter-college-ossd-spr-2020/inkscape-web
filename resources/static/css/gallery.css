@@ -35,6 +35,9 @@ a.link .galleryitem img {
   line-height: 147px;
   outline: none;
 }
+.galleryitem > p {
+  max-width: 150px;
+}
 .galleryitem .label {
   max-width: 150px;
   text-align: center;
