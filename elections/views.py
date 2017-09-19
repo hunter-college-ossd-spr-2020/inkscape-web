@@ -124,7 +124,7 @@ class ElectionInvite(TeamMemberMixin, SingleObjectMixin, RedirectView):
         except (Election.DoesNotExist, User.DoesNotExist) as err:
             raise Http404(str(err))
         except IntegrityError:
-            messages.error(self.request, _('Invitation already sent'))
+            messages.error(self.request, _('This person is already invited'))
 
         next_url = self.get_object().get_absolute_url()
         return self.request.GET.get('next', next_url)
