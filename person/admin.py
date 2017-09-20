@@ -77,7 +77,11 @@ class UserAdmin(BaseUserAdmin):
 site.register(User, UserAdmin)
 
 class MembershipAdmin(AjaxSelectAdmin):
-    readonly_fields = ('team', 'user', 'added_by', 'removed_by')
+    form = make_ajax_form(TeamMembership, {
+        'user': 'user',
+        'added_by': 'user',
+        'removed_by': 'user',
+    }, show_help_text=True)
     list_filter = ('joined', 'requested', 'expired', 'team')
     list_display = ('repr', 'requested', 'joined', 'expired', 'title')
 
