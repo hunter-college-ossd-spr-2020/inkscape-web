@@ -109,6 +109,9 @@ class Election(Model):
         'team': unicode(self.for_team), 'year': self.voting_from.year})
     get_log = property(lambda self: get_log(self.log))
 
+    class Meta:
+        ordering = ('-finish_on',)
+
     def __str__(self):
         return self.slug
 

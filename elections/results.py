@@ -54,7 +54,26 @@ BALLOT_TYPES = {
       'link': 'https://github.com/bradbeattie/python-vote-core',
       'module': 'stv',
     },
-  }
+  },
+  'conservancy.stv': {
+    'system': {
+      'name': _("Single Transferable Vote"),
+      'link': 'http://en.wikipedia.org/wiki/Single_transferable_vote',
+      'icon': 'images/vote/old.svg',
+    },
+    'library': {
+      'name': 'conservancy',
+      'link': 'https://github.com/conservancy/voting',
+      'module': 'voting',
+    },
+  },
+  'old.stv': {
+    'system': {
+      'name': _("Single Transferable Vote"),
+      'link': 'http://en.wikipedia.org/wiki/Single_transferable_vote',
+      'icon': 'images/vote/old.svg',
+    },
+  },
 }
 
 class LogEncoder(json.JSONEncoder):
@@ -70,6 +89,7 @@ def get_log(log):
     User = get_user_model()
     items = json.loads(log)
     user_log = dict([(v['user_id'], v) for v in items['votes']])
+    user_log.update([(v['user_id'], v) for v in items['candidates']])
     res = items['results']
 
     # Build a list of candidate user objects
@@ -77,7 +97,7 @@ def get_log(log):
     for pk in res['candidates']:
         try:
             details = user_log[int(pk)]
-	    user = User.objects.get(pk=pk)
+            user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             # Reconstruct user from details in log
             user = User(
@@ -91,7 +111,7 @@ def get_log(log):
             
         if user is not None:
             user.winner = pk in res['winners']
-            candidates[user.pk] = user
+            candidates[pk] = user
 
     for r in res['rounds']:
         tals = []
