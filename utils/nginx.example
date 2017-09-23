@@ -17,6 +17,9 @@ server {
 
     rewrite ^(.*).php $1.html permanent;
 
+    location /robots.txt { alias /var/www/www.inkscape.org/inkscape/templates/robots.txt; }
+    location /favicon.ico { alias /var/www/www.inkscape.org/data/static/favicon.ico; }
+
     location /static/ {
       alias /var/www/www.inkscape.org/data/static/;
       # Enable CORS for web-fonts via caching service

@@ -41,7 +41,6 @@ urlpatterns = patterns('',
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += i18n_patterns('inkscape.views',
-    url(r'^robots\.txt$',  Robots.as_view(), name='robots.txt'),
     url(r'^contact/us/$',  ContactUs.as_view(), name='contact'),
     url(r'^contact/ok/$',  ContactOk.as_view(), name='contact.ok'),
     url(r'^search/$',      SearchView(), name='search'),
