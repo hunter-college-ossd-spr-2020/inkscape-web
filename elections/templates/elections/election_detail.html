@@ -277,6 +277,24 @@
         </div>
        {% endwith %}
       {% endfor %}
+      {% if object.called_by == request.user %}
+        {% for candidate in object.ignored %}
+          {% with user=candidate.user %}
+            <div class="galleryitem voted" id="item_{{ candidate.pk }}">
+              <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+              <p><a href="mailto:{{ user.email }}">📧</a> {{ user }}</p>
+            </div>
+          {% endwith %}
+        {% endfor %}
+        {% for candidate in object.rejected %}
+          {% with user=candidate.user %}
+          <div class="galleryitem unpublished" id="item_{{ candidate.pk }}" title="{% trans "Rejected invitation to be a candidate" %}">
+              <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+              <p><a href="mailto:{{ user.email }}">📧</a> {{ user }}</p>
+            </div>
+          {% endwith %}
+        {% endfor %}
+      {% endif %}
     </div>
   {% endif %}
 
