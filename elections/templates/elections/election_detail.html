@@ -234,6 +234,9 @@
       </div>
       <h2>{% trans "Voting Rounds" %}</h2>
       {% for round in log.results.rounds %}
+        {% if forloop.counter == 1 %}
+          <p>{% trans "A full log of all votes and the ballot rounds is available on request from the election official." %}</p>
+        {% endif %}
         <h3>{% blocktrans with x=forloop.counter %}Round {{ x }}{% endblocktrans %}
         <ol>
           {% for tally in round.tallies %}
@@ -246,8 +249,9 @@
             </li>
           {% endfor %}
         </ol>
+      {% empty %}
+        <p>{% trans "This election was uncontested and the only candidates to accept have won without any votes being cast." %}</p>
       {% endfor %}
-      <p>{% trans "A full log of all votes and the ballot rounds is available on request from the election official." %}</p>
     {% endwith %}
   {% elif object.status == '!' %}
     <p>{% trans "This election has failed to get enough candidates to be run, it has been canceled and may be re-run in the future." %}</p>
