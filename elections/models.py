@@ -244,13 +244,12 @@ class Election(Model):
         self.ballots.all().delete()
 
         # Add new users to target team
-        for candidate in self.candidates:
-            if candidate.user.pk in res.winners:
-                self.for_team.update_membership(
-                    candidate.user,
-                    expired=None, joined=now(),
-                    added_by=self.called_by
-                )
+        for user_id in res.winners:
+            self.for_team.update_membership(
+                get_user_model().objects.get(pk=user_id),
+                expired=None, joined=now(),
+                added_by=self.called_by
+            )
 
         self.status = FINISHED
         self.save()
