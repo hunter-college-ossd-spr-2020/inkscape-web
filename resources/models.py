@@ -741,13 +741,15 @@ class Gallery(Model):
     contest_count  = DateField(help_text=_('Voting is finished, but the votes are being counted.'), **null)
     contest_finish = DateField(help_text=_('Finish the contest, voting closed, winner announced (UTC).'), **null)
 
-    _is_generic = lambda self, a, b: a and a <= now().date() < b
+    _is_generic   = lambda self, a, b: a and b and a <= now().date() < b
     is_contest    = property(lambda self: bool(self.contest_submit))
     is_pending    = property(lambda self: self.contest_submit and self.contest_submit > now().date())
-    is_submitting = property(lambda self: self._is_generic(self.contest_submit, self.contest_voting))
-    is_voting     = property(lambda self: self._is_generic(self.contest_voting, (self.contest_count or self.contest_finish)))
+    is_submitting = property(lambda self: self._is_generic(self.contest_submit, self.submitting_to))
+    is_voting     = property(lambda self: self._is_generic(self.contest_voting, self.voting_to))
     is_counting   = property(lambda self: self._is_generic(self.contest_count, self.contest_finish))
     is_finished   = property(lambda self: self.contest_finish and self.contest_finish <= now().date())
+    submitting_to = property(lambda self: self.contest_voting or self.contest_finish)
+    voting_to     = property(lambda self: self.contest_count or self.contest_finish)
 
     objects = GalleryQuerySet.as_manager()
 
