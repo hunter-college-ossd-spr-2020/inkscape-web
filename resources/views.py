@@ -52,8 +52,7 @@ from .forms import *
 class GalleryMixin(object):
     pk_url_kwarg = 'gallery_id'
     model = Gallery
-
-
+    
 class DeleteGallery(GalleryMixin, OwnerDeleteMixin, DeleteView):
     title = _("Delete Gallery")
 

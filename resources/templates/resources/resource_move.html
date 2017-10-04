@@ -1,47 +1,6 @@
-{% extends 'resources/resource_base.html' %}
+{% extends 'modal.html' %}
 {% load i18n %}
 
-{% block content %}
-
-
-<h1>
-  {% block title %}
-    {% if form.source %}
-      {% trans "Move Resource" %}
-    {% else %}
-      {% trans "Copy Resource to Gallery" %}
-    {% endif %}
-  {% endblock %}
-</h1>
-
- <form method="post">
-  {% csrf_token %}
-
-  <div id="errors">
-    {{ form.non_field_errors }}
-  </div>
-
-  <table>
-    {% if form.source %}
-      <tr>
-        <th>{% trans "Move from Gallery:" %}</th>
-        <td>{{ form.source }}</td>
-      </tr>
-      <tr>
-        <th>{% trans "Move to Gallery:" %}</th>
-        <td>{{ form.target }}</td>
-      </tr>
-    {% else %}
-      <tr>
-        <th>{% trans "Copy to Gallery:" %}</th>
-        <td>{{ form.target }}</td>
-      </tr>
-    {% endif %}
-  </table>
-
-  <div class="buttonbar">
-      <button id="moreInfo" class="start end unique" type="submit" name="save" value="1">{% if form.source %}{% trans "Move" %}{% else %}{% trans "Copy" %}{% endif %}</button>
-  </div>
- </form>
+{% block "form-buttons" %}
+  <button id="moreInfo" class="btn btn-primary" type="submit" name="save" value="1">{% if form.source %}{% trans "Move" %}{% else %}{% trans "Copy" %}{% endif %}</button>
 {% endblock %}
-

@@ -1007,14 +1007,25 @@ p#final-footer #dev-stamp:hover {
   padding: 1px 5px;
   margin: 2px 0;
 }
+#sidecategory .gallery,
+#item-footer .gallery {
+  background-color: #3a4657;
+  border: #eee 1px inset;
+  border-radius: 3px;
+  color: white;
+  padding: 1px 5px;
+  margin: 2px 0;
+}
 #sidecategory .tag > img {
   vertical-align: text-top;
 }
-#item-footer .tag {
+#item-footer .tag,
+#item-footer .gallery {
   float: left;
   margin: 0px 2px;
 }
-#sidecategory .tag {
+#sidecategory .tag,
+#sidecategory .gallery {
   display: inline-block;
 }
 #sidecategory .tag.selected {
@@ -1023,6 +1034,11 @@ p#final-footer #dev-stamp:hover {
 }
 #sidecategory .tag:hover,
 #item-footer .tag:hover {
+  background-color: #999;
+  text-decoration: none;
+}
+#sidecategory .gallery:hover,
+#item-footer .gallery:hover {
   background-color: #999;
   text-decoration: none;
 }

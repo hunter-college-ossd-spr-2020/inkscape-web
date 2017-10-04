@@ -121,6 +121,11 @@
   </div>   
     
       <div id="item-footer" class="clearfix">
+        {% if object.galleries.count > 1 %}
+          {% for gallery in object.galleries.all %}
+          <a class="gallery" title="{% trans "Go to Gallery" %}" href="{{ gallery.get_absolute_url }}">{{ gallery.name }}</a>
+          {% endfor %}
+        {% endif %}
         {% for tag in object.tags.all %}
           <a class="tag" title="{% blocktrans %}Show all items tagged '{{ tag }}'{% endblocktrans %}" href="{% url "resources" %}?tags={{ tag }}">{{ tag }}</a>
         {% endfor %}
@@ -136,6 +141,9 @@
           {% elif perms.resources.can_curate %}
             <form action="{% url "edit_resource" object.id %}">
               <button id="editSide" class="start" type="submit">{% trans "Curate" %}</button>
+            </form>
+            <form action="{% url "resource.copy" object.id %}">
+              <button id="editSide" class="start" type="submit">{% trans "Add to Gallery" %}</button>
             </form>
           {% endif %}
       </div>

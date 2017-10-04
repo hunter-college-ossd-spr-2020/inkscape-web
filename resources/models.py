@@ -754,7 +754,9 @@ class Gallery(Model):
     objects = GalleryQuerySet.as_manager()
 
     def __unicode__(self):
-        if self.category:
+        if self.contest_submit:
+            return _(u"%(gallery_name)s (contest)") % {'gallery_name': self.name}
+        elif self.category:
             return self.name
         elif self.group:
             return _(u"%(gallery_name)s (for group %(group_name)s)") \

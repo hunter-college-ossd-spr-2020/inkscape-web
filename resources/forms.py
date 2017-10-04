@@ -73,28 +73,41 @@ class GalleryMoveForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.source = kwargs.pop('source', None)
         super(GalleryMoveForm, self).__init__(*args, **kwargs)
+        today = now() # Reduce parens
 
-        # Either resource's owner is the gallery's owner or the gallery's
-        # group is in the resource owner's list of groups.
-        query = (Q(user=self.instance.user) & Q(group__isnull=True)) \
-               | Q(group__in=self.instance.user.groups.all())
+        is_owner = Q(user=self.instance.user) & Q(group__isnull=True)
+        in_group = Q(group__in=self.instance.user.groups.all())
+        open_contest = (Q(contest_submit__lte=today) \
+            & (Q(contest_voting__isnull=True) | Q(contest_voting__gte=today)) \
+            & (Q(contest_finish__isnull=True) | Q(contest_finish__gte=today))
+          )
+
+        # The gallery may be owned by the user, in the same group
+        # as the user or open for events or contests.
+        query = is_owner | in_group | open_contest
 
         # Resources can be moved between galleries in the same group by a
         # user who is not the owner (but who is in the group).
         if self.source and self.source.group:
             query |= Q(group=self.source.group)
 
+        # Limit to the same category if category is set on the Gallery
+        cat = self.instance.category
+        query &= (Q(category__isnull=True) | Q(category=cat))
+
         self.fields['target'].queryset = Gallery.objects.filter(query)
 
     def clean_target(self):
         target = self.cleaned_data['target']
         existing = self.instance.gallery
-        if existing and existing.contest_submit:
-            raise ValidationError(_("Entry is in a contest and can not be moved or copied."))
-        if target.contest_submit and self.source is None:
-            raise ValidationError(_("Entry can not be copied into a contest."))
-        elif target.contest_voting and target.contest_voting < now():
-            raise ValidationError(_("Entry can not be moved into a closed contest."))
+        if target.contest_voting:
+            if existing and existing.contest_submit:
+                raise ValidationError(_("Entry is in a contest and can not be moved or copied."))
+            if target.contest_submit and self.source is None:
+                raise ValidationError(_("Entry can not be copied into a contest."))
+            elif target.contest_voting < now():
+                raise ValidationError(_("Entry can not be moved into a closed contest."))
+
         if target.category is not None and self.instance.category != target.category:
             raise ValidationError(_("Entry needs to be in the %s category to go into this gallery.") % unicode(target.category))
         return target
