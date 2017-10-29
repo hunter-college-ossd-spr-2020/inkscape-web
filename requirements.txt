@@ -37,7 +37,7 @@ django-mptt==0.6.1
 django-recaptcha==1.0.5
 django-split-json-widget==0.2
 django-sendfile==0.3.10
-django-pile==0.8.1
+django-pile==0.8.2
 django-contrib-comments==1.6.2
 django-autotest-command==1.5.3
 django-markdown-deux==1.0.5
