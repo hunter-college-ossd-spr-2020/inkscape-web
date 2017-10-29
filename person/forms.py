@@ -19,6 +19,7 @@
 #
 
 from django.forms import *
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import Permission
@@ -112,6 +113,11 @@ class UserForm(ModelForm):
         password = self.cleaned_data.get('password', None)
         if password:
             self.instance.set_password(password)
+        if self.cleaned_data.get('email') != self.instance.email:
+            # We update the last_login on email change to prevent change
+            # password attacks which would allow an attacker re-access to
+            # an account. Changing the date here will invalidate any hash.
+            self.last_login = now()
         ModelForm.save(self, **kwargs)
 
 
