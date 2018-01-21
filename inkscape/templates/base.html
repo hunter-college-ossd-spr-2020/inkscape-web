@@ -53,6 +53,11 @@
       </div>
       <div id="header-right">
         <ul id="tabs">
+          <!--Remove this header when hackfest is over-->
+          <li id="tab_hackfest" class="link">
+            <p><a href="/support-us/hackfests/"><span class="ico exclamation"></span> {% trans "Inkscape Hackfest 2018" %} <span class="donate"><span class="ico heart"></span> {% trans "Donate Now" %}</span></a></p>
+          </li>
+
           {% language_chooser "languages.html" %}
 
           {% if not request.user.is_authenticated %}

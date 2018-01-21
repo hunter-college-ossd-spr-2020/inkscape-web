@@ -206,26 +206,13 @@ small, .small {
   margin-bottom: 15px;
 }
 /* Social login styles */
-@font-face {
-  font-family:'FontAwesome';
-  src:url('../fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'),
-    url('../fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype');
-  font-weight:normal;
-  font-style:normal
-}
 .btn.social {
-  font: normal normal normal 14px/1 FontAwesome;
-  text-rendering:auto;
-  color: #fff;
-  display: inline-block;
   width: 32px;
+  padding: 0px;
   line-height: 32px;
-  font-size: 1.4em;
   text-align: center;
   border-right: 1px solid rgba(0,0,0,0.2);
   background-image: none;
-  margin: 0px;
-  padding: 0px;
   border-color:rgba(0,0,0,0.2)
 }
 .btn.social:hover {
