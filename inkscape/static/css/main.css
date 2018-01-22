@@ -1610,8 +1610,8 @@ div.sponsors > div > div {
 }
 
 li#tab_hackfest {
-  line-height: 22px;
-  margin-right: 20px;
+  line-height: 14px;
+  margin-right: 6px;
 }
 li#tab_hackfest p {
   background: #eeeeee;
@@ -1619,8 +1619,8 @@ li#tab_hackfest p {
   cursor: pointer;
 }
 li#tab_hackfest p span {
-  padding: 0px 0px 0px 4px;
-  font-size: 15px;
+  padding: 0px 0px 0px 3px;
+  font-size: 14px;
 }
 li#tab_hackfest p a:hover {
   text-decoration: none;
