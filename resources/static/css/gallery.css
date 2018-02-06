@@ -1,71 +1,85 @@
 /* License: AGPLv3 or later (http://www.gnu.org/licenses/), Copyright 2013, Martin Owens <doctormo@gmail.com> */
-
+#gallery{
+  column-width: 280px;
+	column-gap: 5px;
+	width: 100%;
+	margin-top: 10px;
+}
+#gallery:before{
+  content:"Show All Galleries";
+  position: fixed;
+  z-index:30;
+  background-color:rgba(255,255,255,0.7);
+  bottom:10px;
+  margin-left:10px;
+  padding:20px;
+  font-size:22px;
+  border-radius:6px;
+  cursor:pointer;
+}
+#right-sidebar{
+  display:none;
+}
+#left-column{
+  width:100%;
+}
 .galleryitem {
-  display: inline-block;
-  padding: 4px;
-  min-width: 150px;
-  min-height: 150px;
-  text-align: center;
-  vertical-align: middle;
-  margin: 5px 0px 25px 0px;
-  border: 2px solid transparent;
+  background: #fff;
+	border: 0px;
+	margin: 0;
+	padding: 0px;
+	padding-bottom: 1px;
+	transition: opacity .4s ease-in-out;
+	column-break-inside: avoid;
+	display: inline-block;
+  position:relative;
+  width:100%;
 }
 .galleryitem.unavailable {
   opacity: 0.5;
 }
 .galleryitem:hover {
-  border: 2px solid #cce;
-  background-color: #eef;
 } 
 .galleryitem a.link img,
 a.link .galleryitem img {
-  max-width: 150px;
-  max-height: 150px;
-  vertical-align: middle;
-  display: inline-block;
+  width: 100%;
+	height: auto;
+	padding-bottom: 0;
+	margin-bottom: 0;
+  line-height:1;
 }
 a.link .galleryitem img {
-  min-width: 150px;
-  min-height: 150px;
+  width: 100% !important;
+	height: auto;
 }
 .galleryitem a.link {
-  min-width: 150px;
-  min-height: 150px;
   display: block;
-  line-height: 147px;
   outline: none;
 }
-.galleryitem > p {
-  max-width: 150px;
-}
 .galleryitem .label {
-  max-width: 150px;
+ display:none; 
+}
+.galleryitem:hover .label {
   text-align: center;
   padding: 0px;
   margin: 0px;
   overflow: hidden;
-  background-color: #eef;
+  background-color: rgba(255,255,255,0.6);;
   display:table-cell;
-  margin: 2px;
+  margin: 0px;
   padding: 2px;
-  height: 4em;
-  width: 150px;
   word-wrap: break-word;
-  border-radius: 16px;
   vertical-align: middle;
+  position:absolute;
+  width:100%;
+  top:0;
+  color:#fff;
 }
 
-.galleryitem .label:hover {
-  border-radius: 0px;
-}
 
 .galleryitem .label a {
-  color: #035;
-  display: block;
-  outline: none;
-}
-.galleryitem .label a:hover {
   text-decoration: none;
+  color:#333;
 }
 .galleryitem p.new a {
   background-color: #efe;
@@ -77,14 +91,12 @@ a.link .galleryitem img {
   width: 130px;
 }
 .galleryitem div.link input {
-  max-width: 150px;
-  max-height: 150px;
+
   vertical-align: middle;
   display: inline-block;
 }
 .galleryitem div.link {
-  min-width: 150px;
-  min-height: 150px;
+
   display: block;
   line-height: 150px;
 }
@@ -99,7 +111,7 @@ a.link .galleryitem img {
   padding: 3px;
   color: #035;
   height: 4em;
-  width: 150px;
+
   vertical-align: middle;
 }
 
@@ -157,6 +169,7 @@ a.link .galleryitem img {
 }
 .galleryitem:hover .minitabs {
   z-index: unset;
+  width:100%;
 }
 .galleryitem .minitabs > img,
 .galleryitem .minitabs > a {
@@ -165,6 +178,15 @@ a.link .galleryitem img {
 .galleryitem:hover .minitabs > img,
 .galleryitem:hover .minitabs > a {
   visibility: visible;
+  position:absolute;
+  bottom:10px;;
+  left:1px;
+  margin-top:-30px;
+}
+.galleryitem:hover .minitabs > img:nth-child(2),
+.galleryitem:hover .minitabs > a:nth-child(2) {
+  right:1px;
+  left:auto;
 }
 .galleryitem span.ribbon {
   visibility: visible;
@@ -260,4 +282,5 @@ div#category_desc {
   margin: 19px 5px 14px;
   display: inline-block;
 }
+
 
