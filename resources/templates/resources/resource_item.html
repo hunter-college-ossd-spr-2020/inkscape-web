@@ -1,14 +1,8 @@
 {% load i18n static inkscape timers %}
 
-{% if item.is_removed %}
-  <div class="galleryitem removed">
-    <a class="link"><img src="{% static "images/removed.svg" %}"></a>
-    <p class="label">[[ {% trans "Hidden" %} ]]</p>
-    <p class="minitabs"></p>
-  </div>
-{% elif item.is_visible %}
+{% if item.is_visible %}
   {% track_object item %}
-  <div class="galleryitem{% if not item.published %} unpublished{% endif %} {{ item.extra_css }}{% if object.is_voting %}{% if item.voted %} voted{% else %} notvoted{% endif %}{% endif %}" 
+  <div class="galleryitem{% if item.is_removed %} removed{% elif not item.published %} unpublished{% endif %} {{ item.extra_css }}{% if object.is_voting %}{% if item.voted %} voted{% else %} notvoted{% endif %}{% endif %}" 
     title="{{ item.summary_string }}">
     <a class="link" href="{{ item.get_absolute_url }}">
       <img src="{{ item.thumbnail_url }}"/>

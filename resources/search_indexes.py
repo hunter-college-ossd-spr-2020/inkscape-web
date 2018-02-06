@@ -37,7 +37,7 @@ class ResourceIndex(SearchIndex, Indexable):
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
         # This would need changing if we used the signal updater
-        return self.get_model().objects.filter(published=True)
+        return self.get_model().objects.filter(published=True, is_removed=False)
 
 
 from .views import ResourceList

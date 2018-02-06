@@ -179,7 +179,9 @@ class ViewResource(DetailView):
     def get_queryset(self):
         qs = Resource.objects.for_user(self.request.user)
         if 'username' in self.kwargs:
-            return qs.filter(user__username=self.kwargs['username'])
+            qs = qs.filter(user__username=self.kwargs['username'])
+        if not self.request.user.has_perm('is_moderator'):
+            qs = qs.exclude(is_removed=True)
         return qs
 
     def get_template_names(self, *args, **kw):
@@ -363,6 +365,12 @@ class ResourceList(CategoryListView):
       ('-downed', _('Most Downloaded')),
       ('-edited', _('Last Updated')),
     )
+
+    def base_queryset(self):
+        qs = super(ResourceList, self).base_queryset()
+        if not self.request.user.has_perm('is_moderator'):
+            qs = qs.exclude(is_removed=True)
+        return qs
 
     def get_template_names(self):
         if self.get_value('category'):

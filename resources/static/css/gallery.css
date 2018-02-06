@@ -116,6 +116,14 @@ a.link .galleryitem img {
 .galleryitem.empty a.link > img {
   opacity: 0.5;
 }
+.galleryitem.removed {
+  border: 2px dashed #f00 !important;
+  background-color: #fee;
+  padding: 2px;
+}
+.galleryitem.removed p a {
+  background-color: transparent !important;
+}
 .galleryitem.unpublished {
   border: 2px solid #e58 !important;
   background-color: #fee;

@@ -6,7 +6,9 @@
 {% block "description" %}
   <div class="info">
     <div class="title">
-      {% if object.published %}
+      {% if object.is_removed %}
+        <a class="btn btn-danger" style="float: right;" href="{% url "publish_resource" object.pk %}">Removed by Moderators!</a>
+      {% elif object.published %}
         {% if object.user != request.user %}
           <div class="tog single" id="flag">
             <a href="{% flag_url %}" {% if object|is_flagged:request.user %}class="remove"{% endif %} title="{% trans "Flag Resource to Moderators" %}">&nbsp;</a>
