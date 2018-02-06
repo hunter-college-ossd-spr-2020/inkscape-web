@@ -227,7 +227,10 @@ class ResourceManager(Manager):
         return qs
 
     def for_user(self, user):
-        return self.get_queryset().filter(Q(user=user.id) | Q(published=True))
+        qs = self.get_queryset().filter(Q(user=user.id) | Q(published=True))
+        if not user.has_perm('moderation.can_moderate'):
+            qs = qs.exclude(is_removed=True)
+        return qs
 
     def subscriptions(self):
         """Returns a queryset of users who get alerts for new resources"""
