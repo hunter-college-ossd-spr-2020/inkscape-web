@@ -7,7 +7,7 @@
   <div class="info">
     <div class="title">
       {% if object.is_removed %}
-        <a class="btn btn-danger" style="float: right;" href="{% url "publish_resource" object.pk %}">Removed by Moderators!</a>
+      <a class="btn btn-danger" style="float: right;">{% trans "Removed by Moderators!" %}</a>
       {% elif object.published %}
         {% if object.user != request.user %}
           <div class="tog single" id="flag">
