@@ -180,7 +180,7 @@ class ViewResource(DetailView):
         qs = Resource.objects.for_user(self.request.user)
         if 'username' in self.kwargs:
             qs = qs.filter(user__username=self.kwargs['username'])
-        if not self.request.user.has_perm('is_moderator'):
+        if not self.request.user.has_perm('moderation.can_moderate'):
             qs = qs.exclude(is_removed=True)
         return qs
 
@@ -368,7 +368,7 @@ class ResourceList(CategoryListView):
 
     def base_queryset(self):
         qs = super(ResourceList, self).base_queryset()
-        if not self.request.user.has_perm('is_moderator'):
+        if not self.request.user.has_perm('moderation.can_moderate'):
             qs = qs.exclude(is_removed=True)
         return qs
 
