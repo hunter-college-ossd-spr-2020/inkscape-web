@@ -109,6 +109,9 @@ def download(field, row, **kwargs):
     local_path = os.path.join(FIXTURE_MEDIA, media)
     local_dir  = os.path.dirname(local_path)
 
+    if not media.strip():
+        return True
+
     if os.path.isfile(local_path):
         SKIP_WEIGHT -= 1
         #sys.stderr.write("Skipping: %s\n" % media)
@@ -149,6 +152,9 @@ UPDATES = {
   'cmsplugin_news.news': (
     [set_to, 'creator', A_USER],
     [set_to, 'editor', A_USER],
+  ),
+  'cmsplugin_news.SocialMediaType': (
+    [download, 'icon'],
   ),
   'djangocms_file.file': (
     [download, 'file'],
@@ -193,6 +199,24 @@ UPDATES = {
   ),
   'cmsplugin_image.image': (
       [download, 'image'],
+  ),
+  'releases.release': (
+      [download, 'background'],
+      [set_to, 'manager', A_USER],
+      [set_to, 'reviewer', A_USER],
+      [set_to, 'bug_manager', A_USER],
+      [set_to, 'translation_manager', A_USER],
+  ),
+  'releases.platform': (
+      [download, 'icon'],
+      [download, 'image'],
+      [set_to, 'manager', A_USER],
+  ),
+  'releases.releasestatus': (
+      [download, 'icon'],
+  ),
+  'releases.releaseplatform': (
+      [set_to, 'resource', None],
   ),
 }
 

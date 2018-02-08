@@ -38,7 +38,7 @@ cd $DEST/cms_db
 $MANAGE dumpdata cms djangocms_text_ckeditor menus sekizai \
                 djangocms_file cmsplugin_image \
                 djangocms_link cmsplugin_news \
-                cmstabs cmsplugin_toc \
+                cmstabs cmsplugin_toc releases \
     | gzip -9 > $DATE
 
 # This group dump does open us up to a security hole as it lets
