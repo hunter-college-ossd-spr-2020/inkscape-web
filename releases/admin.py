@@ -41,7 +41,7 @@ class TranslationsInline(StackedInline):
 class ReleaseAdmin(AjaxSelectAdmin):
     form = ReleaseForm
     inlines = (PlatformInline, TranslationsInline)
-    list_display = ('version', 'parent', 'release_date', 'manager')
+    list_display = ('version', 'parent', 'release_date', 'manager', 'keywords', 'html_desc')
     list_filter = ('version', 'status')
 
 
@@ -54,7 +54,7 @@ class PlatformTranslationsInline(StackedInline):
 
 class PlatformAdmin(AjaxSelectAdmin):
     form = PlatformForm
-    list_display = ('__str__', 'codename', 'desc', 'manager')
+    list_display = ('__str__', 'codename', 'desc', 'keywords', 'manager')
     inlines = (PlatformTranslationsInline,)
 
 

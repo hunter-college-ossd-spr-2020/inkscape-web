@@ -2,6 +2,8 @@
 {% load static i18n i18n_fields %}
 
 {% block title %}{% blocktrans %}Download {{ object }}{% endblocktrans %}{% endblock %}
+{% block headerdesc %}{{ object|translate_field:"html_desc" }}{% endblock %}
+{% block keywords %}download,choose,{{ object|translate_field:"keywords" }}{% endblock %}
 
 {% block "css" %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "css/shield.css" %}"/>

@@ -60,6 +60,9 @@ class ReleaseStatus(Model):
     style = CharField(max_length=32, choices=STYLES, **null)
     icon = ResizedImageField(**upload_to('icons', 32, 32))
 
+    class Meta:
+        verbose_name_plural = 'Release Statuses'
+
     def __str__(self):
         return self.name
 
@@ -86,6 +89,8 @@ class Release(Model):
     parent = ForeignKey('self', related_name='children', **null)
     version = CharField(_('Version'), max_length=16, db_index=True, unique=True)
     codename = CharField(_('Codename'), max_length=32, db_index=True, **null)
+    html_desc  = CharField(_('HTML Description'), max_length=255, **null)
+    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
 
     release_notes = TextField(_('Release notes'), **null)
     release_date = DateField(_('Release date'), db_index=True,
@@ -150,6 +155,9 @@ class ReleaseTranslation(Model):
     release = ForeignKey(Release, related_name='translations')
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
+
+    html_desc     = CharField(_('HTML Description'), max_length=255, **null)
+    keywords      = CharField(_('HTML Keywords'), max_length=255, **null)
     release_notes = TextField(_('Release notes'))
 
     class Meta:
@@ -160,6 +168,7 @@ class Platform(Model):
     """A list of all platforms we release to"""
     name       = CharField(_('Name'), max_length=64)
     desc       = CharField(_('Description'), max_length=255)
+    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
     parent     = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), **null)
     manager    = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
     codename   = CharField(max_length=255, **null)
@@ -245,6 +254,7 @@ class PlatformTranslation(Model):
 
     name       = CharField(_('Name'), max_length=64)
     desc       = CharField(_('Description'), max_length=255)
+    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
     instruct   = TextField(_('Instructions'), blank=True, null=True)
 
     class Meta:
