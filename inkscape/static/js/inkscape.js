@@ -32,7 +32,10 @@ $(document).ready(function() {
   $(".modal-dialog .fields").hide();
   var selected = $(".modal-dialog .tab.selected");
   if(selected.length == 0) {
-    selected = $(".modal-dialog .tab:first-child");
+    selected = $('.tab[for="' + Cookies.get('selected_tab') + '"]');
+    if(selected.length == 0) {
+      selected = $(".modal-dialog .tab:first-child");
+    }
   }
   selected.click();
   close_elements();
@@ -50,6 +53,7 @@ function modalfieldsets(event) {
     target.addClass('selected');
     var fields = $('#' + target.attr('for'));
     fields.show();
+    Cookies.set('selected_tab', target.attr('for'), { 'expires': 1, 'path': window.location.pathname });
   }
 }
 
