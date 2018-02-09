@@ -34,7 +34,8 @@ except ImportError:
 
 # Because python2.7 broke SSL for many computers.
 import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
