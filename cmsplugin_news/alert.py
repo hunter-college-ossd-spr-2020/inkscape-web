@@ -45,8 +45,10 @@ class NewNewsAlert(BaseAlert):
     subscribe_any = False
     subscribe_own = False
 
-    filter_field = MultipleCheckboxField(label=_('News Language'), choices=settings.LANGUAGES,
-                    help_text=_('Limit the news to this language only. Default is all news languages.'))
+    filter_field = MultipleCheckboxField(label=_('News Language'),
+        required=False, choices=settings.LANGUAGES,
+        help_text=_('Limit the news to this language only. Default is all '
+            'news languages.'))
 
     def call(self, sender, instance, **kwargs):
         if instance.is_published:
