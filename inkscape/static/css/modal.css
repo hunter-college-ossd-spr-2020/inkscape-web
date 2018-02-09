@@ -46,6 +46,16 @@
 .text-muted strong {
   color: #a33;
 }
+.text-danger {
+  color: white;
+  background-color: #c00;
+  display: block;
+  padding: 9px;
+  border: #c00 1px solid;
+}
+.text-danger br {
+  display: none;
+}
 small, .small {
   font-size: 85%;
 }
@@ -274,6 +284,15 @@ label.tab.selected {
   background-color: #34A7C1;
   color: white;
   border: #ccc solid 1px;
+}
+label.tab.errors {
+  color: red;
+  border: red solid 1px;
+}
+label.tab.errors.selected {
+  background-color: #c00;
+  color: white;
+  border: #c00 solid 1px;
 }
 .fields {
   margin-top: 40px;

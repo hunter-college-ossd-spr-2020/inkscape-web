@@ -34,7 +34,7 @@
               {% if form.fieldsets %}
                 <div class="tabs">
                   {% for label, fieldset in form.fieldsets %}
-                    <label class="tab" for="tab{{ forloop.counter }}">{{ label }}</label>
+                    <label class="tab{% if fieldset.errors %} error{% endif %}" for="tab{{ forloop.counter }}">{{ label }}</label>
                   {% endfor %}
                 </div>
                 {% for label, fieldset in form.fieldsets %}
@@ -46,7 +46,7 @@
                 {{ formset.management_form }}
                 <div class="tabs">
                   {% for form in formset %}
-                  <label class="tab{% if form.instance.slug %}{% if request.GET.tab == form.instance.slug %} selected{% endif %}" id="tab_{{ form.instance.slug }}{% endif %}" for="tab{{ forloop.counter }}">{{ form.label }}</label>
+                  <label class="tab{% if form.instance.slug %}{% if request.GET.tab == form.instance.slug %} selected{% endif %}{% if form.errors %} errors{% endif %}" id="tab_{{ form.instance.slug }}{% endif %}" for="tab{{ forloop.counter }}">{{ form.label }}</label>
                   {% endfor %}
                   {% block "extra-tabs" %}{% endblock %}
                 </div>
