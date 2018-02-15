@@ -41,11 +41,8 @@ def process_results(result, progress=None):
 
         try:
             (request, _) = LogRequest.objects.get_or_create(path=path)
-        except utils.IntegrityError:
-            continue
-        except utils.OperationalError:
-            continue
-        except utils.DataError:
+        except (utils.IntegrityError, utils.OperationalError, utils.DataError, utils.InternalError) as err:
+            sys.stderr.write("Error: {}\n".format(err))
             continue
 
         for d_ate, data in result[path].items():
