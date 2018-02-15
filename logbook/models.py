@@ -28,12 +28,14 @@ Models for the logbook app, stores:
 
 """
 
-from datetime import date, timedelta
+import json
+from datetime import date, datetime, timedelta
 from collections import defaultdict, Counter
 
 from django.conf import settings
 from django.db.models import *
 
+from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -161,6 +163,39 @@ class LogMetric(Model):
 
     def get_icon(self):
         return "images/logbook/" + self.icon
+
+    def get_json(self):
+        qs = self.values.filter(period__period=0)
+        tops = qs.values_list('name__family').annotate(count=Sum('count')).order_by('-count')[:9].values_list('name__family', flat=True)
+
+        if len(tops) == 1 and tops[0] in [None, 'None']:
+            tops = qs.values_list('name__name').annotate(count=Sum('count')).order_by('-count')[:9].values_list('name__name', flat=True)
+            name = 'name__name'
+        else:
+            name = 'name__family'
+            
+        metrics = qs.values_list(name, 'period__date')\
+            .annotate(count=Sum('count')).order_by(name, 'period__date')
+
+        families = set()
+        dates = set()
+        square = defaultdict(lambda: defaultdict(int))
+
+        for (family, date, count) in metrics:
+            if family not in tops:
+                continue
+            date = int(date.strftime("%s")) * 1000
+            square[family][date] = count
+            families.add(family)
+            dates.add(date)
+
+        ret = []
+        for family in families:
+            ret.append({
+              "key": family,
+              "values": [[date, square[family][date]] for date in dates]
+            })
+        return mark_safe(json.dumps(ret))
 
     def families(self):
         for family in set(self.values.values_list('name__family', flat=True)):

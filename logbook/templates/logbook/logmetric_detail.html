@@ -10,6 +10,9 @@
   <script type="text/javascript" src="{% static "nvd3/d3.min.js" %}"></script>
   <script type="text/javascript" src="{% static "nvd3/nv.d3.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/logbook.js" %}"></script>
+  <script>
+      var chart_data = {{ object.get_json }};
+  </script>
 {% endblock %}
 
 {% block content %}
