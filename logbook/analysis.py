@@ -23,29 +23,42 @@ Take parsed results and sort them into database objects.
 Collapses lists into counts or averages as needed.
 """
 
+import sys
 from logbook.models import LogMetric, LogRequest, LogPeriod
 from logbook.settings import get_setting
 from django.db import transaction, utils
 
-@transaction.atomic
 def process_results(result, progress=None):
     """Each result is either an average or a count"""
     LogMetric.objects.clear_metrics()
-    count = 0
-    done = 0
-    total = float(len(result))
+    count, done, total = 0, 0, float(len(result))
+    requests = []
 
     for count, path in enumerate(result):
         if progress:
-            progress("save ", count / total, count, done)
-
+            progress("load ", count / total, count, done)
         try:
             (request, _) = LogRequest.objects.get_or_create(path=path)
         except (utils.IntegrityError, utils.OperationalError, utils.DataError, utils.InternalError) as err:
-            sys.stderr.write("Error: {}\n".format(err))
+            sys.stderr.write("Error: {} -> {}\n".format(path, err))
             continue
+        requests.append(request)
+        done += 1
 
-        for d_ate, data in result[path].items():
+    if progress:
+        progress("load ", 1.0, count, done)
+
+    return process_results_part_two(result, requests, progress)
+
+@transaction.atomic
+def process_results_part_two(result, requests, progress=None):
+    count, done, total = 0, 0, float(len(requests))
+
+    for count, request in enumerate(requests):
+        if progress:
+            progress("save ", count / total, count, done)
+
+        for d_ate, data in result[request.path].items():
             (period, _) = LogPeriod.objects.get_or_create(
                     period=0, date=d_ate, request_id=request.pk)
             for key, value in data.items():
@@ -53,6 +66,7 @@ def process_results(result, progress=None):
                 metric = LogMetric.objects.get_metric(key, unit)
                 period.values.create_or_update(metric, value)
                 done += 1
+
     if progress:
         progress("save ", 1.0, count, done)
 
