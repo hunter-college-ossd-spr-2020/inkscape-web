@@ -45,6 +45,8 @@ def process_results(result, progress=None):
             continue
         except utils.OperationalError:
             continue
+        except utils.DataError:
+            continue
 
         for d_ate, data in result[path].items():
             (period, _) = LogPeriod.objects.get_or_create(
