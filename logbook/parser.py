@@ -171,6 +171,9 @@ def run(data, *junk):
 
     if data['status'] != '200':
         junk += ('count', 'country', 'agent')
+    else:
+        # Give status a family which is 4XX, 5XX etc etc.
+        data['status'] = (data['status'][0]+'XX', data['status'])
 
     for key in junk:
         data.pop(key, None)
