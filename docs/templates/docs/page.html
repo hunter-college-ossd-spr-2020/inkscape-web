@@ -4,7 +4,7 @@
 
 {% block content %}
   {% addtoblock "css" %}
-      <link rel="stylesheet" type="text/css" href="{% static "css/docs.css" %}" >
+      <link rel="stylesheet" type="text/css" href="{% get_media_prefix %}doc/docs.css">
   {% endaddtoblock %}
 
   <h1>{% block title %}{{ title }}{% endblock %}</h1>
