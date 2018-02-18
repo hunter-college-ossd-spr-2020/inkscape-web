@@ -66,12 +66,17 @@ def page(request, uri):
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
+        # extract metadata from <head>
         title = content.split('<title>',1)[-1].split('</title>',1)[0]
+        # extract content from <body>
+        content = content.split('<body',1)[-1].split('>',1)[-1].split('</body',1)[0]
+        # try to strip headers/footers using some predefined markers
         if '<div id="content">' in content:
             content = content.split('<div id="content">',1)[-1]
         elif '<div id="preface">' in content:
             content = content.split('<div id="preface">',1)[-1]
         content = content.split('<div id="footer">')[0]
+        # replace relative links with absolute links prefixed with MEDIA_URL
         content = content.replace('src="http','|src|')\
             .replace('src="', 'src="%s/' % os.path.join(settings.MEDIA_URL,
               'doc', *uri.split('/')[:-1]))\
