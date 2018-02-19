@@ -68,8 +68,9 @@ def page(request, uri):
         content = fhl.read()
         # extract metadata from <head>
         title = content.split('<title>',1)[-1].split('</title>',1)[0]
-        # extract content from <body>
-        content = content.split('<body',1)[-1].split('>',1)[-1].split('</body',1)[0]
+        # extract <body> as content (and rewrite to <div>)
+        content = content.split('<body',1)[-1].split('</body',1)[0]
+        content = '<div' + content + '</div>'
         # try to strip headers/footers using some predefined markers
         if '<div id="content">' in content:
             content = content.split('<div id="content">',1)[-1]
