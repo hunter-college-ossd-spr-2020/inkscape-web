@@ -71,12 +71,6 @@ def page(request, uri):
         # extract <body> as content (and rewrite to <div>)
         content = content.split('<body',1)[-1].split('</body',1)[0]
         content = '<div' + content + '</div>'
-        # try to strip headers/footers using some predefined markers
-        if '<div id="content">' in content:
-            content = content.split('<div id="content">',1)[-1]
-        elif '<div id="preface">' in content:
-            content = content.split('<div id="preface">',1)[-1]
-        content = content.split('<div id="footer">')[0]
         # replace relative links with absolute links prefixed with MEDIA_URL
         content = content.replace('src="http','|src|')\
             .replace('src="', 'src="%s/' % os.path.join(settings.MEDIA_URL,
