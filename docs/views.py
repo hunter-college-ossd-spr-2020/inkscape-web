@@ -43,21 +43,24 @@ def get_redirects():
                 return [ line.strip().split("|") for line in fhl.readlines() ]
     return []
 
-def get_path(uri, check=True):
+def get_path(uri):
     path = os.path.join(DOC_ROOT, uri)
-    if not os.path.isfile(path):
-        # Cheeky asserts return for redirects
-        assert check
-        for (regex, new_uri) in get_redirects():
-            try:
-                ret = re.findall(regex, uri)
-                assert ret
-                return get_path(new_uri % ret[0], False)
-            except (Http404, AssertionError):
-                # We capture all exceptions to protect from broken regexs
-                pass
-        raise Http404
-    return (path, uri)
+    if os.path.isfile(path):
+        return (path, uri)
+
+    for (regex, new_uri) in get_redirects():
+        try:
+            ret = re.findall(regex, uri)
+            assert ret
+            uri = new_uri % ret[0]
+            path = os.path.join(DOC_ROOT, uri)
+            if os.path.isfile(path):
+                return (path, uri)
+        except (AssertionError):
+            # We capture all exceptions to protect from broken regexs
+            pass
+    
+    raise Http404
 
 def page(request, uri):
     (path, uri) = get_path(uri)
