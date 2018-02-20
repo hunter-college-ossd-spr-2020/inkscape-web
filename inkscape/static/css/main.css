@@ -798,8 +798,8 @@ div.toc ol,
   margin-bottom: 10px;
 }
 #content > div.wrapper {
-  margin: -20px;
-  padding: 20px;
+  margin: 0 -20px -20px -20px;
+  padding: 0 20px 20px 20px;
   min-height: 500px;
 }
 
@@ -1724,3 +1724,4 @@ li#tab_hackfest p a:hover {
   text-decoration: none;
   background-image: linear-gradient(to bottom, #ff4646, #cc1d1d);
 }
+
