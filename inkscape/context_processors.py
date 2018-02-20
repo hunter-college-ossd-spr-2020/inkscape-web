@@ -25,7 +25,7 @@ import logging
 
 from os.path import isfile, join
 from collections import OrderedDict
-
+from menus.utils import DefaultLanguageChanger
 from django.conf import settings
 
 def tracker_data(request):
@@ -33,6 +33,20 @@ def tracker_data(request):
       'TRACKER_URL': getattr(settings, 'PIWIK_URL', None),
       'TRACKER_API_KEY': getattr(settings, 'PIWIK_API_KEY', None),
       'TRACKER_SIDE_ID': getattr(settings, 'PIWIK_SIDE_ID', 1),
+    }
+
+def englishslug(request):
+    if hasattr(request, "_language_changer"):
+        try:
+            url = request._language_changer("en")
+        except NoReverseMatch:
+            url = DefaultLanguageChanger(request)("en")
+    else:
+        # use the default language changer
+        url = DefaultLanguageChanger(request)("en")
+    url_parts = url.split('/')
+    return {
+        'englishslug': url_parts[len(url_parts)-2],
     }
 
 PATH = settings.PROJECT_PATH

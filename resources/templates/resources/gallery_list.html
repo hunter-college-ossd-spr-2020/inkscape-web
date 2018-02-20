@@ -8,7 +8,7 @@
 
 {% block content %}
   <h1>{% trans "Resources" %}</h1>
-    <div id="gallery">
+    <div id="gallery" class="imagelist" >
       {% for gallery in object_list %}
         <div class="galleryitem" title="">
           <a class="link" href="{{ gallery.get_absolute_url }}"><img src="{{ gallery.thumbnail_url }}"/></a>

@@ -108,6 +108,7 @@ TEMPLATES = [{
             'django.template.loaders.app_directories.Loader',
         ],
         'context_processors': (
+            'inkscape.context_processors.englishslug',
             'inkscape.context_processors.version',
             'inkscape.context_processors.tracker_data',
             'social_django.context_processors.backends',

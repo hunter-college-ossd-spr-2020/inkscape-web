@@ -1,71 +1,153 @@
 /* License: AGPLv3 or later (http://www.gnu.org/licenses/), Copyright 2013, Martin Owens <doctormo@gmail.com> */
+/* See https://gitlab.com/inkscape/inkscape-web/issues/162#note_57927689 for multicolumn and so on*/
+.page > .imagelist{
+  column-width: 180px;
+  column-gap: 10px;
+	width: 100%;
+	margin-top: 10px;
+}
+.page > .imagelist.max3col{
+  column-width: 220px;
+}
+.page > .imagelist.max2col{
+  column-width: 295px;
+}
+.wrapper{
+  position:relative;
+}
+.gallery.page .wrapper #right-sidebar{
+  visibility:hidden !important;
+  z-index:200;
+  float:none;
+  position:absolute;
+  background-color:rgba(255,255,255,0.9);
+  padding:20px 45px 20px 20px !important;
+  width:194px !important;
+  top:0;
+  right:0;
+  z-index:320;
+ 
+}
+.wrapper #left-column{
+  width:93% !important;
+  margin:0px;
+}
 
+.gallery.page .wrapper #right-sidebar:hover,
+.gallery.page .wrapper #right-sidebar:focus{
+  visibility:visible !important;
+}
+.gallery.page .wrapper #right-sidebar:before{
+  visibility:visible;
+  display:block;
+  position:absolute;
+  content:"+";
+  text-align:center !important;
+  border-radius:5px;
+  color:#333;
+  font-size:28px;
+  padding:4px;
+  font-weight:bold;
+  z-index:30;
+  top:0px;
+  right:5px;
+  bottom:0;
+  cursor:pointer;
+  line-height:1;
+  border-width:1px;
+  border-color:#ccc;
+  border-style:solid;
+}
 .galleryitem {
-  display: inline-block;
-  padding: 4px;
-  min-width: 150px;
-  min-height: 150px;
-  text-align: center;
-  vertical-align: middle;
-  margin: 5px 0px 25px 0px;
-  border: 2px solid transparent;
+  background: #fff;
+	border: 0px;
+	margin: 3px;
+	padding: 0px;
+	padding-bottom: 1px;
+	transition: opacity .4s ease-in-out;
+	column-break-inside: avoid;
+	display: inline-block;
+  position:relative;
+  width:100%;
+  
 }
 .galleryitem.unavailable {
   opacity: 0.5;
 }
 .galleryitem:hover {
-  border: 2px solid #cce;
-  background-color: #eef;
 } 
 .galleryitem a.link img,
 a.link .galleryitem img {
-  max-width: 150px;
-  max-height: 150px;
-  vertical-align: middle;
-  display: inline-block;
+  width: 100%;
+	height: auto;
+	padding-bottom: 0;
+	margin-bottom: 0;
+  line-height:1;
+  border-width:1px 1px 0 1px;
+  border-style:solid;
+  border-color:#ccc;
+  border-radius:6px 6px 0 0 !important;
 }
 a.link .galleryitem img {
-  min-width: 150px;
-  min-height: 150px;
+  width: 100% !important;
+	height: auto;
 }
 .galleryitem a.link {
-  min-width: 150px;
-  min-height: 150px;
   display: block;
-  line-height: 147px;
   outline: none;
-}
-.galleryitem > p {
-  max-width: 150px;
-}
-.galleryitem .label {
-  max-width: 150px;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  overflow: hidden;
-  background-color: #eef;
-  display:table-cell;
-  margin: 2px;
-  padding: 2px;
-  height: 4em;
-  width: 150px;
-  word-wrap: break-word;
-  border-radius: 16px;
-  vertical-align: middle;
+  line-height:1;
+  padding:0;
+  margin-bottom:-2px;
 }
 
-.galleryitem .label:hover {
-  border-radius: 0px;
+.galleryitem .label, 
+.galleryitem p {
+  text-align: center !important;
+  padding:4%;
+  margin:0 0 4px 0;
+  width:92%;
+  display:inline-block;
+  border-width:1px 1px 1px 1px;
+  border-style:dashed solid solid solid;
+  border-color:#ccc;
+  border-radius:0 0 6px 6px !important;
 }
-
+@media screen and (min-width: 960px) {
+.titlehover .galleryitem .label, 
+.titlehover .galleryitem p {
+  position:absolute;
+  z-index:20;
+  top:0;
+  border:none;
+  background-color:rgba(255,255,255,0.6);
+  border-radius:0 !important;
+  width:96%;
+  padding:2%;
+  margin:0;
+  color:#333;
+  display:none;
+}
+.titlehover .galleryitem a.link img,
+.titlehover a.link .galleryitem img {
+  border:none;
+  border-radius:6px !important;
+}
+.wrapper #left-column{
+  width:98% !important;
+}
+.titlehover .galleryitem:hover .label, 
+.titlehover .galleryitem:hover p {
+  display:block;
+  
+}
+.titlehover .galleryitem .label a{
+  font-size:16px;
+}
+}
 .galleryitem .label a {
-  color: #035;
-  display: block;
-  outline: none;
-}
-.galleryitem .label a:hover {
   text-decoration: none;
+  color:#333;
+  font-size:18px;
 }
 .galleryitem p.new a {
   background-color: #efe;
@@ -77,14 +159,12 @@ a.link .galleryitem img {
   width: 130px;
 }
 .galleryitem div.link input {
-  max-width: 150px;
-  max-height: 150px;
+
   vertical-align: middle;
   display: inline-block;
 }
 .galleryitem div.link {
-  min-width: 150px;
-  min-height: 150px;
+
   display: block;
   line-height: 150px;
 }
@@ -99,7 +179,6 @@ a.link .galleryitem img {
   padding: 3px;
   color: #035;
   height: 4em;
-  width: 150px;
   vertical-align: middle;
 }
 
@@ -149,39 +228,81 @@ a.link .galleryitem img {
   border-radius: 0px;
 }
 .galleryitem .minitabs {
-  width: 147px;
   position: absolute;
+  top:0;
+  left:0;
+  right:0;
   text-align: right;
-  margin-top: 2px;
   z-index: -1;
 }
-.galleryitem:hover .minitabs {
+@media screen and (min-width: 960px) {
+.titlehover .galleryitem .minitabs{
+  top:auto;
+  bottom:0;
+}
+  .galleryitem:hover span.ribbon{
+    display:none;
+  }
+  .galleryitem .minitabs > img,
+.galleryitem .minitabs > a {
+  visibility: hidden !important;
+  }
+    .galleryitem:hover .minitabs > img,
+.galleryitem:hover .minitabs > a {
+  visibility:visible !important;
+  margin-bottom:5px;
+  }
+}
+.galleryitem .minitabs {
   z-index: unset;
+  width:100%;
 }
 .galleryitem .minitabs > img,
 .galleryitem .minitabs > a {
-  visibility: hidden;
-}
-.galleryitem:hover .minitabs > img,
-.galleryitem:hover .minitabs > a {
   visibility: visible;
+  top:0px;
+  width:25px;
+  height:25px;
+  margin:3px;
+  background-color:rgba(255,255,255,0.6);
+  border-radius:50%;
+  padding:4px;
+}
+.galleryitem .minitabs > a ,
+.galleryitem .minitabs > img
+{
+  visibility: visible;
+  
+}
+
+
+.galleryitem .minitabs > img:nth-child(2),
+.galleryitem .minitabs > a:nth-child(2) {
+  right:0px;
+  left:auto;
 }
 .galleryitem span.ribbon {
   visibility: visible;
-  position: relative;
-  top: -9px;
-  left: -7px;
+  position: absolute;
+  left:50%;
+  bottom:-20px;
+  margin-left:-75px !important;
+  z-index:300;
 }
-.galleryitem:hover span.ribbon {
-  display: none;
-}
+
 .galleryitem span.ribbon p {
   position: absolute;
-  top: -29px;
-  width: 165px;
+  top: -6px;
   text-align: center;
   color: white;
   font-weight: bold;
+  padding: 0%;
+  margin: 10px 0;
+  width: 100%;
+  display: block;
+  border-width: 0;
+  background-color:transparent;
+
 }
 svg.ribbon path.part_a { fill:#7e7e7e; }
 svg.ribbon path.part_b { fill:#a9a9a9; }
@@ -260,4 +381,8 @@ div#category_desc {
   margin: 19px 5px 14px;
   display: inline-block;
 }
+
+
+
+
 

@@ -43,7 +43,7 @@
     <meta name="keywords" content="inkscape,{% block keywords %}{% trans "vector,drawing,graphics,svg,xml,document,poster,linux,open source,foss,floss,free software,libre software,libre,freedom,line,shape,diagram,flowchart,graph,extension,plugin,software,download,platform,windows,win,mac,osx,ubuntu,fedora,debian,help,tutorial,chat,irc,home,homepage,professional,casual,powerful,text,web,www,w3c,standard" %}{% endblock %}" />
   </head>
 
-<body id="page-{% block body-pageid %}{{ PAGE_ID }}{% endblock %}" class="{% if LANGUAGE_BIDI %}rtl {% endif %}{% block body-classes %}{% endblock %}">
+<body id="page-{% block body-pageid %}{{ PAGE_ID }}{% endblock %}" class="page {% if LANGUAGE_BIDI %}rtl {% endif %}{% block body-classes %}{% endblock %} {% language_chooser "pageclasses.html" %}">
   {% cms_toolbar %}
 
   <div class="header">
@@ -56,6 +56,7 @@
           <h2><a href="/" tabindex="-1">{% trans "Draw Freely." %}</a></h2>
         {% endblock %}
       </div>
+
       <div id="header-right">
         <ul id="tabs">
           <!--Remove this header when hackfest is over-->
@@ -64,7 +65,6 @@
               <p><a href="/support-us/hackfests/">{{ DONATE_NOW|safe }} <span class="ico heart"></span></a></p>
           </li>
           {% endif %}
-
           {% language_chooser "languages.html" %}
 
           {% if not request.user.is_authenticated %}
@@ -121,10 +121,10 @@
   {% block supercontent %}
     {% block "precontent" %}{% endblock %}
     <div id="content"{% block contentclasses %}{% endblock %}>
-      <div class="wrapper">
         {% block "breadcrumbs" %}
           {% include "breadcrumbs.html" %}
         {% endblock %}
+      <div class="wrapper">
         {% block content %}{% endblock %}
         {% block "pagination" %}{% include "pagination.html" %}{% endblock %}
       </div>

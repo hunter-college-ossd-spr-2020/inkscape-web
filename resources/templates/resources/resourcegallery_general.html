@@ -2,8 +2,8 @@
 
 {% block supercontent %}
   <div id="content"{% block contentclasses %}{% endblock %}>
-    <div class="wrapper">
       {% include "breadcrumbs.html" %}
+    <div class="wrapper titlehover max3cols">
       {% include 'resources/resourcegallery_contents.html' %}
       {% include "pagination.html" %}
     </div>

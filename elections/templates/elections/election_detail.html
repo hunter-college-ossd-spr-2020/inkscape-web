@@ -221,9 +221,9 @@
   {% elif state.code == 'F' %}
     {% with log=object.get_log %}
       <h2>{% trans "Results" %}</h2>
-      <div class="photos">
+      <div class="photos imagelist">
         {% for user in log.candidates %}
-          <div class="galleryitem">
+          <div class="galleryitem" >
             <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
             <p>{{ user }}</p>
             {% if user.winner %}
