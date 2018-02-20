@@ -49,6 +49,20 @@ def englishslug(request):
         'englishslug': url_parts[len(url_parts)-2],
     }
 
+def englishslug(request):
+    if hasattr(request, "_language_changer"):
+        try:
+            url = request._language_changer("en")
+        except NoReverseMatch:
+            url = DefaultLanguageChanger(request)("en")
+    else:
+        # use the default language changer
+        url = DefaultLanguageChanger(request)("en")
+    url_parts = url.split('/')
+    return {
+        'englishslug': url_parts[len(url_parts)-2],
+    }
+
 PATH = settings.PROJECT_PATH
 INKSCAPE_VERSION = ''
 WEBSITE_VERSION = ''

@@ -33,21 +33,15 @@
   margin:0px;
 }
 
+
 .gallery.page .wrapper #right-sidebar:hover,
 .gallery.page .wrapper #right-sidebar:focus{
   visibility:visible !important;
 }
-.gallery.page .wrapper #right-sidebar,
-.gallery.page .wrapper #right-sidebar{
-  margin-top:-35px;
-  margin-right:-30px;
-  padding-top:5px !important;
-
-}
 .gallery.page .wrapper #right-sidebar:before{
   visibility:visible;
   display:block;
-  position:sticky;
+  position:absolute;
   content:"+";
   text-align:center !important;
   border-radius:5px;
@@ -73,6 +67,7 @@
 	padding: 0px;
 	padding-bottom: 1px;
 	transition: opacity .4s ease-in-out;
+	column-break-inside: avoid;
 	display: inline-block;
   position:relative;
   width:100%;
@@ -109,6 +104,7 @@ a.link .galleryitem  img {
 
 .galleryitem  .label, 
 .galleryitem  p {
+
   text-align: center !important;
   padding:4%;
   margin:0 0 4px 0;
@@ -119,7 +115,40 @@ a.link .galleryitem  img {
   border-color:#ccc;
   border-radius:0 0 6px 6px !important;
 }
-.galleryitem  .label a {
+
+@media screen and (min-width: 960px) {
+.titlehover .galleryitem .label, 
+.titlehover .galleryitem p {
+  position:absolute;
+  z-index:20;
+  top:0;
+  border:none;
+  background-color:rgba(255,255,255,0.6);
+  border-radius:0 !important;
+  width:96%;
+  padding:2%;
+  margin:0;
+  color:#333;
+  display:none;
+}
+.titlehover .galleryitem a.link img,
+.titlehover a.link .galleryitem img {
+  border:none;
+  border-radius:6px !important;
+}
+.wrapper #left-column{
+  width:98% !important;
+}
+.titlehover .galleryitem:hover .label, 
+.titlehover .galleryitem:hover p {
+  display:block;
+  
+}
+.titlehover .galleryitem .label a{
+  font-size:16px;
+}
+}
+.galleryitem .label a {
   text-decoration: none;
   color:#333;
   font-size:18px;
@@ -134,12 +163,10 @@ a.link .galleryitem  img {
   width: 130px;
 }
 .galleryitem  div.link input {
-
   vertical-align: middle;
   display: inline-block;
 }
-.galleryitem  div.link {
-
+.galleryitem div.link {
   display: block;
   line-height: 150px;
 }
@@ -237,8 +264,52 @@ a.link .galleryitem  img {
   right:0;
   left:auto;
 }
-.galleryitem {
-  position:relative;
+
+@media screen and (min-width: 960px) {
+.titlehover .galleryitem .minitabs{
+  top:auto;
+  bottom:0;
+}
+  .galleryitem:hover span.ribbon{
+    display:none;
+  }
+  .galleryitem .minitabs > img,
+.galleryitem .minitabs > a {
+  visibility: hidden !important;
+  }
+    .galleryitem:hover .minitabs > img,
+.galleryitem:hover .minitabs > a {
+  visibility:visible !important;
+  margin-bottom:5px;
+  }
+}
+.galleryitem .minitabs {
+  z-index: unset;
+  width:100%;
+}
+.galleryitem .minitabs > img,
+.galleryitem .minitabs > a {
+  visibility: visible;
+  top:0px;
+  width:25px;
+  height:25px;
+  margin:3px;
+  background-color:rgba(255,255,255,0.6);
+  border-radius:50%;
+  padding:4px;
+}
+.galleryitem .minitabs > a ,
+.galleryitem .minitabs > img
+{
+  visibility: visible;
+  
+}
+
+
+.galleryitem .minitabs > img:nth-child(2),
+.galleryitem .minitabs > a:nth-child(2) {
+  right:0px;
+  left:auto;
 }
 .galleryitem  span.ribbon {
   visibility: visible;
@@ -276,6 +347,23 @@ a.link .galleryitem  img {
 }
 .galleryitem:hover  span.ribbon{
   opacity:1;
+  bottom:-20px;
+  margin-left:-75px !important;
+  z-index:300;
+}
+
+.galleryitem span.ribbon p {
+  position: absolute;
+  top: -6px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  padding: 0%;
+  margin: 10px 0;
+  width: 100%;
+  display: block;
+  border-width: 0;
+  background-color:transparent;
 }
 svg.ribbon path.part_a { fill:#7e7e7e; }
 svg.ribbon path.part_b { fill:#a9a9a9; }
@@ -355,7 +443,6 @@ div#category_desc {
   display: inline-block;
 }
 
-
 @media screen and (min-width: 960px) {
 .page.gallery .galleryitem .label, 
 .page.gallery .galleryitem p {
@@ -402,10 +489,3 @@ div#category_desc {
   }
 
 }
-
-
-
-
-
-
-
