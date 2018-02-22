@@ -457,7 +457,8 @@ div.toc ol,
 
 /* Dropdowns on the top-right */
 #tabs {
-  float: right;
+  position: absolute;
+  right: 0;
   margin: 0;
   padding: 0;
   color: white;

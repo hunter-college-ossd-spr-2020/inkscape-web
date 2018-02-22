@@ -38,6 +38,17 @@ div.cms .cms-toolbar-trigger {
   top: 0;
   right: 8px;
 }
+#tab_hackfest {
+  position: absolute;
+  top: 30px;
+  margin: 0;
+  right: 0;
+  opacity: .8;
+}
+#tab_hackfest p,
+#tab_hackfest a {
+  border-radius: 5px;
+}
 #topsearch {
   right: 8px;
 }
@@ -317,16 +328,22 @@ div.toc,
     display: inline-block;
     position: static;
     float: none;
+    margin-left: -5px;
   }
   #tabs > li.dropdown > div {
     text-align: left;
   }
-  #tabs > li.dropdown:first-child > div {
+  #tab_hackfest {
+    white-space: normal;
+    left: 4px;
+    right: 4px;
+  }
+  #tab_languages > div {
     left: 0;
     right: unset;
     border-radius: 0 5px 5px 5px;
   }
-  #tabs > #tab_languages > div > p:first-child a {
+  #tab_languages > div > p:first-child a {
     border-radius: 0 5px 0 0;
   }
   #topsearch {
