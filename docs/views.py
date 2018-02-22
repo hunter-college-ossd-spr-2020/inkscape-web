@@ -43,21 +43,24 @@ def get_redirects():
                 return [ line.strip().split("|") for line in fhl.readlines() ]
     return []
 
-def get_path(uri, check=True):
+def get_path(uri):
     path = os.path.join(DOC_ROOT, uri)
-    if not os.path.isfile(path):
-        # Cheeky asserts return for redirects
-        assert check
-        for (regex, new_uri) in get_redirects():
-            try:
-                ret = re.findall(regex, uri)
-                assert ret
-                return get_path(new_uri % ret[0], False)
-            except (Http404, AssertionError):
-                # We capture all exceptions to protect from broken regexs
-                pass
-        raise Http404
-    return (path, uri)
+    if os.path.isfile(path):
+        return (path, uri)
+
+    for (regex, new_uri) in get_redirects():
+        try:
+            ret = re.findall(regex, uri)
+            assert ret
+            uri = new_uri % ret[0]
+            path = os.path.join(DOC_ROOT, uri)
+            if os.path.isfile(path):
+                return (path, uri)
+        except (AssertionError):
+            # We capture all exceptions to protect from broken regexs
+            pass
+    
+    raise Http404
 
 def page(request, uri):
     (path, uri) = get_path(uri)
@@ -66,12 +69,12 @@ def page(request, uri):
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
+        # extract metadata from <head>
         title = content.split('<title>',1)[-1].split('</title>',1)[0]
-        if '<div id="content">' in content:
-            content = content.split('<div id="content">',1)[-1]
-        elif '<div id="preface">' in content:
-            content = content.split('<div id="preface">',1)[-1]
-        content = content.split('<div id="footer">')[0]
+        # extract <body> as content (and rewrite to <div>)
+        content = content.split('<body',1)[-1].split('</body',1)[0]
+        content = '<div' + content + '</div>'
+        # replace relative links with absolute links prefixed with MEDIA_URL
         content = content.replace('src="http','|src|')\
             .replace('src="', 'src="%s/' % os.path.join(settings.MEDIA_URL,
               'doc', *uri.split('/')[:-1]))\

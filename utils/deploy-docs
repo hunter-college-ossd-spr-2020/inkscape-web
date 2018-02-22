@@ -32,7 +32,7 @@ fi
 
 TEST=$@
 export FORCE=0
-export DOC_SOURCE="/tmp/inkscape-docs-export-website"
+export DOC_SOURCE="/tmp/documentation-export"
 export DOC_TARGET="$TARGET/data/media/doc"
 
 cd $TARGET
@@ -45,7 +45,7 @@ fi
 if [ ! -d "$DOC_SOURCE" ]; then
     echo "Can't find docs in $DOC_SOURCE, Downloading..."
     cd `dirname $DOC_SOURCE`
-    git clone https://gitlab.com/inkscape/inkscape-docs-export-website.git &> /dev/null
+    git clone https://gitlab.com/inkscape/inkscape-docs/documentation-export.git &> /dev/null
     export FORCE=1
 fi
 
@@ -61,9 +61,9 @@ if [ -d $DOC_TARGET ]; then
   if [[ $? == 0 || $FORCE == 1 ]]; then
     echo "New revisions found, updating!"
     echo "Sending docs to ${DOC_TARGET}..."
-    rsync -ua $TEST --exclude='.bzr/' --delete . $DOC_TARGET
+    rsync -ua $TEST --exclude='.git/' --delete . $DOC_TARGET
     git log -1 --date=local --format="%cd (%h)" > $DOC_TARGET/revision
-    git log --format="------------------%n%nAUTHOR:%aN%nTIME:%at%nEMAIL:%aE%n%h : %s%n%aD%n" > $TARGET/data/documentation.log
+    cp data/documentation.log $TARGET/data/documentation.log
   else
     echo "Docs alrady up to date!"
   fi
