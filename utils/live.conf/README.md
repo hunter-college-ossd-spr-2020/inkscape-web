@@ -1,4 +1,3 @@
-
 # What is live.conf
 
 This directory contains example files used for LIVE deployment.
