@@ -776,8 +776,9 @@ body > .footer .nav ul {
 #final-footer :link:active,
 #final-footer span {
   color: #aaa;
+  display: inline-block;
   padding: 10px;
-  margin: 15px 8px;
+  margin: 2px 8px;
   white-space: nowrap;
 }
 #final-footer :link:hover,
@@ -847,19 +848,8 @@ p#final-footer #dev-stamp:hover {
 }
 
 /* 2 columns */
-#left-column {
-  float: left;
-  width: 71%;
-  padding: 0 2% 0 0;
-}
 .page #left-column > h2:first-child {
   margin-top: 24px;
-}
-
-#right-sidebar {
-  float: right;
-  width: 21%;
-  padding: 0 0 20px 2%;
 }
 #right-sidebar .search input {
   width: 19%;
@@ -905,6 +895,19 @@ p#final-footer #dev-stamp:hover {
   width: 100%;
 }
 
+/*= 2-Column layout on wider screens */
+@media (min-width: 699px) and (min-width: 30em) {
+  #left-column {
+    float: left;
+    width: 71%;
+    padding: 0 2% 0 0;
+  }
+  #right-sidebar {
+    float: right;
+    width: 21%;
+    padding: 0 0 20px 2%;
+  }
+}
 
 /*= Specific elements */
 
