@@ -778,6 +778,7 @@ body > .footer .nav ul {
   color: #aaa;
   padding: 10px;
   margin: 15px 8px;
+  white-space: nowrap;
 }
 #final-footer :link:hover,
 #final-footer a:hover {
