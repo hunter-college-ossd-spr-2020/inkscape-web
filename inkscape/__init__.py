@@ -63,7 +63,6 @@ class MyAdminSite(admin.AdminSite):
       'redirects': 'sites',
       'django_comments': 'forums',
       'contenttypes': 'sites',
-      'inkscape': 'logbook',
     }
     rename = {
       'auth': 'All Users and Teams',

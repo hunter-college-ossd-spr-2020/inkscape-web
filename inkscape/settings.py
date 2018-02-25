@@ -207,7 +207,6 @@ INSTALLED_APPS = (
     'django_comments',
     'forums',
     'alerts',
-    'logbook',
     'ircbot',
     'markdown_deux',
 )
@@ -227,7 +226,6 @@ TRANSLATED_APPS = (
     'haystack',
     'inkscape',
     'ircbot',
-    'logbook',
     'moderation',
     'person',
     'elections',
