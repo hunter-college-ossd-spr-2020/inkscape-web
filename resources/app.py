@@ -24,9 +24,11 @@ Signals for resources
 import logging
 from django.db.models import signals
 from django.apps import AppConfig
+from django.conf import settings
 
 # For clearing the cache in a file
-from inkscape.fastly_cache import FastlyCache
+if not settings.DEBUG:
+    from inkscape.fastly_cache import FastlyCache
 
 class ResourceConfig(AppConfig):
     name = 'resources'
@@ -41,7 +43,7 @@ class ResourceConfig(AppConfig):
     def remove_file(instance, **kw):
         for field in ('download', 'signature', 'checked_sig', 'thumbnail', 'rendering'):
             fn = getattr(instance, field)
-            if fn and fn.url:
+            if fn and fn.url and not settings.DEBUG:
                 FastlyCache().purge_media(fn)
             try:
                 getattr(instance, field).delete(save=False)
