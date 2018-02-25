@@ -43,7 +43,7 @@
 /*= Generic content styles */
 
 body {
-  width: 960px;
+  max-width: 960px;
   margin: 0 auto !important;
   background-color: white;
   background-image: linear-gradient(to bottom, #e6e6e6 0%, #e6e6e6 10px, #ffffff 75px);
@@ -848,8 +848,8 @@ p#final-footer #dev-stamp:hover {
 /* 2 columns */
 #left-column {
   float: left;
-  width: 680px;
-  padding: 0 20px 0 0;
+  width: 71%;
+  padding: 0 2% 0 0;
 }
 .page #left-column > h2:first-child {
   margin-top: 24px;
@@ -857,11 +857,11 @@ p#final-footer #dev-stamp:hover {
 
 #right-sidebar {
   float: right;
-  width: 200px;
-  padding: 0 0 20px 20px;
+  width: 21%;
+  padding: 0 0 20px 2%;
 }
 #right-sidebar .search input {
-  width: 180px;
+  width: 19%;
   padding: 3px;
 } 
 #right-sidebar .search a {
