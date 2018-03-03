@@ -42,6 +42,10 @@ class TeamForm(ModelForm):
             if field in self.fields:
                 self.fields[field].widget = TextEditorWidget()
 
+class TeamAdminForm(TeamForm):
+    class Meta:
+        fields = ('name', 'email', 'icon', 'intro', 'desc', 'charter', 'side_bar', 'enrole', 'auto_expire')
+        model = Team
 
 class PasswordForm(PasswordResetForm):
     recaptcha = ReCaptchaField(label=_("Human Test"))

@@ -27,7 +27,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
 
 from .models import User, Team
-from .forms import UserForm, AgreeToClaForm, Permission
+from .forms import UserForm, AgreeToClaForm, Permission, TeamAdminForm
 from .mixins import LoginRequiredMixin, NeverCacheMixin, UserMixin, NextUrlMixin
 
 class AgreeToCla(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
@@ -94,13 +94,19 @@ class LeaveFriend(MakeFriend):
 class TeamList(ListView):
     queryset = Team.objects.exclude(enrole='S')
 
-class TeamDetail(DetailView):
-    slug_url_kwarg = 'team'
+class TeamMixin(object):
     queryset = Team.objects.exclude(enrole='S')
+    slug_url_kwarg = 'team'
+
+class TeamDetail(TeamMixin, DetailView):
+    pass
 
 class TeamCharter(TeamDetail):
     title = _("Team Charter")
     template_name = 'person/team_charter.html'
+
+class EditTeam(TeamMixin, UpdateView):
+    form_class = TeamAdminForm
 
 class ChatWithTeam(NeverCacheMixin, LoginRequiredMixin, TeamDetail):
     title = _("Chat")
