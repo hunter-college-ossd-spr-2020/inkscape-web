@@ -26,10 +26,13 @@ Person app mixins
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kw):
+        if hasattr(self, 'is_allowed') and not self.is_allowed(request.user):
+            raise PermissionDenied()
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kw)
 
 class UserMixin(LoginRequiredMixin):

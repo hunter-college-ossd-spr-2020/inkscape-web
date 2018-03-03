@@ -105,8 +105,12 @@ class TeamCharter(TeamDetail):
     title = _("Team Charter")
     template_name = 'person/team_charter.html'
 
-class EditTeam(TeamMixin, UpdateView):
+class EditTeam(LoginRequiredMixin, TeamMixin, UpdateView):
     form_class = TeamAdminForm
+
+    def is_allowed(self, user):
+        return user == self.get_object().admin
+
 
 class ChatWithTeam(NeverCacheMixin, LoginRequiredMixin, TeamDetail):
     title = _("Chat")
