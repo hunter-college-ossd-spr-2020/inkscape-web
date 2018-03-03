@@ -11,6 +11,10 @@
 {% endblock %}
 
 {% block "side" %}
+  {% if object.admin == request.user %}
+    <a href="{% url "team.edit" object.slug %}" class="btn btn-danger" disabled title=
+      "{% trans "Edit the teams details as the team's administrator." %}">{% trans "Edit Team" %}</a>
+  {% endif %}
   {% with membership=team|membership:request.user %}
     {% if team.charter %}
       <a href="{% url "team.charter" object.slug %}" class="btn btn-primary" disabled title=
