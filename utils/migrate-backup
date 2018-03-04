@@ -32,6 +32,7 @@ import os
 import sys
 import json
 
+from random import choice
 from collections import defaultdict
 from subprocess import PIPE, Popen
 from urllib2 import urlopen
@@ -42,12 +43,17 @@ if VERBOSE:
 
 MANAGE = os.path.join(os.path.dirname(__file__), 'manage')
 try:
-    A_USER = int( Popen([MANAGE, 'getauser'], stdout=PIPE).stdout.read().strip() )
+    users = Popen([MANAGE, 'getauser'], stdout=PIPE).stdout.read()
+    users = [int(a.strip()) for a in users if a.strip()]
+    A_USER = users[0]
 except ValueError:
     sys.stderr.write("Can't restore data with no admin user setup.")
     sys.exit(1)
 
-LIVE_URL = 'https://inkscape.org/media'
+def random_user(field, **kw):
+    return set_to(field, choice(users), **kw)
+
+LIVE_URL = 'https://media.inkscape.org/media'
 FIXTURE_MEDIA = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', 'data', 'fixtures', 'media'))
 
@@ -218,6 +224,22 @@ UPDATES = {
   'releases.releaseplatform': (
       [set_to, 'resource', None],
   ),
+  'resources.resource': (
+      [download, 'thumbnail'],
+      [download, 'download'],
+      [download, 'rendering'],
+      [random_user, 'user'],
+      [set_to, 'checked_by', A_USER],
+  ),
+  'resources.vote': (
+      [random_user, 'voter'],
+  ),
+  'resources.gallery': (
+      [random_user, 'user'],
+      [delete, 'group'],
+  ),
+  'resources.resourcemirror': ([delete],),
+  'resources.quota': ([delete],),
 }
 
 def log(message):

@@ -30,9 +30,11 @@ class Command(BaseCommand):
     help = 'Returns the first valid user\'s id to the command line.'
 
     def handle(self, *args, **options):
-        for user in User.objects.all():
+        if User.objects.count() == 0:
+            raise ValueError("No valid user is available for use.")
+        for x, user in enumerate(User.objects.all().order_by('?')):
             # TODO: In the future we can check validity here.
             print user.id
-            return
-        raise ValueError("No valid user is available for use.")
+            if x > 30:
+                return
 
