@@ -13,15 +13,16 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.91+devel r"
-   width="54"
+   inkscape:version="0.92.1 r15371"
+   width="20"
    height="20"
    version="1.0"
    sodipodi:docname="delete.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/doctormo/Desktop/small-pd.png"
    inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-ydpi="90"
+   viewBox="0 0 20 20">
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -30,7 +31,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -48,8 +49,8 @@
     </foreignObject>
   </defs>
   <sodipodi:namedview
-     inkscape:window-height="1056"
-     inkscape:window-width="1855"
+     inkscape:window-height="960"
+     inkscape:window-width="1280"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0"
      guidetolerance="10.0"
@@ -60,11 +61,11 @@
      pagecolor="#ffd7d7"
      id="base"
      showgrid="false"
-     inkscape:zoom="11.547826"
-     inkscape:cx="34.5"
-     inkscape:cy="12"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
+     inkscape:zoom="5.773913"
+     inkscape:cx="8.955265"
+     inkscape:cy="9.8213159"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
      inkscape:current-layer="svg2"
      inkscape:window-maximized="1"
      showguides="false"
@@ -78,29 +79,17 @@
      inkscape:snap-grids="false"
      inkscape:snap-to-guides="false"
      inkscape:snap-nodes="false"
-     inkscape:snap-others="false" />
-  <path
-     style="color:#000000;fill:#eeeeff;stroke:#ccccee;stroke-width:2.0007;stroke-linecap:round"
-     d="M 1,1.124 C 1,9.525 1.64,19 12.96,19 l 28.08,0 C 52.36,19 53,9.525 53,1.124"
-     id="rect4216"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="cccc" />
-  <path
-     style="color:#000000;fill:#eeeeff;stroke-width:2.0006;stroke-linecap:round"
-     d="M 1.884,-0.0237 C 1.884,8.205 2.516,18.05 13.76,17.92 l 26.49,-0.28 c 11.23,0 11.85,-9.435 11.85,-17.6637 z"
-     id="path4419"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="csccc" />
+     inkscape:snap-others="false"
+     inkscape:pagecheckerboard="true" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:17.76335716px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#cc0000;fill-opacity:1;stroke:#cc0000;stroke-width:1.70000005;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     x="20.928539"
-     y="15.496985"
-     id="text4144"
-     sodipodi:linespacing="125%"><tspan
+     style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#cc0000;fill-opacity:1;stroke:#cc0000;stroke-width:1.70000005;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     x="3.92854"
+     y="16.474779"
+     id="text4144"><tspan
        sodipodi:role="line"
        id="tspan4146"
-       x="20.928539"
-       y="15.496985"
-       style="fill:#cc0000;stroke:#cc0000;stroke-width:1.70000005;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none">X</tspan></text>
+       x="3.92854"
+       y="16.474779"
+       style="font-size:17.76335716px;line-height:1.25;fill:#cc0000;stroke:#cc0000;stroke-width:1.70000005;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none">X</tspan></text>
 </svg>

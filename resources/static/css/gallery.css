@@ -1,16 +1,16 @@
 /* License: AGPLv3 or later (http://www.gnu.org/licenses/), Copyright 2013, Martin Owens <doctormo@gmail.com> */
 /* See https://gitlab.com/inkscape/inkscape-web/issues/162#note_57927689 for multicolumn and so on*/
+
+/*.normal 4 columns */
 .page  .imagelist{
   column-width: 180px;
   column-gap: 10px;
 	width: 100%;
 	margin-top: 10px;
 }
-.page  .imagelist.max3col{
-  column-width: 260px;
-}
-.page  .imagelist.max2col{
-  column-width: 295px;
+/*.gallery 3 columns */
+.page.gallery .imagelist{
+  column-width: 270px;
 }
 .wrapper{
   position:relative;
@@ -84,8 +84,8 @@
 }
 .galleryitem:hover {
 } 
-.galleryitem > a.link img,
-a.link .galleryitem > img {
+.galleryitem  a.link img,
+a.link .galleryitem img {
   width: 100%;
 	height: auto;
 	padding-bottom: 0;
@@ -96,11 +96,11 @@ a.link .galleryitem > img {
   border-color:#ccc;
   border-radius:6px 6px 0 0 !important;
 }
-a.link .galleryitem > img {
+a.link .galleryitem  img {
   width: 100% !important;
 	height: auto;
 }
-.galleryitem > a.link {
+.galleryitem  a.link {
   display: block;
   outline: none;
   line-height:1;
@@ -108,8 +108,8 @@ a.link .galleryitem > img {
   margin-bottom:-2px;
 }
 
-.galleryitem > .label, 
-.galleryitem > p {
+.galleryitem  .label, 
+.galleryitem  p {
   text-align: center !important;
   padding:4%;
   margin:0 0 4px 0;
@@ -120,26 +120,26 @@ a.link .galleryitem > img {
   border-color:#ccc;
   border-radius:0 0 6px 6px !important;
 }
-.galleryitem > .label a {
+.galleryitem  .label a {
   text-decoration: none;
   color:#333;
   font-size:18px;
 }
-.galleryitem > p.new a {
+.galleryitem  p.new a {
   background-color: #efe;
   outline: none;
 }
-.galleryitem > progress {
+.galleryitem  progress {
   height: 15px;
   margin: 23px 0px;
   width: 130px;
 }
-.galleryitem > div.link input {
+.galleryitem  div.link input {
 
   vertical-align: middle;
   display: inline-block;
 }
-.galleryitem > div.link {
+.galleryitem  div.link {
 
   display: block;
   line-height: 150px;
@@ -148,7 +148,7 @@ a.link .galleryitem > img {
   max-width: 140px;
   text-align: center;
 }
-.galleryitem > adiv.input {
+.galleryitem  adiv.input {
   background-color: #EEF;
   display: table-cell;
   margin: 2px;
@@ -203,7 +203,7 @@ a.link .galleryitem > img {
   background-color: #cce;
   border-radius: 0px;
 }
-.galleryitem > .minitabs {
+.galleryitem .minitabs {
   position: absolute;
   top:0;
   left:0;
@@ -212,56 +212,57 @@ a.link .galleryitem > img {
   z-index: -1;
 }
 
-.galleryitem > .minitabs {
+.galleryitem .minitabs {
   z-index: unset;
   width:100%;
 }
-.galleryitem > .minitabs > img,
-.galleryitem .minitabs  > a > img{
+.galleryitem  .minitabs  img{
   visibility: visible ;
-  width:25px;
-  height:25px;
+  height:18px;
   margin:3px;
   background-color:rgba(255,255,255,0.6);
   display:inline-block;
-  border-radius:50%;
-  padding:4px;
+  border-radius:15%;
+  padding:3px;
 }
-.galleryitem > .minitabs  > a ,
-.galleryitem > .minitabs  > img
+.galleryitem .minitabs   a ,
+.galleryitem .minitabs   img
 {
   visibility: visible;
   
 }
 
 
-.galleryitem > .minitabs > img:nth-child(2),
-.galleryitem > .minitabs > a:nth-child(2) {
-  right:0px;
+.galleryitem  .minitabs  img:nth-child(2),
+.galleryitem  .minitabs  a:nth-child(2) {
+  right:0;
   left:auto;
 }
-.galleryitem > span.ribbon {
+.galleryitem  span.ribbon {
   visibility: visible;
   position: absolute;
   left:50%;
-  bottom:-20px;
-  margin-left:-75px !important;
+  bottom:-18px;
+  margin-left:-82px !important;
   z-index:300;
+  opacity:0.8;
 }
 
-.galleryitem > span.ribbon p {
+.galleryitem  span.ribbon p {
   position: absolute;
   top: -6px;
   text-align: center;
   color: white;
   font-weight: bold;
   padding: 0%;
-  margin: 10px 0;
+  margin: 12px 0;
   width: 100%;
   display: block;
   border-width: 0;
   background-color:transparent;
-
+}
+.galleryitem:hover  span.ribbon{
+  opacity:1;
 }
 svg.ribbon path.part_a { fill:#7e7e7e; }
 svg.ribbon path.part_b { fill:#a9a9a9; }
@@ -304,14 +305,14 @@ svg.ribbon path.part_c { fill:#494949; }
 .galleryitem > .minitabs > img,
 .galleryitem > .minitabs > .blank {
   position: relative;
-  right: -4px;
+  right: -1px;
   float: left;
 }
-.galleryitem > .minitabs img:last-child,
-.galleryitem > .minitabs a:last-child img,
-.galleryitem > .minitabs blank:last-child {
+.galleryitem  .minitabs img:last-child,
+.galleryitem  .minitabs a:last-child img,
+.galleryitem  .minitabs blank:last-child {
   float: right;
-  left: -4px;
+  left: 0;
 }
 .galleryitem > .minitabs > a:hover {
   text-decoration: none;
@@ -343,8 +344,8 @@ div#category_desc {
 
 
 @media screen and (min-width: 960px) {
-.titlehover .galleryitem .label, 
-.titlehover .galleryitem p {
+.page.gallery .galleryitem .label, 
+.page.gallery .galleryitem p {
   position:absolute;
   z-index:20;
   top:0;
@@ -357,40 +358,41 @@ div#category_desc {
   color:#333;
   display:none;
 }
-.titlehover .galleryitem > a.link > img,
-.titlehover > a.link > .galleryitem > img {
+.page.gallery .galleryitem  a.link > img,
+.page.gallery    a.link > .galleryitem > img {
   border:none;
   border-radius:6px !important;
 }
 .wrapper #left-column{
   width:100% !important;
 }
-.titlehover > .galleryitem:hover > .label, 
-.titlehover > .galleryitem:hover > p {
+.page.gallery    .galleryitem:hover  .label, 
+.page.gallery    .galleryitem:hover  p {
   display:block;
   
 }
-.titlehover > .galleryitem >.label a{
+.page.gallery    .galleryitem .label a{
   font-size:16px;
 }
-.titlehover > .galleryitem > .minitabs{
+.page.gallery    .galleryitem  .minitabs{
   top:auto;
   bottom:0;
 }
   .galleryitem:hover > span.ribbon{
     display:none;
   }
-  .galleryitem > .minitabs  > img,
-.galleryitem .minitabs  > a {
+  .galleryitem  .minitabs   img,
+.galleryitem .minitabs   a {
   visibility: hidden !important;
   }
-    .galleryitem:hover > .minitabs > img,
-.galleryitem:hover > .minitabs > a {
+    .galleryitem:hover  .minitabs  img,
+.galleryitem:hover  .minitabs  a {
   visibility:visible !important;
   margin-bottom:5px;
   }
 
 }
+
 
 
 
