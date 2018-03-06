@@ -547,10 +547,12 @@ class Resource(Model):
         return str(self.created.year)
 
     def is_visible(self):
-        return get_user().pk == self.user_id or self.published and self.is_available()
+        return get_user().pk == self.user_id or (
+            self.published and not self.is_removed and self.is_available()
+        )
 
     def is_available(self):
-        return not self.download or os.path.exists(self.download.path)
+        return (self.download and os.path.exists(self.download.path)) or self.link
 
     def voted(self):
         return self.votes.filter(voter_id=get_user().pk).first()
