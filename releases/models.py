@@ -88,14 +88,16 @@ class Release(Model):
     """A release of inkscape"""
     parent = ForeignKey('self', related_name='children', **null)
     version = CharField(_('Version'), max_length=16, db_index=True, unique=True)
-    codename = CharField(_('Codename'), max_length=32, db_index=True, **null)
+    is_prerelease = BooleanField(_('is Pre-Release'), default=False,
+        help_text=_("If set, will indicate that this is a testing pre-release and should not be given to users."))
     html_desc  = CharField(_('HTML Description'), max_length=255, **null)
     keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
 
     release_notes = TextField(_('Release notes'), **null)
     release_date = DateField(_('Release date'), db_index=True,
         help_text=_("ONLY set this when THIS release is ready to go. Set pre-release dates on pre-releases and remember, as soon as this is released, it will take over the default redirection and users will start downloading this release."), **null)
-    status = ForeignKey(ReleaseStatus, **null)
+    status = ForeignKey(ReleaseStatus,
+        help_text=_("When release isn't finalised, document if we are in freezing, etc, useful for development."), **null)
 
     edited = DateTimeField(_('Last edited'), auto_now=True)
     created = DateTimeField(_('Date created'), auto_now_add=True,
@@ -119,20 +121,13 @@ class Release(Model):
         get_latest_by = 'release_date'
 
     def __str__(self):
-        if not self.codename or self.codename == self.version:
-            return "Inkscape %s" % self.version
-        return "Inkscape %s (%s)" % (self.version, self.codename)
+        return "Inkscape %s" % self.version
 
     def get_absolute_url(self):
         return reverse('releases:release', kwargs={'version': self.version})
 
     def breadcrumb_parent(self):
         return self.parent if self.parent else Release.objects.all()
-
-    def is_prerelease(self):
-        """Returns True if this child release happened before parent release"""
-        (par, dat) = (self.parent, self.release_date)
-        return par and dat and (not par.release_date or par.release_date > dat)
 
     @property
     def revisions(self):
