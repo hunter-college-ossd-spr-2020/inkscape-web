@@ -205,7 +205,7 @@ a.link .galleryitem  img {
 }
 .galleryitem .minitabs {
   position: absolute;
-  top:0;
+  bottom:0;
   left:0;
   right:0;
   text-align: right;
@@ -238,28 +238,42 @@ a.link .galleryitem  img {
   right:0;
   left:auto;
 }
+.galleryitem {
+  position:relative;
+}
 .galleryitem  span.ribbon {
   visibility: visible;
   position: absolute;
   left:50%;
-  bottom:-18px;
   margin-left:-82px !important;
   z-index:300;
-  opacity:0.8;
+  opacity:1;
+  bottom:26px;
+  margin-top:0px !important; 
+  filter:invert(0%);
+  background-color:transparent !important;
+}
+.gallery.page span.ribbon{
+    bottom:-18px;
+}
+.galleryitem:hover  span.ribbon {
+  filter:invert(100%);
 }
 
 .galleryitem  span.ribbon p {
   position: absolute;
-  top: -6px;
+  top:-8px;
   text-align: center;
   color: white;
   font-weight: bold;
-  padding: 0%;
+  padding: 0;
   margin: 12px 0;
   width: 100%;
-  display: block;
+  display: block !important;
   border-width: 0;
-  background-color:transparent;
+  line-height:1.8;
+  color:#000 !important;
+  background-color:transparent !important;;
 }
 .galleryitem:hover  span.ribbon{
   opacity:1;
@@ -378,20 +392,18 @@ div#category_desc {
   top:auto;
   bottom:0;
 }
-  .galleryitem:hover > span.ribbon{
-    display:none;
-  }
-  .galleryitem  .minitabs   img,
+.galleryitem  .minitabs   img,
 .galleryitem .minitabs   a {
   visibility: hidden !important;
-  }
-    .galleryitem:hover  .minitabs  img,
+}
+.galleryitem:hover  .minitabs  img,
 .galleryitem:hover  .minitabs  a {
   visibility:visible !important;
   margin-bottom:5px;
   }
 
 }
+
 
 
 
