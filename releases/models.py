@@ -119,7 +119,7 @@ class Release(Model):
         get_latest_by = 'release_date'
 
     def __str__(self):
-        if not self.codename:
+        if not self.codename or self.codename == self.version:
             return "Inkscape %s" % self.version
         return "Inkscape %s (%s)" % (self.version, self.codename)
 

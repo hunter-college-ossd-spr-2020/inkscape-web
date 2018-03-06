@@ -19,6 +19,7 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from django.http import Http404
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
 from django.views.generic.base import RedirectView
@@ -41,7 +42,10 @@ class DownloadRedirect(RedirectView):
 
         url = CACHE.get(key)
         if not url:
-            url = self.get_url(family, version, bits)
+            try:
+                url = self.get_url(family, version, bits)
+            except Release.DoesNotExist:
+                raise Http404
             CACHE.set(key, url, 2 * 3600) # Two hours
 
         if settings.DEBUG:
@@ -53,7 +57,7 @@ class DownloadRedirect(RedirectView):
         # have no parent at all, or the parent MUST also have a release date
         qs = Release.objects.filter(release_date__isnull=False)
         qs = qs.filter(Q(parent__isnull=True) | Q(parent__release_date__isnull=False))
-        release = qs.exclude(codename__icontains='pre').latest()
+        release = qs.exclude(Q(codename__icontains='pre') | Q(version__icontains='pre')).latest()
         platforms = list(release.platforms.for_os(family, version, bits))
 
         if len(platforms) == 1:
@@ -147,7 +151,7 @@ class ReleaseView(DetailView):
         is_before = False
 
         for item in data['releases'][REVS][LIST]:
-            if is_released or 'pre' in item.codename:
+            if is_released or 'pre' in item.codename or 'pre' in item.version:
                 # If the parent is released and the selected is before
                 # tell the html to hide this item (we can use js to enable)
                 item.hide = True
