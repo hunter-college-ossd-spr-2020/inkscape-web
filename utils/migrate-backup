@@ -44,7 +44,7 @@ if VERBOSE:
 MANAGE = os.path.join(os.path.dirname(__file__), 'manage')
 try:
     users = Popen([MANAGE, 'getauser'], stdout=PIPE).stdout.read()
-    users = [int(a.strip()) for a in users if a.strip()]
+    users = [int(a.strip()) for a in users.split() if a.strip()]
     A_USER = users[0]
 except ValueError:
     sys.stderr.write("Can't restore data with no admin user setup.")
