@@ -23,6 +23,7 @@
     {% if membership.is_member %}
       <a href="{% url "team.leave" object.slug %}" class="btn btn-default" disabled title=
         "{% trans "Leave this team." %}">{% trans "Leave Team" %}</a>
+      <script>popUpLink("{% blocktrans %}Are you sure you want to leave {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Leave Team" %}', "{{ object.get_absolute_url }}");</script>
     {% elif membership.is_watcher %}
       <a href="{% url "team.unwatch" object.slug %}" class="btn btn-default" title=
         "{% trans "This means that you will no longer be kept up-to-date about this team's activities." %}">{% trans "Stop Watching Team" %}</a>
@@ -143,9 +144,14 @@
             {% endif %}
             {% if user == request.user or object.admin == request.user %}
               {% if user.username %}
-                <a href="{% url "team.remove" object.slug user.username %}">
+              <a href="{% url "team.remove" object.slug user.username %}" title="{% trans 'Remove Membership' %}">
                   <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Remove Membership" %}">
                 </a>
+                {% if user == request.user %}
+                  <script>popUpLink("{% blocktrans %}Are you sure you want to leave {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Leave Team" %}', "{{ object.get_absolute_url }}");</script>
+                {% else %}
+                  <script>popUpLink("{% blocktrans %}Are you sure you want to remove {{ user }} from {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Remove" %}', "{{ object.get_absolute_url }}");</script>
+                {% endif %}
               {% endif %}
             {% endif %}
           </div>
