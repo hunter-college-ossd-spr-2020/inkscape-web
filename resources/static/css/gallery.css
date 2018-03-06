@@ -375,16 +375,18 @@ a.link .galleryitem > img {
 
 .galleryitem  span.ribbon p {
   position: absolute;
-  top: -6px;
+  top:-8px;
   text-align: center;
   color: white;
   font-weight: bold;
-  padding: 0%;
+  padding: 0;
   margin: 12px 0;
   width: 100%;
-  display: block;
+  display: block !important;
   border-width: 0;
-  background-color:transparent;
+  line-height:1.8;
+  color:#000 !important;
+  background-color:transparent !important;;
 }
 svg.ribbon path.part_a { fill:#7e7e7e; }
 svg.ribbon path.part_b { fill:#a9a9a9; }
@@ -545,14 +547,11 @@ div#category_desc {
   top:auto;
   bottom:0;
 }
-  .galleryitem:hover > span.ribbon{
-    display:none;
-  }
-  .galleryitem  .minitabs   img,
+.galleryitem  .minitabs   img,
 .galleryitem .minitabs   a {
   visibility: hidden !important;
-  }
-    .galleryitem:hover  .minitabs  img,
+}
+.galleryitem:hover  .minitabs  img,
 .galleryitem:hover  .minitabs  a {
   visibility:visible !important;
   margin-bottom:5px;
