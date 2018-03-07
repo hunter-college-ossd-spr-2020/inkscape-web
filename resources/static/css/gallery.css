@@ -77,7 +77,6 @@
 	padding: 0px;
 	padding-bottom: 1px;
 	transition: opacity .4s ease-in-out;
-	column-break-inside: avoid;
 	display: inline-block;
   position:relative;
   width:100%;
