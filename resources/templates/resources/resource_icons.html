@@ -3,7 +3,7 @@
     {% for item in resources %}
       {% include "resources/resource_item.html" %}
     {% empty %}
-      <div class="galleryitem">
+      <div class="galleryitem nothing">
         <div class="link"><img src="{% static "images/none.svg" %}"/></div>
         {% if object.contest_submit %}
           <p>{% trans "No Submissions Yet" %}</p>
