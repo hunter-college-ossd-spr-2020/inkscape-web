@@ -442,7 +442,6 @@ $(document).ready(function(){
     };
     $('.imagelist').each(function() {
         var ncols = $(this).howMuchCols();
-        alert(ncols);
         var galleryitems = $(this).find('> div').detach();
         var galleryitems_result = [];
         var result = [];
