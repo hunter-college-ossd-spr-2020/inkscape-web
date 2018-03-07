@@ -22,6 +22,11 @@
       <h1>{{ title }}</h1>
       <p>{% trans "Thank you for downloading Inkscape." %}
       <p>{% blocktrans with object.get_resource_url as link %}Your download should start in 2 seconds, if not, please <a href="{{ link }}">click here</a> to start.{% endblocktrans %}</p>
+
+      <p>{% trans "Uploaded by" %} <a href="{{ object.resource.user.get_absolute_url }}">{{ object.resource.user }}</a> {% if object.resource.signature %} (<a href="{{ object.resource.signature.url }}">{% trans "sig" %}</a>){% endif %}</p>
+      {% if object.resource.checked_by %}
+      <p>{% trans "Verified by" %} <a href="{{ object.resource.checked_by.get_absolute_url }}">{{ object.resource.checked_by }}</a> {% if object.resource.checked_sig %} (<a href="{{ object.resource.checked_sig.url }}">{% trans "sig" %}</a>){% endif %}</p>
+      {% endif %}
     {% elif object.instructions %}
       {{ object.instructions|safe }}
     {% else %}
