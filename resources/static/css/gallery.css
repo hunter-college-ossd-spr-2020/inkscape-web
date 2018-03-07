@@ -335,7 +335,7 @@ a.link .galleryitem > img {
   visibility: visible;
   display:block;
   text-align:center;
-  z-index:300;
+  z-index:0 !important;
   opacity:1;
   margin-top:-12px !important; 
   margin-bottom:-15px;
@@ -355,7 +355,7 @@ a.link .galleryitem > img {
 
 .galleryitem  span.ribbon p {
   position: absolute;
-  top:-8px;
+  top:-7px !important;
   text-align: center;
   color: white;
   font-weight: bold;
@@ -367,6 +367,9 @@ a.link .galleryitem > img {
   line-height:1.5;
   color:#000 !important;
   background-color:transparent !important;;
+}
+.gallery.page .galleryitem  span.ribbon p{
+    top:0px !important;
 }
 .galleryitem:hover  span.ribbon{
   opacity:1;
