@@ -436,6 +436,38 @@ function registerDropZone(drop_id, gallery_id, post_url, media_url, keep) {
 
 }
 
+$(document).ready(function(){
+    $.fn.howMuchCols = function(){
+        return Math.round($(this).width()/$(this).find('div:last').width());
+    };
+    $('.imagelist').each(function() {
+        var ncols = $(this).howMuchCols();
+        alert(ncols);
+        var galleryitems = $(this).find('> div').detach();
+        var galleryitems_result = [];
+        var result = [];
+        var i = 0;
+        $(galleryitems).each(function(index,el) {
+            if (i == ncols) {
+                i = 0;
+            }
+            galleryitems_result.push({col:i,data:el})
+            i++;
+        })
+        galleryitems_result.sort(mycomparator);
+        function mycomparator(a, b) {
+            return a.col - b.col;
+        };
+        $(galleryitems_result).each(function(index,el) {
+            result.push(el.data)
+        })
+        $(result).appendTo($(this));
+        galleryitems_result=null;
+        galleryitems=null;
+        result=null;
+    })
+});
+
  /* Guides sometimes show a status saying "your browser doesn't support this"
   * but I reckon the html should assume non-support and the javascript should
   * modify that as needed. Thus noscript and nofeature is covered. 
