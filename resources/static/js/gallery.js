@@ -450,6 +450,7 @@ $(document).ready(function(){
             if (i == ncols) {
                 i = 0;
             }
+            console.log(i);
             galleryitems_result.push({col:i,data:el})
             i++;
         })
