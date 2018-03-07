@@ -17,6 +17,7 @@
 }
 .wrapper{
   position:relative;
+  margin-top:42px;
 }
 .gallerysidebar{
   visibility:hidden !important;
@@ -42,7 +43,7 @@
 }
 .gallerysidebar,
 .gallerysidebar{
-  margin-top:-35px;
+  margin-top:-42px;
   margin-right:-30px;
   padding-top:5px !important;
 
@@ -561,3 +562,4 @@ div#category_desc {
   visibility:visible !important;
   margin-bottom:5px;
   }
+
