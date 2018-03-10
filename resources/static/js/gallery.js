@@ -465,6 +465,11 @@ $(document).ready(function(){
         galleryitems=null;
         result=null;
     })
+    $('#sidetoggle').click(function(){
+        if ($('.gallerysidebar').css("visibility") == "visible") {
+            $('.gallerysidebar').css("visibility", "hidden");
+        }
+    })
 });
 
  /* Guides sometimes show a status saying "your browser doesn't support this"

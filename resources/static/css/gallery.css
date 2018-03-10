@@ -48,7 +48,13 @@
   padding-top:5px !important;
 
 }
-.gallerysidebar:before{
+/*.gallerysidebar #sidetoggle:before{*/
+/*  content:"+";*/
+/*}*/
+/*.gallerysidebar:hover #sidetoggle:before{*/
+/*  content:"-";*/
+/*}*/
+.gallerysidebar #sidetoggle{
   visibility:visible;
   display:block;
   position:sticky;
@@ -70,6 +76,7 @@
   border-color:#ccc;
   border-style:solid;
 }
+
 .galleryitem {
   background: #fff;
 	border: 0px;
