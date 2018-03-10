@@ -41,11 +41,11 @@
 .gallery.page .wrapper #right-sidebar:focus{
   visibility:visible !important;
 }
-.gallerysidebar,
 .gallerysidebar{
-  margin-top:-42px;
+  margin-top:-18px !important;
   margin-right:-30px;
   padding-top:5px !important;
+  height:96%;
 }
 .gallerysidebar #sidetoggle:before{
   content:"+";
@@ -53,15 +53,11 @@
 .gallerysidebar:hover #sidetoggle:before{
   content:"-";
 }
-.gallerysidebar.hideside #sidetoggle:before{
-  content:"+";
-}
-.gallerysidebar.showside #sidetoggle:before{
-  content:"-";
-}
+
 .gallerysidebar #sidetoggle{
   visibility:visible;
   display:block;
+  width:100px;
   position:sticky;
   content:"+";
   text-align:center !important;
@@ -72,21 +68,15 @@
   padding:2px 4px 4px 4px;
   font-weight:bold;
   z-index:0;
-  top:0px;
-  right:5px;
-  bottom:0;
+  margin-left:20px;
   cursor:pointer;
   line-height:1;
   border-width:1px;
   border-color:#ccc;
   border-style:solid;
+  top:20px;
 }
-.gallerysidebar.hideside{
-  visibility:hidden !important;
-}
-.gallerysidebar.showside{
-  visibility:visible !important;
-}
+
 .galleryitem {
   background: #fff;
 	border: 0px;
@@ -410,7 +400,7 @@ a.link .galleryitem > img {
   background-color:transparent !important;;
 }
 .gallery.page .galleryitem  span.ribbon p{
-    top:0px !important;
+    top:-7px !important;
 }
 .galleryitem:hover  span.ribbon{
   opacity:1;
@@ -528,7 +518,12 @@ div#category_desc {
   color:#333;
   display:none;
 }
-
+.gallerysidebar #sidetoggle:before{
+  content:"+";
+}
+.gallerysidebar:hover #sidetoggle:before{
+  content:"+";
+}
 .page.gallery .galleryitem  a.link > img,
 .page.gallery    a.link > .galleryitem > img {
   border:none;
