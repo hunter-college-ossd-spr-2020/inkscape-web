@@ -465,10 +465,28 @@ $(document).ready(function(){
         galleryitems=null;
         result=null;
     })
-    $('#sidetoggle').mouseup(function(){
-        if ($('.gallerysidebar').css("visibility") == "visible") {
-            $('.gallerysidebar').css("visibility", "hidden");
+    $('#sidetoggle').click(function(){
+        var ss = $('.gallerysidebar').hasClass("showside");
+        var hs = $('.gallerysidebar').hasClass("hideside");
+        var closed = $('.gallerysidebar').css("visivility") == "hidden";
+        if (!ss && !hs) {
+            if (closed) {
+                $('.gallerysidebar').addClass("showside");
+            } else {
+                $('.gallerysidebar').addClass("hideside");
+            }
         }
+        if ($('.gallerysidebar').hasClass("showside")) {
+            $('.gallerysidebar').removeClass("showside");
+            $('.gallerysidebar').addClass("hideside");
+        } else {
+            $('.gallerysidebar').removeClass("hideside");
+            $('.gallerysidebar').addClass("showside");
+        }
+    })
+    $('#sidetoggle').mouseleave(function(){
+        $('.gallerysidebar').removeClass("showside");
+        $('.gallerysidebar').removeClass("hideside");
     })
 });
 
