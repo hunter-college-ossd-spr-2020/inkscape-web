@@ -48,7 +48,12 @@
   padding-top:5px !important;
 
 }
-
+.gallerysidebar #sidetoggle:before{
+  content:"+";
+}
+.gallerysidebar:hover #sidetoggle:before{
+  content:"-";
+}
 .gallerysidebar #sidetoggle{
   visibility:visible;
   display:block;
@@ -517,7 +522,7 @@ div#category_desc {
   content:"+";
 }
 .gallerysidebar:hover #sidetoggle:before{
-  content:"-";
+  content:"+";
 }
 .page.gallery .galleryitem  a.link > img,
 .page.gallery    a.link > .galleryitem > img {
