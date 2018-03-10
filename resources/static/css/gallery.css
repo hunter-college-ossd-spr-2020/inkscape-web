@@ -33,7 +33,7 @@
  
 }
 .wrapper .gallerycontent{
-  width:93% !important;
+  width:100% !important;
   margin:0px;
 }
 
@@ -43,7 +43,7 @@
 }
 .gallerysidebar{
   margin-top:-18px !important;
-  margin-right:-30px;
+  margin-right:0px;
   padding-top:5px !important;
 }
 .gallerysidebar #sidetoggle:before{
@@ -67,7 +67,7 @@
   padding:2px 4px 4px 4px;
   font-weight:bold;
   z-index:0;
-  margin-left:20px;
+  margin-left:112px;
   cursor:pointer;
   line-height:1;
   border-width:1px;

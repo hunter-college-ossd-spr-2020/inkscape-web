@@ -43,7 +43,6 @@ div.cms .cms-toolbar-trigger {
   top: 30px;
   margin: 0;
   display:block;
-  margin-left:-58px;
   right: 0;
   opacity: .8;
 }
@@ -332,16 +331,22 @@ div.toc,
     position: static;
     float: none;
     margin-left: -5px;
+    /*HACKFEST*/
+    margin-top:26px;
+    /*HACKFEST*/
   }
   #tabs > li.dropdown > div {
     text-align: left;
+
   }
-  #tabs > #tab_hackfest {
+  #tab_hackfest {
+    position:absolute !important;
+    
     white-space: normal;
+    top:0;
     left: 0px;
-    right: 0px;
+    right: -10px;
     display:block;
-    width:100%;
     border-radius:0 !important;;
   }
   #tab_hackfest p {
