@@ -42,6 +42,8 @@ div.cms .cms-toolbar-trigger {
   position: absolute;
   top: 30px;
   margin: 0;
+  display:block;
+  margin-left:-58px;
   right: 0;
   opacity: .8;
 }
@@ -152,7 +154,7 @@ ol {
 
 #content {
   margin-bottom: 0;
-  padding: 20px 12px;
+  padding: 0px 12px;
   background: transparent;
   word-wrap: break-word;
 }
@@ -309,12 +311,13 @@ div.toc,
     position: relative;
     height: 172px;
     text-align: center;
+    
   }
   #logo {
     display: inline-block;
     float: none;
     margin: 0;
-    padding-top: 44px;
+    padding-top: 58px;
     white-space: nowrap;
     text-align: left;
   }
@@ -335,8 +338,14 @@ div.toc,
   }
   #tabs > #tab_hackfest {
     white-space: normal;
-    left: 4px;
-    right: 4px;
+    left: 0px;
+    right: 0px;
+    display:block;
+    width:100%;
+    border-radius:0 !important;;
+  }
+  #tab_hackfest p {
+    border-radius:0 !important;;
   }
   #tabs > #tab_languages > div {
     left: 0;
@@ -443,3 +452,4 @@ div.toc,
     border-radius: 0 0 5px 5px;
   }
 }
+

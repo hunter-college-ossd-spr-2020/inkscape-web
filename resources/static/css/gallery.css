@@ -45,7 +45,6 @@
   margin-top:-18px !important;
   margin-right:-30px;
   padding-top:5px !important;
-  height:96%;
 }
 .gallerysidebar #sidetoggle:before{
   content:"+";
@@ -599,5 +598,6 @@ div#category_desc {
   visibility:visible !important;
   margin-bottom:5px;
   }
+
 
 
