@@ -568,10 +568,6 @@ div.toc ol,
 
 /* Navigation menu */
 .header .nav {
-  background: #4d4d4d;
-  background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
-  border-radius: 10px 10px 0 0;
-  border-bottom: 1px solid #262626;
   clear: both;
   text-align: right;
   z-index: 5;
@@ -601,10 +597,9 @@ div.toc ol,
 }
 #menu {
   display: block;
-  float: right;
   margin: 0;
   padding: 0;
-  border-left: 1px solid #333333;
+  text-align: center;
 }
 #menu li {
   position: relative;
@@ -612,6 +607,9 @@ div.toc ol,
   padding: 0;
   list-style: none;
   text-align: left;
+}
+#menu > li {
+  margin: 0 -3px 0 0;
 }
 #menu :link,
 #menu :link:hover,
@@ -625,22 +623,26 @@ div.toc ol,
 }
 #menu a {
   display: block;
+  
   padding: 8px 10px;
   outline: 0;
   font-size: 13px;
   line-height: 18px;
 }
 #menu > li {
-  display: block;
-  float: left;
+  display: inline-block;
   vertical-align: top;
 }
 #menu > li > a {
+  background: #4d4d4d;
+  background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
+  border-radius: 10px;
   padding: 17px 8px;
   white-space: nowrap;
   border-left: 1px solid #5a5a5a;
   border-right: 1px solid #333333;
   font-size: 14px;
+  margin: 0 3px 3px 0;
   text-transform: uppercase;
   text-align: center;
 }
@@ -648,7 +650,7 @@ div.toc ol,
 #menu > li.ancestor > a,
 #menu > li > a:focus {
   background: #333333;
-  background-image: linear-gradient(to bottom, #333, #444, #333);
+  background-image: linear-gradient(to bottom, #111, #444);
 }
 #menu > li:hover > a,
 #menu > li.activated > a {
@@ -662,10 +664,14 @@ div.toc ol,
   border-right: 0;
   border-top-right-radius: 10px;
 }
+#menu > li:first-child > a {
+  border-left: 0;
+  border-top-left-radius: 10px;
+}
 #menu li ul {
   display: none;
   position: absolute;
-  top: 100%;
+  top: 52px;
   left: 0;
   z-index: 1;
   margin: 0;
@@ -906,6 +912,25 @@ p#final-footer #dev-stamp:hover {
     float: right;
     width: 21%;
     padding: 0 0 20px 2%;
+  }
+}
+/*= Adjust navigation on wider screens */
+@media (min-width: 959px) and (min-width: 41em) {
+  .header .nav {
+    background: #4d4d4d;
+    background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid #262626;
+  }
+  #menu > li > a {
+    border-radius: 0;
+    margin: 0;
+  }
+  #menu > li.selected > a,
+  #menu > li.ancestor > a,
+  #menu > li > a:focus {
+    background: #333333;
+    background-image: linear-gradient(to bottom, #333, #444, #333);
   }
 }
 
