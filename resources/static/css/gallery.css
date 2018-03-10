@@ -165,7 +165,7 @@ a.link .galleryitem > img {
 }
 .galleryitem.nothing img{
   
-  width:100px;% !important;
+  width:100px !important;
   float:left;
   vertical-align:middle;
   border-width:0 !important;
