@@ -465,7 +465,7 @@ $(document).ready(function(){
         galleryitems=null;
         result=null;
     })
-    $('#sidetoggle').touchend(function(){
+    $('#sidetoggle').mouseup(function(){
         if ($('.gallerysidebar').css("visibility") == "visible") {
             $('.gallerysidebar').css("visibility", "hidden");
         }
