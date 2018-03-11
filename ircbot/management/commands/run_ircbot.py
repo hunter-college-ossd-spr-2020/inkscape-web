@@ -27,8 +27,6 @@ import atexit
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from ircbot.bot import InkscapeBot
-
 class Command(BaseCommand):
     help = 'Starts an irc bot that will join the main channel and interact with the website.'
 
@@ -36,6 +34,12 @@ class Command(BaseCommand):
         if not hasattr(settings, 'IRCBOT_PID'):
             print "Please set IRCBOT_PID to a file location to enable bot."
             return
+
+        if not hasattr(settings, 'CONNECTIONS'):
+            print "Please set CONNECTIONS to the IRC setup needed."
+            return
+
+        from ircbot.bot import InkscapeBot
 
         with open(settings.IRCBOT_PID, 'w') as pid:
             pid.write(str(os.getpid()))
