@@ -667,9 +667,6 @@ div.toc ol,
   list-style: none;
   text-align: left;
 }
-#menu > li {
-  margin: 0 -3px 0 0;
-}
 #menu :link,
 #menu :link:hover,
 #menu :link:active,
@@ -728,7 +725,7 @@ div.toc ol,
 #menu li ul {
   display: none;
   position: absolute;
-  top: 52px;
+  top: 100%;
   left: 0;
   z-index: 1;
   margin: 0;
@@ -765,6 +762,9 @@ div.toc ol,
     background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
     border-radius: 10px 10px 0 0;
     border-bottom: 1px solid #262626;
+  }
+  #menu > li {
+    margin: 0 -3px 0 0;
   }
   #menu > li > a {
     border-radius: 0;

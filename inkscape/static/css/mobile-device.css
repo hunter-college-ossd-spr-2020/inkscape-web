@@ -75,9 +75,6 @@ div.cms .cms-toolbar-trigger {
   padding: 9px 14px;
   border: 1px solid #5a5a5a;
 }
-#menu > li:last-child > a {
-  border-radius: 0;
-}
 #menu li li.main {
   display: list-item;
 }
