@@ -38,15 +38,15 @@ div.cms .cms-toolbar-trigger {
   top: 0;
   right: 8px;
 }
-#tab_hackfest {
+#tabs > #tab_hackfest {
   position: absolute;
   top: 30px;
   margin: 0;
   right: 0;
   opacity: .8;
 }
-#tab_hackfest p,
-#tab_hackfest a {
+#tabs > #tab_hackfest p,
+#tabs > #tab_hackfest a {
   border-radius: 5px;
 }
 #topsearch {
@@ -333,17 +333,17 @@ div.toc,
   #tabs > li.dropdown > div {
     text-align: left;
   }
-  #tab_hackfest {
+  #tabs > #tab_hackfest {
     white-space: normal;
     left: 4px;
     right: 4px;
   }
-  #tab_languages > div {
+  #tabs > #tab_languages > div {
     left: 0;
-    right: unset;
+    right: auto;
     border-radius: 0 5px 5px 5px;
   }
-  #tab_languages > div > p:first-child a {
+  #tabs > #tab_languages > div > p:first-child a {
     border-radius: 0 5px 0 0;
   }
   #topsearch {
