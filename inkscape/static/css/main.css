@@ -695,13 +695,13 @@ div.toc ol,
 #menu > li > a {
   background: #4d4d4d;
   background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 17px 8px;
   white-space: nowrap;
   border-left: 1px solid #5a5a5a;
   border-right: 1px solid #333333;
   font-size: 14px;
-  margin: 0 3px 3px 0;
+  margin: 0 4px 4px 0;
   text-transform: uppercase;
   text-align: center;
 }
@@ -721,11 +721,9 @@ div.toc ol,
 }
 #menu > li:last-child > a {
   border-right: 0;
-  border-top-right-radius: 10px;
 }
 #menu > li:first-child > a {
   border-left: 0;
-  border-top-left-radius: 10px;
 }
 #menu li ul {
   display: none;
@@ -777,6 +775,12 @@ div.toc ol,
   #menu > li > a:focus {
     background: #333333;
     background-image: linear-gradient(to bottom, #333, #444, #333);
+  }
+  #menu > li:first-child > a {
+    border-top-left-radius: 10px;
+  }
+  #menu > li:last-child > a {
+    border-top-right-radius: 10px;
   }
 }
 
