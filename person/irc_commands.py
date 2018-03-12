@@ -23,7 +23,7 @@ Commands related to Users and Teams
 import time
 
 from django.db.models import Q
-from ircbot.base import BotCommand
+from ircbot.base import BotCommand, url
 
 from .models import User, Team, TeamChatRoom
 

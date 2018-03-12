@@ -21,11 +21,15 @@
 Commands related to Users and Teams
 """
 
+import os
 from datetime import timedelta, datetime
 from ircbot.base import BotCommand
 
+from person.models import TeamChatRoom
 
 class LogChannel(BotCommand):
+    regex = ['.']
+
     def __call__(self, context, message, *args, **kwargs):
         """Call for any message to this channel, it won't consume the message"""
         dt = datetime.now()

@@ -52,6 +52,7 @@ class BotCommand(object):
     LANGS = [l[0] for l in settings.LANGUAGES]
     is_channel = True
     is_direct = True
+    automatic = True
     regex = []
 
     @property
@@ -85,7 +86,7 @@ class BotCommand(object):
     def __call__(self, context, message, *args, **kwargs):
         """Some basic extra filtering for directed commands"""
         self.context = context
-        is_channel = context.target.startswith('#')
+        is_channel = context.target and context.target.startswith('#')
         if not self.is_channel and is_channel:
             print " ! %s does not accept messages in channel." % self.name
             return False
@@ -126,118 +127,16 @@ class BotCommand(object):
         return self.client.connections[0].tried_nick
 
 
-
-class Command(BotCommand):
-    help = 'Starts an irc bot that will join the main channel and interact with the website.'
-
-    def handle(self, *args, **options):
-        if not hasattr(settings, 'IRCBOT_PID'):
-            print "Please set IRCBOT_PID to a file location to enable bot."
-            return
-
-        with open(settings.IRCBOT_PID, 'w') as pid:
-            pid.write(str(os.getpid()))
-        atexit.register(lambda: os.unlink(settings.IRCBOT_PID))
-
-        HeartBeat.objects.filter(name="ircbot").delete()
-        self.beat = HeartBeat.objects.create(name="ircbot")
-
-        self.client = BotClient()
-        self.commands = list(self.load_irc_modules())
-        self.client.start()
-        self.connection = self.client.connections[0]
-
-        self.log_status("Server Started!", 0)
-        drum = 2 # wait for two seconds after connecting
-        knel = 200 # wait 20 seconds before term and join on error.
-
-        while True:
-            try:
-                time.sleep(drum)
-                self.beat.save()
-                assert(self.connection.socket.connected)
-                self.ready_commands()
-                drum = 60 # wait for a minute for the next heartbeat
-            except KeyboardInterrupt:
-                self.client.quit()
-                for x, conn in enumerate(self.client.connections):
-                    if conn.socket.connected:
-                        conn.socket.disconnect()
-                self.log_status("Keyboard Interrupt", 1)
-                drum = 0.1
-            except AssertionError as err:
-                threads = [t for t in threading.enumerate() if t.name != 'MainThread' and t.isAlive()]
-                for t in threads:
-                    # This is for error tracking when treading is messed up
-                    self.log_status("Thread Locked: %s (Alive:%s, Daemon:%s)\n%s" % (t.name, t.isAlive(), t.isDaemon(), str(err)), -10)
-                    knel -= 1
-                    if knel < 0:
-                        t.terminate()
-                        t.join()
-
-                if not threads:
-                    self.log_status("Socket Disconnected", -1)
-                    break
-                else:
-                    drum = 0.1
-
-    def log_status(self, msg, status=-1):
-        if self.beat.status == 0:
-            self.beat.error = msg
-            self.beat.status = status
-            self.beat.save()
-
-    def load_irc_modules(self):
-        """Generate all BotCommands available in all installed apps"""
-        for command in self.load_irc_commands(globals(), 'inkscape.management.commands.ircbot'):
-            yield command
-
-        for app_config in apps.app_configs.values():
-            app = app_config.module
-            if module_has_submodule(app, 'irc_commands'):
-                app = app.__name__
-                module = import_module("%s.%s" % (app, 'irc_commands'))
-                for command in self.load_irc_commands(module.__dict__, module.__name__):
-                    yield command
-
-    def load_irc_commands(self, possible, mod):
-        """See if this is an item that is a Bot Command"""
-        self.client.events.msgregex.hookback(".")(FallbackResponse)
-        for (name, value) in possible.items():
-            if type(value) is type(BotCommand) and \
-                 issubclass(value, BotCommand) and \
-                 value is not BotCommand and \
-                 value.__module__ == mod:
-                yield self.register_command(value(self))
-
-    def register_command(self, command):
-        """Register a single command class inheriting from BotCommand"""
-        print "Hooking up: %s" % command.name
-        regexes = command.regex
-        if not isinstance(regexes, (list, tuple)):
-            regexes = [regexes]
-        for regex in regexes:
-            self.client.events.msgregex.hookback(regex)(command)
-        return command
-
-    def ready_commands(self):
-        """Make commands ready after we know for sure that we're connected"""
-        for command in self.commands:
-            try:
-                if not command.is_ready:
-                    command.is_ready = bool(command.ready())
-            except Exception as err:
-                print "Error getting %s ready: %s" % (command.name, str(err))
-
-class FallbackResponse(object):
+class FallbackResponse(BotCommand):
     """Returns a standard response when the command wasn't consumed"""
-    def __init__(self, caller, *args):
-        print "CALLER: %s // %s" % (str(caller), str(args))
-        self.caller = caller
+    is_channel = False
+    automatic = False
+    regex = "(.+)"
 
-    def __call__(self, context, message, *args, **kwargs):
-        if not getattr(self.caller, 'consumed'):
-            return "I don't know '%s', try 'help' to list commands." % message
+    def run_command(self, context, message):
+        print(">>> {}".format(message))
+        return False
+
 
 class ExitCommand(BotCommand):
     name = "Exit the IRC Bot"

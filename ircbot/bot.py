@@ -54,6 +54,8 @@ class InkscapeBot(object):
         self.client = BotClient()
         self.commands = list(self.load_irc_modules())
         self.client.start()
+        # If we don't wait here, the client will flood the IRC connection before it's ready!
+        time.sleep(2)
         self.connection = self.client.connections[0]
 
         self.log_status("Server Started!", 0)
@@ -92,12 +94,16 @@ class InkscapeBot(object):
 
     def log_status(self, msg, status=-1):
         if self.beat.status == 0:
+            print("{}. {}".format(status, msg))
             self.beat.error = msg
             self.beat.status = status
             self.beat.save()
 
     def load_irc_modules(self):
         """Generate all BotCommands available in all installed apps"""
+        # Should be done first to catch all
+        yield self.register_command(FallbackResponse(self))
+
         for command in self.load_irc_commands(globals(), 'inkscape.management.commands.ircbot'):
             yield command
 
@@ -111,21 +117,20 @@ class InkscapeBot(object):
 
     def load_irc_commands(self, possible, mod):
         """See if this is an item that is a Bot Command"""
-        self.client.events.msgregex.hookback(".")(FallbackResponse)
         for (name, value) in possible.items():
             if type(value) is type(BotCommand) and \
                  issubclass(value, BotCommand) and \
                  value is not BotCommand and \
-                 value.__module__ == mod:
+                 value.__module__ == mod and value.automatic:
                 yield self.register_command(value(self))
 
     def register_command(self, command):
         """Register a single command class inheriting from BotCommand"""
-        print "Hooking up: %s" % command.name
         regexes = command.regex
         if not isinstance(regexes, (list, tuple)):
             regexes = [regexes]
-        for regex in regexes:
+        for regex in list(regexes):
+            print("Hooking up: {} <- ({})".format(command.name, regex))
             self.client.events.msgregex.hookback(regex)(command)
         return command
 

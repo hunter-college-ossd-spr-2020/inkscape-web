@@ -21,14 +21,14 @@
 IRC Commands related to resources and artwork.
 """
 
-from ircbot.base import BotCommand
+from ircbot.base import BotCommand, url
 
 from .models import Category
 
 class LatestArtCommand(BotCommand):
     regex = "Get Latest Art"
 
-    def run_command(self):
+    def run_command(self, *args, **kw):
         try:
             artworks = Category.objects.get(name='Artwork')
         except Category.DoesNotExist:
