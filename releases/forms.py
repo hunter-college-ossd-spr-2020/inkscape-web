@@ -56,8 +56,11 @@ class ResourceReleaseForm(ResourceBaseForm):
 
     def clean(self):
         super(ResourceReleaseForm, self).clean()
-        release = self.cleaned_data['release']
-        platform = self.cleaned_data['platform']
+        release = self.cleaned_data.get('release', None)
+        platform = self.cleaned_data.get('platform', None)
+        if release is None or platform is None:
+            raise ValidationError(_("Release and Platform must be specified!")
+
         (rp, created) = release.platforms.get_or_create(platform=platform)
         if rp.resource and rp.resource != self.instance:
             raise ValidationError(_("Release Platform '%s' already has a package resource assigned.") % unicode(rp))
