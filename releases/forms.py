@@ -59,7 +59,7 @@ class ResourceReleaseForm(ResourceBaseForm):
         release = self.cleaned_data.get('release', None)
         platform = self.cleaned_data.get('platform', None)
         if release is None or platform is None:
-            raise ValidationError(_("Release and Platform must be specified!")
+            raise ValidationError(_("Release and Platform must be specified!"))
 
         (rp, created) = release.platforms.get_or_create(platform=platform)
         if rp.resource and rp.resource != self.instance:
