@@ -24,47 +24,27 @@
 
 TARGET="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 
-if [ -f "data/deployment" ]; then
-    source "data/deployment"
-else
-    echo "Local deployment: $TARGET"
-fi
-
-TEST=$@
-export FORCE=0
-export DOC_SOURCE="/tmp/documentation-export"
-export DOC_TARGET="$TARGET/data/media/doc"
-
-cd $TARGET
+FORCE=0
+DOC_TARGET="$TARGET/data/media/doc"
 
 if [ ! -d "$DOC_TARGET" ]; then
     echo "Target doesn't exist: $DOC_TARGET, Creating..."
     mkdir -p $DOC_TARGET
+    cd $DOC_TARGET
+    git clone https://gitlab.com/inkscape/inkscape-docs/documentation-export.git . &> /dev/null
+    FORCE=1
 fi
 
-if [ ! -d "$DOC_SOURCE" ]; then
-    echo "Can't find docs in $DOC_SOURCE, Downloading..."
-    cd `dirname $DOC_SOURCE`
-    git clone https://gitlab.com/inkscape/inkscape-docs/documentation-export.git &> /dev/null
-    export FORCE=1
-fi
+cd "$DOC_TARGET"
 
-if [ ! -d "$DOC_SOURCE" ]; then
-    echo "Something went wrong with the download!"
-    exit 1
-fi
+git fetch
+git status -uno | grep "Your branch"
 
-cd "$DOC_SOURCE"
-
-if [ -d $DOC_TARGET ]; then
-  git pull &> /dev/null
-  if [[ $? == 0 || $FORCE == 1 ]]; then
-    echo "New revisions found, updating!"
-    echo "Sending docs to ${DOC_TARGET}..."
-    rsync -ua $TEST --exclude='.git/' --delete . $DOC_TARGET
-    git log -1 --date=local --format="%cd (%h)" > $DOC_TARGET/revision
-    cp data/documentation.log $TARGET/data/documentation.log
-  else
-    echo "Docs alrady up to date!"
-  fi
+if [[ $? == 0 || $FORCE == 1 ]]; then
+  echo "New revisions found, updating!"
+  git reset --hard $BRANCH
+  git log -1 --date=local --format="%cd (%h)" > $DOC_TARGET/revision
+  cp data/documentation.log $TARGET/data/documentation.log
+else
+  echo "Docs alrady up to date!"
 fi
