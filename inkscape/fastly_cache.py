@@ -66,23 +66,35 @@ class FastlyCache(object):
 
           purge old ones too if old=True (all static files)
         """
-        if self.api is None:
-            #sys.stderr.write("No-cache: cleaning static files (ignored)\n")
-            pass
-
-        root = settings.STATIC_ROOT
-
-        if not os.path.isdir(root):
+        if not os.path.isdir(settings.STATIC_ROOT):
             return sys.stderr.write("\nStatic directory doesn't exist or is "
                 "empty. Have you run collectstatic yet?\n\n")
 
+        for path in self.clean_dir(settings.STATIC_ROOT, old=old, label='Static'):
+            # We don't want to just use get static url, because that just points
+            # back to fastly cache which is not what we need for this api
+            self.purge(static(path))
+
+    def clean_media(self, old=False):
+        """Like clean_static but for media files"""
+        if not os.path.isdir(settings.MEDIA_ROOT):
+            return sys.stderr.write("\nMedia directory doesn't exist or is "
+                "empty. Do you have any media files yet?\n\n")
+
+        for path in self.clean_dir(settings.MEDIA_ROOT, old=old, label='Media'):
+            self.purge(os.path.join(settings.MEDIA_URL, path))
+
+    def clean_dir(self, root, old=False, label=''):
+        """
+        Returns all files that have changed since the last .fastly_cache was created
+        """
         last_clear = 0
         last_file = os.path.join(root, '.fastly_cleared')
         if os.path.isfile(last_file):
             last_clear = os.path.getmtime(last_file)
-            print "Last cache clear: %s" % time.ctime(last_clear)
+            print("\nLast cache clear: {}\n".format(time.ctime(last_clear)))
         else:
-            print "Never cleared before (first run)"
+            print("\nNever cleared before (first run)\n")
 
         count = 0
         cleared = 0
@@ -96,11 +108,11 @@ class FastlyCache(object):
 
                 if old or os.path.getmtime(path) > last_clear:
                     cleared += 1
-                    self.purge_static(path.replace(root, '').lstrip('/'))
+                    yield path.replace(root, '').lstrip('/')
 
-        print "\n  * %d of %d static files cleared\n\n" % (cleared, count)
+        print("\n  * {:d} of {:d} {} files cleared\n\n".format(cleared, count, label))
         if not count:
-            print "There weren't any static files, run collectstatic."
+            print("There weren't any {} files, run collectstatic.".format(label))
 
         if cleared:
             touch(last_file)
@@ -116,12 +128,6 @@ class FastlyCache(object):
             logging.error("Couldn't purge key, %s" % str(err))
             return False
 
-    def purge_static(self, path):
-        """Takes a static path and purges the resulting url"""
-        # We don't want to just use get static url, because that just points
-        # back to fastly cache which is not what we need for this api
-        return self.purge(static(path))
-
     def purge_media(self, field):
         """Takes a file field and purges the media url"""
         if not hasattr(field, 'url'):
@@ -129,7 +135,7 @@ class FastlyCache(object):
         self.purge(field.url)
 
     def purge(self, url):
-        """Purge any static file from the fastly cache"""
+        """Purge any static or media file from the fastly cache"""
 
         if '://' in url:
             (domain, location) = url.split('://', 1)[-1].split('/', 1)
@@ -139,7 +145,7 @@ class FastlyCache(object):
 
         if self.api is None:
             var = (url, domain, location)
-            #sys.stderr.write("No-cache: purging %s -> %s/%s (ignored)\n" % var)
+            sys.stderr.write("No-cache: purging %s -> %s/%s (ignored)\n" % var)
             return False
 
         return self.api.purge_url(domain, '/' + location)

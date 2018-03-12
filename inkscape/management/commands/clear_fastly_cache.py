@@ -32,5 +32,7 @@ class Command(NoArgsCommand):
 
 
     def handle_noargs(self, **options):
-        cache = FastlyCache().clean_static()
+        cache = FastlyCache()
+        cache.clean_static()
+        cache.clean_media()
 
