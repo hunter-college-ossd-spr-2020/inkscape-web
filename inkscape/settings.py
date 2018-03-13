@@ -193,7 +193,6 @@ INSTALLED_APPS = (
     'djangocms_text_ckeditor',
     'djangocms_file',
     'djangocms_link',
-    'djangocms_history',
     'cmsplugin_toc',
     'cmsplugin_search',
     'cmsplugin_news',
