@@ -64,6 +64,7 @@ ENABLE_CACHING = False
 ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DESIGN_TOOLBAR = False
 ENABLE_PROFILER_TOOLBAR = False
+ENABLE_PYMPLER_TOOLBAR = False
 CACHE_PAGE_SETTING = 3600
 
 # Allow realtime updates of pages
@@ -443,6 +444,9 @@ if ENABLE_DEBUG_TOOLBAR:
         INSTALLED_APPS += 'debug_toolbar_line_profiler',
         DEBUG_TOOLBAR_PANELS += 'debug_toolbar_line_profiler.panel.ProfilingPanel',
 
+    if ENABLE_PYMPLER_TOOLBAR:
+        INSTALLED_APPS += 'pympler',
+        DEBUG_TOOLBAR_PANELS += 'pympler.panels.MemoryPanel',
 
 
 # ===== Migration to MySQL Special Code ===== #

@@ -378,3 +378,33 @@ class CachedRedirects(object):
         """Cache a redirect if possible"""
         return response
 
+
+class PrintMemoryMiddleware(object):
+    """
+    Measure memory taken by requested view, and response. Prints to stdout (Devel ONLY!)
+    """
+    heapy = None
+
+    def process_response(self, request, response):
+        if self.heapy is None:
+            try:
+                import guppy
+                self.heapy = guppy.hpy()
+            except ImportError:
+                self.heapy = False
+                return
+
+        req = request.META['PATH_INFO']
+        if 'static' in req or 'media' in req or self.heapy is False:
+            return response
+
+        if settings.DEBUG:
+            print("\nWARNING: Django DEBUG setting will give you an inaccurate Memory map because of extra caching.\n")
+
+        print(self.heapy.heap())
+        print("-" * 20)
+        print(heapy.heap().get_rp(40))
+
+        heapy.setref()
+        return response
+
