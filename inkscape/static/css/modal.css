@@ -125,9 +125,9 @@ small, .small {
   .modal-dialog {
   margin: 0px auto;
   }
-  .modal-dialog form {
+  .modal-dialog .fields {
   max-width: 500px;
-  margin: 10px auto 4px;
+  margin: 20px auto 4px;
   }
   .modal-sm {
   width: 300px;
@@ -267,17 +267,12 @@ small, .small {
 }
 
 /* Special rules for fieldset tabs */
-.tabs {
-  position: absolute;
-  top: 2px;
-  left: 14px;
-}
 label.tab {
   border: #e5e5e5 solid 1px;
   background-color: #fff;
   padding: 6px 12px;
   display: inline-block;
-  margin: 2px 0px;
+  margin: 0px 0px 5px;
   cursor: pointer;
 }
 label.tab.selected {
@@ -293,9 +288,6 @@ label.tab.errors.selected {
   background-color: #c00;
   color: white;
   border: #c00 solid 1px;
-}
-.fields {
-  margin-top: 40px;
 }
 
 /* on-off checkbox */
