@@ -65,6 +65,14 @@ def get_path(uri):
     raise Http404
 
 def get_localized_path(path, language):
+    # normalize some language names that differ between inkscape-web and docs
+    if language == 'pt-br':
+        language = 'pt_BR'
+    if language == 'zh':
+        language = 'zh_CN'
+    if language == 'zh-hant':
+        language = 'zh_TW'
+
     localized_path = path[:-4] + language + '.html'
     if os.path.isfile(localized_path):
         return localized_path
