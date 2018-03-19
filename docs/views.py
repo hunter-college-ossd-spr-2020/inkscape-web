@@ -25,6 +25,8 @@ import re
 import os
 import codecs
 
+from cms.utils import get_language_from_request
+
 from django.http import Http404
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -62,10 +64,20 @@ def get_path(uri):
     
     raise Http404
 
+def get_localized_path(path, language):
+    localized_path = path[:-4] + language + '.html'
+    if os.path.isfile(localized_path):
+        return localized_path
+
+    return path
+
 def page(request, uri):
     (path, uri) = get_path(uri)
     if os.path.isdir(path) or path[-5:] != '.html':
         raise Http404
+
+    language = get_language_from_request(request)
+    path = get_localized_path(path, language)
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
