@@ -13,6 +13,10 @@
       <link rel="stylesheet" type="text/css" href="{% static "css/gallery.css" %}"/>
     {% endblock %}
 
+    {% for language in LANGUAGES %}
+      <link rel="alternate" hreflang="{{ language.0 }}" href="{% page_language_url language.0 %}">
+    {% endfor %}
+
     <link rel="alternate"   type="application/rss+xml" title="{% trans "News Feed" %}" href="{% url "news:rss" %}"/>
     {% if rss_url %}
       <link rel="alternate" type="application/rss+xml" title="{% trans "RSS Feed" %}" href="{{ rss_url }}" />
