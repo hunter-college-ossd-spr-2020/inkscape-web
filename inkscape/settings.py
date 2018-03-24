@@ -119,7 +119,7 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE_CLASSES = (
-    'inkscape.middleware.CachedRedirects',
+    'inkscape.middleware.LanguageRedirectMiddleware',
     'inkscape.middleware.AutoBreadcrumbMiddleware',
     'inkscape.models.UserOnErrorMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -9,7 +9,7 @@
   <div>
     {% for language in languages %}
       {% language language.0 %}
-      <p><a class="{% ifequal current_language language.0 %}selected{% endifequal %}" href="{% page_language_url language.0 %}">{{ language.1 }}</a></p>
+      <p><a class="{% ifequal current_language language.0 %}selected{% endifequal %}" href="?demand_lang={{ language.0 }}">{{ language.1 }}</a></p>
       {% endlanguage %}
     {% endfor %}
   </div>

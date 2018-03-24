@@ -34,6 +34,9 @@ from django.dispatch import receiver
 from django.db.models import signals, Model, Manager, QuerySet
 from django.utils.cache import get_cache_key
 
+from django.http import HttpResponsePermanentRedirect
+from menus.utils import DefaultLanguageChanger
+
 import logging
 
 from .utils import BaseMiddleware, QuerySetWrapper, to, context_items
@@ -49,6 +52,21 @@ SUPPRESSED_MODELS = ['User']
 # Ignored models never invalidate caches.
 #
 IGNORED_MODELS = ['Session']
+
+class LanguageRedirectMiddleware(object):
+    """Django's language url system isn't designed for so many languages, so we must accept lang querystring"""
+    qs_key = 'demand_lang'
+
+    def process_request(self, request):
+        """Return a redirect right away"""
+        if hasattr(request, 'GET') and self.qs_key in request.GET:
+            if request.GET[self.qs_key]:
+                url = DefaultLanguageChanger(request)(request.GET[self.qs_key])
+                return HttpResponsePermanentRedirect(url)
+
+    def process_response(self, request, response):
+        """Cache a redirect if possible"""
+        return response
 
 
 class TrackCacheMiddleware(BaseMiddleware):
@@ -362,21 +380,6 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
             return None
         return (url, name)
 
-
-class CachedRedirects(object):
-    """
-    The django/cms system requires A LOT of resources (some 30%) to redirect
-    users to the right language or page.
-
-    We will do a better job here by caching such redirects based on language.
-    """
-    def process_request(self, request):
-        """Return a redirect right away"""
-        pass
-
-    def process_response(self, request, response):
-        """Cache a redirect if possible"""
-        return response
 
 
 class PrintMemoryMiddleware(object):
