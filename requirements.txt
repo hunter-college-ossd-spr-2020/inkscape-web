@@ -52,7 +52,6 @@ django-cms==3.4.4
 djangocms-file==0.2.1
 djangocms-link==2.1.0
 djangocms-text-ckeditor>=3.4.0
-djangocms-history>=0.3.0
 
 cmsplugin-filery==1.0.1
 cmsplugin-search==0.7.3
