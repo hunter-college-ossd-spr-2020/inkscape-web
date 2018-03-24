@@ -25,25 +25,37 @@ import logging
 from django.apps import AppConfig
 from django.conf import settings
 
+from django.core.cache import caches
+
 
 class InkscapeConfig(AppConfig):
     name = 'inkscape'
+    cache = caches['default']
 
     def ready(self):
         self.patch_cms()
 
     def patch_cms(self):
         """Patch away some aweful django-cms code"""
-        from menus import utils
+        from cms.models import Page
+        from cms.utils.i18n import get_current_language
 
-        class ReplacementLanguageChanger(utils.DefaultLanguageChanger):
-            def __init__(self, request, controlled=False):
-                if not controlled:
-                    raise NotImplementedError("I refuse to give you a slow django-cms url!")
-                super(ReplacementLanguageChanger, self).__init__(request)
+        _slow_url = Page.get_absolute_url
+        def get_absolute_url(self, language=None, fallback=True):
+            if language is None:
+                language = get_current_language()
 
-        utils.DefaultLanguageChanger = ReplacementLanguageChanger
+            key = "{:d}:{:s}".format(self.pk, language)
+            result = InkscapeConfig.cache.get(key)
+            if not result:
+                result = _slow_url(self, language, fallback)
+                InkscapeConfig.cache.set(key, result, 7 * 24 * 60 * 60)
+            return result
 
+        # We replace the url generator with a cached version (7 days!)
+        Page.get_absolute_url = get_absolute_url
+
+        # We don't like this toolbar, remove.
         from cms import cms_toolbars
         cms_toolbars.BasicToolbar.add_language_menu = lambda self: None
 
