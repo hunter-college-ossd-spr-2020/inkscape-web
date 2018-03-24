@@ -29,6 +29,7 @@ from shutil import copyfile
 import logging
 import os
 
+default_app_config = 'inkscape.app.InkscapeConfig'
 BASE_DIR = os.path.dirname(__file__)
 SETTINGS = 'local_settings.py'
 
