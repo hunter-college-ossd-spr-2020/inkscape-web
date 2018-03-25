@@ -150,7 +150,6 @@ if ENABLE_CACHING or IS_TEST:
     }
 
     MIDDLEWARE_CLASSES = \
-      ('inkscape.middleware.TrackCacheMiddleware',) + \
       ('django.middleware.cache.UpdateCacheMiddleware',) + \
       MIDDLEWARE_CLASSES + \
       ('django.middleware.cache.FetchFromCacheMiddleware',)

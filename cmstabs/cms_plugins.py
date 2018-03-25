@@ -66,7 +66,7 @@ class CMSShieldPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         context.update({
             'placeholder': placeholder,
-            'tabs'       : instance.tabs.all(),
+            'tabs'       : instance.tabs.all().select_related('user', 'license', 'shield', 'tab_cat'),
             'instance'   : instance
         })
         return context
