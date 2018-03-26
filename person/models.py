@@ -49,6 +49,16 @@ def WithoutFields(cls, *args):
     else:
         raise Exception("Not an abstract model")
 
+def linked_users_only(qs, *rels):
+    """
+    Limits a query to only include enough user information to link to the user.
+    """
+    only = []
+    for rel in rels:
+        #for field in ('first_name', 'last_name', 'username'):
+        for field in ('photo', 'bio', 'gpg_key', 'last_seen', 'website'):
+            only.append(rel + '__' + field)
+    return qs.select_related(*rels).defer(*only)
 
 @python_2_unicode_compatible
 class User(WithoutFields(AbstractUser, 'is_staff')):
