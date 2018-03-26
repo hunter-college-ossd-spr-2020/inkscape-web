@@ -106,6 +106,13 @@ class ReleaseView(DetailView):
     model = Release
     slug_field = 'version'
     slug_url_kwarg = 'version'
+    template_name = 'releases/release_detail.html'
+
+    def get_queryset(self):
+        from person.models import linked_users_only
+        qs = super(ReleaseView, self).get_queryset()
+        qs = linked_users_only(qs, 'manager', 'reviewer', 'translation_manager', 'bug_manager')
+        return qs
 
     def get_context_data(self, **kwargs):
         data = super(ReleaseView, self).get_context_data(**kwargs)
@@ -117,7 +124,7 @@ class ReleaseView(DetailView):
             (_('Versions'), [], 1),
             (_('In Development'), [], 1),
         ]
-        for rel in list(Release.objects.for_parent(self.object)):
+        for rel in Release.objects.for_parent(self.object).defer('html_desc', 'release_notes', 'background'):
             # The parent id is none, so this must be a top level release
             # Like 0.91 or 0.48 etc. pre-releases and point releases will
             # have a parent_id of their master release.

@@ -68,10 +68,6 @@ class ReleaseStatus(Model):
 
 
 class ReleaseQuerySet(QuerySet):
-    def __init__(self, *args, **kw):
-        super(ReleaseQuerySet, self).__init__(*args, **kw)
-        self.query.select_related = True
-
     def for_parent(self, parent):
         pk = parent.parent_id if parent.parent_id else parent.pk
         return self.filter(Q(parent__isnull=True) | Q(parent_id=pk))
@@ -281,13 +277,15 @@ class PlatformQuerySet(QuerySet):
         level = parent.count('/') + 2 if parent else 1
 
         items = defaultdict(list)
-        for release in self:
+        for release in self.defer('howto', 'info', 'release__html_desc', 'release__release_notes', 'release__background'):
             codename = release.platform.codename
             if codename.startswith(parent):
                 items['/'.join(codename.rsplit('/')[:level])].append(release)
 
         # Get all platforms at this level
-        platforms = list(Platform.objects.filter(codename__in=items.keys()))
+        qs = Platform.objects.filter(codename__in=items.keys())
+        qs = qs.defer('instruct', 'desc')
+        platforms = list(qs)
 
         # Add link to a release (download) if it's the only one so downloads
         # can be direct for users.
