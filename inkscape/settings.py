@@ -104,6 +104,7 @@ TEMPLATES = [{
       ],
       'context_processors': (
         'inkscape.context_processors.version',
+        'inkscape.context_processors.tracker_data',
         'social.apps.django_app.context_processors.backends',
         'social.apps.django_app.context_processors.login_redirect',
         'django.contrib.auth.context_processors.auth',

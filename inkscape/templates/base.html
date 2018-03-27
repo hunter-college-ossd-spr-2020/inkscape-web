@@ -165,5 +165,23 @@ Django {{ DJANGO_VERSION }}
 InkscapeWeb {{ WEBSITE_VERSION }}, as of {{ WEBSITE_REVISION }}" alt="PY"/></a>
     </p>
   {% endblock %}
+
+{% if TRACKER_URL and TRACKER_API_KEY %}
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    _paq.push(['setTrackerUrl',  '{{ TRACKER_URL }}']);
+    _paq.push(['setApiToken', '{{ TRACKER_API_KEY }}']);
+    _paq.push(['setSiteId', {{ TRACKER_SITE_ID }}]);
+
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src='{% static "js/piwik.js" %}'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+{% endif %}
 </body>
 </html>

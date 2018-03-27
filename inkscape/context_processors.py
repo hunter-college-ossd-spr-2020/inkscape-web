@@ -28,13 +28,11 @@ from collections import OrderedDict
 
 from django.conf import settings
 
-def design(request):
-    """
-    Adds static-related context variables to the context.
-    """
+def tracker_data(request):
     return {
-      'DEBUG': settings.DEBUG,
-      'GOOGLE_ANID': settings.GOOGLE_ANID,
+      'TRACKER_URL': getattr(settings, 'PIWIK_URL', None),
+      'TRACKER_API_KEY': getattr(settings, 'PIWIK_API_KEY', None),
+      'TRACKER_SIDE_ID': getattr(settings, 'PIWIK_SIDE_ID', 1),
     }
 
 PATH = settings.PROJECT_PATH
