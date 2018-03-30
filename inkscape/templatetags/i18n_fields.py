@@ -50,6 +50,9 @@ STR_ERR = "Expected object but got string '{}'"
 
 @register.filter("translate_field")
 def translate_field(obj, name):
+    if obj is in ('', None, 0):
+        return obj
+
     if isinstance(obj, (str, unicode)):
         raise TemplateSyntaxError(STR_ERR.format(obj))
 
@@ -80,7 +83,9 @@ def translate_field(obj, name):
             CACHE.set(key, tr_obj)
         if tr_obj is False:
             tr_obj = obj
-        return getattr(tr_obj, name)
+
+        if hasattr(tr_obj, name):
+            return getattr(tr_obj, name)
 
     # Passthrough, nothing to do here.
     return getattr(obj, name)
