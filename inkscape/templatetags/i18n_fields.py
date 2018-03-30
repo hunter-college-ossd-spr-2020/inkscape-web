@@ -50,7 +50,7 @@ STR_ERR = "Expected object but got string '{}'"
 
 @register.filter("translate_field")
 def translate_field(obj, name):
-    if obj is in ('', None, 0):
+    if obj in ('', None, 0):
         return obj
 
     if isinstance(obj, (str, unicode)):
