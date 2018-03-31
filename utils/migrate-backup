@@ -33,7 +33,7 @@ import sys
 import json
 
 from random import choice
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from subprocess import PIPE, Popen
 from urllib2 import urlopen
 
@@ -57,11 +57,13 @@ LIVE_URL = 'https://media.inkscape.org/media'
 FIXTURE_MEDIA = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', 'data', 'fixtures', 'media'))
 
+class DeleteValue(ValueError):
+    pass
+
 def delete(field=None, row=None, **kwargs):
     if not field:
         # Delete model (whole entry)
-        kwargs['delete'].append(kwargs['item'])
-        return True
+        raise DeleteValue(kewargs['item'])
     if row.has_key(field):
         # Delete field
         row.pop(field)
@@ -95,10 +97,10 @@ def rename(field=None, to=None, row=None, **kwargs):
     return False
 
 TRACK = defaultdict(list)
-def unique(field, item, row, model, delete, **kwargs):
+def unique(field, item, row, model, **kwargs):
     global TRACK
     if row[field] in TRACK[model]:
-        delete.append(item)
+        raise DeleteValue(item)
     else:
         TRACK[model].append(row[field])
 
@@ -145,102 +147,103 @@ def update_cms(field, row, **kwargs):
     return False
 
 
-UPDATES = {
-  'cms.page': (
+UPDATES = OrderedDict([
+  ('cms.treenode', ()),
+  ('cms.page', (
     [update_cms, 'template'],
     [delete, 'moderator_state'],
-  ),
-  'cms.usersettings': (
+  )),
+  ('cms.usersettings', (
     [set_to, 'user', A_USER],
     [unique, 'user'],
-  ),
+  )),
   # Set the creator to admin account
-  'cmsplugin_news.news': (
+  ('cmsplugin_news.news', (
     [set_to, 'creator', A_USER],
     [set_to, 'editor', A_USER],
-  ),
-  'cmsplugin_news.SocialMediaType': (
+  )),
+  ('cmsplugin_news.SocialMediaType', (
     [download, 'icon'],
-  ),
-  'djangocms_file.file': (
+  )),
+  ('djangocms_file.file', (
     [download, 'file'],
-  ),
-  'djangocms_picture.picture': (
+  )),
+  ('djangocms_picture.picture', (
     [download, 'image'],
-  ),
-  'extra.shieldplugin': (
+  )),
+  ('extra.shieldplugin', (
     [rename, 'cmstabs.shieldplugin'],
-  ),
-  'projects.project': (
+  )),
+  ('projects.project', (
     [set_to, 'proposer', A_USER],
     [set_to, 'manager', A_USER],
     [set_to, 'reviewer', A_USER],
     [set_to, 'second', A_USER],
-  ),
-  'projects.projectupdate': (
+  )),
+  ('projects.projectupdate', (
     [set_to, 'creator', A_USER],
-  ),
-  'projects.worker': (
+  )),
+  ('projects.worker', (
     [set_to, 'user', A_USER],
-  ),
-  'person.team': (
+  )),
+  ('person.team', (
     [set_to, 'admin', A_USER],
     [delete, 'requests'],
-  ),
-  'cmstabs.tabcategory': (
+  )),
+  ('cmstabs.tabcategory', (
     [download, 'icon'],
-  ),
-  'cmstabs.tab': (
+  )),
+  ('cmstabs.tab', (
     [rename, 'cmstabs.tab'],
     [download, 'download'],
     [set_to, 'user', A_USER],
-  ),
-  'cmsplugin_pygments.pygmentsplugin': ([delete],),
-  'djangocms_snippet.snippet': ([delete],),
-  'djangocms_snippet.snippetptr': ([delete],),
-  'djangocms_picture.picture': (
+  )),
+  ('cmsplugin_pygments.pygmentsplugin', ([delete],)),
+  ('djangocms_snippet.snippet', ([delete],)),
+  ('djangocms_snippet.snippetptr', ([delete],)),
+  ('djangocms_picture.picture', (
       [rename, 'cmsplugin_image.image'],
       [rename, 'longdesc', 'title'],
       [download, 'image'],
-  ),
-  'cmsplugin_image.image': (
+  )),
+  ('cmsplugin_image.image', (
       [download, 'image'],
-  ),
-  'releases.release': (
+  )),
+  ('releases.release', (
       [download, 'background'],
       [set_to, 'manager', A_USER],
       [set_to, 'reviewer', A_USER],
       [set_to, 'bug_manager', A_USER],
       [set_to, 'translation_manager', A_USER],
-  ),
-  'releases.platform': (
+  )),
+  ('releases.platform', (
       [download, 'icon'],
       [download, 'image'],
       [set_to, 'manager', A_USER],
-  ),
-  'releases.releasestatus': (
+  )),
+  ('releases.releasestatus', (
       [download, 'icon'],
-  ),
-  'releases.releaseplatform': (
+  )),
+  ('releases.releaseplatform', (
       [set_to, 'resource', None],
-  ),
-  'resources.resource': (
+  )),
+  ('resources.resource', (
       [download, 'thumbnail'],
       [download, 'download'],
       [download, 'rendering'],
       [random_user, 'user'],
       [set_to, 'checked_by', A_USER],
-  ),
-  'resources.vote': (
+  )),
+  ('resources.vote', (
       [random_user, 'voter'],
-  ),
-  'resources.gallery': (
+  )),
+  ('resources.gallery', (
       [random_user, 'user'],
       [delete, 'group'],
-  ),
-  'resources.resourcemirror': ([delete],),
-  'resources.quota': ([delete],),
-}
+  )),
+  ('resources.resourcemirror', ([delete],)),
+  ('resources.quota', ([delete],)),
+])
 
 def log(message):
     if VERBOSE:
@@ -277,43 +280,45 @@ class RowObject(dict):
 
 
 def update(content, updates):
-    DEFERRED = []
     WARNED = []
-    DELETE = []
-    COUNT = {}
+    COUNT = defaultdict(lambda: defaultdict(int))
+    ITEMS = defaultdict(list)
 
     for item in content:
         model = item['model']
-        update = updates.get(model, [])
-
-        if not update:
-            if model not in WARNED:
-                log("No updates for %s" % model)
-                WARNED.append(model)
-            continue
-        COUNT[model] = COUNT.setdefault(model, {})
         item['fields'] = RowObject(item['pk'], item['fields'])
-        for up in update:
-            kwargs = dict(row=item['fields'], item=item, model=model,
-                          delete=DELETE, deferred=DEFERRED)
-            if up[0](*up[1:], **kwargs):
-                if len(up) > 1:
-                    COUNT[model][up[1]] = COUNT[model].setdefault(up[1], 0) + 1
+        for up in updates.get(model, ()):
+            kwargs = dict(row=item['fields'], item=item, model=model)
+            try:
+                if up[0](*up[1:], **kwargs) and len(up) > 1:
+                    COUNT[model][up[1]] += 1
+            except DeleteValue:
+                # Delete means it's not included in ITEMS
+                COUNT[model]['delete'] += 1
+                item = None
+                break
+        if item:
+            ITEMS[model].append(item)
 
-    CLEANUP = []
-    for (f, clean) in DEFERRED:
-        CLEANUP.append([f(), clean])
+    #CLEANUP = []
+    #for (f, clean) in DEFERRED:
+    #    CLEANUP.append([f(), clean])
 
-    for (item, clean) in CLEANUP:
-        for key in clean:
-            item.pop(key, None)
-
-    for d in DELETE:
-        content.remove(d)
+    #for (item, clean) in CLEANUP:
+    #    for key in clean:
+    #        item.pop(key, None)
 
     for model, counts in COUNT.iteritems():
         log("Migrated %s: %s" % (model, str(counts)))
 
+    # Reorder the output according to the UPDATES list.
+    for model in updates:
+        for item in ITEMS.pop(model, []):
+            yield item
+
+    for model in ITEMS:
+        for item in ITEMS[model]:
+            yield item
 
 if __name__ == '__main__':
     if len(sys.argv) == 1 or (
@@ -326,6 +331,7 @@ if __name__ == '__main__':
     else:
         with open(sys.argv[1], 'r') as fhl:
             content = json.loads(fhl.read())
-    update(content, UPDATES)
-    print json.dumps(content)
+
+    out = sys.stdout
+    out.write(json.dumps(list(update(content, UPDATES)), indent=2))
 
