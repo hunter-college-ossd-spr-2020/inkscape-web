@@ -81,6 +81,8 @@ def percent(x, y):
 def add_placeholder(bound_field, text=None):
     if text == None:
         raise ValueError("Placeholder requires text content for widget.")
+    if type(bound_field.field).__name__ == 'ReCaptchaField':
+        return bound_field
     bound_field.field.widget.attrs.update({ "placeholder": text })
     return bound_field
 

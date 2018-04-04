@@ -26,7 +26,7 @@ from django.contrib.auth.models import Permission
 
 from djangocms_text_ckeditor.widgets import TextEditorWidget
 from registration.forms import RegistrationForm
-from captcha.fields import ReCaptchaField
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 from .models import User, Team
 
@@ -48,10 +48,15 @@ class TeamAdminForm(TeamForm):
         model = Team
 
 class PasswordForm(PasswordResetForm):
-    recaptcha = ReCaptchaField(label=_("Human Test"))
+    recaptcha = NoReCaptchaField(label=_("Human Test"))
+    # These Media entries as bs, unstream should be fixed.
+    class Media:
+        js = ('https://www.google.com/recaptcha/api.js',)
 
 class RegisForm(RegistrationForm):
-    recaptcha = ReCaptchaField(label=_("Human Test"))
+    recaptcha = NoReCaptchaField(label=_("Human Test"))
+    class Media:
+        js = ('https://www.google.com/recaptcha/api.js',)
 
 class AgreeToClaForm(Form):
     def __init__(self, *args, **kwargs):
