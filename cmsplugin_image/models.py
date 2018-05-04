@@ -49,6 +49,8 @@ class Image(CMSPlugin):
         help_text=_("If present, clicking on image will take user to "
                     "specified cms page."))
 
+    nofollow = BooleanField(default=False, verbose_name=_("Add nofollow to link"))
+
     alt = CharField(
         _("Alternate text"), max_length=255, blank=True, null=True,
         help_text=_("Specifies an alternate text for an image, if the image "

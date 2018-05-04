@@ -18,7 +18,7 @@ from .models import Image
 class PicturePlugin(CMSPluginBase):
     """
     Compatible replacement for djangocms-picture,
-    
+
     we use the same name, template name and icon name.
     """
     model = Image
@@ -43,8 +43,7 @@ class PicturePlugin(CMSPluginBase):
     def icon_src(self, instance):
         if getattr(settings, 'PICTURE_FULL_IMAGE_AS_ICON', False):
             return instance.image.url
-        else:
-            return urlparse.urljoin(
-                settings.STATIC_URL, "cms/img/icons/plugins/picture.png")
+        return urlparse.urljoin(
+            settings.STATIC_URL, "cms/img/icons/plugins/picture.png")
 
 plugin_pool.register_plugin(PicturePlugin)
