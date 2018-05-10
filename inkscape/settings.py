@@ -36,6 +36,7 @@ LANGUAGES = (
     ('nl', 'Dutch'),
     ('it', 'Italian'),
     ('es', 'Spanish'),
+    ('pl', 'Polish'),
     ('pt', 'Portuguese'),
     ('pt-br', 'Brazilian Portuguese'),
     ('cs', 'Czech'),
