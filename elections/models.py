@@ -21,7 +21,6 @@
 Hold elections for group memberships.
 """
 
-import json
 from random import sample
 from pyvotecore.irv import IRV
 from pyvotecore.stv import STV
@@ -69,6 +68,8 @@ class Election(Model):
 
     for_team = ForeignKey(Team, help_text=_('The team wanting new members.'),
         related_name='elections')
+    for_role = CharField(max_length=128, null=True, blank=True,
+        help_text=_('The role the elected members will have in the team.'))
     constituents = ForeignKey(Team, help_text=_('People allowed to vote.'),
         related_name='election_votes')
     called_by = ForeignKey(User,
@@ -103,11 +104,19 @@ class Election(Model):
     # probably in json format.
     log = TextField(**null)
 
+    year = property(lambda self: self.voting_from.year)
     parent = property(lambda self: self.for_team)
     intro = property(lambda self: self.notes)
-    name = property(lambda self: _("Election for %(team)s (%(year)d)") % {
-        'team': unicode(self.for_team), 'year': self.voting_from.year})
     get_log = property(lambda self: get_log(self.log))
+
+    @property
+    def name(self):
+        """Generate a useful specific name for this election"""
+        if not self.for_role:
+            return _("Election for {0.for_team} ({0.year})").format(self)
+        if self.constituents == self.for_team:
+            return _("Election for {0.for_role} in {0.for_team}").format(self)
+        return _("Election for {0.for_team} ({0.for_role})").format(self)
 
     class Meta:
         ordering = ('-finish_on',)
@@ -248,6 +257,7 @@ class Election(Model):
             self.for_team.update_membership(
                 get_user_model().objects.get(pk=user_id),
                 expired=None, joined=now(),
+                title=self.for_role,
                 added_by=self.called_by
             )
 

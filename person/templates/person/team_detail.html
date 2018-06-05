@@ -96,13 +96,13 @@
           </ul>
         {% endif %}
       </ul>
-      {% if object.enrole == 'E' %}
+      {% if object.elections %}
         <h2>{% trans "Elections" %}</h2>
         <ul>
           {% for election in object.elections.all %}
             <li>
               <a href="{{ election.get_absolute_url }}">
-                <label>{{ election.voting_from.year }}</label>
+                  <label>{{ election.for_role }} {{ election.voting_from.year }}</label>
                 <span{% if election.state.failed %} class="failed"{% endif %}>{{ election.state.name }}</span>
               </a>
             </li>
