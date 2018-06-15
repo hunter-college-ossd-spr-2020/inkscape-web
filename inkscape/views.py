@@ -24,6 +24,7 @@ __all__ = (
 )
 from collections import defaultdict
 
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, FormView, ListView
 from django.core.urlresolvers import reverse_lazy
@@ -40,7 +41,7 @@ from cms.utils import get_language_from_request
 
 from .authors import CODERS, TRANSLATORS, DOCUMENTORS
 from .forms import FeedbackForm
-from .models import ErrorLog, Q
+from .models import ErrorLog
 
 class ContactOk(TemplateView):
     title = _('Contact Inkscape')

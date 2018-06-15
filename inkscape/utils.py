@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -20,8 +20,11 @@
 """
 Some generic utilities for improving caching and other core features
 """
+import urllib2
+from io import StringIO
 
 from django.core.exceptions import FieldDoesNotExist
+from django.core.files.storage import FileSystemStorage, File
 
 from django.db.models.lookups import Exact
 from django.db.models.expressions import Col
@@ -138,3 +141,29 @@ class BaseMiddleware(object):
             return getattr(then, 'get_'+key)(data)
         return default
 
+class ReplaceStore(FileSystemStorage):
+    """Allow filenames to replace when saving"""
+    def get_available_name(self, name, max_length=255):
+        """Always return the exact name, never change it"""
+        return name
+
+    def _save(self, name, content):
+        """Delete the existing file if it already exists"""
+        if self.exists(name):
+            self.delete(name)
+        return super(ReplaceStore, self)._save(name, content)
+
+class URLFile(File):
+    """Takes a url and attempts to download it"""
+    def __init__(self, url):
+        self.response = urllib2.urlopen(url)
+        if 'content-length' in self.response.headers:
+            self.size = self.response.headers['content-length']
+        super(URLFile, self).__init__(self.response)
+
+    def _get_size_from_underlying_file(self):
+        """Called when content-length was not returned with response"""
+        content = self.response.read()
+        self.file = StringIO(content)
+        self.size = len(content)
+        return self.size
