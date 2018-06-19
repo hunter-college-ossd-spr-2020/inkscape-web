@@ -171,35 +171,43 @@ class ResourceBaseForm(ModelForm):
                     self.fields[field].widget = ResourceFileInput()
 
         if 'category' in self.fields:
-            f = self.fields['category']
+            field = self.fields['category']
+            # Limit any resources submitted to a pre-defined gallery to the
+            # gallery's selected category if one is set.
             if self.gallery and self.gallery.category:
-                f.queryset = Category.objects.filter(pk=self.gallery.category.pk)
-                f.widget = DisabledSelect(f.widget.attrs, f.widget.choices)
+                field.queryset = Category.objects.filter(pk=self.gallery.category.pk)
+                field.widget = DisabledSelect(field.widget.attrs, field.widget.choices)
             else:
-                f.queryset = f.queryset.filter(Q(selectable=True) & \
-                    (Q(groups__isnull=True) | Q(groups__in=self.user.groups.all()))
-                )
-                f.widget = CategorySelect(f.widget.attrs, f.widget.choices)
-                f.choices = [(o, unicode(o)) for o in f.queryset]
+                # Filter out any categories we're not allowed to see because
+                # we are not in the required groups to see them.
+                field.queryset = field.queryset.filter(Q(selectable=True) & \
+                    (Q(groups__isnull=True) | Q(groups__in=self.user.groups.all())))
+                # This special widget enables javascriptto control what each
+                # category will limit other options (such as licence and tags)
+                field.widget = CategorySelect(field.widget.attrs, field.widget.choices)
+                field.choices = [(o, unicode(o)) for o in field.queryset]
 
         if 'license' in self.fields:
-            f = self.fields['license']
-            f.queryset = f.queryset.filter(selectable=True)
+            field = self.fields['license']
+            field.queryset = field.queryset.filter(selectable=True)
             if 'category' in self.fields:
-                f.widget = FilterSelect(f.queryset, 'category', 'id_category', f.widget)
+                field.widget = FilterSelect(field.queryset, 'category',
+                                            'id_category', field.widget)
 
         if 'owner' in self.fields:
-            f = self.fields['owner']
-            f.to_python = self.ex_clean_owner(f.to_python)
-        
-    def ex_clean_owner(self, f):
+            field = self.fields['owner']
+            field.to_python = self.ex_clean_owner(field.to_python)
+
+    @staticmethod
+    def ex_clean_owner(to_python):
         """We want to clean owner, but django to_python validator catches our
            error before we get a chance to explain it to the user. Intercept in
            this crazy way."""
         def _internal(val):
             if val in (None, u'None'):
-                raise ValidationError(_("You need to have permission to post this work, or be the owner of the work."))
-            return f(val)
+                raise ValidationError(_("You need to have permission to post'\
+                                    'this work, or be the owner of the work."))
+            return to_python(val)
         return _internal
 
     def clean_license(self):

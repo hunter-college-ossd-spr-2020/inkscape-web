@@ -195,6 +195,9 @@ class TagCategory(Model):
     categories = ManyToManyField(Category, related_name='tags',
             help_text=_("Only show with these categories"))
 
+    class Meta:
+        verbose_name_plural = 'tag categories'
+
     def __unicode__(self):
         return self.name
 

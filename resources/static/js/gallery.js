@@ -159,6 +159,43 @@ function setupUpload() {
     }
   }).change();
 
+  refresh_tagcats = function() {
+    // When category changes, we need a new tag map to work with
+    $('.tagcat').remove();
+    var category = $('select#id_category');
+    var opt = $('option:selected', category);
+    var cats = opt.data('tagcat')
+    if(cats) {
+      var tagbox = $('#id_tags');
+      var boxed_tags = tagbox.tagsinput('items');
+      $.each(cats, function(index, name) {
+        var tags = opt.data('tagcat-' + index);
+        var segment = $('<div class="tagcat"><h2>'+name+'</h2><select></select></div>');
+        var select = $('select', segment);
+        $(select).append('<option value="">---</option>');
+        $.each(tags, function(index, tag) {
+          $(select).append('<option value="'+tag+'">'+tag+'</option>');
+          if(boxed_tags.includes(tag)) {
+            $('option[value="'+tag+'"]', select).attr('disabled', 'disabled');
+          }
+        });
+        $(select).change(function() {
+          tagbox.tagsinput('add', $(this).val());
+          select.val('');
+        });
+        tagbox.on('beforeItemAdd', function(event) {
+          $('option[value="'+event.item+'"]', select).attr('disabled', 'disabled');
+        });
+        tagbox.on('beforeItemRemove', function(event) {
+          $('option[value="'+event.item+'"]', select).removeAttr('disabled');
+        });
+        $('.info .side').append(segment);
+      });
+    }
+
+  };
+  $('select#id_category').change(refresh_tagcats);
+
   $('select[data-filter_by]').each(function() {
     var target = $(this);
     var filters = [];

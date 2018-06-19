@@ -2,6 +2,8 @@
 Allow tags to be created on the fly
 """
 
+import json
+
 from collections import defaultdict
 
 from django.forms import ValidationError
@@ -72,10 +74,14 @@ class CategorySelect(Select):
         return super(CategorySelect, self).render(name, value, attrs, choices)
 
     def render_option(self, selected_choices, obj, label):
+        """Reimplement and generate option tags for this select"""
+        # TODO: Upgrade to django 1.11 will involve using template html files
+        # instead of this in-code generation.
         label = force_text(label)
         value = force_text(obj or '')
         html = ''
         if obj and not isinstance(obj, (int, str, unicode)):
+            attrs = {}
             # CSV list of types, treat as string
             if obj.acceptable_types:
                 html += ' data-types="%s"' % obj.acceptable_types
@@ -86,12 +92,22 @@ class CategorySelect(Select):
                     scale = 1024 if field == 'size' else 1
                     for method in (min, max):
                         # Add both min and max for every range field
-                        html += ' data-%s-%s="%d"' % (field,
-                            method.__name__, method(Range(f_value)) / scale)
+                        name = '-'.join(['data', field, method.__name__])
+                        attrs[name] = method(Range(f_value)) / scale
+
+            # Add tag options, if needed
+            names = []
+            for x, tagcat in enumerate(obj.tags.all()):
+                names.append(tagcat.name)
+                key = 'data-tagcat-{}'.format(x)
+                attrs[key] = json.dumps(list(tagcat.tags.values_list('name', flat=True)))
+
+            attrs['data-tagcat'] = json.dumps(names)
+            html = ' '.join(["{}='{}'".format(name, val) for name, val in attrs.items()])
             value = force_text(obj.pk)
 
         html += ' selected="selected"' if value in selected_choices else ''
-        return '<option value="%s"%s>%s</option>' % (value, html, label)
+        return '<option value="%s" %s>%s</option>' % (value, html, label)
 
 class SelectTags(SelectMultiple):
     SCRIPT = """
@@ -135,8 +151,6 @@ class SelectTags(SelectMultiple):
 
     def render_option(self, selected_choices, option_value, label):
         """Only supply selected tags so tagsinput won't add them all"""
-        # This isn't as efficient as it could be because it
-        # still loops /every/ tag possible. Replace with selected_choices
         if force_text(option_value) in selected_choices:
             return super(SelectTags, self).render_option([], label, 'hidden')
         return ''
