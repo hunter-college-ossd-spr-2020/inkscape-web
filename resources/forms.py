@@ -205,8 +205,8 @@ class ResourceBaseForm(ModelForm):
            this crazy way."""
         def _internal(val):
             if val in (None, u'None'):
-                raise ValidationError(_("You need to have permission to post'\
-                                    'this work, or be the owner of the work."))
+                raise ValidationError(_("You need to have permission to post "
+                                        "this work, or be the owner of the work."))
             return to_python(val)
         return _internal
 
