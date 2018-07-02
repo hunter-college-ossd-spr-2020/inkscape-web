@@ -21,7 +21,7 @@
 Provide a way of intergrating membership into booleans
 """
 
-from django.template.base import Library
+from django.template import Library
 
 from person.models import User, Team
 

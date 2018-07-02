@@ -23,6 +23,8 @@ Provide some extra fields for django
 
 __all__ = ('AutoOneToOneField','ResizedImageField')
 
+from django.db.models.fields.related import ReverseOneToOneDescriptor
+
 from PIL import Image, ExifTags
 TAGS = dict(zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys()))
 
@@ -37,7 +39,6 @@ CorrectOre = {
 }
 
 from django.db.models import Field, OneToOneField
-from django.db.models.fields.related import SingleRelatedObjectDescriptor
 from django.db.models.fields.files import ImageField, ImageFieldFile
 from django.core.files.base import ContentFile
 
@@ -48,17 +49,17 @@ except ImportError:
 
 
 
-class AutoSingleRelatedObjectDescriptor(SingleRelatedObjectDescriptor):
+class AutoReverseOneToOneDescriptor(ReverseOneToOneDescriptor):
     def __get__(self, instance, instance_type=None):
         try:
-            return super(AutoSingleRelatedObjectDescriptor, self).__get__(instance, instance_type)
+            return super(AutoReverseOneToOneDescriptor, self).__get__(instance, instance_type)
         except self.related.model.DoesNotExist:
             obj = self.related.model(**{self.related.field.name: instance})
             obj.save()
             # Don't return obj directly, otherwise it won't be added
             # to Django's cache, and the first 2 calls to obj.relobj
             # will return 2 different in-memory objects
-            return super(AutoSingleRelatedObjectDescriptor, self).__get__(instance, instance_type)
+            return super(AutoReverseOneToOneDescriptor, self).__get__(instance, instance_type)
 
 
 class AutoOneToOneField(OneToOneField):
@@ -74,7 +75,7 @@ class AutoOneToOneField(OneToOneField):
             icq = models.IntegerField(max_length=255, null=True)
     '''
     def contribute_to_related_class(self, cls, related):
-        setattr(cls, related.get_accessor_name(), AutoSingleRelatedObjectDescriptor(related))
+        setattr(cls, related.get_accessor_name(), AutoReverseOneToOneDescriptor(related))
 
 
 class ResizedImageFieldFile(ImageFieldFile):

@@ -1,5 +1,5 @@
 
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 from cms.models.pagemodel import Page

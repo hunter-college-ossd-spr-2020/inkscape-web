@@ -27,7 +27,6 @@ from django.apps import AppConfig
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-from django_comments.models import Comment
 from django.conf import settings
 
 
@@ -47,6 +46,7 @@ class ForumsConfig(AppConfig):
 
     def ready(self):
         from .models import Forum
+        from django_comments.models import Comment
 
         post_create(Comment, self.new_comment)
         post_create(Forum, self.new_forum)
@@ -70,6 +70,8 @@ class ForumsConfig(AppConfig):
 
     def new_forum(self, instance, **kw):
         """Called when a new forum is created"""
+        from django_comments.models import Comment
+
         done = []
         if instance.content_type:
             # Look for all existing comments that might exist for this object
@@ -103,4 +105,3 @@ class ForumsConfig(AppConfig):
             if not obj.last_posted or obj.last_posted < submit_date:
                 obj.last_posted = submit_date
                 obj.save(update_fields=['last_posted'])
-

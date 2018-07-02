@@ -33,7 +33,7 @@ Assumptions:
 from django.utils.translation import get_language
 from django.core.exceptions import FieldDoesNotExist
 from django.template import TemplateSyntaxError
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 from django.core.cache import caches

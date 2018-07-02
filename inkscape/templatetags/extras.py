@@ -24,7 +24,7 @@ from django.utils.timezone import is_aware, utc
 from django.utils.translation import ungettext_lazy as _un, ugettext_lazy as _
 
 from datetime import datetime
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 from cms.models.pagemodel import Page

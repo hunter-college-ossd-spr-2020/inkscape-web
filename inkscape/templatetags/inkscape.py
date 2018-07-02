@@ -19,7 +19,7 @@ Template tags for the whole project
 """
 
 from django.conf import settings
-from django.template.base import Library
+from django.template import Library
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import date, timesince
 from django.templatetags.tz import localtime

@@ -23,7 +23,7 @@ Provide useful tools for showing svg file in the templates directly.
 
 from xml.dom.minidom import parseString, Node
 
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 register = Library()

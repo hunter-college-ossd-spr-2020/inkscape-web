@@ -19,7 +19,7 @@ Just like the comments templatetag from django_comments but tracks the
 queryset for the caching middleware to pick up.
 """
 
-from django.template.base import Library
+from django.template import Library
 from django_comments.templatetags.comments import CommentListNode
 
 from inkscape.middleware import TrackCacheMiddleware

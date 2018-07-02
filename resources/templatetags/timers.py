@@ -23,7 +23,7 @@ Provide useful tools for showing svg file in the templates directly.
 
 from datetime import datetime, timedelta
 
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime, parse_date, parse_time

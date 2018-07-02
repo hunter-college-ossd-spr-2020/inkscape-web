@@ -22,7 +22,7 @@ Provide a tool for getting moderation urls.
 """
 
 from django.core.urlresolvers import reverse
-from django.template.base import Library
+from django.template import Library
 from django.conf import settings
 
 from django.contrib.contenttypes.models import ContentType

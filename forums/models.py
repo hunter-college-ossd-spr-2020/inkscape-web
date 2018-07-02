@@ -29,7 +29,7 @@ from collections import OrderedDict
 
 from django.db.models import *
 from django.template.loader import get_template
-from django.template.base import TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
