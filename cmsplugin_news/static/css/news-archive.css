@@ -10,6 +10,7 @@
   border-bottom: 1px solid #eee;
   background-color: #fffffa;
   padding: 10px;
+  overflow: hidden;
 }
 .article.unpub {
   border-radius: 7px;
