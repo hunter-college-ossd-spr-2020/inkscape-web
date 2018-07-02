@@ -30,9 +30,9 @@ django-ajax-selects==1.3.6
 django-formtools==2.1
 django-treebeard==4.2.1
 #django-haystack==2.4.1
--e git://github.com/doctormo/django-haystack.git#egg=haystack
+git+https://gitlab.com/doctormo/django-haystack.git#egg=django-haystack
 #django-pagination==1.0.7
--e git://github.com/zyga/django-pagination.git#egg=linaro_django_pagination
+git+https://github.com/zyga/django-pagination.git#egg=linaro_django_pagination
 python-social-auth==0.2.21
 django-model-utils==2.4
 django-registration-redux==1.3

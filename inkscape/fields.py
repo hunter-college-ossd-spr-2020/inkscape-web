@@ -1,7 +1,7 @@
 #
 # Copyright 2014-2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -21,26 +21,25 @@
 Provide some extra fields for django
 """
 
-__all__ = ('AutoOneToOneField','ResizedImageField')
+__all__ = ('AutoOneToOneField', 'ResizedImageField')
 
+from django.db.models import OneToOneField
 from django.db.models.fields.related import ReverseOneToOneDescriptor
+from django.db.models.fields.files import ImageField, ImageFieldFile
+from django.core.files.base import ContentFile
 
 from PIL import Image, ExifTags
 TAGS = dict(zip(ExifTags.TAGS.values(), ExifTags.TAGS.keys()))
 
-CorrectOre = {
-  2: [Image.FLIP_LEFT_RIGHT],
-  3: [Image.ROTATE_180],
-  4: [Image.FLIP_TOP_BOTTOM],
-  5: [Image.FLIP_LEFT_RIGHT, Image.ROTATE_90],
-  6: [Image.ROTATE_270],
-  7: [Image.FLIP_LEFT_RIGHT, Image.ROTATE_270],
-  8: [Image.ROTATE_90],
+CORRECTORE = {
+    2: [Image.FLIP_LEFT_RIGHT],
+    3: [Image.ROTATE_180],
+    4: [Image.FLIP_TOP_BOTTOM],
+    5: [Image.FLIP_LEFT_RIGHT, Image.ROTATE_90],
+    6: [Image.ROTATE_270],
+    7: [Image.FLIP_LEFT_RIGHT, Image.ROTATE_270],
+    8: [Image.ROTATE_90],
 }
-
-from django.db.models import Field, OneToOneField
-from django.db.models.fields.files import ImageField, ImageFieldFile
-from django.core.files.base import ContentFile
 
 try:
     from cStringIO import StringIO
@@ -94,7 +93,7 @@ class ResizedImageFieldFile(ImageFieldFile):
         if hasattr(img, '_getexif') and img._getexif():
             exif = dict(img._getexif().items())
             orientation = exif.get(TAGS.get('Orientation', None), None)
-            for tr in CorrectOre.get(orientation, []):
+            for tr in CORRECTORE.get(orientation, []):
                 img = img.transpose(tr)
 
         # In-place optional resize down to propotionate size

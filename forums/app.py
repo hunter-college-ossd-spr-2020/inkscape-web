@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -24,16 +24,16 @@ import logging
 from importlib import import_module
 
 from django.apps import AppConfig
-from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 from django.conf import settings
 
 
-def post_create(model, fn):
+def post_create(model, func):
+    """Signal wrapper around post_save that calls on create only"""
     def _inner(sender, instance, created=False, **kw):
         if created:
-            fn(instance, **kw)
+            func(instance, **kw)
     post_save.connect(_inner, sender=model, weak=False)
 
 
