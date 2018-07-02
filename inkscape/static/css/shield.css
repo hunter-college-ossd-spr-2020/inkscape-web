@@ -7,6 +7,7 @@
 #banners {
   display: block;
   height: 360px;
+  position: relative;
 }
 
 #banners > div {
@@ -17,11 +18,13 @@
   border-bottom: 1px solid #000000;
   display: block;
   height: 320px;
+  left: 0;
   margin: 0;
   opacity: 0;
   padding: 20px;
   position: absolute;
   transition: opacity 0s ease 0.4s;
+  width: calc(100% - 40px);
 }
 
 #banners > div.current {
@@ -46,8 +49,9 @@
 #banners > div > div {
   height: 250px;
   margin: 10px 30px 0px;
+  max-width: 860px;
   text-align: right;
-  width: 860px;
+  width: calc(100% - 60px);
 }
 
 #banners > div > div > p.text {
