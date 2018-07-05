@@ -1,0 +1,36 @@
+
+# Universal requirements
+whoosh==2.7.4
+pygments==2.2.0
+django==1.11.11
+django-ajax-selects==1.7.0
+django-haystack==2.8.1
+django-contrib-comments==1.8.0
+django-markdown-deux==1.0.5
+python-dateutil==2.7.3
+
+# cms
+django-cms==3.5.2
+djangocms-link==2.1.2
+djangocms-file==2.0.2
+djangocms-text-ckeditor==3.6.0
+cmsplugin-search==0.7.3
+cmdplugin-objects==1.0
+# django-cmsplugin-diff==TBD (diff-match-patch==20121119)
+# django-notification==TBD
+# django-cmsplugin-alerts==TBD
+
+# person - User, login and registration
+django-registration==2.4.1
+social-auth-app-django==2.1.0
+python3-vote-core==20170329.0
+django-nocaptcha-recaptcha==0.0.20
+
+# gallery
+gnupg==2.3.1
+
+# Test only
+django-extratest>=1.6
+
+# Live only
+psycopg2-binary==2.7.5
