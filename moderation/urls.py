@@ -1,7 +1,7 @@
 #
 # Copyright 2014-2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,29 +17,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Moderation views allow other parts of the website to be controlled by users"""
 
-try:
-    from django.conf.urls import patterns, url, include
-except ImportError:
-    from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls import url
+from inkscape.url_utils import url_tree
 
-from .views import *
-
-def url_tree(regex, *urls):
-    return url(regex, include(patterns('', *urls)))
-
-urlpatterns = patterns('',
-  url(r'^$', Moderation(), name="index"),
-
-  url_tree(r'^(?P<app>[\w-]+)/(?P<name>[\w-]+)/',
-    url(r'^$', ModerateType(), name="bytype"),
-
-    url_tree(r'^(?P<pk>\d+)/',
-      url(r'^$', UserFlag(), name='flag'),
-      url(r'^censure/$', CensureObject(), name="censure"),
-      url(r'^undecide/$', UndecideObject(), name="undecide"),
-      url(r'^approve/$', ApproveObject(), name="approve"),
-      url(r'^notes/$', NoteObject(), name="note"),
-    )
-  )
+from .views import (
+    Moderation, ModerateType, UserFlag, CensureObject, UndecideObject,
+    ApproveObject, NoteObject,
 )
+
+urlpatterns = [ # pylint: disable=invalid-name
+    url(r'^$', Moderation.as_view(), name="index"),
+    url_tree(
+        r'^(?P<app>[\w-]+)/(?P<name>[\w-]+)/',
+        url(r'^$', ModerateType.as_view(), name="bytype"),
+
+        url_tree(
+            r'^(?P<pk>\d+)/',
+            url(r'^$', UserFlag.as_view(), name='flag'),
+            url(r'^censure/$', CensureObject.as_view(), name="censure"),
+            url(r'^undecide/$', UndecideObject.as_view(), name="undecide"),
+            url(r'^approve/$', ApproveObject.as_view(), name="approve"),
+            url(r'^notes/$', NoteObject.as_view(), name="note"),
+        )
+    )
+]

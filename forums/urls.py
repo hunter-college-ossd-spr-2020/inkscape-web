@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,21 +17,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+Forum views accessable from the website.
+"""
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
+from inkscape.url_utils import url_tree
 
-from .views import *
+from .views import ForumList, ForumDetail, AddTopic, TopicDetail
 
-def url_tree(regex, *urls):
-    return url(regex, include(patterns('', *urls)))
-
-urlpatterns = patterns('',
-  url(r'^$', ForumList(), name="list"),
-  url_tree(r'^(?P<slug>[\w-]+)/',
-    url(r'^$', ForumDetail(), name='detail'),
-    url(r'^new/$', AddTopic(), name='create'),
-  ),
-  url_tree(r'^(?P<forum>[\w-]+)/(?P<slug>[\w-]+)/',
-    url(r'^$', TopicDetail(), name='topic'),
-  ),
-)
+urlpatterns = [ # pylint: disable=invalid-name
+    url(r'^$', ForumList.as_view(), name="list"),
+    url_tree(
+        r'^(?P<slug>[\w-]+)/',
+        url(r'^$', ForumDetail.as_view(), name='detail'),
+        url(r'^new/$', AddTopic.as_view(), name='create'),
+    ),
+    url_tree(
+        r'^(?P<forum>[\w-]+)/(?P<slug>[\w-]+)/',
+        url(r'^$', TopicDetail.as_view(), name='topic'),
+    ),
+]

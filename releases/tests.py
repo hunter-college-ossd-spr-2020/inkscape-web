@@ -21,7 +21,7 @@
 Test the releases app, mostly just os detection
 """
 
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from .views import DownloadRedirect
 

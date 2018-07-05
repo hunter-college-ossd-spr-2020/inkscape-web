@@ -40,7 +40,7 @@ class FakeGoogle(object):
 
     def __init__(self, filename):
         with open(filename, 'r') as fhl:
-	    self.data = json.loads(fhl.read())
+            self.data = json.loads(fhl.read())
 
     def list(self, userId=None, activityId=None, **kw):
         self.store = self.data[userId or activityId]
@@ -65,15 +65,15 @@ class Plugin(BasePlugin):
         if fake_data:
             return FakeGoogle(fake_data)
         if not hasattr(cls, 'service'):
-	    try:
-		dkey = settings.GOOGLE_DEVELOPER_KEY
-	    except AttributeError:
-		raise KeyError("No google plus setup for sync. Make sure "
-		    "GOOGLE_DEVELOPER_KEY is defined in your settings.py")
+            try:
+                dkey = settings.GOOGLE_DEVELOPER_KEY
+            except AttributeError:
+                raise KeyError("No google plus setup for sync. Make sure "
+                    "GOOGLE_DEVELOPER_KEY is defined in your settings.py")
 
-	    # This service object is duplicated for each Plugin instance,
-	    # there may be a better way of doing it per-class
-	    cls.service = build('plus', 'v1', developerKey=dkey)
+            # This service object is duplicated for each Plugin instance,
+            # there may be a better way of doing it per-class
+            cls.service = build('plus', 'v1', developerKey=dkey)
         return cls.service
 
     def init(self, user_id, test_data=None):
@@ -87,7 +87,7 @@ class Plugin(BasePlugin):
 
         for topic in packet['items']:
             topic['title']
-            print topic
+            print(topic)
             continue
             callback(message)
 

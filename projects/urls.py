@@ -17,23 +17,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-try:
-    from django.conf.urls import patterns, url, include
-except ImportError:
-    from django.conf.urls.defaults import patterns, url, include
+"""Project Views"""
 
-from .views import *
+from django.conf.urls import url
 from person.urls import USER_URLS
-
-urlpatterns = patterns('',
-  url(r'^$',                         ProjectList(),     name="project.list"),
-  url(r'^gsoc/$',                    ProjectGsocList(), name="project.gsoc.list"),
-
-  url(r'^new/$',                     NewProject(),      name="project.new"),
-  url(r'^(?P<slug>[\w-]+)/update/$', UpdateProject(),   name="project.update"),
-  url(r'^(?P<slug>[\w-]+)/$',        ProjectView(),     name="project.view"),
+from .views import (
+    ProjectList, ProjectGsocList, NewProject, ProjectView, UpdateProject,
+    MyProjects,
 )
 
-USER_URLS.url_patterns.extend([
-  url(r'^/myprojects/$',             MyProjects(),      name="my_projects"),
-])
+urlpatterns = [ # pylint: disable=invalid-name
+    url(r'^$', ProjectList.as_view(), name="project.list"),
+    url(r'^gsoc/$', ProjectGsocList.as_view(), name="project.gsoc.list"),
+
+    url(r'^new/$', NewProject.as_view(), name="project.new"),
+    url(r'^(?P<slug>[\w-]+)/$', ProjectView.as_view(), name="project.view"),
+    url(r'^(?P<slug>[\w-]+)/update/$', UpdateProject.as_view(), name="project.update"),
+]
+
+USER_URLS.url_patterns += (
+    url(r'^projects/$', MyProjects.as_view(), name="my_projects"),
+)

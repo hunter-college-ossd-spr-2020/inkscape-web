@@ -1,7 +1,7 @@
 #
 # Copyright 2015, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,9 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Provide some reusable mixin classes for resource views."""
 
 import os
-from urllib import basejoin
+from urllib.parse import urljoin
 
 from django.conf import settings
 
@@ -33,23 +34,15 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 
-from .models import Resource, Gallery, Model, Group, Q, QuerySet
-
-class NotAllowed(KeyError):
-    def __init__(self, msg):
-        self.msg = msg
+from .models import Resource, Gallery, Model, Group, QuerySet
 
 class OwnerViewMixin(object):
     """Doesn't limit the view, but provides user or group access and filtering"""
-    @property
-    def user(self):
-        return self.kwargs.get('username', None)
-
-    @property
-    def team(self):
-        return self.kwargs.get('team', None)
+    user = property(lambda self: self.kwargs.get('username', None))
+    team = property(lambda self: self.kwargs.get('team', None))
 
     def get_context_data(self, **kwargs):
+        """Add useful context to all gallery and resource views"""
         data = super(OwnerViewMixin, self).get_context_data(**kwargs)
         if self.user:
             data['user'] = get_object_or_404(get_user_model(), username=self.user)
@@ -60,17 +53,19 @@ class OwnerViewMixin(object):
         return data
 
     def get_queryset(self):
-        qs = super(OwnerViewMixin, self).get_queryset()
+        """Returns a list of things limited to either user or group"""
+        qset = super(OwnerViewMixin, self).get_queryset()
         if self.user:
-            qs = qs.filter(user__username=self.user, group__isnull=True)
+            qset = qset.filter(user__username=self.user, group__isnull=True)
         elif self.team:
-            qs = qs.filter(group__team__slug=self.team)
-        return qs
+            qset = qset.filter(group__team__slug=self.team)
+        return qset
 
 
 class OwnerUpdateMixin(object):
     """Limit the get and post methods to the user or group owners"""
     def is_allowed(self):
+        """Test the owner, group or user for permissions"""
         obj = self.get_object()
         group = self.get_group()
         if group is not None and group in self.request.user.groups.all():
@@ -80,6 +75,7 @@ class OwnerUpdateMixin(object):
         return obj.user == self.request.user
 
     def get_group(self):
+        """Return's the object's group owner, if it has one"""
         return getattr(self.get_object(), 'group', None)
 
     @method_decorator(never_cache)
@@ -101,85 +97,88 @@ class OwnerUpdateMixin(object):
         return super(OwnerUpdateMixin, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Return some basic resource information when editing"""
         data = super(OwnerUpdateMixin, self).get_context_data(**kwargs)
         data.update({
-          'gallery': getattr(self, 'gallery', None),
-          'cancel':  self.get_next_url(),
+            'gallery': getattr(self, 'gallery', None),
+            'cancel':  self.get_next_url(),
         })
         return data
 
     def get_next_url(self, default=None):
+        """Next url is defined by the client, where to go to next"""
         if isinstance(default, Model):
             default = default.get_absolute_url()
         return self.request.GET.get('next', \
                self.request.META.get('HTTP_REFERER', default or '/'))
 
     def get_success_url(self):
+        """Returns the success url when an item is edited"""
         try:
             return super(OwnerUpdateMixin, self).get_success_url()
-        except:
+        except ValueError:
             return self.get_next_url(self.parent)
 
 
 class OwnerCreateMixin(OwnerUpdateMixin):
+    """Who is allowed to create things"""
     def is_allowed(self):
         return self.request.user.is_authenticated()
 
     def get_context_data(self, **kwargs):
         data = super(OwnerCreateMixin, self).get_context_data(**kwargs)
         if hasattr(self, 'model') and not 'object_list' in data:
-	    data['object_list'] = self.model.objects.all()
-	    data['object_list'].instance = self.request.user
+            data['object_list'] = self.model.objects.all()
+            data['object_list'].instance = self.request.user
         if 'gallery' in data and 'object' not in data:
             data['object'] = data['gallery']
         return data
 
 
 class OwnerDeleteMixin(OwnerUpdateMixin):
+    """Can the owner of a thing, delete it."""
     def get_success_url(self):
         # Called before object is deleted or edited
         obj = self.get_object().parent
-        return getattr(obj, 'get_absolute_url', self.backup_url)()
-
-    def backup_url(self):
+        if hasattr(obj, 'get_absolute_url'):
+            return obj.get_absolute_url()
         return reverse('my_profile')
-
 
 class ResourceJSONEncoder(DjangoJSONEncoder):
     """Turn resource objects into serializable objects for json"""
     @property
     def domain(self):
-        if not hasattr(self, '_domain'):
-            from django.contrib.sites.models import Site
-            self._domain = Site.objects.get().domain
-        return self._domain
+        """Return the website's domain name"""
+        from django.contrib.sites.models import Site
+        return Site.objects.get().domain
 
     def url(self, file_obj):
-        if file_obj:
-            base = os.path.join(settings.MEDIA_URL, file_obj.url.lstrip('/'))
-            return basejoin('http://' + self.domain, base)
+        """Return the full url with domain name"""
+        base = os.path.join(settings.MEDIA_URL, file_obj.url.lstrip('/'))
+        if '://' not in base:
+            return urljoin('https://' + self.domain, base)
+        return base
 
-    def default(self, obj):
-        if isinstance(obj, QuerySet):
-            return [self.default(item) for item in obj]
-        if isinstance(obj, Resource):
+    def default(self, o): # pylint: disable=E0202
+        if isinstance(o, QuerySet):
+            return [self.default(item) for item in o]
+        if isinstance(o, Resource):
             return {
-                'name': obj.name,
-                'user': unicode(obj.user),
-                'desc': obj.desc,
-                'link': obj.link,
-                'created': obj.created,
-                'edited': obj.edited,
-                'verified': obj.verified,
-                'download': self.url(obj.download),
-                'thumbnail': self.url(obj.thumbnail),
-                'rendering': self.url(obj.rendering),
-                'signature': self.url(obj.signature),
-                'license': obj.license.code if obj.license else None,
-                'extra_status': obj.get_extra_status_display(),
+                'name': o.name,
+                'user': str(o.user),
+                'desc': o.desc,
+                'link': o.link,
+                'created': o.created,
+                'edited': o.edited,
+                'verified': o.verified,
+                'download': self.url(o.download),
+                'thumbnail': self.url(o.thumbnail),
+                'rendering': self.url(o.rendering),
+                'signature': self.url(o.signature),
+                'license': o.license.code if o.license else None,
+                'extra_status': o.get_extra_status_display(),
             }
         try:
-            return DjangoJSONEncoder.default(self, obj)
+            return super().default(o)
         except TypeError:
             return None
-

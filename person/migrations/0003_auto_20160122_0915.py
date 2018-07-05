@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 from django.conf import settings
 import django.core.validators
-import pile.fields
 
 
 class Migration(migrations.Migration):
@@ -87,7 +86,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='group',
-            field=pile.fields.AutoOneToOneField(related_name='team', default=1, to='auth.Group'),
+            field=models.OneToOneField(related_name='team', default=1, to='auth.Group'),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -20,7 +20,7 @@
 """
 Some generic utilities for improving caching and other core features
 """
-import urllib2
+import urllib
 from io import StringIO
 
 from django.core.exceptions import FieldDoesNotExist
@@ -156,7 +156,7 @@ class ReplaceStore(FileSystemStorage):
 class URLFile(File):
     """Takes a url and attempts to download it"""
     def __init__(self, url):
-        self.response = urllib2.urlopen(url)
+        self.response = urllib.request.urlopen(url)
         if 'content-length' in self.response.headers:
             self.size = self.response.headers['content-length']
         super(URLFile, self).__init__(self.response)

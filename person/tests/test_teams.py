@@ -21,7 +21,7 @@
 Test team functions
 """
 from datetime import timedelta
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from django.utils.timezone import now
 

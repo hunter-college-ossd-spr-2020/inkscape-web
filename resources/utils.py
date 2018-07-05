@@ -1,7 +1,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -40,20 +40,18 @@ MIME_DIR = 'mime'
 #MIME_URL = os.path.join(settings.STATIC_URL, MIME_DIR)
 #MIME_ROOT = os.path.join(settings.STATIC_ROOT, MIME_DIR)
 
-ALL_TEXT_TYPES = dict( (mimes[0], name)
-    for (name, alias, patterns, mimes) in lexers.get_all_lexers()
-      if mimes ).items()
-ALL_TEXT_TYPES.sort(key=lambda a: a[1])
+ALL_TEXT_TYPES = sorted(dict((mimes[0], name)\
+    for (name, alias, patterns, mimes) in lexers.get_all_lexers()\
+      if mimes).items(), key=lambda item: item[1])
 
 class CodeHtmlFormatter(formatters.HtmlFormatter):
-
-    def wrap(self, source, outfile):
-        return self._wrap_code(source)
-
-    def _wrap_code(self, source):
+    """Add html formatter for code diffs"""
+    @staticmethod
+    def wrap(source, *_):
+        """Outputs diff code-lines"""
         yield 0, '<ol id="lines">'
-        for i, t in source:
-            yield i, "<li><code>%s</code></li>" % t
+        for i, code in source:
+            yield i, "<li><code>%s</code></li>" % code
         yield 0, '</ol>'
 
 def syntaxer(text, mime):
@@ -69,12 +67,14 @@ def syntaxer(text, mime):
     return mark_safe(''.join(highlight(text, lexer, formatter)))
 
 def get_range(text):
+    """Turns text 1-2 into two integers as their range"""
     if '-' not in text:
         text = text + '-' + text
     return (force_int(x) for x in text.split('-', 1))
 
 SCALES = ' KMGT'
 def force_int(text):
+    """Turns 5KB into 5000, and similar conversions"""
     text = text.upper().replace('B', '').strip()
     if text[-1] in ['K', 'M', 'G', 'T']:
         return int(text[:-1]) * (2 ** (SCALES.index(text[-1]) * 10))
@@ -103,24 +103,27 @@ mimetypes.add_type('application/x-7z-compressed', '7z')
 mimetypes.add_type('application/x-gimp-palette', '.gpl')
 
 class MimeType(object):
-    tr = {
-      'application': {
-       'document': ['pdf','rtf','word','powerpoint','excel','spreadsheet','text','presentation','chart'],
-       'archive': ['bzip','zip','gzip','tar'],
-       'text': ['xml','plain'],
-       'code': ['c++','javascript'],
-       'palette': ['gimp-palette'],
-      },
-      'text': {
-       'document': ['rtf', 'html'],
-       'code': ['python','perl','pascal', 'script', 'tcl', 'shell', 'c-header', 'c', 'c++', 'css','java'],
-      }
+    """Translate mime type to icons and do other useful conversions"""
+    type_tr = {
+        'application': {
+            'document': ['pdf', 'rtf', 'word', 'powerpoint', 'excel',
+                         'spreadsheet', 'text', 'presentation', 'chart'],
+            'archive': ['bzip', 'zip', 'gzip', 'tar'],
+            'text': ['xml', 'plain'],
+            'code': ['c++', 'javascript'],
+            'palette': ['gimp-palette'],
+        },
+        'text': {
+            'document': ['rtf', 'html'],
+            'code': ['python', 'perl', 'pascal', 'script', 'tcl', 'shell',
+                     'c-header', 'c', 'c++', 'css', 'java'],
+        }
     }
     s_tr = {
-      'compress': 'zip', 'compressed': 'zip', 'bzip2': 'bzip', 'gtar': 'tar', 'gnutar': 'tar',
-      'sh': 'shell', 'h': 'c-header', 'cplusplus': 'c++', 'java-source': 'java',
-      'mspowerpoint': 'powerpoint', 'msexcel': 'excel', 'msword': 'word',
-      'richtext': 'rtf',
+        'compress': 'zip', 'compressed': 'zip', 'bzip2': 'bzip', 'gtar': 'tar', 'gnutar': 'tar',
+        'sh': 'shell', 'h': 'c-header', 'cplusplus': 'c++', 'java-source': 'java',
+        'mspowerpoint': 'powerpoint', 'msexcel': 'excel', 'msword': 'word',
+        'richtext': 'rtf',
     }
 
     def __init__(self, mime='application/unknown', filename=None):
@@ -134,58 +137,70 @@ class MimeType(object):
     @cached
     def subtype(self):
         """Return the sub-type as a human readable thing"""
-        value = self.minor.rsplit('+',1)[0]
-        for x in ['x-','script.','vnd.','ms-','windows-','oasis.opendocument.','microsoft.']:
+        value = self.minor.rsplit('+', 1)[0]
+        for x in ('x-', 'script.', 'vnd.', 'ms-', 'windows-', 'oasis.opendocument.', 'microsoft.'):
             if value.startswith(x):
                 value = value[len(x):]
         return self.s_tr.get(value, value)
 
     @cached
     def type(self):
+        """Returns the type for this mime-type"""
         value = self.major
-        for x, l in self.tr.get(value, {}).items():
-            if self.subtype() in l:
+        for x, lin in self.type_tr.get(value, {}).items():
+            if self.subtype() in lin:
                 return x
         return value
 
     def is_text(self):
-        # We test for both because javascript in code and html in document
+        """We test for both because javascript in code and html in document"""
         return self.type() in ['text', 'code'] or self.major == 'text'
 
     def is_xml(self):
+        """Returns true if this mimetype is an xml document"""
         return self.minor.endswith('+xml') or self.minor == 'xml'
 
     def is_image(self):
+        """Returns true if this mimetype is any sort of image"""
         return self.major == 'image'
 
     def is_raster(self):
+        """Returns true if this mimetype is specific raster images"""
         return self.is_image() and self.minor in ['jpeg', 'gif', 'png']
 
     def icon(self, subdir=""):
+        """Returns the icon for use in showing mimetypes"""
         for ft_icon in [self.subtype(), self.type(), self.minor, self.major, 'unknown']:
             filename = os.path.join(MIME_DIR, subdir, ft_icon+'.svg')
             if finders.find(filename):
                 return static(filename)
         return self.static("unknown")
 
-    def static(self, name):
+    @staticmethod
+    def static(name):
+        """Returns a static icon for this mimetype name"""
         return static('mime', name + '.svg')
 
     def banner(self):
+        """Returns a banner image icon"""
         return self.icon('banner')
 
 VIDEO_URLS = {
-  'youtube': r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be/)(watch\?v=|embed/|v/|.+\?v=)?(?P<video_id>[^&=%\?]{11})',
-  'vimeo': r'(http:\/\/)?(www\.)?(vimeo\.com)(\/channels\/.+)?\/(?P<video_id>.+)/?',
+    'youtube': r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be'
+               r'/)(watch\?v=|embed/|v/|.+\?v=)?(?P<video_id>[^&=%\?]{11})',
+    'vimeo': r'(http:\/\/)?(www\.)?(vimeo\.com)(\/channels\/.+)?\/(?P<video_id>.+)/?',
 }
 
 def video_embed(url):
+    """Embed the video using known video_urls"""
     for site_id, regex in VIDEO_URLS.items():
         match = re.match(regex, url)
         if match:
             return {'type': site_id, 'id': match.group('video_id')}
+    return None
 
 def hash_verify(sig_type, sig, data):
+    """Verify the signature against the data (for example md5)"""
     import hashlib
     sig.file.open()
     sig.file.seek(0)

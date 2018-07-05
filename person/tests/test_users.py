@@ -20,7 +20,7 @@
 """
 Test team functions
 """
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from django.contrib.auth.models import Permission
 

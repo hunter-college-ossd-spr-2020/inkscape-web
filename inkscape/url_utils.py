@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -27,18 +27,24 @@ import logging
 
 from string import ascii_uppercase, ascii_lowercase, digits
 
-logger = logging.getLogger('main')
-logger.setLevel(logging.INFO)
-
+from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
 
-import inkscape.urls
+LOGGER = logging.getLogger('main')
+LOGGER.setLevel(logging.INFO)
+
+def url_tree(regex, *urls):
+    """Provide a way to extend patterns easily"""
+    class UrlTwig(object): # pylint: disable=too-few-public-methods, missing-docstring
+        urlpatterns = urls
+    return url(regex, include(UrlTwig))
 
 class Url(object):
+    """Load in a django URL and parse it for information"""
     is_module = False
     is_view = False
 
@@ -59,6 +65,7 @@ class Url(object):
 
     @property
     def name(self):
+        """Returns the name of the url, plus namespace"""
         name = getattr(self.entry, 'name', None)
         namespace = self.namespace
         if name and namespace:
@@ -69,6 +76,7 @@ class Url(object):
 
     @property
     def slug(self):
+        """Returns the slugified pattern to identify this url"""
         name = self.name
         if name is None:
             return slugify(self.pattern)
@@ -79,17 +87,18 @@ class Url(object):
     @property
     def kwargs(self):
         """Gathers all kwargs from this and every parent regex"""
-        kw = self.parent.kwargs if self.parent else {}
-        kw.update(self.entry.regex.groupindex)
-        return kw
+        kwargs = self.parent.kwargs if self.parent else {}
+        kwargs.update(self.entry.regex.groupindex)
+        return kwargs
 
     @property
     def full_pattern(self):
+        """Returns the fullregular expression for this url"""
         pattern = self.pattern.lstrip('^').rstrip('$')
         if self.parent:
             if pattern and self.parent.pattern.endswith('$'):
-                logger.warning("Possible broken url, parent url ends "
-                        "string matching: " + unicode(self.parent))
+                LOGGER.warning("Possible broken url, parent url ends "
+                               "string matching: %s", self.parent)
             pattern = self.parent.full_pattern + pattern
         if pattern == 'None/':
             return '/'
@@ -97,6 +106,7 @@ class Url(object):
 
     @property
     def namespace(self):
+        """Returns the namespace if it's defined"""
         if hasattr(self.entry, 'namespace') and self.entry.namespace:
             return self.entry.namespace
         if self.parent is not None:
@@ -135,7 +145,7 @@ def random_change(data, key=None):
         return random.randint(int(data) + 10, int(data) + 100)
     if key in ['month', 'day']:
         return '00'
-    if isinstance(data, (unicode, str)) and data.isdigit():
+    if isinstance(data, str) and data.isdigit():
         data = int(data)
     if isinstance(data, int):
         return random.randint((data+10) * 10, (data+10) * 100)
@@ -150,18 +160,18 @@ class UrlModule(Url):
     is_module = True
 
     def __unicode__(self):
-        tag = super(UrlModule, self).__unicode__()
         return "%s > %s >>" % (self.full_pattern, self.name)
 
     @property
     def name(self):
         return self.urls_name(self.module)
 
-    def urls_name(self, uc):
-        if isinstance(uc, list) and uc:
-            return self.urls_name(uc[0])
-        elif hasattr(uc, '__name__'):
-            return uc.__name__
+    def urls_name(self, urlc):
+        """Returns the urls own name"""
+        if isinstance(urlc, list) and urlc:
+            return self.urls_name(urlc[0])
+        elif hasattr(urlc, '__name__'):
+            return urlc.__name__
         return None
 
 class UrlFunction(Url):
@@ -190,27 +200,32 @@ class UrlView(Url):
 
     @classmethod
     def get_url_type(cls, view):
-        for x, cls in enumerate(cls.VIEW_CLASSES):
-            if cls is not None and isinstance(view, cls):
-                return x
+        """Returns the urls type index, if it'sa known type"""
+        for index, view_cls in enumerate(cls.VIEW_CLASSES):
+            if view_cls is not None and isinstance(view, view_cls):
+                return index
         return 0
 
     @property
     def url_type(self):
+        """Returns the url_type for this module"""
         return self.get_url_type(self.module)
 
     @property
     def url_type_name(self):
+        """Returns the url type name, such as List or Detail"""
         return self.VIEW_NAMES[self.url_type]
 
     @property
     def app(self):
+        """Attemptsto find the app name for this module"""
         return self.module.__module__.split('.views')[0]
 
     @property
     def model(self):
+        """Returns the model involved in this view"""
         if hasattr(self.module, 'model'):
-            # self.module is the View class 
+            # self.module is the View class
             return self.module.model
         return type(None)
 
@@ -222,14 +237,14 @@ class WebsiteUrls(object):
         Yields every url with a Url class, see Url() for details.
         """
         dupes = {}
+        import inkscape.urls
         for item in self.url_iter(inkscape.urls.urlpatterns):
             key = (item.name, item.full_pattern)
             if not item.is_module:
                 if key is not None and key in dupes:
-                    logger.error(
-                       "URL Name is already used '%s' -> '%s'" % key\
-                       + "\n  a) " + unicode(dupes[key])\
-                       + "\n  b) " + unicode(item) + '\n')
+                    LOGGER.error(
+                        "URL Name is already used '%s' -> '%s'\n a) %s\n b) %s",
+                        key[0], key[1], str(dupes[key]), str(item))
                 dupes[key] = item
             yield item
 
@@ -240,7 +255,7 @@ class WebsiteUrls(object):
         for entry in urllist:
             if hasattr(entry, 'url_patterns'):
                 if hasattr(entry, '_urlconf_module'):
-                    this_parent = UrlModule(parent, entry, entry._urlconf_module)
+                    this_parent = UrlModule(parent, entry, entry._urlconf_module) # pylint: disable=protected-access
                     if this_parent.name:
                         yield this_parent
 
@@ -249,13 +264,12 @@ class WebsiteUrls(object):
                         yield item
 
                 continue
-            
+
             if hasattr(entry, '_callback'):
-                callback = entry._callback
+                callback = entry._callback # pylint: disable=protected-access
                 if isinstance(callback, types.FunctionType):
                     yield UrlFunction(parent, entry, callback)
                 elif hasattr(callback, 'model') and callback.model is not None:
                     yield UrlView(parent, entry, callback)
                 else:
                     yield Url(parent, entry, callback)
-

@@ -1,5 +1,5 @@
 {% extends 'person/base.html' %}
-{% load i18n humanize extras static moderator pagination_tags %}
+{% load i18n humanize extras static moderator %}
 
 {% block title %}{% trans "User Profile" %} | {{ object.name }}{% endblock %} 
 
@@ -154,8 +154,9 @@
   <h2>{% trans "Recent Uploads" %}</h2>
   
   {% if object.resources.latest %}
-    {% autopaginate object.resources.latest 4 as resources %}
-    {% include "resources/resource_icons.html" %}
+    {% with resources=object.resources.latest %}
+      {% include "resources/resource_icons.html" %}
+    {% endwith %}
   {% else %}
     {% if not object == request.user %}
       <div class="galleryitem nothing">
@@ -174,8 +175,9 @@
 
   <h2>{% trans "Favorite Artworks" %}</h2>
   {% if object.favorites.items.count > 0 %}
-    {% autopaginate object.favorites.items 4 as resources %}
-    {% include "resources/resource_icons.html" %}
+    {% with resources=object.favorites.items %}
+      {% include "resources/resource_icons.html" %}
+    {% endwith %}
   {% else %}
     {% if not object == request.user %}
       <div class="galleryitem nothing">

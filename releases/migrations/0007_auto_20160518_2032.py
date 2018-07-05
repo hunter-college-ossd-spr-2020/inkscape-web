@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import pile.fields
+import inkscape.fields
 
 
 class Migration(migrations.Migration):
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='release',
             name='background',
-            field=pile.fields.ResizedImageField(format=b'PNG', upload_to=b'release/background', max_width=960, min_height=0, max_height=360, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/background', max_width=960, min_height=0, max_height=360, blank=True, min_width=0, null=True),
         ),
         migrations.AlterField(
             model_name='release',

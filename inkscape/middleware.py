@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -27,14 +27,12 @@ from inspect import isclass
 from django.core.cache import caches
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import smart_text, smart_unicode
+from django.utils.encoding import smart_text
 
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models import signals, Model, Manager, QuerySet
 from django.utils.cache import get_cache_key
-
-import logging
 
 from .utils import BaseMiddleware, QuerySetWrapper, to, context_items
 from .fastly_cache import FastlyCache
@@ -113,7 +111,7 @@ class TrackCacheMiddleware(BaseMiddleware):
     @classmethod
     def get_create_key(cls, model, fields):
         # Detect related name here XXX
-        add = ["%s=%s" % (a, unicode(b)) for (a, b) in fields]
+        add = ["%s=%s" % (a, str(b)) for (a, b) in fields]
         add = "&".join(add).replace(' ', '_')
         return "cache:create:%s%s%s" % (model.__name__, "?"[:bool(add)], add)
 
@@ -216,9 +214,9 @@ class TrackCacheMiddleware(BaseMiddleware):
 
         This cache_key is then saved against each of the associated
         objects that are found in this request.
-        
+
         1. These objects can be the object or object_list context data
-           variables found in many class based views in django. 
+           variables found in many class based views in django.
         2. They can be the 'cache_tracks' array found in the context_data
            or a property (or property method) of the class based view.
         3. An array of tracked_objects can be populated using the inkscape
@@ -352,10 +350,10 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
             name = obj.name
         else:
             try:
-                name = smart_unicode(obj, errors='ignore')
-            except (UnicodeEncodeError, TypeError) as err:
+                name = smart_text(obj, errors='ignore')
+            except (UnicodeEncodeError, TypeError):
                 try:
-                    name = unicode(obj)
+                    name = str(obj)
                 except UnicodeEncodeError:
                     name = "Name Error"
         if hasattr(obj, 'get_absolute_url'):
@@ -363,7 +361,6 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
         if name is not None and name.startswith('['):
             return None
         return (url, name)
-
 
 
 class PrintMemoryMiddleware(object):
@@ -394,4 +391,5 @@ class PrintMemoryMiddleware(object):
 
         heapy.setref()
         return response
+
 

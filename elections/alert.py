@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -26,19 +26,22 @@ from django.utils.translation import override as tr_override, ugettext_lazy as _
 from django.core.mail.message import EmailMultiAlternatives
 from django.conf import settings
 
-from alerts.base import EditedAlert, CreatedAlert
+from alerts.base import CreatedAlert
 from alerts.template_tools import render_template, render_directly
 
 from .models import Candidate
 
+DEFAULT_LANG = getattr(settings, 'LANGUAGE_CODE', 'en')
+
 class CandidateInvitationAlert(CreatedAlert):
-    name   = _("Invitation to Stand")
-    desc   = _("An alert is sent when a user invites another to stand in an election.")
-    info   = _("When a member of a team selects another user to stand, you get an email.")
+    """Invite candidates by email to stand for elections"""
+    name = _("Invitation to Stand")
+    desc = _("An alert is sent when a user invites another to stand in an election.")
+    info = _("When a member of a team selects another user to stand, you get an email.")
     sender = Candidate
 
+    email_footer = None
     email_subject = "{% trans 'Stand for Election:' %} {{ instance.election }}"
-    email_footer  = None
     default_email = True
 
     subscribe_all = False
@@ -49,9 +52,9 @@ class CandidateInvitationAlert(CreatedAlert):
 
     def get_alert_users(self, instance):
         """Alert the candidate that is invited"""
-	if instance.user_id != instance.invitor_id:
-	    return instance.user
-
+        if instance.user_id != instance.invitor_id:
+            return instance.user
+        return None
 
 def send_team_email(team, subject, template, **context):
     """Sends a team email to everyone"""
@@ -62,16 +65,13 @@ def send_team_email(team, subject, template, **context):
         subject = "ADMIN WARNING! No group email set for team '%s'" % team.name
     return send_email(email, subject, template, **context)
 
-DEFAULT_LANG = getattr(settings, 'LANGUAGE_CODE', 'en')
-
 def send_email(email, subject, template, lang=DEFAULT_LANG, **context):
+    """Sends the right emailusing the template"""
     with tr_override(lang):
         context['site'] = settings.SITE_ROOT
         return EmailMultiAlternatives(
-          to=[email],
-          body=render_template(template, context),
-          subject=render_directly(subject, context)\
-            .strip().replace('\n', ' ').replace('\r', ' '),
+            to=[email],
+            body=render_template(template, context),
+            subject=render_directly(subject, context)\
+                .strip().replace('\n', ' ').replace('\r', ' '),
         ).send(True)
-
-

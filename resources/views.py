@@ -2,7 +2,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -18,14 +18,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+# pylint: disable=too-many-ancestors
 """
 Views for resource system, adding items, entering new categories for widgets etc
 """
-
-import sys
 import os
 
-from sendfile import sendfile
 from datetime import timedelta
 
 from django.http import JsonResponse, Http404
@@ -34,45 +32,53 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.conf import settings
 from django.template import RequestContext
+from django.views.generic import DetailView, ListView, DeleteView, CreateView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import RedirectView
 
 from person.models import User, Team
-from pile.views import *
 
-from .mixins import *
+from .category_views import CategoryListView, CategoryFeed
+from .mixins import (
+    OwnerDeleteMixin, OwnerCreateMixin, OwnerUpdateMixin,
+    OwnerViewMixin, ResourceJSONEncoder,
+)
 from .models import *
 from .forms import *
 
 class GalleryMixin(object):
+    """Load up a single gallery from the kwargs"""
     pk_url_kwarg = 'gallery_id'
     model = Gallery
     
 class DeleteGallery(GalleryMixin, OwnerDeleteMixin, DeleteView):
+    """An owner of a gallery can delete it"""
     title = _("Delete Gallery")
 
 class CreateGallery(GalleryMixin, OwnerCreateMixin, CreateView):
+    """Any user can create galleries"""
     form_class = GalleryForm
     title = _("Create Gallery")
 
 class EditGallery(GalleryMixin, OwnerUpdateMixin, UpdateView):
+    """An owner of a gallery can edit it"""
     title = _("Edit Gallery")
     form_class = GalleryForm
     get_group = lambda self: None
 
 class GalleryList(GalleryMixin, OwnerViewMixin, ListView):
-    pass
+    """List all galleries"""
 
 class DeleteResource(OwnerDeleteMixin, DeleteView):
+    """An owner of a resource can delete it"""
     model = Resource
     title = _("Delete")
 
 class EditResource(OwnerUpdateMixin, UpdateView):
+    """An owner of a resource can edit it"""
     model = Resource
     title = _("Edit")
 
@@ -80,16 +86,17 @@ class EditResource(OwnerUpdateMixin, UpdateView):
         return ResourceBaseForm.get_form_class(self.object)
 
     def get_form_kwargs(self):
-        kw = super(EditResource, self).get_form_kwargs()
+        kwargs = super(EditResource, self).get_form_kwargs()
         if self.object.gallery:
-            kw['gallery'] = self.object.gallery
-        return kw
+            kwargs['gallery'] = self.object.gallery
+        return kwargs
 
     def get_success_url(self):
         return self.request.POST.get('next', self.object.get_absolute_url())
 
 
 class PublishResource(OwnerUpdateMixin, DetailView):
+    """Any ownerof a resource can publish it"""
     model = Resource
     title = _("Publish")
 
@@ -102,17 +109,18 @@ class PublishResource(OwnerUpdateMixin, DetailView):
 
 
 class MoveResource(OwnerUpdateMixin, UpdateView):
+    """Any owner of a resource and a gallery can move resources into them"""
     template_name = 'resources/resource_move.html'
     form_class = GalleryMoveForm
     model = Resource
-    
-    def get_object(self):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.source = None
         self.title = _('Copy to Gallery')
         if 'source' in self.kwargs:
             self.title = _('Move to Gallery')
             self.source = get_object_or_404(Gallery, pk=self.kwargs['source'])
-        return super(MoveResource, self).get_object()
 
     def get_group(self):
         """This gives group members permisson to move other's resources"""
@@ -134,58 +142,60 @@ class MoveResource(OwnerUpdateMixin, UpdateView):
 
 
 class UploadResource(OwnerCreateMixin, CreateView):
+    """Any logged in user can create a resource"""
     form_class = ResourceForm
     model = Resource
     title = _("Upload New Resource")
 
     def get_form_kwargs(self):
-        kw = super(UploadResource, self).get_form_kwargs()
+        kwargs = super(UploadResource, self).get_form_kwargs()
         if hasattr(self, 'gallery'):
-            kw['gallery'] = self.gallery
-        return kw
+            kwargs['gallery'] = self.gallery
+        return kwargs
 
 
 class DropResource(UploadResource):
-    content_type  = 'text/plain'
+    """A drag and drop uploader using json"""
     template_name = 'resources/ajax/add.txt'
-    form_class    = ResourceAddForm
+    content_type = 'text/plain'
+    form_class = ResourceAddForm
 
     def form_valid(self, form):
-        ret = super(DropResource, self).form_valid(form)
+        super().form_valid(form)
         context = self.get_context_data(item=form.instance)
         return self.render_to_response(context)
 
-
 class LinkToResource(UploadResource):
+    """Create a link to a resource instead of an upload"""
     form_class = ResourceLinkForm
     title = _("Link to Video or Resource")
 
-
-class PasteIn(UploadResource):
+class PasteInResource(UploadResource):
+    """Create a paste-bin entry instead of an upload"""
     form_class = ResourcePasteForm
     title = _("New PasteBin")
 
     def get_context_data(self, **kw):
-        data = super(PasteIn, self).get_context_data(**kw)
+        data = super().get_context_data(**kw)
         data['object'] = Category.objects.get(slug='pastebin')
         data['object']._parent = self.request.user.resources.all()
-	data['object_list'] = None
-	return data
-
+        data['object_list'] = None
+        return data
 
 class ViewResource(DetailView):
+    """View a single resource, for download or just zommed in"""
     model = Resource
-    
-    def get_queryset(self):
-        qs = Resource.objects.for_user(self.request.user)
-        if 'username' in self.kwargs:
-            qs = qs.filter(user__username=self.kwargs['username'])
-        return qs
 
-    def get_template_names(self, *args, **kw):
+    def get_queryset(self):
+        qset = Resource.objects.for_user(self.request.user)
+        if 'username' in self.kwargs:
+            qset = qset.filter(user__username=self.kwargs['username'])
+        return qset
+
+    def get_template_names(self):
         if self.request.GET.get('modal', False):
             return 'resources/resource_modal.html'
-        return super(ViewResource, self).get_template_names(*args, **kw)
+        return super().get_template_names()
 
     def get(self, request, *args, **kwargs):
         ret = super(ViewResource, self).get(request, *args, **kwargs)
@@ -196,8 +206,8 @@ class ViewResource(DetailView):
                 raise Http404()
         return ret
 
-
 class TagsJson(View):
+    """Json based get a list of possible tags that a resource can use"""
     def get(self, request):
         # We could leverage category to style
         # categorized tags differently in the suggestions list
@@ -205,70 +215,79 @@ class TagsJson(View):
             "id": tag.pk,
             "name": tag.name,
             "cat" : str(tag.category or "") or None,
-          } for tag in Tag.objects.all()]}
+        } for tag in Tag.objects.all()]}
         return JsonResponse(context, safe=False, content_type='application/json; charset=utf-8')
 
 
 class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
+    """Allow any logged in user to vote on a resource"""
     permanent = False
     queryset = Resource.objects.filter(published=True)
+    msg = {
+        'prev': _('Your previous vote has been replaced by a vote for this item.'),
+        'done': _('Thank you for your vote!'),
+        'ended': _('You may not vote after the contest ends.'),
+        '!begun': _('You may not vote until the contest begins.'),
+        '!ready': _('You may not vote in a contest open for submissions.'),
+    }
 
-    def get_redirect_url(self, obj):
-        return self.request.GET.get('next', obj.get_absolute_url())
+    def get_redirect_url(self, *args, **kwargs):
+        return self.request.GET.get(
+            'next', self.get_object().get_absolute_url())
 
-    def get(self, request, **kw):
+    def get(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.user.pk == request.user.pk:
             raise PermissionDenied()
         try:
-            self.vote_on(obj, kw['like'] == '+')
-        except NotAllowed as err:
-            messages.error(self.request, err.msg)
+            self.vote_on(obj, kwargs['like'] == '+')
+        except PermissionDenied as err:
+            messages.error(self.request, str(err))
         return super(VoteResource, self).get(request, obj=obj)
 
     def vote_on(self, item, like=True):
+        """Vote on the item, say if the user likes it or not"""
         gallery = item.gallery
+        msg = self.msg['done']
         if gallery and gallery.contest_submit and like:
             # Delete existing contest votes.
             for vote in self.contest_vote(item):
                 resource = vote.resource
                 vote.delete()
                 resource.votes.refresh()
-                messages.info(self.request, _('Your previous vote in this contest has been replaced by your vote for this item.'))
-            else:
-                messages.info(self.request, _('Thank you for your vote!'))
+                msg = self.msg['prev']
         if like:
             item.votes.get_or_create(voter_id=self.request.user.pk)
         else:
             item.votes.filter(voter_id=self.request.user.pk).delete()
         # Update the Resource item's vote count (for easier lookup)
         item.votes.refresh()
+        messages.info(self.request, msg)
 
     def contest_vote(self, item):
+        """Attemptto vote on the item, but fail if the contest isn't running"""
         gallery = item.gallery
         today = now().date()
         # Some different rules for contest galleries
         if gallery.contest_submit > today:
-            raise NotAllowed(_('You may not vote until the contest begins.'))
+            raise PermissionDenied(self.msg['!begun'])
         elif gallery.contest_voting and gallery.contest_voting > today:
-            raise NotAllowed(_('You may not vote in a contest open for submissions.'))
+            raise PermissionDenied(self.msg['!ready'])
         elif gallery.contest_finish and gallery.contest_finish < today:
-            raise NotAllowed(_('You may not vote after the contest ends.'))
+            raise PermissionDenied(self.msg['ended'])
         return item.gallery.votes.filter(voter_id=self.request.user.pk)
 
-
-def down_readme(request, pk):
-    item = get_object_or_404(Resource, id=pk)
-    return render_to_response('resources/readme.txt', {'item': item},
-      context_instance=RequestContext(request),
-      content_type="text/plain")
-
+class DownloadReadme(ViewResource):
+    """The readme.txt file is generated from the resource's description"""
+    template_name = 'resources/readme.txt'
+    content_type = "text/plain"
 
 class DownloadResource(ViewResource):
+    """Resource download will count the downloads and then redirect users"""
     template_name = 'resources/view_text.html'
 
     def get(self, request, *args, **kwargs):
-        fn = kwargs.get('fn', None)
+        func = kwargs.get('fn', None)
         item = self.get_object()
         if not item.download:
             messages.warning(request, _('There is no file to download in this resource.'))
@@ -277,68 +296,19 @@ class DownloadResource(ViewResource):
         # The view 'download' allows one to view an image in full screen glory
         # which is technically a download, but we count it as a view and try
         # and let the browser deal with showing the file.
-        if fn is None:
+        if func is None:
             if item.mime().is_text():
                 return super(DownloadResource, self).get(request, *args, **kwargs)
             return redirect(item.download.url)
 
-        if fn not in ['download', item.filename()]:
-            messages.warning(request, _('Can not find file \'%s\', please retry download.' % fn))
+        if func not in ['download', item.filename()]:
+            messages.warning(request, _('Can not find file \'%s\', please retry download.') % func)
             return redirect(item.get_absolute_url())
-
-        # If the item is mirrored, then we need to select a good mirror to use
-        if item.mirror:
-            mirror = ResourceMirror.objects.select_mirror(item.edited)
-            if mirror:
-                response = render_to_response('resources/resourcemirror_thanks.html', {
-                     'mirror': mirror,
-                     'item': item,
-                     'url': mirror.get_url(item),
-                   }, context_instance=RequestContext(request))
-                response['refresh'] = "3; url=%s" % mirror.get_url(item)
-                return response
-
-        if settings.DEBUG:
-            # We still use sendfile for development because it's useful
-            return sendfile(request, item.download.path, attachment=True)
 
         # But live now uses nginx directly to set the Content-Disposition
         # since the header will be passed to the fastly cache from nginx
         # but the sendfile method will fail because of the internal redirect.
         return redirect(item.download.url.replace('/media/', '/dl/'))
-
-
-class MirrorIndex(ListView):
-    model = ResourceMirror
-
-class MirrorView(DetailView):
-    model = ResourceMirror
-    slug_field = 'uuid'
-
-    def get(self, *args, **kw):
-        self.get_object().do_sync()
-        return super(MirrorView, self).get(*args, **kw)
-
-class MirrorResource(MirrorView):
-    def get(self, request, *args, **kw):
-        mirror = self.get_object()
-        path = os.path.join('resources', 'file', self.kwargs['filename'])
-        url = get_object_or_404(Resource, download=path).download.path
-        if not settings.DEBUG:
-            # use nginx context-disposition on live
-            return redirect(url.replace('/media/', '/dl/'))
-        # Still use sendfile for local development
-        return sendfile(request, url, attachment=True)
-
-class MirrorAdd(CreateView):
-    model = ResourceMirror
-    form_class = MirrorAddForm
-
-    def get_context_data(self, **kw):
-        data = super(MirrorAdd, self).get_context_data(**kw)
-        data['object_list'] = ResourceMirror.objects.all()
-        data['title'] = _("Create")
-        return data
 
 
 class ResourceList(CategoryListView):
@@ -475,18 +445,22 @@ class GalleryView(ResourceList):
        (('galleries', 'galleries__slug', False),)
     cats = (('category', _("Media Category"), 'get_categories'),)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.limit = 20
+
     def get_template_names(self):
         return ['resources/resourcegallery_specific.html']
 
     @property
     def order(self):
+        """Returns the ordering in this gallery view (the first one only)"""
         return self.orders[0][0]
 
     @property
     def orders(self):
         """Restrict ordering when doing a contest"""
         gallery = get_object_or_404(Gallery, slug=self.kwargs['galleries'])
-        self.limit = 20
         if gallery.is_contest:
             if gallery.is_submitting:
                 return (('-created', _('Created Date')),)
@@ -494,17 +468,19 @@ class GalleryView(ResourceList):
                 self.limit = 0
                 return (('?', _('Random Order')),)
             return (
-              ('-liked', _('Most Votes')),
-              ('-created', _('Created Date')),
+                ('-liked', _('Most Votes')),
+                ('-created', _('Created Date')),
             )
         return super(GalleryView, self).orders
 
 
 class ResourcePick(ResourceList):
+    """A loadable picker that allows an item to be choosen"""
     def get_template_names(self):
         return ['resources/resource_picker.html']
 
 class ResourceFeed(CategoryFeed, ResourceList):
+    """Feed via xml a list of resources in any of the galleries"""
     title = _("Gallery Feed")
     description = "Gallery Resources RSS Feed"
 
@@ -523,28 +499,16 @@ class ResourceFeed(CategoryFeed, ResourceList):
                 else:
                     yield item
 
-    def item_title(self, item):
-        return item.name
+    item_guid = lambda self, item: '#'+str(item.pk)
+    item_title = lambda self, item: item.name
+    item_pubdate = lambda self, item: item.created
+    item_updateddate = lambda self, item: item.edited
+    item_description = lambda self, item: item.description
+    item_author_name = lambda self, item: str(item.user)
+    item_author_link = lambda self, item: item.user.get_absolute_url()
 
-    def item_description(self, item):
-        return item.description
-
-    def item_guid(self, item):
-        return '#'+str(item.pk)
-
-    def item_author_name(self, item):
-        return str(item.user)
-
-    def item_author_link(self, item):
-        return item.user.get_absolute_url()
-
-    def item_pubdate(self, item):
-        return item.created
-
-    def item_updateddate(self, item):
-        return item.edited
 
 class ResourceJson(ResourceList):
-    def render_to_response(self, context, **kwargs):
+    """Take any list of resources, and produce json output"""
+    def render_to_response(self, context, **_):
         return JsonResponse(context, encoder=ResourceJSONEncoder)
-

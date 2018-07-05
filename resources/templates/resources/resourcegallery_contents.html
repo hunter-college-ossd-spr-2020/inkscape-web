@@ -1,10 +1,8 @@
-{% load i18n pagination_tags %}
+{% load i18n %}
 
 <div id="left-column">
   {% if limit > 0 %}
-    {% autopaginate object_list limit as resources %}
-      {% include "resources/resource_icons.html" %}
-    {% paginate %}
+    {% include "resources/resource_icons.html" with resources=object_list %}
   {% else %}
     {% include "resources/resource_icons.html" with resources=object_list %}
     <div class="pagination"><span class="disabled">{% trans "Pages Disabled" %}</span></div>

@@ -29,7 +29,7 @@ from django.utils import translation
 from django.utils.timezone import utc
 from django.core.urlresolvers import reverse
 
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from django_comments.models import Comment
 from forums.models import Forum, ForumTopic, ContentType

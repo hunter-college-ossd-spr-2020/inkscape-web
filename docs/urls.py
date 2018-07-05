@@ -1,7 +1,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Simple docs pass-through"""
 
-try:
-    from django.conf.urls import patterns, url
-except ImportError:
-    from django.conf.urls.defaults import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('docs.views',
-    url(r'^(.*)$', 'page', name='doc'),
-)
+from .views import page
+
+urlpatterns = [
+    url(r'^(.*)$', page, name='doc'),
+]

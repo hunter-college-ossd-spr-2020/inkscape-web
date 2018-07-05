@@ -42,7 +42,7 @@ class ResourceReleaseForm(ResourceBaseForm):
     def __init__(self, data=None, *args, **kwargs):
         kwargs['initial'] = kwargs.pop('initial', {})
         if 'instance' in kwargs:
-	    for rp in kwargs['instance'].releases.all():
+            for rp in kwargs['instance'].releases.all():
                 kwargs['initial']['release'] = rp.release
                 kwargs['initial']['platform'] = rp.platform
                 break

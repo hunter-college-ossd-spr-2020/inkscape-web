@@ -33,11 +33,11 @@ class CachedCommentListNode(CommentListNode):
             qs = self.comment
             ctype, object_pk = self.get_target_ctype_pk(context)
             if object_pk:
-                qs = self.comment_model.objects.filter(
+                qset = self.comment_model.objects.filter(
                       content_type=ctype,
                       object_pk=str(object_pk),
                    )
-		request.cache_tracks.append(qs)
+                request.cache_tracks.append(qset)
         return super(CachedCommentListNode, self).render(context)
 
 @register.tag

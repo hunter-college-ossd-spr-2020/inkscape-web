@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import pile.fields
 from django.conf import settings
 import django.core.validators
+import inkscape.fields
 
 class Migration(migrations.Migration):
 
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=32, verbose_name='User Team')),
                 ('icon', models.ImageField(upload_to=b'teams', verbose_name='Display Icon')),
                 ('desc', models.TextField(blank=True, null=True, verbose_name='Full Description', validators=[django.core.validators.MaxLengthValidator(10240)])),
-                ('group', pile.fields.AutoOneToOneField(related_name='team', null=True, blank=True, to='auth.Group')),
+                ('group', models.OneToOneField(related_name='team', null=True, blank=True, to='auth.Group')),
             ],
             options={
                 'db_table': 'person_userroll',
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('bio', models.TextField(blank=True, null=True, validators=[django.core.validators.MaxLengthValidator(4096)])),
-                ('photo', pile.fields.ResizedImageField(format=b'PNG', upload_to=b'photos', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Photograph (square)')),
+                ('photo', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'photos', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Photograph (square)')),
                 ('ircnick', models.CharField(max_length=20, null=True, verbose_name='IRC Nickname', blank=True)),
                 ('ircpass', models.CharField(max_length=128, null=True, verbose_name='Freenode Password (optional)', blank=True)),
                 ('ircdev', models.BooleanField(default=False, verbose_name='Join Developer Channel')),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('gpg_key', models.TextField(blank=True, null=True, verbose_name='GPG Public Key', validators=[django.core.validators.MaxLengthValidator(262144)])),
                 ('last_seen', models.DateTimeField(null=True, blank=True)),
                 ('visits', models.IntegerField(default=0)),
-                ('user', pile.fields.AutoOneToOneField(related_name='details', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='details', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },

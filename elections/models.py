@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -21,9 +21,11 @@
 Hold elections for group memberships.
 """
 
-from random import sample
-from pyvotecore.irv import IRV
-from pyvotecore.stv import STV
+from random import choice, sample
+from collections import Counter
+from string import ascii_letters
+
+from py3votecore.stv import STV
 
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -31,23 +33,23 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 
 from django.conf import settings
-from django.db.models import *
+from django.db.models import (
+    Manager, Model, SlugField, ForeignKey, CharField, DateTimeField,
+    DateField, PositiveIntegerField, TextField, BooleanField
+)
 
 from person.models import Team
 
-from collections import Counter
-from random import choice
-from string import ascii_letters
+from .results import BALLOT_TYPES, get_log as _get_log, make_log
 
-from .results import BALLOT_TYPES, get_log, make_log
-
-User = settings.AUTH_USER_MODEL
 
 def get_hash():
+    """Returns a generated hash to model fields"""
     return ''.join(choice(ascii_letters) for _ in range(50))
 
 
-null = dict(null=True, blank=True)
+User = settings.AUTH_USER_MODEL # pylint: disable=invalid-name
+null = dict(null=True, blank=True) # pylint: disable=invalid-name
 
 STATUSES = [
     ('.', _('Planning'), _('Planning the election.')),
@@ -58,45 +60,46 @@ STATUSES = [
     ('!', _('Insufficient Candidates'), _('Electing Canceled, Failed to get enough candidates.')),
     ('*', _('Insufficient Votes'), _('Electing Canceled, Failed to get enough voters to vote.')),
 ]
-RESTAT = zip(*STATUSES)
+RESTAT = list(zip(*STATUSES))
 (PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, INCAN, INVOT) = RESTAT[0]
 FAILURE = {'S': '!', 'V': '*'}
 
 class Election(Model):
-    slug = SlugField(max_length=32, help_text=_('Unique name used to identify'
-        ' this election in urls.'))
+    """A single election as held by a group"""
+    slug = SlugField(max_length=32,\
+         help_text=_('Unique name used to identify this election in urls.'))
 
-    for_team = ForeignKey(Team, help_text=_('The team wanting new members.'),
-        related_name='elections')
-    for_role = CharField(max_length=128, null=True, blank=True,
+    for_team = ForeignKey(Team, related_name='elections',\
+        help_text=_('The team wanting new members.'))
+    for_role = CharField(max_length=128, null=True, blank=True,\
         help_text=_('The role the elected members will have in the team.'))
-    constituents = ForeignKey(Team, help_text=_('People allowed to vote.'),
-        related_name='election_votes')
-    called_by = ForeignKey(User,
+    constituents = ForeignKey(Team, related_name='election_votes',\
+        help_text=_('People allowed to vote.'))
+    called_by = ForeignKey(User,\
         help_text=_('You, the responsible person for this election.'))
     called_on = DateTimeField(auto_now=True)
 
-    status = CharField(max_length=1, db_index=True,
+    status = CharField(max_length=1, db_index=True,\
         choices=zip(RESTAT[0], RESTAT[2]), default=PLANNING)
 
-    invite_from = DateField(help_text=_('Start the nominations process on this'
+    invite_from = DateField(help_text=_('Start the nominations process on this'\
         ' date, emails are sent out as invites are created (UTC).'))
-    accept_from = DateField(help_text=_('Invitation process stops and invitees'
-        ' have this extra amount of time to accept their invitations. (UTC)'))
-    voting_from = DateField(help_text=_('Finish the nominations and start'
-        ' voting (UTC).'))
-    finish_on = DateField(help_text=_('Finish the election, voting closed,'
-        ' winners announced (UTC).'))
+    accept_from = DateField(help_text=_('Invitation process stops and'\
+        ' invitees have this extra amount of time to accept it. (UTC)'))
+    voting_from = DateField(\
+        help_text=_('Finish the nominations and start voting (UTC).'))
+    finish_on = DateField(\
+        help_text=_('Finish the election, vote closed, wins announced (UTC).'))
 
-    places = PositiveIntegerField(default=1, help_text=_('The number of places'
-        ' that are available to be won in this election. If fewer candidates'
+    places = PositiveIntegerField(default=1, help_text=_('The number of place'\
+        's that are available to be won in this election. If fewer candidates'\
         ' are available to stand, this election will fail and be canceled'))
-    min_votes = PositiveIntegerField(default=2, help_text=_('A minimum number'
-        ' of votes required to make this a fair election. Insufficient votes'
+    min_votes = PositiveIntegerField(default=2, help_text=_('A minimum number'\
+        ' of votes required to make this a fair election. Insufficient votes'\
         ' will force the election to fail and be canceled.'))
-    notes  = TextField(help_text=_('Any notes about this election, why it was'
-        ' called or why new people are needed. Message is sent to constituents'
-        ' during the invitation and voting periods.'), **null)
+    notes = TextField(help_text=_('Any notes about this election, why it was'\
+        ' called or why new people are needed. Message is sent to constituent'\
+        's during the invitation and voting periods.'), **null)
 
     # log records all the voters once the vote is finished. Votes are removed
     # as soon as the log is generated and saved. This also records all the
@@ -107,7 +110,7 @@ class Election(Model):
     year = property(lambda self: self.voting_from.year)
     parent = property(lambda self: self.for_team)
     intro = property(lambda self: self.notes)
-    get_log = property(lambda self: get_log(self.log))
+    get_log = property(lambda self: _get_log(self.log))
 
     @property
     def name(self):
@@ -126,9 +129,11 @@ class Election(Model):
 
     @property
     def ballot_type(self):
+        """Returns the ballot type"""
         return BALLOT_TYPES['pyvotecore.stv']
 
     def state(self):
+        """Returns a state structure for this election"""
         ret = dict(process=[], index=RESTAT[0].index(self.status), fail=99)
         dates = (now().date(), self.invite_from, self.accept_from,
                  self.voting_from, self.finish_on, now().date())
@@ -159,11 +164,12 @@ class Election(Model):
         return ret
 
     def send_team_email(self, subject, tmp, **kw):
+        """Send an email to the team involved"""
         from .alert import send_team_email
         send_team_email(self.constituents,
-            "Election {{ instance.for_team }}: {{ add }}",
-            "elections/alert/email_%s.txt" % tmp,
-            add=subject, instance=self, **kw)
+                        "Election {{ instance.for_team }}: {{ add }}",
+                        "elections/alert/email_%s.txt" % tmp,
+                        add=subject, instance=self, **kw)
 
     def invitation_open(self):
         """Move from PLANNING to NOMINATING"""
@@ -174,7 +180,7 @@ class Election(Model):
     def invitation_close(self):
         """Move from NOMINATING to SELECTING"""
         if self._candidates.count() < self.places:
-            return self.failed_to_invite()
+            self.failed_to_invite()
 
         self.status = SELECTING
         self.save()
@@ -209,7 +215,7 @@ class Election(Model):
         self.save()
 
         # Send a message advertising that voting is open
-        self.send_team_email('Voting Open', 'voting_open')
+        return self.send_team_email('Voting Open', 'voting_open')
 
     def failed_to_vote(self):
         """This election doesn't have enough candidates"""
@@ -234,12 +240,12 @@ class Election(Model):
             votes=list(self.ballots.log()),
             type='pyvotecore.stv',
             counts=dict(
-              candidates=self.candidates.count(),
-              invites=self.invites.count(),
-              ignored=self.ignored.count(),
-              rejected=self.rejected.count(),
-              ballots=self.ballots.count(),
-              voters=self.voters.count(),
+                candidates=self.candidates.count(),
+                invites=self.invites.count(),
+                ignored=self.ignored.count(),
+                rejected=self.rejected.count(),
+                ballots=self.ballots.count(),
+                voters=self.voters.count(),
             ),
         )
         self.save()
@@ -274,6 +280,7 @@ class Election(Model):
     voters = property(lambda self: self.ballots.filter(responded=True))
 
     def get_absolute_url(self):
+        """Return a link to the election"""
         return reverse('elections:item', kwargs={
             'team': self.for_team.slug, 'slug': self.slug,
         })
@@ -284,17 +291,18 @@ class CandidateManager(Manager):
         """Create a list of candidates and add to log"""
         for candidate in self.get_queryset():
             yield {
-              'user_id': candidate.user.pk,
-              'first_name': candidate.user.first_name,
-              'last_name': candidate.user.last_name,
-              'username': candidate.user.username,
-              'email': candidate.user.email,
-              'invitor': candidate.invitor_id,
-              'responded': candidate.responded,
-              'accepted': candidate.accepted,
+                'user_id': candidate.user.pk,
+                'first_name': candidate.user.first_name,
+                'last_name': candidate.user.last_name,
+                'username': candidate.user.username,
+                'email': candidate.user.email,
+                'invitor': candidate.invitor_id,
+                'responded': candidate.responded,
+                'accepted': candidate.accepted,
             }
 
 class Candidate(Model):
+    """Each candidate who is standing for an election"""
     slug = SlugField(default=get_hash)
 
     election = ForeignKey(Election, related_name='_candidates')

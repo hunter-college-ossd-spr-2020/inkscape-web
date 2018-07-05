@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.core.validators
 import django.contrib.auth.models
-import pile.fields
+import inkscape.fields
 
 
 class Migration(migrations.Migration):
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='photo',
-            field=pile.fields.ResizedImageField(format=b'PNG', upload_to=b'photos', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Photograph (square)'),
+            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'photos', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Photograph (square)'),
         ),
         migrations.AddField(
             model_name='user',

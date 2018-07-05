@@ -23,8 +23,13 @@ Dealing with fastly caches.
 
 import os
 import sys
+import ssl
 import time
 import logging
+
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.templatetags.static import static
 
 try:
     import fastly
@@ -33,13 +38,8 @@ except ImportError:
     fastly = None
 
 # Because python2.7 broke SSL for many computers.
-import ssl
 if hasattr(ssl, '_create_unverified_context'):
     ssl._create_default_https_context = ssl._create_unverified_context
-
-from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
-from django.templatetags.static import static
 
 def touch(fname, times=None):
     """Unix like touching of files"""
@@ -124,7 +124,7 @@ class FastlyCache(object):
             return False
         try:
             return self.api.purge_key(self.service, key)
-        except Exception, err:
+        except Exception as err:
             logging.error("Couldn't purge key, %s" % str(err))
             return False
 

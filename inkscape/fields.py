@@ -41,12 +41,7 @@ CORRECTORE = {
     8: [Image.ROTATE_90],
 }
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-
+from io import StringIO
 
 class AutoReverseOneToOneDescriptor(ReverseOneToOneDescriptor):
     def __get__(self, instance, instance_type=None):

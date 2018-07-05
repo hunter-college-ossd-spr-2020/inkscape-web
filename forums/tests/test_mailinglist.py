@@ -27,7 +27,7 @@ from md5 import md5
 from os import unlink
 from os.path import dirname, basename, isfile, join
 
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify

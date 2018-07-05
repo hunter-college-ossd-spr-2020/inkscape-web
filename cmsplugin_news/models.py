@@ -130,7 +130,7 @@ class News(Model):
 
     def __getattribute__(self, name):
         obj = self
-        if hasattr(self, 'trans') and name in self.tr_fields:
+        if name in News.tr_fields and hasattr(obj, 'trans'):
             obj = self.trans
         elif name == 'translated':
             name = 'updated'

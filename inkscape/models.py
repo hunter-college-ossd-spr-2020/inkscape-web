@@ -20,9 +20,8 @@
 """
 Utility models which store data for the whole website's use.
 """
-
-import urllib2
-import md5
+import urllib
+import hashlib
 
 from django.db.models import Model, CharField, IntegerField, DateTimeField,\
     FileField, TextField, URLField
@@ -84,12 +83,12 @@ class RemoteImage(Model):
     def save(self, **kw):
         """Download the remote url and store locally, replaces file if needed."""
         if not self.local_file:
-            self.md5_prefix = md5.md5(self.remote_url).hexdigest()[:16]
+            self.md5_prefix = hashlib.md5(self.remote_url).hexdigest()[:16]
             filename = str(self.remote_url).rsplit('/', 1)[-1]
             filename = (self.md5_prefix + '_' + filename)[-255:]
             try:
                 self.local_file.save(filename, URLFile(self.remote_url), save=False)
-            except urllib2.HTTPError:
+            except urllib.error.HTTPError:
                 # Set the local_file to an 'image not found'
                 self.local_file.name = RemoteImage.objects.get(pk=1).local_file.name
         return super(RemoteImage, self).save(**kw)

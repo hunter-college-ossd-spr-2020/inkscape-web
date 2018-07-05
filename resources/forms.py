@@ -1,7 +1,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -20,29 +20,31 @@
 """
 Forms for the gallery system
 """
-from cStringIO import StringIO
+__all__ = ('GalleryForm', 'GalleryMoveForm', 'ResourceForm',
+           'ResourceEditPasteForm', 'ResourcePasteForm', 'ResourceAddForm',
+           'MirrorAddForm', 'ResourceLinkForm', 'ResourceBaseForm')
 
-from django.forms import *
+from io import StringIO
+
+from django.forms import (
+    ModelForm, ModelChoiceField, ValidationError, ClearableFileInput,
+    ChoiceField, CharField, BooleanField, Textarea
+)
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils.text import slugify
-from django.db.models import Model, Q
+from django.db.models import Q
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
-from .models import *
-from .validators import Range, CsvList
-from .utils import FileEx, MimeType, ALL_TEXT_TYPES
-from .fields import FilterSelect, DisabledSelect, CategorySelect, TagsChoiceField
 
 # Thread-safe current user middleware getter.
 from cms.utils.permissions import get_current_user as get_user
-
 from inkscape.middleware import TrackCacheMiddleware
 
-__all__ = ('GalleryForm', 'GalleryMoveForm', 'ResourceForm',
-        'ResourceEditPasteForm', 'ResourcePasteForm', 'ResourceAddForm',
-        'MirrorAddForm', 'ResourceLinkForm', 'ResourceBaseForm')
+from .models import Gallery, Resource, Tag, Category, ResourceMirror
+from .validators import Range, CsvList
+from .utils import FileEx, MimeType, ALL_TEXT_TYPES
+from .fields import FilterSelect, DisabledSelect, CategorySelect, TagsChoiceField
 
 TOO_SMALL = [
     "Image is too small for %s category (Minimum %sx%s)",
@@ -52,6 +54,7 @@ TOO_LARGE = [
     "Text is too large for %s category (Maximum %s Lines, %s Words)"]
 
 class GalleryForm(ModelForm):
+    """Create a gallery from the website"""
     class Meta:
         model = Gallery
         fields = ['name', 'group', 'category']
@@ -59,11 +62,11 @@ class GalleryForm(ModelForm):
     def __init__(self, *args, **kwargs):
         ModelForm.__init__(self, *args, **kwargs)
         self.fields['group'].queryset = get_user().groups.all()
-        qs = self.fields['category'].queryset
-        self.fields['category'].queryset = qs.filter(selectable=True)
+        self.fields['category'].queryset = self.fields['category'].queryset.filter(selectable=True)
 
 
 class GalleryMoveForm(ModelForm):
+    """Form used when moving a resource from one gallery to another"""
     target = ModelChoiceField(queryset=Gallery.objects.none())
 
     class Meta:
@@ -80,8 +83,7 @@ class GalleryMoveForm(ModelForm):
         open_contest = (Q(contest_submit__lte=today) \
             & (Q(contest_voting__isnull=True) | Q(contest_voting__gte=today)) \
             & (Q(contest_finish__isnull=True) | Q(contest_finish__gte=today))
-          )
-
+                       )
         # The gallery may be owned by the user, in the same group
         # as the user or open for events or contests.
         query = is_owner | in_group | open_contest
@@ -98,6 +100,7 @@ class GalleryMoveForm(ModelForm):
         self.fields['target'].queryset = Gallery.objects.filter(query)
 
     def clean_target(self):
+        """Clean the target field and make sure gallery allows this type of resource"""
         target = self.cleaned_data['target']
         existing = self.instance.gallery
         if target.contest_voting:
@@ -109,7 +112,8 @@ class GalleryMoveForm(ModelForm):
                 raise ValidationError(_("Entry can not be moved into a closed contest."))
 
         if target.category is not None and self.instance.category != target.category:
-            raise ValidationError(_("Entry needs to be in the %s category to go into this gallery.") % unicode(target.category))
+            raise ValidationError(_("Entry needs to be in the %s category"\
+                                    " to go into this gallery.") % str(target.category))
         return target
 
     def save(self):
@@ -132,6 +136,11 @@ class ResourceBaseForm(ModelForm):
 
     class Media:
         js = ('js/jquery.validate.js', 'js/additional.validate.js', 'js/resource.validate.js')
+        widgets = {
+            'download': ResourceFileInput(),
+            'rendering': ResourceFileInput(),
+            'signature': ResourceFileInput(),
+        }
 
     def __init__(self, *args, **kwargs):
         self.gallery = kwargs.pop('gallery', None)
@@ -165,11 +174,6 @@ class ResourceBaseForm(ModelForm):
         else:
             self.fields.pop('comment', None)
 
-        for field in ('download', 'rendering', 'signature'):
-            if field in self.fields:
-                if isinstance(self.fields[field].widget, ClearableFileInput):
-                    self.fields[field].widget = ResourceFileInput()
-
         if 'category' in self.fields:
             field = self.fields['category']
             # Limit any resources submitted to a pre-defined gallery to the
@@ -185,7 +189,7 @@ class ResourceBaseForm(ModelForm):
                 # This special widget enables javascriptto control what each
                 # category will limit other options (such as licence and tags)
                 field.widget = CategorySelect(field.widget.attrs, field.widget.choices)
-                field.choices = [(o, unicode(o)) for o in field.queryset]
+                field.choices = [(o, str(o)) for o in field.queryset]
 
         if 'license' in self.fields:
             field = self.fields['license']
@@ -218,8 +222,8 @@ class ResourceBaseForm(ModelForm):
             acceptable = list(category.acceptable_licenses.all())
             if category and ret not in acceptable:
                 accept = '\n'.join([" * %s" % str(acc) for acc in acceptable])
-                raise ValidationError(_("This is not an acceptable license "
-                      "for this category, Acceptable licenses:\n%s") % accept)
+                raise ValidationError(_("This is not an acceptable license for"
+                                        " this category, Acceptable licenses:\n%s") % accept)
         return ret
 
     def clean_category(self):
@@ -238,9 +242,11 @@ class ResourceBaseForm(ModelForm):
         return ret
 
     def get_space(self):
+        """Returns the user's quota minus amount of space already used"""
         return self.user.quota() - self.user.resources.disk_usage()
 
     def clean_download(self):
+        """Clean the download field, making sure it's type and size are right"""
         download = self.cleaned_data['download']
         category = self.cleaned_data.get('category', None)
         types = CsvList(getattr(category, 'acceptable_types', None))
@@ -268,20 +274,25 @@ class ResourceBaseForm(ModelForm):
 
         if hasattr(download, 'content_type'):
             if download.content_type not in types:
-                err = _("Only %(file_type)s files allowed in %(cat_name)s category (found %(mime_type)s)") 
-                raise ValidationError(err % {"file_type": types, "cat_name": str(category), "mime_type": download.content_type})
+                err = _("Only %(file_type)s files allowed in %(cat_name)s category (found %(mime_type)s)")
+                raise ValidationError(err % {
+                    "file_type": types,
+                    "cat_name": str(category),
+                    "mime_type": download.content_type,
+                })
             if media_x or media_y:
                 self.clean_media_size(category, download, media_x, media_y)
         return download
 
-    def clean_media_size(self, category, download, media_x, media_y):
+    @staticmethod
+    def clean_media_size(category, download, media_x, media_y):
         """Clean the media size and raise error if too small or large"""
         mime = MimeType(download.content_type)
         small = TOO_SMALL[mime.is_text()]
         large = TOO_LARGE[mime.is_text()]
 
-        fh = FileEx(download, mime=mime)
-        (x, y) = fh.media_coords
+        handle = FileEx(download, mime=mime)
+        (x, y) = handle.media_coords
         if x > media_x or y > media_y:
             raise ValidationError(large % (str(category), media_x.to_max(), media_y.to_max()))
         elif x < media_x or y < media_y:
@@ -292,7 +303,8 @@ class ResourceBaseForm(ModelForm):
         owner = self.cleaned_data.get('owner', None)
         name = self.cleaned_data['owner_name']
         if owner and name:
-            raise ValidationError(_("Owner's Name should only be specified when you are NOT the owner."))
+            raise ValidationError(_("Owner's Name should only be specified when "
+                                    "you are NOT the owner."))
         elif not owner and not name:
             raise ValidationError(_("Owner's Name needs to be used when you are NOT the owner."))
         return name
@@ -301,10 +313,10 @@ class ResourceBaseForm(ModelForm):
         """Make sure all tags are lowercase"""
         ret = self.cleaned_data['tags']
         for tag in ret:
-           tag.name = tag.name.lower()
+            tag.name = tag.name.lower()
         return ret
 
-    def save(self, commit=False, **kwargs):
+    def save(self, commit=False):
         obj = ModelForm.save(self, commit=False)
         if not obj.pk and not obj.user:
             obj.user = self.user
@@ -312,7 +324,7 @@ class ResourceBaseForm(ModelForm):
             if self.cleaned_data['comment'] and obj.desc:
                 obj.desc = obj.desc + "\n---\n" + self.cleaned_data['comment']
 
-        obj.save(**kwargs)
+        obj.save(commit)
         obj.tags = self.clean_tags()
         if self.gallery is not None:
             self.gallery.items.add(obj)
@@ -352,7 +364,7 @@ class ResourceBaseForm(ModelForm):
             for subchild in child._get_forms(obj):
                 yield subchild
             if child.is_valid_form(obj):
-		yield child
+                yield child
 
 
 class ResourceForm(ResourceBaseForm):
@@ -393,7 +405,7 @@ class ResourceLinkForm(ResourceBaseForm):
 
 class ResourcePasteForm(ResourceBaseForm):
     media_type = ChoiceField(label=_('Text Format'), choices=ALL_TEXT_TYPES)
-    download   = CharField(label=_('Pasted Text'), widget=Textarea, required=False)
+    download = CharField(label=_('Pasted Text'), widget=Textarea, required=False)
     paste_mode = True
 
     def __init__(self, data=None, *args, **kwargs):
@@ -401,7 +413,7 @@ class ResourcePasteForm(ResourceBaseForm):
         kwargs['initial'] = dict(
             download='', desc='-', license=1, media_type='text/plain',
             name=_("Pasted Text #%d") % Resource.objects.all().count(),
-           **kwargs.pop('initial', {}))
+            **kwargs.pop('initial', {}))
         new_data = kwargs['initial'].copy()
         new_data.update(data or {})
         super(ResourcePasteForm, self).__init__(data, *args, **kwargs)
@@ -440,18 +452,19 @@ class ResourcePasteForm(ResourceBaseForm):
 
 
 class ResourceEditPasteForm(ResourcePasteForm):
+    """Form used when editing a paste-bin entry"""
     form_priority = 10
 
     def __init__(self, data=None, *args, **kwargs):
         # Fill the text field with the text, not the text file name
-        i = dict(download=kwargs['instance'].as_text())
-        
-        i.update(kwargs.pop('initial', {}))
-        kwargs['initial'] = i
-        d = data and dict((key, data.get(key, i[key])) for key in i.keys())
+        pod = dict(download=kwargs['instance'].as_text())
+        pod.update(kwargs.pop('initial', {}))
+        if data:
+            pod.update(data)
+        kwargs['initial'] = pod
+        kwargs['data'] = data
+        super().__init__(*args, **kwargs)
 
-        super(ResourcePasteForm, self).__init__(data, *args, **kwargs)
-    
     @classmethod
     def is_valid_form(cls, obj):
         """Only show for items in the pastebin category"""
@@ -459,14 +472,17 @@ class ResourceEditPasteForm(ResourcePasteForm):
 
 
 class ResourceAddForm(ResourceBaseForm):
+    """Form used when adding a new resource"""
     class Meta:
         model = Resource
         fields = ['download', 'name']
 
     def clean_name(self):
+        """Cleans the name field in new resources"""
         name = self.cleaned_data.get('name')
-        if name and name[0] == '$':
-            self.cleaned_data['name'] = name[1:].rsplit('.',1)[0].replace('_',' ').replace('-',' ').title()[:64]
+        if name and name.startswith('$'):
+            self.cleaned_data['name'] = name[1:].rsplit('.', 1)[0].title()[:64]\
+                                                .replace('_', ' ').replace('-', ' ')
         return self.cleaned_data['name']
 
 

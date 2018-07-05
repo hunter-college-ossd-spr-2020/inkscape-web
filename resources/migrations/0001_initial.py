@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import pile.fields
+import inkscape.fields
 import cms.utils.permissions
 import django.utils.timezone
 from django.conf import settings
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField()),
                 ('edited', models.DateTimeField(null=True, blank=True)),
                 ('published', models.BooleanField(default=False)),
-                ('thumbnail', pile.fields.ResizedImageField(format=b'PNG', upload_to=b'resources/thumb', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail')),
+                ('thumbnail', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'resources/thumb', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail')),
                 ('link', models.URLField(null=True, verbose_name='External Link', blank=True)),
                 ('viewed', models.PositiveIntegerField(default=0)),
                 ('downed', models.PositiveIntegerField(default=0, verbose_name='Downloaded')),

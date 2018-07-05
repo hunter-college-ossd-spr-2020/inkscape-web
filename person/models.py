@@ -163,7 +163,7 @@ class User(WithoutFields(AbstractUser, 'is_staff')):
         from cms.utils.permissions import get_current_user as get_user
         user = get_user()
         if user.is_authenticated():
-	    return bool(self.resources.subscriptions().get(user=user.pk))
+            return bool(self.resources.subscriptions().get(user=user.pk))
         return False
 
 
@@ -420,17 +420,17 @@ class Team(Model):
         return obj, created
 
     def expire_if_needed(self, dt):
-	delta = timedelta(days=self.auto_expire)
-	for membership in team.members:
-	    if membership.joined + delta < now():
+        delta = timedelta(days=self.auto_expire)
+        for membership in team.members:
+            if membership.joined + delta < now():
                 self.update_membership(membership.user, expired=now(), removed_by=None)
                 yield membership.user
 
     def warn_if_needed(self, dt, days):
         delta = timedelta(days=team.auto_expire - days)
-	for membership in team.members:
-	    if (membership.joined + warn_delta).date == now().date:
-		# XXX Send warning email
+        for membership in team.members:
+            if (membership.joined + warn_delta).date == now().date:
+                # XXX Send warning email
                 yield membership.user
 
     def __unicode__(self):

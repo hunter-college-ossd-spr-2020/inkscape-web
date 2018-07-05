@@ -28,7 +28,7 @@ import json
 
 from django.contrib.auth.models import Permission, Group
 from django.core.urlresolvers import reverse
-from autotest.base import ExtraTestCase, MultipleFailureTestCase
+from extratest.base import ExtraTestCase, MultipleFailureTestCase
 
 from inkscape.middleware import AutoBreadcrumbMiddleware, TrackCacheMiddleware
 from inkscape.url_utils import WebsiteUrls, UrlView

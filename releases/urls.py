@@ -1,7 +1,7 @@
 #
 # Copyright 2015, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,23 +17,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls import patterns, url, include
+"""Releases allow inkscape to be downloaded."""
 
-from .views import *
+from django.conf.urls import url
+from inkscape.url_utils import url_tree
 
-def url_tree(regex, *urls):
-    return url(regex, include(patterns('', *urls)))
+from .views import DownloadRedirect, ReleaseView, PlatformList, ReleasePlatformView, PlatformView
 
-urlpatterns = patterns('',
-  url(r'^$', DownloadRedirect.as_view(), name="download"),
+urlpatterns = [ # pylint: disable=invalid-name
+    url(r'^$', DownloadRedirect.as_view(), name="download"),
+    url_tree(
+        r'^(?P<version>[\w\+\.-]+)/',
+        url('^$', ReleaseView.as_view(), name="release"),
+        url(r'^platforms/', PlatformList.as_view(), name="platforms"),
 
-  url_tree(r'^(?P<version>[\w\+\.-]+)/',
-    url('^$', ReleaseView.as_view(), name="release"),
-    url(r'^platforms/', PlatformList.as_view(), name="platforms"),
-
-    # We don't use url_tree here because .+ competes with /dl/
-    url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
-    url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
-  ),
-)
-
+        # We don't use url_tree here because .+ competes with /dl/
+        url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
+        url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
+    ),
+]

@@ -18,8 +18,7 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.conf.urls import patterns, include, url
-from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
@@ -35,12 +34,12 @@ def get_app_patterns(*args, **kwargs):
         return []
 appresolver.get_app_patterns = get_app_patterns
 
-urlpatterns = patterns('',
-  url(r'^social/', include('social.apps.django_app.urls', namespace='social')),
-) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
+urlpatterns = [
+    url(r'^social/', include('social_django.urls', namespace='social')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += i18n_patterns('inkscape.views',
+urlpatterns += [
     url(r'^contact/us/$',  ContactUs.as_view(), name='contact'),
     url(r'^contact/ok/$',  ContactOk.as_view(), name='contact.ok'),
     url(r'^search/$',      SearchView(), name='search'),
@@ -60,14 +59,14 @@ urlpatterns += i18n_patterns('inkscape.views',
     url(r'^',           include('person.urls')),
     url(r'^',           include('resources.urls')),
     url(r'^',           include('cms.urls')),
-)
+]
 
 for e in ('403','404','500'):
     locals()['handler'+e] = Error.as_error(e)
-    urlpatterns += patterns('', url('^error/%s/$' % e, Error.as_error(e)))
+    urlpatterns.append(url('^error/%s/$' % e, Error.as_error(e)))
 
 if settings.ENABLE_DEBUG_TOOLBAR:
     import debug_toolbar
-    urlpatterns += patterns('',
+    urlpatterns.append(
         url(r'^__debug__/', include(debug_toolbar.urls)),
     )

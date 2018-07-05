@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n pagination_tags %}
+{% load i18n %}
 
 {% block content %}
   <h1>{{ title }}</h1>
@@ -11,8 +11,7 @@
       <th scope="col">Status</th>
       <th scope="col">Last</th>
     </tr>
-    {% autopaginate object_list 20 as errors %}
-    {% for error in errors %}
+    {% for error in object_list %}
       <tr>
         <td>{{ error.count }}</td>
         <td>{{ error.uri }}</td>
@@ -21,6 +20,4 @@
       </tr>
     {% endfor %}
   </table>
-
-  {% paginate %}
 {% endblock %}

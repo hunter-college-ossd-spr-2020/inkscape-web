@@ -1,5 +1,5 @@
 {% extends "moderation/base.html" %}
-{% load i18n comments pagination_tags %}
+{% load i18n comments %}
 
 {% block content %}
   <h1>{{ title }}</h1>
@@ -13,13 +13,11 @@
       <h2>{% trans "These are the comments made by our users within the last 30 days" %} ({{ comment_list|length }}):</h2>
       <div>   
         {% url "moderation:latest" as next_url %}
-        {% autopaginate object_list 10 as comments %}
-        {% for object in comments %}
+        {% for object in object_list %}
           {% with forloop.counter0|add:1 as comment_counter %}
             {% include "moderation/flag_item.html" %}
           {% endwith %}
         {% endfor %}
       </div>
-    {% paginate %}
     </div>
 {% endblock %}

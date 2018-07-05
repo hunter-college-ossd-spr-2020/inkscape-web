@@ -1,4 +1,4 @@
-{% load i18n static pagination_tags %}
+{% load i18n static %}
 
 {% block "css" %}
   <link rel="stylesheet" type="text/css" href="{% static "css/bio.css" %}"/>
@@ -6,10 +6,8 @@
 
 <div id='errors'></div>
 
-{% autopaginate object_list limit as resources %}
-
 <div class="photos">
-  {% for item in resources %}
+  {% for item in object_list %}
     {% if item.is_visible %}
     <table class="bioitem">
       <tr>
@@ -23,7 +21,3 @@
     {% endif %}
   {% endfor %}
 </div>
-
-{% paginate %}
-
-

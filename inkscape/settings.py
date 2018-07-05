@@ -3,15 +3,15 @@
 Inkscape's default settings module, will look for a local_settings.py
 module to override /some/ of the settings defined here.
 """
-
-from django.utils.translation import ugettext_lazy as _
-from django.conf import global_settings
 import sys
 import os
 
+from django.utils.translation import ugettext_lazy as _
+from django.conf import global_settings
+
 gettext = lambda s: s
 
-IS_TEST = len(sys.argv) > 1 and sys.argv[1] in ('test', 'autotest')
+IS_TEST = len(sys.argv) > 1 and sys.argv[1] in ('test',)
 
 MAX_PREVIEW_SIZE = 5 * 1024 * 1024
 
@@ -68,6 +68,10 @@ ENABLE_PROFILER_TOOLBAR = False
 ENABLE_PYMPLER_TOOLBAR = False
 CACHE_PAGE_SETTING = 3600
 
+DEBUG = False
+SITE_ADDRESS = None
+PROJECT_PATH = None
+
 # Allow realtime updates of pages
 #HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
@@ -87,36 +91,36 @@ LOGBOOK_ROOT = os.path.join(PROJECT_PATH, 'data', 'logs')
 DESIGN_ROOT = os.path.join(PROJECT_PATH, 'data', 'static', 'design')
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'data', 'media', '')
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'data', 'static')
-FIXTURE_DIRS = os.path.join(PROJECT_PATH, 'data', 'fixtures'),
+FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'data', 'fixtures'),)
 IRCBOT_PID = os.path.join(PROJECT_PATH, 'data', 'ircbot.pid')
 
 STATICFILES_DIRS = []
 LOCALE_PATHS = (
-  os.path.join(PROJECT_PATH, 'data', 'locale', 'website'),
+    os.path.join(PROJECT_PATH, 'data', 'locale', 'website'),
 )
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
     'DIRS': [DESIGN_ROOT],
     'OPTIONS': {
-      'loaders': [
-          'django.template.loaders.filesystem.Loader',
-          'django.template.loaders.app_directories.Loader',
-      ],
-      'context_processors': (
-        'inkscape.context_processors.version',
-        'inkscape.context_processors.tracker_data',
-        'social.apps.django_app.context_processors.backends',
-        'social.apps.django_app.context_processors.login_redirect',
-        'django.contrib.auth.context_processors.auth',
-        'django.contrib.messages.context_processors.messages',
-        'django.core.context_processors.i18n',
-        'django.core.context_processors.request',
-        'django.core.context_processors.media',
-        'django.core.context_processors.static',
-        'cms.context_processors.cms_settings',
-        'sekizai.context_processors.sekizai',
-      )
+        'loaders': [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
+        'context_processors': (
+            'inkscape.context_processors.version',
+            'inkscape.context_processors.tracker_data',
+            'social_django.context_processors.backends',
+            'social_django.context_processors.login_redirect',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+            'django.template.context_processors.i18n',
+            'django.template.context_processors.request',
+            'django.template.context_processors.media',
+            'django.template.context_processors.static',
+            'cms.context_processors.cms_settings',
+            'sekizai.context_processors.sekizai',
+        )
     }
 }]
 
@@ -131,13 +135,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cmsplugin_diff.middleware.EditCommentMiddleware',
     'cmsplugin_objects.middleware.ObjectToolbarMiddleware',
-    'linaro_django_pagination.middleware.PaginationMiddleware',
     'person.middleware.SetLastVisitMiddleware',
 )
 
@@ -145,7 +148,7 @@ MIDDLEWARE_CLASSES = (
 
 if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
-    CMS_CACHE_DURATIONS = { 
+    CMS_CACHE_DURATIONS = {
         'content': CACHE_PAGE_SETTING,
         'menus': 3600, # One hour for menus which is important
         'permissions': 1800, # Half an hour for page permissions
@@ -160,19 +163,20 @@ if ENABLE_CACHING or IS_TEST:
     TEMPLATES[0]['OPTIONS']['loaders'] = [(
         'django.template.loaders.cached.Loader',
         TEMPLATES[0]['OPTIONS']['loaders'],
-      )]
+    )]
 
 ROOT_URLCONF = 'inkscape.urls'
 
 INSTALLED_APPS = (
-    'autotest',
     'inkscape', # Goes first
     'person', # Goes next
     'elections',
+    'easy_thumbnails',
     'django.contrib.sites',
     'django.contrib.auth',
     'registration',
-    'social.apps.django_app.default',
+    'social_django',
+    'filer',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
     'django.contrib.messages',
@@ -183,13 +187,11 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'ajax_select',
     'haystack',
-    'pile',
     'treebeard',
     'cmsplugin_diff',
     'cms',
     'menus',
     'sekizai',
-    'linaro_django_pagination',
     'djangocms_text_ckeditor',
     'djangocms_file',
     'djangocms_link',
@@ -213,7 +215,6 @@ INSTALLED_APPS = (
 
 TRANSLATED_APPS = (
     'alerts',
-    'autotest',
     'cmstabs',
     'cmsplugin_alerts',
     'cmsplugin_diff',
@@ -229,7 +230,6 @@ TRANSLATED_APPS = (
     'moderation',
     'person',
     'elections',
-    'pile',
     'projects',
     'releases',
     'resources',
@@ -267,21 +267,22 @@ CMS_TEMPLATES = (
 
 # activate automatic filling-in of contents for non-translated cms pages
 CMS_PLACEHOLDER_CONF = {
-  placeholder : {'language_fallback': True,} for placeholder in [
-    'normal_template_content',
-    'front_body',
-    'column_one',
-    'column_two',
-    'column_three',
-    'sidebar_template_content']
+    placeholder : {'language_fallback': True,} for placeholder in [
+        'normal_template_content',
+        'front_body',
+        'column_one',
+        'column_two',
+        'column_three',
+        'sidebar_template_content'
+    ]
 }
 
 CMS_APPLICATIONS_URLS = (
     ('cmsplugin_news.urls', 'News'),
 )
 CMS_APPHOOKS = (
-   'cmsplugin_news.cms_app.NewsAppHook',
-   'inkscape.cms_app.SearchApphook',
+    'cmsplugin_news.cms_app.NewsAppHook',
+    'inkscape.cms_app.SearchApphook',
 )
 CMS_NAVIGATION_EXTENDERS = (
     ('cmsplugin_news.navigation.get_nodes', 'News navigation'),
@@ -293,20 +294,20 @@ CKEDITOR_SETTINGS = {
     'readOnly': False,
 }
 CKEDITOR_NEWS = {
-  'extraPlugins': 'image',
-  'filebrowserImageBrowseUrl': '/gallery/pick/',
-  'toolbar_HTMLField': [
-      ['Undo', 'Redo'], ['ShowBlocks'],
-      ['Format', 'Styles', '-', 'RemoveFormat'],
-      ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
-      ['Maximize', ''],
-      '/',
-      ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript'],
-      ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
-      ['Image', '-', 'HorizontalRule'],
-      ['Link', 'Unlink'],
-      ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
-      ['Source']
+    'extraPlugins': 'image',
+    'filebrowserImageBrowseUrl': '/gallery/pick/',
+    'toolbar_HTMLField': [
+        ['Undo', 'Redo'], ['ShowBlocks'],
+        ['Format', 'Styles', '-', 'RemoveFormat'],
+        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
+        ['Maximize', ''],
+        '/',
+        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript'],
+        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+        ['Image', '-', 'HorizontalRule'],
+        ['Link', 'Unlink'],
+        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
+        ['Source']
     ],
 }
 CKEDITOR_READONLY = {
@@ -315,10 +316,11 @@ CKEDITOR_READONLY = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOAuth2',
-    'social.backends.facebook.FacebookOAuth2',
-    'social.backends.twitter.TwitterOAuth',
-    'social.backends.yahoo.YahooOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.gitlab.GitLabOAuth2',
+    'social_core.backends.yahoo.YahooOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -335,23 +337,23 @@ RECAPTCHA_USE_SSL = True
 OPENID_REDIRECT_NEXT = '/accounts/openid/done/'
 
 OPENID_AX = [{
-  "type_uri": "http://axschema.org/contact/email",
-  "count": 1,
-  "required": True,
-  "alias": "email",
-  }, {
-  "type_uri": "http://axschema.org/schema/fullname",
-  "count":1,
-  "required": False,
-  "alias": "fname",
+    "type_uri": "http://axschema.org/contact/email",
+    "count": 1,
+    "required": True,
+    "alias": "email",
+}, {
+    "type_uri": "http://axschema.org/schema/fullname",
+    "count":1,
+    "required": False,
+    "alias": "fname",
 }]
 
 OPENID_AX_PROVIDER_MAP = {
-  'Default': {
-    'email': 'http://axschema.org/contact/email',
-    'fullname': 'http://axschema.org/namePerson',
-    'nickname': 'http://axschema.org/namePerson/friendly',
-  },
+    'Default': {
+        'email': 'http://axschema.org/contact/email',
+        'fullname': 'http://axschema.org/namePerson',
+        'nickname': 'http://axschema.org/namePerson/friendly',
+    },
 }
 
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
@@ -366,9 +368,9 @@ SENDFILE_ROOT = MEDIA_ROOT
 SENDFILE_URL = MEDIA_URL
 
 AJAX_LOOKUP_CHANNELS = {
-  'user'    : {'model':'person.User', 'search_field':'username'},
-  'resource': {'model':'resources.Resource', 'search_field':'name'},
-  'tags'    : ('resources.lookups', 'TagLookup'),
+    'user'    : {'model':'person.User', 'search_field':'username'},
+    'resource': {'model':'resources.Resource', 'search_field':'name'},
+    'tags'    : ('resources.lookups', 'TagLookup'),
 }
 
 AJAX_SELECT_BOOTSTRAP = False
@@ -415,7 +417,7 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = True
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TEMPLATE_CONTEXT': True,
     # TURN ON DEBUG VIA A LINK IN THE WEBSITE, SOMETHIN WE CAN ADD TO COOKIES
-    'SHOW_TOOLBAR_CALLBACK': lambda req: DEBUG, #'debug' in req.GET or 'debug' in req.META.get('HTTP_REFERER', ''),
+    'SHOW_TOOLBAR_CALLBACK': lambda req: DEBUG, #'debug' in req.GET or 'debug' in HTTP_REFERER
     'MEDIA_URL': '/media/debug/',
     'INTERCEPT_REDIRECTS': False,
 }
@@ -436,32 +438,13 @@ DEBUG_TOOLBAR_PANELS = (
 
 if ENABLE_DEBUG_TOOLBAR:
     # We're not even going to trust debug_toolbar on live
-    INSTALLED_APPS += 'debug_toolbar',
-    MIDDLEWARE_CLASSES += 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
     if ENABLE_PROFILER_TOOLBAR:
-        INSTALLED_APPS += 'debug_toolbar_line_profiler',
-        DEBUG_TOOLBAR_PANELS += 'debug_toolbar_line_profiler.panel.ProfilingPanel',
+        INSTALLED_APPS += ('debug_toolbar_line_profiler',)
+        DEBUG_TOOLBAR_PANELS += ('debug_toolbar_line_profiler.panel.ProfilingPanel',)
 
     if ENABLE_PYMPLER_TOOLBAR:
-        INSTALLED_APPS += 'pympler',
-        DEBUG_TOOLBAR_PANELS += 'pympler.panels.MemoryPanel',
-
-
-# ===== Migration to MySQL Special Code ===== #
-# Allows us an extra option for turning off key checks
-
-from django.db.backends.signals import connection_created
-import sys
-
-def turn_off_constraints(sender, connection, **kwargs):
-    if 'mysql' in connection.settings_dict['ENGINE']\
-      and connection.settings_dict.get('FOREIGN_KEY_CHECK') == True\
-      and not hasattr(connection, 'fk_check'):
-        sys.stderr.write("\n== TURNING OFF MYSQL FOREIGN KEY CHECKS!!==\n\n")
-        cursor = connection.cursor()
-        cursor.execute('SET foreign_key_checks = 0')
-        connection.fk_check = True
-
-connection_created.connect(turn_off_constraints)
-
+        INSTALLED_APPS += ('pympler',)
+        DEBUG_TOOLBAR_PANELS += ('pympler.panels.MemoryPanel',)

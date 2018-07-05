@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import pile.fields
+import inkscape.fields
 from django.conf import settings
 
 
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=22)),
-                ('icon', pile.fields.ResizedImageField(format=b'PNG', upload_to=b'shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon')),
+                ('icon', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon')),
             ],
             options={
                 'db_table': 'extra_tabcategory',

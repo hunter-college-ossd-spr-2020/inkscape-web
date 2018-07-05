@@ -91,10 +91,10 @@ LINKEDIN_CONSUMER_SECRET = ''
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'socialauth.auth_backends.OpenIdBackend',
-    'socialauth.auth_backends.TwitterBackend',
-    'socialauth.auth_backends.FacebookBackend',
-    'socialauth.auth_backends.LinkedInBackend',
+    'social_core.auth_backends.OpenIdBackend',
+    'social_core.auth_backends.TwitterBackend',
+    'social_core.auth_backends.FacebookBackend',
+    'social_core.auth_backends.LinkedInBackend',
 )
 
 # Server Email settings

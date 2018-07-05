@@ -2,7 +2,7 @@
 
 <!-- URL: http://localhost:8000/en/projects/ -->
 
-{% load static i18n sekizai_tags pagination_tags %}
+{% load static i18n sekizai_tags %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -15,18 +15,12 @@
 
   <p>See also <a href="http://wiki.inkscape.org/wiki/index.php/Development_Project_Ideas" title="Development Project Ideas">Development Project Ideas</a> and <a href="https://blueprints.launchpad.net/inkscape/">https://blueprints.launchpad.net/inkscape/</a></p>
   
-  
-  {% autopaginate object_list 22 as items %}
-
   <div class="project-list">
-        {% for project in items %}
+        {% for project in object_list %}
             {% include "projects/project_item.html"  %}
         {% empty %}
             {% trans "Sorry, no projects found" %}
         {% endfor %}
   </div>
-
-  {% paginate %}
-
 {% endblock %}
 

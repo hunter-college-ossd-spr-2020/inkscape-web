@@ -26,8 +26,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from .settings import USE_LINK_ON_EMPTY_CONTENT_ONLY, LINK_AS_ABSOLUTE_URL
 from .models import News

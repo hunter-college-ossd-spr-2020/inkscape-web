@@ -26,7 +26,7 @@ Base TestCase for Resource and Gallery Tests.
 # pylint: disable=invalid-name
 __unittest = True
 
-from autotest.base import HaystackTestCase
+from extratest.base import HaystackTestCase
 
 from resources.models import Resource
 

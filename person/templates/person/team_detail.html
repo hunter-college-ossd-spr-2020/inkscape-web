@@ -1,5 +1,5 @@
 {% extends 'person/base.html' %}
-{% load i18n extras static memberships pagination_tags %}
+{% load i18n extras static memberships %}
 
 {% block title %}{{ object.name }}{% endblock %} 
 {% block "css" %}{{ block.super }}
@@ -129,9 +129,8 @@
   {% if object.members.count %}
     <h2>{% trans "Team Members" %}</h2>
 
-    {% autopaginate object.members.all 20 as members %}
     <div class="photos"/>
-      {% for member in members %}
+      {% for member in object.members.all %}
        {% with user=member.user %}
         <div class="galleryitem">
           <a class="link" href="{{ user.get_absolute_url }}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
@@ -162,7 +161,6 @@
   {% else %}
     <h2>No Team Members</h2>
   {% endif %}
-  {% paginate %}
   {% if object.old_members.count %}
     <h2>{% trans "Previous Team Members" %}</h2>
     <ul>

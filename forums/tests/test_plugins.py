@@ -24,7 +24,7 @@ Test the plugin syncing
 from django.apps import apps
 from django.conf import settings
 
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from forums.models import Forum, Comment
 from forums.plugins.base import MessageBase

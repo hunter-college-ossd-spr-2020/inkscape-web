@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static pagination_tags inkscape %}
+{% load i18n static inkscape %}
 
 {% block "css" %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}"/>
@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block content %}
-  {% autopaginate object.topics.all 20 as items %}
   <div class="comment changes" data-pk="forum-{{ object.pk }}">
     <div class="details">
       <div class="title"><h2>{{ object.name }}</h2></div>
@@ -29,7 +28,7 @@
       {% endif %}
     </div>
     <table class="topic_list">
-      {% for topic in items %}
+      {% for topic in object.topics.all %}
         {% ifchanged topic.is_sticky %}{% if not topic.sticky %}<tr class="sticky-bar"><td colspan="2"></tr>{% endif %}{% endifchanged %}
         <tr class="{% cycle 'odd' 'even' %} unchanged" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
           <th><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></th>
@@ -42,10 +41,5 @@
         </tr>
       {% endfor %}
     </table>
-    {% if page_obj.has_next or page_obj.has_previous %}
-      <div class="cfooter">
-        {% paginate %}
-      </div>
-    {% endif %}
   </div>
 {% endblock %}

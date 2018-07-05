@@ -25,7 +25,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView
 from django.db.models import Q
 
-from pile.views import DetailView, CreateView, UpdateView, breadcrumbs
+from django.views.generic import DetailView, CreateView, UpdateView
 from .models import Project, Report
 
 class ProjectList(ListView):
@@ -39,9 +39,9 @@ class ProjectList(ListView):
 
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
-        data['breadcrumbs'] = breadcrumbs(
+        data['breadcrumbs'] = [
             ('projects:project.list', 'Projects'),
-        )
+        ]
         return data
 
 
@@ -58,9 +58,9 @@ class ProjectGsocList(ListView):
 
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
-        data['breadcrumbs'] = breadcrumbs(
+        data['breadcrumbs'] = [
             ('projects:projects.gsoc', 'Google Summer of Code Projects'),
-        )
+        ]
         return data
 
 
@@ -69,10 +69,10 @@ class ProjectView(DetailView):
 
     def get_context_data(self, **kwargs):
         data = DetailView.get_context_data(self, **kwargs)
-        data['breadcrumbs'] = breadcrumbs(
+        data['breadcrumbs'] = [
             ('projects:project.list', 'Projects'),
             data['object'],
-        )
+        ]
         return data
 
 class NewProject(CreateView):
@@ -81,10 +81,10 @@ class NewProject(CreateView):
 
     def get_context_data(self, **kwargs):
         data = CreateView.get_context_data(self, **kwargs)
-        data['breadcrumbs'] = breadcrumbs(
+        data['breadcrumbs'] = [
             ('projects:project.new', 'Projects'),
             'Propose Project',
-        )
+        ]
         return data
 
     def form_valid(self, form):
@@ -103,10 +103,10 @@ class UpdateProject(CreateView):
     def get_context_data(self, **kwargs):
       data = super(CreateView, self).get_context_data(**kwargs)
       data['project'] = self.get_project()
-      data['breadcrumbs'] = breadcrumbs(
+      data['breadcrumbs'] = [
             ('projects:project.update', 'Projects'),
             'Update Project',
-      )
+      ]
       return data
 
     def form_valid(self, form):
@@ -124,10 +124,10 @@ class MyProjects(ListView):
 
     def get_context_data(self, **kwargs):
         data = ListView.get_context_data(self, **kwargs)
-        data['breadcrumbs'] = breadcrumbs(
+        data['breadcrumbs'] = [
             (self.request.user, str(self.request.user.details)),
             'My Projects',
-        )
+        ]
         return data
 
     def get_queryset(self, **kwargs):

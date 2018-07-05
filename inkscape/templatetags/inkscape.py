@@ -85,12 +85,12 @@ class UrlStaticNode(StaticNode):
     def url(self, context):
         field = self.field.resolve(context)
         if field:
-	    return field.url
+            return field.url
         return super(UrlStaticNode, self).url(context)
 
     @classmethod
     def handle_token(cls, parser, token):
-	bits = token.split_contents()
+        bits = token.split_contents()
 
         if len(bits) < 3:
             raise template.TemplateSyntaxError(

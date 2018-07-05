@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import cms.utils.permissions
-import pile.fields
 from django.conf import settings
 import django.core.validators
 

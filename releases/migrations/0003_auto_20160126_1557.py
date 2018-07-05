@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import pile.fields
+import inkscape.fields
 
 
 class Migration(migrations.Migration):
@@ -25,13 +25,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='platform',
             name='icon',
-            field=pile.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='platform',
             name='image',
-            field=pile.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=256, min_height=0, max_height=256, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=256, min_height=0, max_height=256, blank=True, min_width=0, null=True),
             preserve_default=True,
         ),
     ]

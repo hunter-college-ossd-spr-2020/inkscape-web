@@ -21,7 +21,7 @@
 Test the election process
 """
 from datetime import timedelta
-from autotest.base import ExtraTestCase
+from extratest.base import ExtraTestCase
 
 from django.core import mail
 from django.utils.timezone import now

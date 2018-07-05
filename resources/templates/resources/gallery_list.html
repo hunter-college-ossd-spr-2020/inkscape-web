@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static pagination_tags %}
+{% load i18n static %}
 
 {% block title %}{% trans "Galleries" %}{% endblock %} 
 {% block "css" %}{{ block.super }}
@@ -8,9 +8,8 @@
 
 {% block content %}
   <h1>{% trans "Resources" %}</h1>
-  {% autopaginate object_list 20 as galleries %}
     <div id="gallery">
-      {% for gallery in galleries %}
+      {% for gallery in object_list %}
         <div class="galleryitem" title="">
           <a class="link" href="{{ gallery.get_absolute_url }}"><img src="{{ gallery.thumbnail_url }}"/></a>
           <p class="label"><a href="{{ gallery.get_absolute_url }}">{{ gallery.name|truncatechars:40 }}</a></p>
@@ -22,6 +21,5 @@
 	</div>
       {% endfor %}
     </div>
-  {% paginate %}
 {% endblock %}
 
