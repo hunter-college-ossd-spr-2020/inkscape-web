@@ -41,7 +41,7 @@ CORRECTORE = {
     8: [Image.ROTATE_90],
 }
 
-from io import StringIO
+from io import BytesIO
 
 class AutoReverseOneToOneDescriptor(ReverseOneToOneDescriptor):
     def __get__(self, instance, instance_type=None):
@@ -80,7 +80,7 @@ class ResizedImageFieldFile(ImageFieldFile):
         return '.'.join(parts)
 
     def save(self, name, content, save=True):
-        new_content = StringIO()
+        new_content = BytesIO()
         content.file.seek(0)
 
         img = Image.open(content.file)
@@ -88,8 +88,8 @@ class ResizedImageFieldFile(ImageFieldFile):
         if hasattr(img, '_getexif') and img._getexif():
             exif = dict(img._getexif().items())
             orientation = exif.get(TAGS.get('Orientation', None), None)
-            for tr in CORRECTORE.get(orientation, []):
-                img = img.transpose(tr)
+            for trans in CORRECTORE.get(orientation, []):
+                img = img.transpose(trans)
 
         # In-place optional resize down to propotionate size
         img.thumbnail(self.field.maximum, Image.ANTIALIAS)

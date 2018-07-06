@@ -1,7 +1,7 @@
 #
 # Copyright 2018, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,45 +17,47 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Takes 20 random people from randomuser.me and installs them into the site."""
 
 import json
-import urllib2
+import urllib
 
-from django.conf import settings
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.base import File
-from django.utils.timezone import now
 
-from person.models import *
+from person.models import Group, User
 
-class Command(NoArgsCommand):
-    help = "Takes 20 random people from randomuser.me and installs them into the site."
+class Command(BaseCommand):
+    """Provide a command for creating users"""
+    help = __doc__
 
     def url_file(self, url):
+        """Download the given url file"""
         img_temp = NamedTemporaryFile()
-        opener = urllib2.build_opener()
+        opener = urllib.request.build_opener()
         img_temp.write(opener.open(url).read())
         img_temp.flush()
         return File(img_temp)
 
-    def handle_noargs(self, number=20, **options):
+    def handle(self, number=20, **options):
+        """Handle creating this number of users"""
         url = 'https://randomuser.me/api/?results={:d}'.format(number)
-        response = urllib2.urlopen(url)
+        response = urllib.request.urlopen(url)
         groups = Group.objects.filter(team__isnull=False).order_by('?')
         for datum in json.load(response)['results']:
-            user, _ = User.objects.get_or_create(
+            (user, _) = User.objects.get_or_create(
                 username=datum['login']['username'],
                 defaults={
                     'first_name': datum['name']['first'],
                     'last_name': datum['name']['last'],
                     'email': datum['email'],
                 })
-            user.photo.save(datum['login']['username']+'.jpg',
+            user.photo.save(datum['login']['username']+'.jpg',\
                 self.url_file(datum['picture']['large']))
             user.save()
             for group in groups[:2]:
                 group.user_set.add(user)
-            print "Added {} added to {}".format(user, user.groups.all())
+            print("Added {} added to {}".format(user, user.groups.all()))
 
 

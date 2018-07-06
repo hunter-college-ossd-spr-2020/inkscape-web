@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,28 +17,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Sync group memberships so that teams are aware of groups"""
 
-from django.conf import settings
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from django.utils.timezone import now
 
-from person.models import *
+from person.models import Team
 
-class Command(NoArgsCommand):
-    help = "Sync group memberships so that teams are aware of groups"
+class Command(BaseCommand):
+    """Make sure groups and teams are synced up"""
+    help = __doc__
 
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         for team in Team.objects.all():
-            print(" * %s" % unicode(team))
+            print(" * %s" % str(team))
             users = set()
             for user in team.group.user_set.all():
                 users.add(user.pk)
                 if not team.has_member(user):
-                    print("  + %s" % unicode(user))
-                    team.update_membership(user, expired=None, joined=now()) 
+                    print("  + %s" % str(user))
+                    team.update_membership(user, expired=None, joined=now())
 
             for membership in team.members:
                 if membership.user.pk not in users:
-                    print("  - %s" % unicode(membership.user))
+                    print("  - %s" % str(membership.user))
                     team.update_membership(membership.user, expired=now())
-
