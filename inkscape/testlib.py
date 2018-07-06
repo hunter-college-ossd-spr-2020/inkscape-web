@@ -168,7 +168,7 @@ class ExtraTestCase(TestCase):
 
         # Assert we have enough objects to return
         self.assertGreater(qs.count(), count - 1,
-            "%d object(s) matching %s not found." % (count, unicode(kw)))
+            "%d object(s) matching %s not found." % (count, str(kw)))
 
         # Return either one object or a list of objects limited to count
         return qs[0] if count == 1 else qs[:count]
@@ -327,8 +327,8 @@ class MultipleFailureTestCase(ExtraTestCase):
                     self._currentResult.addSuccess(self)
                 except self.failureException:
                     self._currentResult.addFailure(self, sys.exc_info())
-                except SkipTest as e:
-                    self._addSkip(self._currentResult, unicode(e))
+                except SkipTest as err:
+                    self._addSkip(self._currentResult, str(err))
                 except Exception:
                     self._currentResult.addError(self, sys.exc_info())
 

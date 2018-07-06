@@ -84,7 +84,7 @@ class ForumsConfig(AppConfig):
     def new_comment(self, instance, **kw):
         """Called when a new comment has been saved"""
         from .models import Forum, ForumTopic
-        defaults = {'subject': unicode(instance.content_object)}
+        defaults = {'subject': str(instance.content_object)}
 
         for forum in Forum.objects.filter(content_type=instance.content_type):
             try:

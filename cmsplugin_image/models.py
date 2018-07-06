@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import os
 
 from django.core.exceptions import ValidationError
@@ -18,9 +16,7 @@ except ImportError:
         for information
         """
         return instance.get_media_path(filename)
-from cms.utils.compat.dj import python_2_unicode_compatible
 
-@python_2_unicode_compatible
 class Image(CMSPlugin):
     """
     A Picture with or without a link, with or without captions, in raster or vector format.

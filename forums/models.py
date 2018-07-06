@@ -37,7 +37,7 @@ from django.core.validators import MaxLengthValidator
 
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible, force_text
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.text import slugify
 from django_comments.models import Comment
@@ -60,7 +60,6 @@ class SelectRelatedQuerySet(QuerySet):
         return ret
 
 
-@python_2_unicode_compatible
 class ForumGroup(Model):
     name = CharField(max_length=128, unique=True)
 
@@ -84,7 +83,6 @@ class ForumQuerySet(SelectRelatedQuerySet):
         return reverse('forums:list')
 
 
-@python_2_unicode_compatible
 class Forum(Model):
     group = ForeignKey(ForumGroup, related_name='forums')
     sort = IntegerField(default=0, null=True, blank=True)
@@ -156,7 +154,7 @@ class Forum(Model):
             topic, created = self.topics.get_or_create(
               message_id=message_id,
               defaults={
-                'subject': unicode(message.get_subject()),
+                'subject': str(message.get_subject()),
               }
             )
 
@@ -164,7 +162,7 @@ class Forum(Model):
             comment = Comment.objects.create(
                 site_id=1,
                 user=message.get_user(),
-                user_name=unicode(message.get_username()),
+                user_name=str(message.get_username()),
                 user_email=message.get_email(),
                 user_url=message.get_userurl(),
                 comment=force_text(message.get_body(), errors='replace'),
@@ -185,7 +183,7 @@ class Forum(Model):
                 comment = Comment.objects.create(
                     site_id=1,
                     user=message.get_user(),
-                    user_name=unicode(message.get_username()),
+                    user_name=str(message.get_username()),
                     user_email=message.get_email(),
                     user_url='',
                     comment=force_text(reply.get_body(), errors='replace'),

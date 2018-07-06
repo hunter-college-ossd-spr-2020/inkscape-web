@@ -70,7 +70,7 @@ class FlagView(ModerationMixin, DetailView):
             msgs = [{
               'level': msg.level,
               'tags': msg.tags,
-              'text': unicode(msg),
+              'text': str(msg),
              } for msg in messages.get_messages(request)]
 
             return JsonResponse({
@@ -79,7 +79,7 @@ class FlagView(ModerationMixin, DetailView):
                 'weight': vote.weight,
                 'weight_label': vote.weight_label(),
                 'weight_icon': vote.weight_icon(),
-                'status': unicode(vote.target.status_label()),
+                'status': str(vote.target.status_label()),
                 'notes': vote.notes,
                 'user': str(vote.moderator),
                 'messages': msgs,

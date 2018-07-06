@@ -99,7 +99,7 @@ def clean_dict(target, translate=None):
         if value is None:
             target.pop(key)
         elif translate:
-            target[key] = translate.get(unicode(value), value)
+            target[key] = translate.get(str(value), value)
     return target
 
 def reverse_order(target, active=True):

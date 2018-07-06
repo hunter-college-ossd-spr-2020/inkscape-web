@@ -45,7 +45,7 @@ def url(item):
     """Returns the full URL"""
     if hasattr(item, 'get_absolute_url'):
         item = item.get_absolute_url()
-    return settings.SITE_ROOT.rstrip('/') + unicode(item)
+    return settings.SITE_ROOT.rstrip('/') + str(item)
 
 class BotCommand(object):
     """Base class for all commands you want available in irc"""
@@ -106,7 +106,7 @@ class BotCommand(object):
             if isinstance(ret, bool):
                 self.caller.consumed |= ret
                 return None
-            elif isinstance(ret, (str, unicode)):
+            elif isinstance(ret, str):
                 self.caller.consumed = True
                 return ret
             else:

@@ -58,7 +58,7 @@ class Url(object):
         if parent is not None:
             self.depth = parent.depth + 1
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
             return "%s [%s]" % (self.full_pattern, self.name)
         return self.full_pattern
@@ -159,7 +159,7 @@ class UrlModule(Url):
     """A url include"""
     is_module = True
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s > %s >>" % (self.full_pattern, self.name)
 
     @property
@@ -176,16 +176,16 @@ class UrlModule(Url):
 
 class UrlFunction(Url):
     """A url using a simple function"""
-    def __unicode__(self):
-        tag = super(UrlFunction, self).__unicode__()
+    def __str__(self):
+        tag = super(UrlFunction, self).__str__()
         return "%s > %s()" % (tag, self.module.__name__)
 
 class UrlView(Url):
     """A url using a generic class based view"""
     is_view = True
 
-    def __unicode__(self):
-        tag = super(UrlView, self).__unicode__()
+    def __str__(self):
+        tag = super(UrlView, self).__str__()
         return "%s > %s %s.%s" % (tag, self.url_type_name, self.app, self.model.__name__)
 
     URL_UNKNOWN_TYPE = 0

@@ -80,7 +80,7 @@ class CategorySelect(Select):
         label = force_text(label)
         value = force_text(obj or '')
         html = ''
-        if obj and not isinstance(obj, (int, str, unicode)):
+        if obj and not isinstance(obj, (int, str)):
             attrs = {}
             # CSV list of types, treat as string
             if obj.acceptable_types:

@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
-try:
-    import urlparse
-except ImportError:
-    from urllib import parse as urlparse
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -43,7 +38,6 @@ class PicturePlugin(CMSPluginBase):
     def icon_src(self, instance):
         if getattr(settings, 'PICTURE_FULL_IMAGE_AS_ICON', False):
             return instance.image.url
-        return urlparse.urljoin(
-            settings.STATIC_URL, "cms/img/icons/plugins/picture.png")
+        return urljoin(settings.STATIC_URL, "cms/img/icons/plugins/picture.png")
 
 plugin_pool.register_plugin(PicturePlugin)

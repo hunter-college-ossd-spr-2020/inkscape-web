@@ -68,7 +68,7 @@ class WebsiteUrlTest(MultipleFailureTestCase):
                 else:
                     self.assertIn('href="%s" class="crumb">%s<' % term, crumbs)
         except AssertionError:
-            raise AssertionError("Breadcrumb %s missing from %s" % (unicode(term), crumbs))
+            raise AssertionError("Breadcrumb %s missing from %s" % (str(term), crumbs))
 
     def assertBreadcrumbRequest(self, url, breadcrumbs, **kw):
         """Test a url for the right breadcrumbs"""
@@ -82,8 +82,8 @@ class WebsiteUrlTest(MultipleFailureTestCase):
         tester = zip(*breadcrumbs) if breadcrumbs else [(), ()]
 
         # The i18n gets in the way of testing the names
-        result[NAMES] = tuple(unicode(item) for item in result[NAMES])
-        tester[NAMES] = tuple(unicode(item) for item in tester[NAMES])
+        result[NAMES] = tuple(str(item) for item in result[NAMES])
+        tester[NAMES] = tuple(str(item) for item in tester[NAMES])
 
         if result[NAMES] and result[NAMES][0] == "Home":
             # We're going to assume Home is tested.
@@ -139,8 +139,8 @@ class WebsiteUrlTest(MultipleFailureTestCase):
         for url in WebsiteUrls():
             if url.slug not in self.url_bin and (
                   url.slug in skips \
-                  or unicode(url.name) + "?*" in skips \
-                  or unicode(url.namespace) + ":*" in skips):
+                  or str(url.name) + "?*" in skips \
+                  or str(url.namespace) + ":*" in skips):
                 continue
 
             if not url.is_module:

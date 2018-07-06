@@ -39,5 +39,5 @@ class LatestArtCommand(BotCommand):
         except Resource.DoesNotExist:
             return "No Artworks uploaded yet"
 
-        return u"%s by %s: %s" % (unicode(art), unicode(art.user), url(art))
+        return u"%s by %s: %s" % (str(art), str(art.user), url(art))
 

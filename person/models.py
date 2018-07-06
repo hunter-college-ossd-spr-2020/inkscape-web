@@ -28,7 +28,6 @@ from django.dispatch import receiver
 
 from django.utils import timezone
 from django.utils.text import slugify
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _, get_language
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
@@ -60,7 +59,6 @@ def linked_users_only(qs, *rels):
             only.append(rel + '__' + field)
     return qs.select_related(*rels).defer(*only)
 
-@python_2_unicode_compatible
 class User(WithoutFields(AbstractUser, 'is_staff')):
     bio   = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
     photo = ResizedImageField(_('Photograph (square)'), null=True, blank=True,
@@ -203,7 +201,6 @@ class TwilightSparkle(Manager):
         return self.get_queryset()\
                 .filter(from_user__from_friends__from_user=F('user'))
 
-@python_2_unicode_compatible
 class Friendship(Model):
     from_user = ForeignKey(User, related_name='friends')
     user      = ForeignKey(User, related_name='from_friends')
@@ -213,7 +210,6 @@ class Friendship(Model):
     def __str__(self):
         return u"%s loves %s" % (str(self.from_user), str(self.user))
 
-@python_2_unicode_compatible
 class TeamChatRoom(Model):
     admin    = ForeignKey(User, **null)
     channel  = CharField(_('IRC Chatroom Name'), max_length=64)
@@ -433,7 +429,7 @@ class Team(Model):
                 # XXX Send warning email
                 yield membership.user
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

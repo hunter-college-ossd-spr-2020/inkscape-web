@@ -35,7 +35,6 @@ from django.dispatch import Signal
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 
 flag_created = Signal(providing_args=["instance", "flag", "mod"])
@@ -69,7 +68,6 @@ class ObjectQuery(QuerySet):
             }
             
 
-@python_2_unicode_compatible
 class FlagObject(Model):
     """
     The implicated object is a record of this object
@@ -212,7 +210,6 @@ class FlagManager(Manager):
 
 
 
-@python_2_unicode_compatible
 class FlagVote(Model):
     """
     Flag votes are used to calculate how likely an object will be deleted

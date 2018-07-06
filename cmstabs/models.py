@@ -50,7 +50,7 @@ class TabCategory(Model):
     class Meta:
         db_table = 'extra_tabcategory'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 BTNS = (
@@ -89,7 +89,7 @@ class Tab(Model):
     def uuid(self):
         return slugify(self.tab_name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tab_name + (not self.draft and ' (draft)' or '')
 
     def save(self, **kwargs):
@@ -140,7 +140,7 @@ class InlinePages(CMSPlugin):
     class Meta:
         db_table = 'extra_inlinepages'
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d Inline Pages" % self.cmsplugin_set.all().count()
 
 
@@ -150,7 +150,7 @@ class InlinePage(CMSPlugin):
     class Meta:
         db_table = 'extra_inlinepage'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 

@@ -94,7 +94,7 @@ class License(Model):
     def is_all_rights(self):
         return self.nc and self.nd and not self.at
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.name, self.code)
 
 
@@ -125,7 +125,7 @@ class Category(Model):
         ordering = 'order',
 
     def __str__(self):
-        return self.name.encode('utf8')
+        return self.name
 
     def save(self, **kwargs):
         set_slug(self)
@@ -184,7 +184,7 @@ class Tag(Model):
         ret = super(Tag, self).save(**kwargs)
         return ret
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -198,7 +198,7 @@ class TagCategory(Model):
     class Meta:
         verbose_name_plural = 'tag categories'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -363,11 +363,8 @@ class Resource(Model):
             ("can_curate", "User can curate resources."),
         )
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
-        return self.name.encode('utf8')
+        return self.name
 
     def summary_string(self):
         kw = {'title': self.name, 'user': self.user, 'years': self.years, 'owner': self.owner_name}
@@ -697,8 +694,7 @@ class ResourceMirror(Model):
         return os.path.join(self.url, 'file', filename)
 
     def __str__(self):
-        return "Mirror '%s' from '%s'" % \
-                (self.name.encode('utf8'), self.host.encode('utf8'))
+        return "Mirror '%s' from '%s'" % (self.name, self.host)
 
 
 class GalleryQuerySet(QuerySet):
@@ -761,19 +757,16 @@ class Gallery(Model):
 
     objects = GalleryQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         if self.contest_submit:
             return _(u"%(gallery_name)s (contest)") % {'gallery_name': self.name}
         elif self.category:
             return self.name
         elif self.group:
             return _(u"%(gallery_name)s (for group %(group_name)s)") \
-                  % {'gallery_name': self.name, 'group_name': unicode(self.group)}
+                  % {'gallery_name': self.name, 'group_name': str(self.group)}
         return  _(u"%(gallery_name)s (by %(user_name)s)") \
-                  % {'gallery_name': self.name, 'user_name': unicode(self.user)}
-
-    def __str__(self):
-        return unicode(self).encode('utf8')
+                  % {'gallery_name': self.name, 'user_name': str(self.user)}
 
     def tag_cloud(self):
         """Returns a cloud collection"""

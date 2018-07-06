@@ -86,7 +86,7 @@ class MembershipAdmin(AjaxSelectAdmin):
     list_display = ('repr', 'requested', 'joined', 'expired', 'title')
 
     def repr(self, obj):
-        return "%s membership of %s" % (unicode(obj.user), unicode(obj.team))
+        return "%s membership of %s" % (str(obj.user), str(obj.team))
 
 
 site.register(TeamMembership, MembershipAdmin)

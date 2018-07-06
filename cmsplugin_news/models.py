@@ -120,7 +120,7 @@ class News(Model):
     def lang(self):
         return self.language or 'en'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def select_language(self, lang):

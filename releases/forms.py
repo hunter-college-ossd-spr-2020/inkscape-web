@@ -63,7 +63,7 @@ class ResourceReleaseForm(ResourceBaseForm):
 
         (rp, created) = release.platforms.get_or_create(platform=platform)
         if rp.resource and rp.resource != self.instance:
-            raise ValidationError(_("Release Platform '%s' already has a package resource assigned.") % unicode(rp))
+            raise ValidationError(_("Release Platform '%s' already has a package resource assigned.") % str(rp))
         self.cleaned_data['release_platform'] = rp
 
     def save(self, **kw):

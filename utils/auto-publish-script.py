@@ -23,7 +23,7 @@ The website has upgraded it's publishing user interface to make it more obvious 
 
 %s
 
-""" % (unicode(user), "\n".join([" * %s (%s) https://inkscape.org%s" % (unicode(r), str(r.created), r.get_absolute_url()[3:]) for r in rec]))
+""" % (str(user), "\n".join([" * %s (%s) https://inkscape.org%s" % (str(r), str(r.created), r.get_absolute_url()[3:]) for r in rec]))
     rec.update(published=True)
     try:
         user.email_user("Uploads Automatically Published", msg, from_email="webmaster@inkscape.org")
