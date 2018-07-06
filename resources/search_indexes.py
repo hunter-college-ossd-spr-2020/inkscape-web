@@ -1,7 +1,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,15 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Define how resources can be searched"""
 
-from haystack.indexes import *
+from haystack.indexes import SearchIndex, Indexable, \
+    DateTimeField, BooleanField, CharField
+
 from .models import Resource
+from .views import ResourceList
+from .search_base import add_fields
 
 class ResourceIndex(SearchIndex, Indexable):
-    text      = CharField(document=True, use_template=True)
-
-    edited    = DateTimeField(model_attr='edited', null=True)
-    created   = DateTimeField(model_attr='created', null=True)
+    """Main index for each resource"""
+    text = CharField(document=True, use_template=True)
+    edited = DateTimeField(model_attr='edited', null=True)
+    created = DateTimeField(model_attr='created', null=True)
     published = BooleanField(model_attr='published')
 
     def get_model(self):
@@ -40,9 +45,5 @@ class ResourceIndex(SearchIndex, Indexable):
         return self.get_model().objects.filter(published=True, is_removed=False)
 
 
-from .views import ResourceList
-from pile.search_base import add_fields
-
-# This adds the extra indexable fields that the category list uses.  
+# This adds the extra indexable fields that the category list uses.
 add_fields(ResourceIndex, ResourceList)
-

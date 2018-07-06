@@ -20,6 +20,8 @@ Provides some base functionality for all search indexes
 
 import re
 
+from django.core.exceptions import FieldDoesNotExist
+
 from django.db import models
 from django.db.models.fields.related_descriptors import (
     ReverseManyToOneDescriptor as RMR_OD,
@@ -75,7 +77,7 @@ def add_field(cls, field_name, model_attr=None, model=None):
 
     try:
         field = model._meta.get_field(model_attr) # pylint: disable=protected-access
-    except AttributeError:
+    except FieldDoesNotExist:
         field = model and getattr(model, model_attr, None)
 
     if field and isinstance(field, (MR_OD, RMR_OD)):
