@@ -18,21 +18,16 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-Django command for clearing fastly caches.
+Cleans the static files from a fastly cache
 """
- 
-import os
- 
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from inkscape.fastly_cache import FastlyCache
- 
-class Command(NoArgsCommand):
+
+class Command(BaseCommand):
     """Clear fastly cache based on last clear and modified times"""
-    help = "Cleans the static files from a fastly cache"
+    help = __doc__
 
-
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         cache = FastlyCache()
         cache.clean_static()
         cache.clean_media()
-

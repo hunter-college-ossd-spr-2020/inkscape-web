@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,24 +17,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+Automatically expire users from team memberships and send out reminder
+notifications/alters when the user is removed. If the expiration is greater
+than two weeks, then a warning is sent out at the one week mark.
+"""
 
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from django.utils.timezone import now
 
-from person.models import *
+from person.models import Team
 
-class Command(NoArgsCommand):
-    help = "Automatically expire users from team memberships and send out"\
-           " reminder notifications/alters when the user is removed."\
-           " If the expiration is greater than two weeks, then a warning"\
-           " is sent out at the one week mark."
+class Command(BaseCommand):
+    """Run expire membership command"""
+    help = __doc__
 
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         for team in Team.objects.filter(auto_expire__gt=0):
             for user in team.expire_if_needed(now()):
-                print " [EXPIRED] %s " % unicode(user)
+                print(" [EXPIRED] %s " % str(user))
 
             if team.auto_expire > 14:
                 for user in team.warn_if_needed(now(), 7):
-                    print " [WARNED] %s " % unicode(user)
-
+                    print(" [WARNED] %s " % str(user))

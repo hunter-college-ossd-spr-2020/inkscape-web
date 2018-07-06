@@ -20,6 +20,9 @@ cmdplugin-objects==1.0
 # django-notification==TBD
 # django-cmsplugin-alerts==TBD
 
+# download_remote_images command
+bs4==0.0.1
+
 # person - User, login and registration
 django-registration==2.4.1
 social-auth-app-django==2.1.0

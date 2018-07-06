@@ -18,22 +18,15 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-A simple command to clean the entire webstie cache
+Cleans the entire configured website cache (warning: this will clear all keys,
+even keys used by other applications in the cache system)
 """
-
-import os
-import sys
-import time
-
+from django.core.management import BaseCommand
 from inkscape.middleware import TrackCacheMiddleware
 
-from django.conf import settings
-from django.core.management.base import NoArgsCommand
-
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """Clear website cache"""
-    help = "Cleans the entire configured website cache (warning: this will clear all keys, even keys used by other applications in the cache system)"
+    help = __doc__
 
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         TrackCacheMiddleware.invalidate_all()
-

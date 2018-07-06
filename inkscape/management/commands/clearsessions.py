@@ -1,7 +1,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,20 +17,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+Can be run as a cronjob or directly to clean out expired sessions
+(only with the database backend at the moment).
+"""
+
+from importlib import import_module
 
 from django.conf import settings
-from django.core.management.base import NoArgsCommand
-from django.utils.importlib import import_module
+from django.core.management import BaseCommand
 
+class Command(BaseCommand):
+    """Command for clear session"""
+    help = __doc__
 
-class Command(NoArgsCommand):
-    help = "Can be run as a cronjob or directly to clean out expired sessions (only with the database backend at the moment)."
-
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         engine = import_module(settings.SESSION_ENGINE)
         try:
             engine.SessionStore.clear_expired()
         except NotImplementedError:
             self.stderr.write("Session engine '%s' doesn't support clearing "
                               "expired sessions.\n" % settings.SESSION_ENGINE)
-

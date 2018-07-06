@@ -160,6 +160,8 @@ class UrlModule(Url):
     is_module = True
 
     def __str__(self):
+        if self.name == 'UrlTwig':
+            return "{} ^>".format(self.full_pattern)
         return "%s > %s >>" % (self.full_pattern, self.name)
 
     @property
@@ -254,19 +256,18 @@ class WebsiteUrls(object):
         """
         for entry in urllist:
             if hasattr(entry, 'url_patterns'):
-                if hasattr(entry, '_urlconf_module'):
-                    this_parent = UrlModule(parent, entry, entry._urlconf_module) # pylint: disable=protected-access
+                if hasattr(entry, 'urlconf_name'):
+                    this_parent = UrlModule(parent, entry, entry.urlconf_name)
                     if this_parent.name:
                         yield this_parent
 
                     # replace with yield from (python 3.3) when possible.
                     for item in self.url_iter(entry.url_patterns, this_parent):
                         yield item
-
                 continue
 
-            if hasattr(entry, '_callback'):
-                callback = entry._callback # pylint: disable=protected-access
+            if hasattr(entry, 'callback'):
+                callback = entry.callback
                 if isinstance(callback, types.FunctionType):
                     yield UrlFunction(parent, entry, callback)
                 elif hasattr(callback, 'model') and callback.model is not None:

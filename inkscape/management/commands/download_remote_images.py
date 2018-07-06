@@ -1,7 +1,7 @@
 #
 # Copyright 2018, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -21,17 +21,14 @@
 Downloads remote images in a given model's field and replaces the URL links.
 """
 from bs4 import BeautifulSoup as Soup
-
-from django.conf import settings
-from django.core.management.base import NoArgsCommand
-
+from django.core.management import BaseCommand
 from inkscape.models import RemoteImage
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """Command to check http image links and reset them"""
     help = __doc__
 
-    def handle_noargs(self, **_):
+    def handle(self, *args, **options):
         """Handle downloading images"""
         # Future: We're making this fixed for now, there areways to make callers
         # pass which models and fields we should fix, but for now, we're

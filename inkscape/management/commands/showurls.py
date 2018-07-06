@@ -1,7 +1,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -20,20 +20,13 @@
 """
 Shows all the available urls for a django website, useful for debugging.
 """
-
-from django.core.management.base import BaseCommand, CommandError
-
+from django.core.management.base import BaseCommand
 from inkscape.url_utils import WebsiteUrls
 
 class Command(BaseCommand):
-    args = '<start_url>'
-    help = 'Shows all urls begining with the start_url'
+    """Shows all urls begining with the start_url"""
+    help = __doc__
 
     def handle(self, *args, **options):
-        self.start_url = None
-        if len(args) > 0:
-            self.start_url = args[0]
-
         for url in WebsiteUrls():
-            self.stdout.write(" " * url.depth + unicode(url))
-
+            self.stdout.write(" " * url.depth + str(url))
