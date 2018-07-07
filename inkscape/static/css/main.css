@@ -432,7 +432,8 @@ div.toc ol,
   margin: 0;
   vertical-align: top;
 }
-#topsearch #q {
+#topsearch #q,
+#insearch #q {
   width: 140px;
   height: 20px;
   background-color: white;
@@ -447,7 +448,8 @@ div.toc ol,
   font-size: 12px;
   text-indent: 6px;
 }
-#topsearch button {
+#topsearch button,
+#insearch button {
   background: url(../images/search.png);
   background-repeat: no-repeat;
   background-color: #4d4d4d;
@@ -456,6 +458,10 @@ div.toc ol,
   height: 30px;
   border: 1px solid #989898;
   border-radius: 0px 6px 6px 0px;
+}
+#insearch input {
+  position: relative;
+  top: -2px;
 }
 
 /* Logo */
@@ -931,7 +937,7 @@ p#final-footer #dev-stamp:hover {
   margin-top: 24px;
 }
 #right-sidebar .search input {
-  width: 19%;
+  width: 100%;
   padding: 3px;
 } 
 #right-sidebar .search a {

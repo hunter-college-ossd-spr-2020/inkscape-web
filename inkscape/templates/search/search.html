@@ -11,9 +11,8 @@
 
   <h2>{% block title %}{% trans "Search" %}{% endblock %}</h2>
 
-  <form method="get" action="{% url "search" %}">
-    <input type="text" name="q" id="q" value="{{ query }}" placeholder="{% trans "Search" %}">
-    <button><img src="{% static "images/search.svg" %}" alt="{% trans "Search" %}"/></button>
+  <form id="insearch" method="get" action="{% url "search" %}">
+    <input type="text" name="q" id="q" value="{{ query }}" placeholder="{% trans "Search" %}"><button type="submit"><img src="{% static "images/search.svg" %}" alt="{% trans "Search" %}"/></button>
   </form>
 
     <form method="get" action=".">
