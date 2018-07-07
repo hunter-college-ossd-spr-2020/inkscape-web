@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 #
-# Copyright 2013, Martin Owens <doctormo@gmail.com>
+# Copyright 2013-2018, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
@@ -17,24 +18,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""Project Views"""
+"""
+URLs that start with the ~username pattern, and so are 'owned' by a specific user.
+"""
 
 from django.conf.urls import url
-from person import user_urls
+
+from alerts.views import CreateMessage
 from .views import (
-    ProjectList, ProjectGsocList, NewProject, ProjectView, UpdateProject,
-    MyProjects,
+    UserDetail, UserGPGKey, MakeFriend, LeaveFriend,
 )
 
+# r'^~(?P<username>[^\/]+)/',
 urlpatterns = [ # pylint: disable=invalid-name
-    url(r'^$', ProjectList.as_view(), name="project.list"),
-    url(r'^gsoc/$', ProjectGsocList.as_view(), name="project.gsoc.list"),
-
-    url(r'^new/$', NewProject.as_view(), name="project.new"),
-    url(r'^(?P<slug>[\w-]+)/$', ProjectView.as_view(), name="project.view"),
-    url(r'^(?P<slug>[\w-]+)/update/$', UpdateProject.as_view(), name="project.update"),
-]
-
-user_urls.urlpatterns += [
-    url(r'^projects/$', MyProjects.as_view(), name="my_projects"),
+    url(r'^$', UserDetail.as_view(), name='view_profile'),
+    url(r'^gpg/$', UserGPGKey.as_view(), name='user_gpgkey'),
+    url(r'^friend/$', MakeFriend.as_view(), name='user_friend'),
+    url(r'^unfriend/$', LeaveFriend.as_view(), name='user_unfriend'),
+    # Example message system
+    url(r'^message/$', CreateMessage.as_view(), name="message.new"),
+    url(r'^message/(?P<pk>\d+)/$', CreateMessage.as_view(), name="message.reply"),
 ]

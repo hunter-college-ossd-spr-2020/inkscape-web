@@ -22,7 +22,7 @@
 
 from django.conf.urls import url
 from inkscape.url_utils import url_tree
-from person.urls import USER_URLS, TEAM_URLS
+from person import user_urls, team_urls
 
 from .views import (
     ResourceList, ResourcePick, ResourceFeed, ResourceJson, ViewResource,
@@ -50,20 +50,19 @@ def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
 
 owner_patterns = [ # pylint: disable=invalid-name
     url_tree(
-        r'^/galleries/',
+        r'^galleries/',
         url(r'^$', GalleryList.as_view(), name='galleries'),
         url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView)),
     ),
-    url_tree(r'^/resources/', *resource_search()),
+    url_tree(r'^resources/', *resource_search()),
 ]
 user_patterns = [ # pylint: disable=invalid-name
     # Try a utf-8 url, see if it breaks web browsers.
     url(r'^★(?P<slug>[^\/]+)$', ViewResource.as_view(), name='resource'),
 ]
 # Add to the username user profile and teamname
-USER_URLS.url_patterns += tuple(owner_patterns + user_patterns)
-TEAM_URLS.url_patterns += tuple(owner_patterns)
-
+user_urls.urlpatterns += list(owner_patterns + user_patterns)
+team_urls.urlpatterns += list(owner_patterns)
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^paste/(?P<pk>\d+)/$', ViewResource.as_view(), name='pasted_item'),
