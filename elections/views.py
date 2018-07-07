@@ -38,7 +38,9 @@ from .models import Election, Ballot, Candidate
 from .mixins import TeamMemberMixin
 
 class ElectionList(ListView):
-    model = Election
+    def get_queryset(self):
+        return Team.objects.get(slug=self.kwargs['team'])\
+                   .elections.all()
 
 class ElectionDetail(DetailView):
     model = Election

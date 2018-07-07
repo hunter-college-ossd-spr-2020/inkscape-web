@@ -34,7 +34,7 @@ from django.contrib.auth import get_user_model
 
 from django.conf import settings
 from django.db.models import (
-    Manager, Model, SlugField, ForeignKey, CharField, DateTimeField,
+    Manager, Model, QuerySet, SlugField, ForeignKey, CharField, DateTimeField,
     DateField, PositiveIntegerField, TextField, BooleanField
 )
 
@@ -63,6 +63,16 @@ STATUSES = [
 RESTAT = list(zip(*STATUSES))
 (PLANNING, NOMINATING, SELECTING, VOTING, FINISHED, INCAN, INVOT) = RESTAT[0]
 FAILURE = {'S': '!', 'V': '*'}
+
+class ElectionQuerySet(QuerySet):
+    """Give context to lists of elections"""
+    breadcrumb_name = lambda self: _("Elections")
+
+    @property
+    def parent(self):
+        """Returns the instance parent if possible for this election"""
+        print("HINTS: {}".format(self._hints))
+        return self._hints.get('instance', getattr(self, 'instance', None))
 
 class Election(Model):
     """A single election as held by a group"""
@@ -106,6 +116,7 @@ class Election(Model):
     # candidates. (see STV log for example of the kind of output we could have)
     # probably in json format.
     log = TextField(**null)
+    objects = ElectionQuerySet.as_manager()
 
     year = property(lambda self: self.voting_from.year)
     parent = property(lambda self: self.for_team)

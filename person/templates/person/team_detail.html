@@ -96,21 +96,21 @@
           </ul>
         {% endif %}
       </ul>
-      {% if object.elections %}
+      {% if object.elections.all %}
         <h2>{% trans "Elections" %}</h2>
         <ul>
           {% for election in object.elections.all %}
             <li>
+              {% if forloop.counter < 4 %}
               <a href="{{ election.get_absolute_url }}">
-                  <label>{{ election.for_role }} {{ election.voting_from.year }}</label>
+                  <label>{{ election.for_role|default:'' }} {{ election.voting_from.year }}</label>
                 <span{% if election.state.failed %} class="failed"{% endif %}>{{ election.state.name }}</span>
               </a>
-            </li>
-          {% empty %}
-            <li>
+              {% elif forloop.counter == 4 %}
               <a href="{% url "elections:list" object.slug %}">
-                <label>{% trans "All Elections" %}</label>
+                <label>{% trans "More Elections" %}</label>
               </a>
+              {% endif %}
             </li>
           {% endfor %}
         </ul>
