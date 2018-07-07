@@ -24,13 +24,13 @@ Forum views accessable from the website.
 from django.conf.urls import url
 from inkscape.url_utils import url_tree
 
-from .views import ForumList, ForumDetail, AddTopic, TopicDetail
+from .views import ForumList, TopicList, AddTopic, TopicDetail
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url_tree(
         r'^(?P<slug>[\w-]+)/',
-        url(r'^$', ForumDetail.as_view(), name='detail'),
+        url(r'^$', TopicList.as_view(), name='detail'),
         url(r'^new/$', AddTopic.as_view(), name='create'),
     ),
     url_tree(

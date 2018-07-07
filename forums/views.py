@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,16 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.utils import timezone
-from datetime import timedelta
+# pylint: disable=too-many-ancestors
+"""
+Forum views, show topics, comments and link to apps.
+"""
 
+from django.views.generic import ListView, DetailView, FormView
 from django.http import Http404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import *
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 
 from django_comments.models import Comment
+
 from .forms import NewTopicForm
 from .mixins import UserRequired
 from .models import Q, ForumGroup, Forum, ForumTopic
@@ -34,14 +38,25 @@ from .models import Q, ForumGroup, Forum, ForumTopic
 class ForumList(UserRequired, ListView):
     """A list of all available forums"""
     cache_tracks = [ForumGroup, ForumTopic, Comment]
+    paginate_by = 12
 
     def get_queryset(self):
         language = translation.get_language()
         return Forum.objects.filter(Q(lang=language) | Q(lang=''))
 
-class ForumDetail(UserRequired, DetailView):
+class TopicList(UserRequired, ListView):
     """A list of all topics in a forum"""
-    model = Forum
+    paginate_by = 20
+
+    def get_queryset(self):
+        self.forum = Forum.objects.get(slug=self.kwargs['slug'])
+        return self.forum.topics.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = self.forum
+        print(context['page_obj'].__dict__)
+        return context
 
 class TopicDetail(UserRequired, DetailView):
     """A single topic view"""
@@ -58,21 +73,21 @@ class AddTopic(UserRequired, FormView):
     form_class = NewTopicForm
 
     def get_parent(self):
+        """Return the parent of the topic, i.e. the forum"""
         return get_object_or_404(Forum, slug=self.kwargs['slug'])
 
     def get_form_kwargs(self):
-        kw = super(type(self), self).get_form_kwargs()
-        kw.update({
-          'user': self.request.user,
-          'ip_address': self.request.META.get("REMOTE_ADDR", None),
-          'target_object': self.get_parent(),
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+            'ip_address': self.request.META.get("REMOTE_ADDR", None),
+            'target_object': self.get_parent(),
         })
-        if kw['target_object'].content_type:
+        if kwargs['target_object'].content_type:
             raise Http404("Topics are not allowed to be created.")
-        return kw
+        return kwargs
 
     def form_valid(self, form):
         topic = form.save()
         self.success_url = topic.get_absolute_url()
-        return super(type(self), self).form_valid(form)
-
+        return super().form_valid(form)
