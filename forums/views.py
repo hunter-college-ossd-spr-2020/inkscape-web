@@ -55,7 +55,6 @@ class TopicList(UserRequired, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['object'] = self.forum
-        print(context['page_obj'].__dict__)
         return context
 
 class TopicDetail(UserRequired, DetailView):
