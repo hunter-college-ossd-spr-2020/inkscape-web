@@ -23,7 +23,7 @@
     {% endif %}
 
     {% block "js" %}
-      <script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+      <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
       <script type="text/javascript" src="{% static "js/js.cookie.js" %}"></script>
       <script type="text/javascript" src="{% static "js/inkscape.js" %}"></script>
     {% endblock %}
@@ -122,6 +122,7 @@
           {% include "breadcrumbs.html" %}
         {% endblock %}
         {% block content %}{% endblock %}
+        {% block "pagination" %}{% include "pagination.html" %}{% endblock %}
       </div>
     </div>
   {% endblock %}
