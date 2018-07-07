@@ -17,27 +17,26 @@
 """
 Template tags for the whole project
 """
+from datetime import timedelta, datetime
 
-from django.conf import settings
-from django.template import Library
+from django import template
+from django.templatetags.static import StaticNode
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import date, timesince
 from django.templatetags.tz import localtime
 from django.utils import timezone
 from django.db.models import Model
 
-from datetime import timedelta, datetime
-
-register = Library()
+register = template.Library() # pylint: disable=invalid-name
 
 def _dt(arg):
     if not arg:
         return datetime.now(timezone.utc)
-    elif isinstance(arg, (str, unicode)):
+    elif isinstance(arg, str):
         try:
-            (d,t) = arg.split(' ')
-            date = [ int(i) for i in d.split('-')[:3] + t.split(':')[:3] ]
-            return datetime(*(date+[0, timezone.utc]))
+            (dat, time) = arg.split(' ')
+            dat = [int(i) for i in dat.split('-')[:3] + time.split(':')[:3]]
+            return datetime(*(dat + [0, timezone.utc]))
         except Exception:
             raise ValueError("Should be a datetime object, got string: %s" % arg)
     elif not isinstance(arg, datetime) or not arg.tzinfo:
@@ -49,9 +48,9 @@ def _dt(arg):
 @register.filter("placeholder")
 def add_placeholder(form, text=None):
     """Add a placeholder attribute to input widgets"""
-    if text == None:
+    if text is None:
         raise ValueError("Placeholder requires text content for widget.")
-    form.field.widget.attrs.update({ "placeholder": text })
+    form.field.widget.attrs.update({"placeholder": text})
     return form
 
 @register.filter("add")
@@ -64,7 +63,7 @@ def track_object(context, obj):
     """This object, when changed, should invalidate this request"""
     if not isinstance(obj, Model):
         raise ValueError("track_object requires a model object, "
-                "%s object provided instead." % type(obj).__name__)
+                         "%s object provided instead." % type(obj).__name__)
 
     request = context['request']
     if not hasattr(request, 'tracked_objects'):
@@ -73,11 +72,8 @@ def track_object(context, obj):
     request.tracked_objects.append(obj)
     return mark_safe("<!--Cache Tracked-->")
 
-
-from django.templatetags.static import StaticNode
-from django import template
-
 class UrlStaticNode(StaticNode):
+    """Returns either the url of a file field, or a static url default"""
     def __init__(self, field=None, **kw):
         self.field = field
         super(UrlStaticNode, self).__init__(**kw)
@@ -105,10 +101,10 @@ class UrlStaticNode(StaticNode):
             varname = None
 
         return cls(field=field, varname=varname, path=path)
- 
 
 @register.tag("url_or_static")
 def static_url(parser, token):
+    """Return the url of a file field, or it's default static url"""
     return UrlStaticNode.handle_token(parser, token)
 
 
@@ -118,7 +114,7 @@ def timetag_filter(value, arg=None):
     Will return <time...> html tag as part of the output.
     """
     if not value:
-        return
+        return ''
     value = _dt(value)
     arg = _dt(arg)
 
@@ -128,5 +124,4 @@ def timetag_filter(value, arg=None):
         label = timesince(value, arg) + " ago"
 
     return mark_safe("<time datetime=\"%s\" title=\"%s\">%s</time>" % (
-        date(value, 'Y-m-d\TH:i:sO'), date(localtime(value), 'Y-m-d H:i:sO'), label))
-
+        date(value, 'Y-m-d\\TH:i:sO'), date(localtime(value), 'Y-m-d H:i:sO'), label))
