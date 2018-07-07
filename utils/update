@@ -26,7 +26,7 @@ REQUIRES="./requirements.txt"
 
 if [ ! -e $PIP ]; then
     echo "Installing new PIP..."
-    virtualenv pythonenv -p /usr/bin/python2.7
+    virtualenv pythonenv -p /usr/bin/python3
     touch -d '+1 minute' $PIP
     touch -d '+2 minute' $REQUIRES
 fi

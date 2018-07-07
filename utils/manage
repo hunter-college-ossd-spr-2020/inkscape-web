@@ -22,11 +22,6 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/..
 
-if [ ! -d "$DIR/pythonenv" ]; then
-  echo "VirtualEnv not found, trying to set one up..."
-  echo "Failed! I didn't write this part yet!"
-fi
-
 cd $DIR
 
 if [ -f "$DIR/manage.py" ]; then
