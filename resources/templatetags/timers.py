@@ -20,48 +20,45 @@
 """
 Provide useful tools for showing svg file in the templates directly.
 """
-
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.template import Library
-from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime, parse_date, parse_time
 
-register = Library()
+register = Library() #pylint: disable=invalid-name
 
-def _datetime(dt):
+def _datetime(dtime):
     """Forces a variable to be a datetime (not date or time)"""
     now = datetime.now(timezone.utc)
-    if isinstance(dt, (str, unicode)):
-        if ' ' in dt or 'T' in dt:
-            dt = parse_datetime(dt)
-        elif '-' in dt:
-            dt = parse_date(dt)
-        elif ':' in dt:
-            dt = parse_time(dt)
+    if isinstance(dtime, str):
+        if ' ' in dtime or 'T' in dtime:
+            dtime = parse_datetime(dtime)
+        elif '-' in dtime:
+            dtime = parse_date(dtime)
+        elif ':' in dtime:
+            dtime = parse_time(dtime)
         else:
-            raise ValueError("Should be a datetime object, got string: %s" % dt)
-    if not isinstance(dt, datetime) or not dt.tzinfo:
+            raise ValueError("Should be a datetime object, got string: %s" % dtime)
+    if not isinstance(dtime, datetime) or not dtime.tzinfo:
         return datetime(
-            getattr(dt, 'year', now.year),
-            getattr(dt, 'month', now.month),
-            getattr(dt, 'day', now.day),
-            getattr(dt, 'hour', 0),
-            getattr(dt, 'minute', 0),
-            getattr(dt, 'second', 0),
-            getattr(dt, 'microsecond', 0),
+            getattr(dtime, 'year', now.year),
+            getattr(dtime, 'month', now.month),
+            getattr(dtime, 'day', now.day),
+            getattr(dtime, 'hour', 0),
+            getattr(dtime, 'minute', 0),
+            getattr(dtime, 'second', 0),
+            getattr(dtime, 'microsecond', 0),
             timezone.utc)
-    return dt or now
+    return dtime or now
 
 
 @register.filter("timedelta")
-def timedelta(dt, other=None):
+def _timedelta(dtime, other=None):
     """Returns the clean timedelta for this dt, other can be any date/time or None for now()"""
-    return _datetime(other) - _datetime(dt)
+    return _datetime(other) - _datetime(dtime)
 
 @register.filter("totalseconds")
-def totalseconds(dt, other=None):
+def totalseconds(dtime, other=None):
     """Return the number of seconds in this delta, can be positive or negative"""
-    return timedelta(dt, other).total_seconds()
-
+    return _timedelta(dtime, other).total_seconds()
