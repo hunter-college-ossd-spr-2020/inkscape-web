@@ -72,20 +72,15 @@ The CategoryFeed allows the same categories to be turned into an rss feed.
 
 All View classes don't need as_view() and can be created directly from urls.
 """
-
 __all__ = ('CategoryListView', 'CategoryFeed')
 
 from django.contrib.syndication.views import Feed
-from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView, DeleteView
-from django.views.generic.base import TemplateView as View, View as BaseView
 from django.core.urlresolvers import reverse, get_resolver, NoReverseMatch
-from django.shortcuts import get_object_or_404, redirect
+from django.views.generic.base import TemplateView as View
 from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlquote
+from django.shortcuts import redirect
 from django.db.models import Model
-
-import types
-import logging
 
 from .search_base import get_haystack_query, MR_OD, RMR_OD, SearchIter
 
@@ -95,12 +90,9 @@ def get_url(name, *args, **kwargs):
 
 def clean_dict(target, translate=None):
     """Removes any keys where the values is None"""
-    for key, value in target.items():
-        if value is None:
-            target.pop(key)
-        elif translate:
-            target[key] = translate.get(str(value), value)
-    return target
+    return dict((name, (translate or {}).get(str(value), value))
+                for (name, value) in target.items()
+                if value is not None)
 
 def reverse_order(target, active=True):
     """Appends '-' to column ordering arguments"""
@@ -110,7 +102,7 @@ def reverse_order(target, active=True):
         return target[1:]
     return '-' + target
 
-class AllCategory(object):
+class AllCategory(object): # pylint: disable=too-few-public-methods
     """A simple object for 'All' Menu Item"""
     value = None
     filterable = True
@@ -174,11 +166,11 @@ class CategoryListView(View):
 
     def base_queryset(self):
         """Returns the default query for a given manager"""
-        return self.model._default_manager.all()
+        return self.model._default_manager.all() # pylint: disable=protected-access
 
     def base_haystack_query(self, query):
         """When doing full-text searching, use this instead of base_queryset"""
-        return get_haystack_query(query, using=self.using, models=(self.model,))
+        return get_haystack_query(query, using=self.using, hs_models=(self.model,))
 
     @staticmethod
     def extra_filters():
@@ -318,7 +310,7 @@ class CategoryListView(View):
         """Gets the category object, which contains a list of possible options"""
         # We could move this into Category class XXX
         field = getattr(self.model, cid, None)
-        if isinstance(model, basestring):
+        if isinstance(model, str):
             qset = getattr(self, model)()
         elif field and hasattr(field, 'get_queryset'):
             qset = field.get_queryset()
@@ -331,7 +323,7 @@ class CategoryListView(View):
             return None
         return Category(self, qset, cid, name)
 
-    def get(self, *_, **kwargs):
+    def get(self, request, *args, **kwargs):
         """When the GET request is sent to this CategoryList"""
         qset = self.get_queryset()
         if self.redirect and not self.query and qset.count() == 1:

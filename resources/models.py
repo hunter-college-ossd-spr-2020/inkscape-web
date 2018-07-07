@@ -222,6 +222,13 @@ class ResourceQuerySet(QuerySet):
             return reverse('resources', kwargs={'team': obj.team.slug})
         return reverse('resources')
 
+    def visible(self):
+        """Returns only visible items (or items owned by the user)"""
+        return self.filter(Q(user_id=get_user().pk) | (Q(published=True) & Q(is_removed=False)))
+
+    def four(self):
+        """Returns the latest four items"""
+        return self[:4]
 
 class ResourceManager(Manager):
     def get_queryset(self):
@@ -243,13 +250,13 @@ class ResourceManager(Manager):
         return subs.all()
 
     def downloads(self):
-        return self.get_queryset().aggregate(Sum('downed')).values()[0]
+        return list(self.get_queryset().aggregate(Sum('downed')).values())[0]
 
     def views(self):
-        return self.get_queryset().aggregate(Sum('viewed')).values()[0]
+        return list(self.get_queryset().aggregate(Sum('viewed')).values())[0]
 
     def likes(self):
-        return self.get_queryset().aggregate(Sum('liked')).values()[0]
+        return list(self.get_queryset().aggregate(Sum('liked')).values())[0]
 
     def new(self):
         return self.get_queryset().filter(category__isnull=True)
@@ -335,7 +342,7 @@ class Resource(Model):
     media_y    = IntegerField(**null)
 
     extra_status = PositiveSmallIntegerField(choices=EXTRA_CHOICES, **null)
-    extra_css = property(lambda self: self.EXTRA_CSS[self.extra_status])
+    extra_css = property(lambda self: self.EXTRA_CSS[self.extra_status or 0])
 
     # ======== ITEMS FROM RESOURCEFILE =========== #
     download   = FileField(_('Consumable File'), storage=resource_storage,
@@ -712,6 +719,10 @@ class GalleryQuerySet(QuerySet):
     def breadcrumb_name(self):
         return _("Galleries")
 
+    def not_group(self):
+        """Excludes any galleries owned by a group"""
+        return self.exclude(group__isnull=False)
+
     @property
     def parent(self):
         return self._hints.get('instance', getattr(self, 'instance', None))
@@ -847,10 +858,12 @@ class Gallery(Model):
 
 class VoteManager(Manager):
     def items(self):
-        f = dict( ('votes__'+a,b) for (a,b) in self.core_filters.items() )
-        return Resource.objects.filter(published=True, **f)
+        """Turns a Vote selection into a Resource selection, translating the filters"""
+        return Resource.objects.filter(published=True,\
+            **dict(('votes__'+a, b) for (a, b) in self.core_filters.items()))
 
     def refresh(self):
+        """Update the stored count of 'likes' for a resource"""
         if 'resource' in self.core_filters:
             resource = self.core_filters['resource']
             resource.liked = self.count()

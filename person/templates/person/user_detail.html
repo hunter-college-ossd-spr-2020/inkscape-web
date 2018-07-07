@@ -65,7 +65,7 @@
   <ul>
     <li><a href="{% url "resources" username=object.username %}">{% trans "All Uploads" %}</a></li>
     <hr/>
-    {% for gallery in object.galleries.all %}
+    {% for gallery in object.galleries.all.not_group %}
       <li><a href="{{ gallery.get_absolute_url }}">{{ gallery.name }}</a></li>
     {% endfor %}
     <li><a href="{% url "resources" username=object.username category='pastebin' %}">{% trans "PasteBin" %}</a></li>
@@ -174,8 +174,8 @@
   {% endif %}
 
   <h2>{% trans "Favorite Artworks" %}</h2>
-  {% if object.favorites.items.count > 0 %}
-    {% with resources=object.favorites.items %}
+  {% if object.favorites.items.visible.count > 0 %}
+    {% with resources=object.favorites.items.visible.four %}
       {% include "resources/resource_icons.html" %}
     {% endwith %}
   {% else %}
