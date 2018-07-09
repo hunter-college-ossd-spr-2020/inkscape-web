@@ -74,6 +74,7 @@ All View classes don't need as_view() and can be created directly from urls.
 """
 __all__ = ('CategoryListView', 'CategoryFeed')
 
+from django.views.generic.list import MultipleObjectMixin
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse, get_resolver, NoReverseMatch
 from django.views.generic.base import TemplateView as View
@@ -149,7 +150,7 @@ class Category(list):
         return str(self.name)
 
 
-class CategoryListView(View):
+class CategoryListView(View, MultipleObjectMixin):
     """ListView with categorisation functionality, provides a simple way to
     Define a set of categories and have them availab ein the template with urls"""
     cats = ()
@@ -159,9 +160,11 @@ class CategoryListView(View):
     rss_view = None
     redirect = False
     using = 'default'
+    paginate_by = 20
 
     def __init__(self, *args, **kwargs):
         super(CategoryListView, self).__init__(*args, **kwargs)
+        self.object_list = None
         self.query = None
 
     def base_queryset(self):
@@ -340,8 +343,9 @@ class CategoryListView(View):
         opts = self.model._meta
         return ["%s/%s_list.html" % (opts.app_label, opts.object_name.lower())]
 
-    def get_context_data(self, **data):
+    def get_context_data(self, **kwargs):
         """Allows search results and object queries to work the same way."""
+        data = super().get_context_data(**kwargs)
         if not hasattr(self.model, 'object'):
             self.model.object = lambda self: self
 
