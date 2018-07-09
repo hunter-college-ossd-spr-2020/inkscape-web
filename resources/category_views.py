@@ -77,6 +77,7 @@ __all__ = ('CategoryListView', 'CategoryFeed')
 from django.views.generic.list import MultipleObjectMixin
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse, get_resolver, NoReverseMatch
+from django.utils.functional import cached_property
 from django.views.generic.base import TemplateView as View
 from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlquote
@@ -194,12 +195,12 @@ class CategoryListView(View, MultipleObjectMixin):
         else:
             queryset = self.base_queryset()
         filters = {}
-        for cat in self.get_cats():
+        for cat in self.get_cats:
             if cat is not None and cat.item != cat[0]:
                 filters[cat.cid] = _get(cat)
 
         filters.update(self.extra_filters())
-        filters.update(clean_dict(dict(self.get_opts())))
+        filters.update(clean_dict(dict(self.get_opts)))
         filters.update(kwargs)
         qset = queryset.filter(**clean_dict(filters, {'True':True, 'False':False}))
         order_by = self.get_value('order', self.order)
@@ -253,6 +254,7 @@ class CategoryListView(View, MultipleObjectMixin):
         """Tries to find the category value from multiple sources"""
         return self.kwargs.get(cid, self.request.GET.get(cid, default))
 
+    @cached_property
     def get_opts(self):
         """Gets a list of options selected based on opts"""
         return [self.get_opt(*opt) for opt in self._opts()]
@@ -301,10 +303,12 @@ class CategoryListView(View, MultipleObjectMixin):
                 field = link
         return (context and cid or field, value)
 
+    @cached_property
     def get_value_opts(self):
         """Similar to get_opt, but returns value useful for templates"""
         return [self.get_opt(*opt, context=True) for opt in self._opts()]
 
+    @cached_property
     def get_cats(self):
         """Returns a list of category objects for each of the cats"""
         return [self.get_cat(*cat) for cat in self.cats]
@@ -353,14 +357,14 @@ class CategoryListView(View, MultipleObjectMixin):
         data['orders'] = self.get_orders()
 
         data['categories'] = []
-        for cat in self.get_cats():
+        for cat in self.get_cats:
             if cat is not None:
                 data['categories'].append(cat)
                 cat.conclude(self)
                 if cat.item != cat[0]:
                     data[cat.cid] = cat.item
 
-        data.update(self.get_value_opts())
+        data.update(self.get_value_opts)
 
         if self.rss_view:
             data['rss_url'] = self.get_url(view=self.rss_view)
