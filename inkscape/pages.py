@@ -36,7 +36,7 @@ class InkscapePage(Page): # pylint: disable=too-many-ancestors
         """Return a compressed range"""
         start = self.number - self.hide_range
         stop = self.number + self.hide_range - 1
-        count = self.paginator.count
+        count = self.paginator.num_pages
         if start < 0:
             start = 0
             if stop < count:
