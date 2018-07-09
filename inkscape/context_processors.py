@@ -46,7 +46,7 @@ if isfile(VERSION_FILE):
     emai_msg = email.message_from_file(open(VERSION_FILE))
     WEBSITE_VERSION = emai_msg["version"]
     INKSCAPE_VERSION = emai_msg["inkscape"]
-    DONATE_NOW = emai_msg.get("donate", '0').strip() == '1'
+    DONATE_NOW = emai_msg.get("donate", None)
 
 REVISION_FILE = join(PATH, 'data', 'revision')
 if isfile(REVISION_FILE):
