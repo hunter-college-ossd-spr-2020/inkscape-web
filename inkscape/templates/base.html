@@ -59,9 +59,11 @@
       <div id="header-right">
         <ul id="tabs">
           <!--Remove this header when hackfest is over-->
-          <!--li id="tab_hackfest" class="link">
+          {% if DONATE_NOW %}
+          <li id="tab_hackfest" class="link">
             <p><a href="/support-us/hackfests/">{% blocktrans %}Donate to the March 2018 <strong>Inkscape Hackfest</strong>{% endblocktrans %} <span class="ico heart"></span></a></p>
-          </li-->
+          </li>
+          {% endif %}
 
           {% language_chooser "languages.html" %}
 
