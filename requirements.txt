@@ -15,13 +15,13 @@ djangocms-link==2.1.2
 djangocms-file==2.0.2
 djangocms-text-ckeditor==3.6.0
 cmdplugin-objects==1.0
-# cmsplugin-search==TBD
+cmsplugin-search==0.8.0
 # django-cmsplugin-diff==TBD (diff-match-patch==20121119)
 # django-notification==TBD
 # django-cmsplugin-alerts==TBD
 
 # download_remote_images command
-bs4==0.0.1
+beautifulsoup4==4.6.0
 
 # person - User, login and registration
 django-registration==2.4.1
