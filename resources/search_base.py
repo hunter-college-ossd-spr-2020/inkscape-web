@@ -67,30 +67,41 @@ def many_to_many(field):
         return [g.value for g in getattr(obj, field).all()]
     return _inner
 
+def get_model_field(model, model_attr):
+    """Return the field object from the model class"""
+    if model:
+        try:
+            return model._meta.get_field(model_attr) # pylint: disable=protected-access
+        except FieldDoesNotExist:
+            return getattr(model, model_attr, None)
+    return None
+
+def model_to_search_field(m_field, model_attr):
+    """Turn a model field into a haystack search field"""
+    if m_field:
+        if isinstance(m_field, (MR_OD, RMR_OD)):
+            return MultiValueField()
+        elif isinstance(m_field, models.IntegerField):
+            return IntegerField(model_attr=model_attr, null=m_field.null)
+        elif isinstance(m_field, models.FloatField):
+            return FloatField(model_attr=model_attr, null=m_field.null)
+        elif isinstance(m_field, models.DecimalField):
+            return DecimalField(model_attr=model_attr, null=m_field.null)
+        elif isinstance(m_field, (models.CharField, models.TextField)):
+            return CharField(model_attr=model_attr, null=getattr(m_field, 'null', True))
+    return None
+
 def add_field(cls, field_name, model_attr=None, model=None):
     """Add a field post meta-class, not with setattr, but fields"""
     model_attr = model_attr or field_name
     target = cls.fields
 
-    if field_name in target:
+    field = model_to_search_field(get_model_field(model, model_attr), model_attr)
+    if field_name in target or not field:
         return
 
-    try:
-        field = model._meta.get_field(model_attr) # pylint: disable=protected-access
-    except FieldDoesNotExist:
-        field = model and getattr(model, model_attr, None)
-
-    if field and isinstance(field, (MR_OD, RMR_OD)):
+    if isinstance(field, MultiValueField):
         setattr(cls, 'prepare_%s' % field_name, many_to_many(model_attr))
-        field = MultiValueField()
-    elif isinstance(field, models.IntegerField):
-        field = IntegerField(model_attr=model_attr, null=field.null)
-    elif isinstance(field, models.FloatField):
-        field = FloatField(model_attr=model_attr, null=field.null)
-    elif isinstance(field, models.DecimalField):
-        field = DecimalField(model_attr=model_attr, null=field.null)
-    else:
-        field = CharField(model_attr=model_attr, null=getattr(field, 'null', True))
 
     field.set_instance_name(field_name)
     target[field_name] = field
