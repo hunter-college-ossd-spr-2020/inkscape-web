@@ -15,9 +15,6 @@
   <div class="float-left">
     {% with next as request.GET.next|default:request.path %}
       <a class="btn social google" href="{% url "social:begin" 'google-oauth2' %}?next={{ next }}" title="{% trans "Login via Google+" %}"></a>
-      <a class="btn social facebook" href="{% url "social:begin" 'facebook' %}?next={{ next }}" title="{% trans "Login via Facebook" %}"></a>
-      <a class="btn social twitter" href="{% url "social:begin" 'twitter' %}?next={{ next }}" title="{% trans "Login via Twitter" %}"></a>
-      <a class="btn social yahoo" href="{% url "social:begin" 'yahoo' %}?next={{ next }}" title="{% trans "Login via Yahoo" %}"></a>
     {% endwith %}
   </div>
 {% endblock %}
