@@ -34,7 +34,7 @@ BASE_DIR = os.path.dirname(__file__)
 SETTINGS = 'local_settings.py'
 
 try:
-  from local_settings import *
+  from .local_settings import *
 except ImportError:
   target = os.path.join(BASE_DIR, SETTINGS)
   if not os.path.exists(target):
@@ -43,9 +43,9 @@ except ImportError:
               copyfile(template, target)
               break
   try:
-      from local_settings import *
+      from .local_settings import *
   except ImportError:
-      logging.error("No settings found and default template failed to load.")
+      logging.error("No local_settings found in PYTHON_PATH.")
       exit(3)
 
 
