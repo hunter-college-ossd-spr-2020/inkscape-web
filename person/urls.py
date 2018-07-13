@@ -46,7 +46,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^edit/$', EditProfile.as_view(), name='edit_profile'),
     url(r'^welcome/$', Welcome.as_view(), name='welcome'),
     url(r'^login/', LoginView.as_view(), name='auth_login'),
-    url(r'^logout/', LogoutView, name='auth_logout'),
+    url(r'^logout/', LogoutView.as_view(), name='auth_logout'),
     url(r'^teams/$', TeamList.as_view(), name='teams'),
     url_tree(
         r'^pwd/',
