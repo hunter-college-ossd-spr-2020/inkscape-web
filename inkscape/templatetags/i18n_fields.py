@@ -39,7 +39,7 @@ from django.conf import settings
 from django.core.cache import caches
 CACHE = caches['default']
 
-register = Library()
+register = Library() # pylint: disable=invalid-name
 
 DEFAULT_LANG = settings.LANGUAGE_CODE.split('-')[0]
 OTHER_LANGS = list(i for i in settings.LANGUAGES if i[0].split('-')[0] != DEFAULT_LANG)
@@ -50,15 +50,16 @@ STR_ERR = "Expected object but got string '{}'"
 
 @register.filter("translate_field")
 def translate_field(obj, name):
+    """Attempt to translate the names field if the object supports a simple i18n translations"""
     if obj in ('', None, 0):
         return obj
 
-    if isinstance(obj, (str, unicode)):
+    if isinstance(obj, str):
         raise TemplateSyntaxError(STR_ERR.format(obj))
 
     # Check that this is a translated model
     try:
-        Translations = obj.translations.model
+        Translations = obj.translations.model # pylint: disable=invalid-name
     except AttributeError:
         raise TemplateSyntaxError(CONF_ERR.format(type(obj).__name__))
 
@@ -89,4 +90,3 @@ def translate_field(obj, name):
 
     # Passthrough, nothing to do here.
     return getattr(obj, name)
-
