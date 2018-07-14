@@ -38,16 +38,6 @@ from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True)
 
-def WithoutFields(cls, *args):
-    """Rip an abstract model's field out, not needed in django>=1.10"""
-    if cls._meta.abstract:
-        remove_fields = [f for f in cls._meta.local_fields if f.name in args]
-        for f in remove_fields:
-            cls._meta.local_fields.remove(f)
-        return cls
-    else:
-        raise Exception("Not an abstract model")
-
 def linked_users_only(qs, *rels):
     """
     Limits a query to only include enough user information to link to the user.
@@ -59,7 +49,7 @@ def linked_users_only(qs, *rels):
             only.append(rel + '__' + field)
     return qs.select_related(*rels).defer(*only)
 
-class User(WithoutFields(AbstractUser, 'is_staff')):
+class User(AbstractUser):
     bio   = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
     photo = ResizedImageField(_('Photograph (square)'), null=True, blank=True,
               upload_to='photos', max_width=190, max_height=190)
