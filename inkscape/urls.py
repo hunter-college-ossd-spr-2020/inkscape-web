@@ -30,7 +30,8 @@ from .views import ContactUs, ContactOk, SearchView, Authors, Errors, Error
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^social/', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
-  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
+  + static('/dl/', document_root=settings.MEDIA_ROOT)
 
 urlpatterns += i18n_patterns(
     url(r'^contact/us/$', ContactUs.as_view(), name='contact'),
