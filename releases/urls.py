@@ -29,10 +29,10 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^(?P<version>[\w\+\.-]+)/',
         url('^$', ReleaseView.as_view(), name="release"),
-        url(r'^platforms/', PlatformList.as_view(), name="platforms"),
+        url(r'^platforms/$', PlatformList.as_view(), name="platforms"),
 
         # We don't use url_tree here because .+ competes with /dl/
-        url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
         url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
+        url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
     ),
 ]
