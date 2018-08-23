@@ -35,7 +35,7 @@ class MyView(CategoryListView):
 in urls.py:
 
 url('^$', MyView.as_view(), name='myview')
-url('^(?P<type>[\w-]+)/$', MyView.as_view(), name='myview')
+url('^(?P<type>[\ w-]+)/$', MyView.as_view(), name='myview')
 
 In this example our ListView is created as normal with a model.
 It also specifies a cats class attribute which defines each category
@@ -72,10 +72,9 @@ The CategoryFeed allows the same categories to be turned into an rss feed.
 
 All View classes don't need as_view() and can be created directly from urls.
 """
-__all__ = ('CategoryListView', 'CategoryFeed')
+__all__ = ('CategoryListView')
 
 from django.views.generic.list import MultipleObjectMixin
-from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse, get_resolver, NoReverseMatch
 from django.utils.functional import cached_property
 from django.views.generic.base import TemplateView as View
@@ -378,24 +377,3 @@ class CategoryListView(View, MultipleObjectMixin):
             yield {'id': odr, 'name': label, 'down': (order or '*')[0] == '-',
                    'active': order.strip('-') == odr.strip('-'),
                    'url': self.get_url('order', reverse_order(odr, odr == order))}
-
-
-class CategoryFeed(Feed):
-    """So these CategoryListViews can become Feeds we have to do a few bits for django"""
-    def __init__(self, *args, **kwargs):
-        super(CategoryFeed, self).__init__(*args, **kwargs)
-        self.request = None
-        self.kwargs = None
-
-    def __call__(self, request, *args, **kwargs):
-        self.request = request
-        self.kwargs = kwargs
-        return Feed.__call__(self, request, *args, **kwargs)
-
-    def items(self):
-        """Returns the queryset as the list of items"""
-        return self.get_queryset()
-
-    def link(self):
-        """Returns the link for this feed"""
-        return self.get_url()

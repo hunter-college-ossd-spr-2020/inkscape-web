@@ -26,10 +26,10 @@ from person import user_urls, team_urls
 
 from .views import (
     ResourceList, ResourcePick, ResourceFeed, ResourceJson, ViewResource,
-    GalleryList, GalleryView, TagsJson, CreateGallery, PasteInResource,
-    UploadResource, DropResource, LinkToResource, DeleteGallery, EditGallery,
-    DeleteResource, EditResource, PublishResource, MoveResource,
-    DownloadReadme, VoteResource, DownloadResource,
+    GalleryList, GalleryView, GalleryFeed, TagsJson, CreateGallery,
+    PasteInResource, UploadResource, DropResource, LinkToResource,
+    DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
+    MoveResource, DownloadReadme, VoteResource, DownloadResource,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
@@ -37,13 +37,13 @@ def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
     """Generate standard url patterns for resource listing"""
     return [
         url(r'^$', lst.as_view(), name='resources'),
-        url(r'^rss/$', feed.as_view(), name='resources_rss'),
+        url(r'^rss/$', feed(), name='resources_rss'),
         url(r'^pick/$', pick.as_view(), name='resources_pick'),
         url(r'^json/$', json.as_view(), name='resources_json'),
         url_tree(
             r'^=(?P<category>[^\/]+)/',
             url(r'^$', lst.as_view(), name='resources'),
-            url(r'^rss/$', feed.as_view(), name='resources_rss'),
+            #url(r'^rss/$', feed.as_view(), name='resources_rss'),
             url(r'^json/$', json.as_view(), name='resources_json'),
             *args)
     ]
@@ -52,7 +52,7 @@ owner_patterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^galleries/',
         url(r'^$', GalleryList.as_view(), name='galleries'),
-        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView)),
+        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView, feed=GalleryFeed)),
     ),
     url_tree(r'^resources/', *resource_search()),
 ]
@@ -101,7 +101,7 @@ urlpatterns = [ # pylint: disable=invalid-name
         ),
         *resource_search(
             url(r'^(?P<galleries>[^\/]+)/', GalleryView.as_view(), name='resources'),
-            url(r'^(?P<galleries>[^\/]+)/rss/', ResourceFeed.as_view(), name='resources_rss'),
+            url(r'^(?P<galleries>[^\/]+)/rss/', GalleryFeed(), name='resources_rss'),
             url(r'^(?P<galleries>[^\/]+)/json/', ResourceJson.as_view(), name='resources_json'),
         )
     ),

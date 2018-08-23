@@ -22,26 +22,22 @@
 """
 Views for resource system, adding items, entering new categories for widgets etc
 """
-import os
-
-from datetime import timedelta
-
 from django.http import JsonResponse, Http404
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.contrib.syndication.views import Feed
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.template import RequestContext
 from django.views.generic import DetailView, ListView, DeleteView, CreateView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import RedirectView
 
 from person.models import User, Team
 
-from .category_views import CategoryListView, CategoryFeed
+from .category_views import CategoryListView
 from .mixins import (
     OwnerDeleteMixin, OwnerCreateMixin, OwnerUpdateMixin,
     OwnerViewMixin, ResourceJSONEncoder,
@@ -53,7 +49,7 @@ class GalleryMixin(object):
     """Load up a single gallery from the kwargs"""
     pk_url_kwarg = 'gallery_id'
     model = Gallery
-    
+
 class DeleteGallery(GalleryMixin, OwnerDeleteMixin, DeleteView):
     """An owner of a gallery can delete it"""
     title = _("Delete Gallery")
@@ -312,26 +308,31 @@ class DownloadResource(ViewResource):
 
 
 class ResourceList(CategoryListView):
+    """
+    This listing of resources provides the backbone of all gallery and resource
+    listings on the website. It provies searching as well as being used by the
+    RSS feed generator.
+    """
     rss_view = 'resources_rss'
     model = Resource
     opts = (
-      ('username', 'user__username'),
-      ('team', 'galleries__group__team__slug', False),
-      ('gallery_id', 'galleries__id', False),
-      ('tags', 'tags__name', False),
+        ('username', 'user__username'),
+        ('team', 'galleries__group__team__slug', False),
+        ('gallery_id', 'galleries__id', False),
+        ('tags', 'tags__name', False),
     )
     cats = (
-      #('media_type', _("Media Type")),
-      ('category', _("Media Category"), 'get_categories'),
-      ('license', _("License"), 'get_licenses'),
-      ('galleries', _("Galleries"), 'get_galleries'),
+        #('media_type', _("Media Type")),
+        ('category', _("Media Category"), 'get_categories'),
+        ('license', _("License"), 'get_licenses'),
+        ('galleries', _("Galleries"), 'get_galleries'),
     )
     order = '-liked'
     orders = (
-      ('-liked', _('Most Popular')),
-      ('-viewed', _('Most Views')),
-      ('-downed', _('Most Downloaded')),
-      ('-edited', _('Last Updated')),
+        ('-liked', _('Most Popular')),
+        ('-viewed', _('Most Views')),
+        ('-downed', _('Most Downloaded')),
+        ('-edited', _('Last Updated')),
     )
 
     def base_queryset(self):
@@ -479,19 +480,26 @@ class ResourcePick(ResourceList):
     def get_template_names(self):
         return ['resources/resource_picker.html']
 
-class ResourceFeed(CategoryFeed, ResourceList):
+
+class FeedMixin(Feed):
     """Feed via xml a list of resources in any of the galleries"""
     title = _("Gallery Feed")
     description = "Gallery Resources RSS Feed"
 
-    def extra_filters(self):
-        # Limit RSS feeds to the last month
-        extra = super(ResourceFeed, self).extra_filters()
-        extra['created__gt'] = now() - timedelta(days=32)
-        return extra
+    def get_feed(self, obj, request):
+        self.request = request
+        return super().get_feed(self, request)
+
+    def lister_view(self):
+        """Returns the category list for this feed (as a view)"""
+        if not hasattr(self, '_lister'):
+            self._lister = self.lister.as_view()(
+                request=self.request, kwargs=self.kwargs, args=self.args)
+        return self._lister
 
     def items(self):
-        for item in CategoryFeed.items(self):
+        """Returns the items for this feed, depends on query"""
+        for item in self.lister_view().get_queryset():
             if item is not None:
                 if self.query:
                     if item.object is not None:
@@ -499,6 +507,7 @@ class ResourceFeed(CategoryFeed, ResourceList):
                 else:
                     yield item
 
+    item_link = lambda self, item: item.link
     item_guid = lambda self, item: '#'+str(item.pk)
     item_title = lambda self, item: item.name
     item_pubdate = lambda self, item: item.created
@@ -507,6 +516,12 @@ class ResourceFeed(CategoryFeed, ResourceList):
     item_author_name = lambda self, item: str(item.user)
     item_author_link = lambda self, item: item.user.get_absolute_url()
 
+
+class ResourceFeed(FeedMixin):
+    lister = ResourceList
+
+class GalleryFeed(FeedMixin):
+    lister = GalleryView
 
 class ResourceJson(ResourceList):
     """Take any list of resources, and produce json output"""
