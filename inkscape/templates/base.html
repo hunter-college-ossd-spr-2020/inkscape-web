@@ -97,7 +97,7 @@
         </ul>
         {% block rightheader %}
         <form id="topsearch" method="get" action="{% url "search" %}">
-          <input type="text" name="q" id="q" placeholder="{% trans "Search" %}">
+          <input type="text" name="q" id="q" placeholder="{% trans "Search website" %}">
           <button><img src="{% static "images/search.svg" %}" alt="{% trans "Search" %}"/></button>
         </form>
         {% endblock %}
