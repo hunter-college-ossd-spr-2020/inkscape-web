@@ -931,8 +931,9 @@ p#final-footer #dev-stamp:hover {
   margin-top: 24px;
 }
 #right-sidebar .search input {
-  width: 19%;
+  width: 100%;
   padding: 3px;
+  box-sizing: border-box;
 } 
 #right-sidebar .search a {
   position: relative;
