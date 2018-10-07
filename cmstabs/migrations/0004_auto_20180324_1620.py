@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='groupphotoplugin',
             name='style',
-            field=models.CharField(max_length=1, verbose_name='Display Style', choices=[(b'L', 'Simple List'), (b'P', 'Photo Heads'), (b'B', 'Photo Bios'), (b'0', 'Random Sponsor'), (b'1', 'Full View Sponsors'), (b'2', 'Icon Only Sponsors'), (b'3', 'Link Only Sponsors')]),
+            field=models.CharField(max_length=1, verbose_name='Display Style', choices=[('L', 'Simple List'), ('P', 'Photo Heads'), ('B', 'Photo Bios'), ('0', 'Random Sponsor'), ('1', 'Full View Sponsors'), ('2', 'Icon Only Sponsors'), ('3', 'Link Only Sponsors')]),
         ),
         migrations.AlterField(
             model_name='inlinepage',
@@ -40,6 +40,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tabcategory',
             name='icon',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon'),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon'),
         ),
     ]

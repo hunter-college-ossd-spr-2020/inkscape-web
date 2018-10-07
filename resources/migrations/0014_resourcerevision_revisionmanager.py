@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             name='ResourceRevision',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('download', models.FileField(upload_to=b'resources/file', verbose_name='Consumable File')),
-                ('signature', models.FileField(upload_to=b'resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
+                ('download', models.FileField(upload_to='resources/file', verbose_name='Consumable File')),
+                ('signature', models.FileField(upload_to='resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
                 ('created', models.DateTimeField(auto_now=True)),
                 ('version', models.IntegerField(default=0)),
                 ('resource', models.ForeignKey(related_name='revisions', to='resources.ResourceFile')),

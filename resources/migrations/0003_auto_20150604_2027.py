@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='start_contest',
-            field=models.DateField(help_text=b'If specified, this category will have special voting rules.', null=True, blank=True),
+            field=models.DateField(help_text='If specified, this category will have special voting rules.', null=True, blank=True),
             preserve_default=True,
         ),
     ]

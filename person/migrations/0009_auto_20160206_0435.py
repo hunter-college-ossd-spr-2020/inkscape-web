@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='icon',
-            field=models.ImageField(default=b'https://inkscape.global.ssl.fastly.net/static/images/team.svg', upload_to=b'teams', verbose_name='Display Icon'),
+            field=models.ImageField(default='https://inkscape.global.ssl.fastly.net/static/images/team.svg', upload_to='teams', verbose_name='Display Icon'),
         ),
     ]

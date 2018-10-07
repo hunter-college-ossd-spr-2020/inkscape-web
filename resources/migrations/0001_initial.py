@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('limit', models.PositiveIntegerField(verbose_name='Number of items per page')),
-                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[(b'list', 'Gallery List'), (b'rows', 'Gallery Rows')])),
+                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[('list', 'Gallery List'), ('rows', 'Gallery Rows')])),
                 ('source', models.ForeignKey(to='resources.Category')),
             ],
             options={
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
                 ('limit', models.PositiveIntegerField(verbose_name='Number of items per page')),
-                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[(b'list', 'Gallery List'), (b'rows', 'Gallery Rows')])),
+                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[('list', 'Gallery List'), ('rows', 'Gallery Rows')])),
                 ('source', models.ForeignKey(to='resources.Gallery')),
             ],
             options={
@@ -71,8 +71,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64)),
                 ('code', models.CharField(max_length=16)),
                 ('link', models.URLField(null=True, blank=True)),
-                ('banner', models.FileField(upload_to=b'license/banner', null=True, verbose_name='License Banner (svg:80x15)', blank=True)),
-                ('icon', models.FileField(upload_to=b'license/icon', null=True, verbose_name='License Icon (svg:100x40)', blank=True)),
+                ('banner', models.FileField(upload_to='license/banner', null=True, verbose_name='License Banner (svg:80x15)', blank=True)),
+                ('icon', models.FileField(upload_to='license/icon', null=True, verbose_name='License Icon (svg:100x40)', blank=True)),
                 ('at', models.BooleanField(default=True, verbose_name='Attribution')),
                 ('sa', models.BooleanField(default=False, verbose_name='Copyleft (Share Alike)')),
                 ('nc', models.BooleanField(default=False, verbose_name='Non-Commercial')),
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField()),
                 ('edited', models.DateTimeField(null=True, blank=True)),
                 ('published', models.BooleanField(default=False)),
-                ('thumbnail', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'resources/thumb', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail')),
+                ('thumbnail', inkscape.fields.ResizedImageField(format='PNG', upload_to='resources/thum', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail')),
                 ('link', models.URLField(null=True, verbose_name='External Link', blank=True)),
                 ('viewed', models.PositiveIntegerField(default=0)),
                 ('downed', models.PositiveIntegerField(default=0, verbose_name='Downloaded')),
@@ -114,9 +114,9 @@ class Migration(migrations.Migration):
             name='ResourceFile',
             fields=[
                 ('resource_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='resources.Resource')),
-                ('download', models.FileField(upload_to=b'resources/file', verbose_name='Consumable File')),
+                ('download', models.FileField(upload_to='resources/file', verbose_name='Consumable File')),
                 ('owner', models.BooleanField(default=True, verbose_name='Permission', choices=[(None, 'No permission'), (True, 'I own the work'), (False, 'I have permission')])),
-                ('signature', models.FileField(upload_to=b'resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
+                ('signature', models.FileField(upload_to='resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
                 ('verified', models.BooleanField(default=False)),
                 ('mirror', models.BooleanField(default=False)),
                 ('license', models.ForeignKey(blank=True, to='resources.License', null=True)),
@@ -192,7 +192,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='acceptable_licenses',
-            field=models.ManyToManyField(to='resources.License', db_table=b'resource_category_acceptable_licenses'),
+            field=models.ManyToManyField(to='resources.License', db_table='resource_category_acceptable_licenses'),
             preserve_default=True,
         ),
     ]

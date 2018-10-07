@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='rendering',
-            field=ResizedImageField(format=b'PNG', upload_to=b'resources/render', max_width=780, min_height=0, max_height=600, blank=True, min_width=0, null=True, verbose_name='Rendering'),
+            field=ResizedImageField(format='PNG', upload_to='resources/render', max_width=780, min_height=0, max_height=600, blank=True, min_width=0, null=True, verbose_name='Rendering'),
         ),
         migrations.AlterField(
             model_name='resource',
             name='thumbnail',
-            field=ResizedImageField(format=b'PNG', upload_to=b'resources/thumb', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail'),
+            field=ResizedImageField(format='PNG', upload_to='resources/thum', max_width=190, min_height=0, max_height=190, blank=True, min_width=0, null=True, verbose_name='Thumbnail'),
         ),
     ]

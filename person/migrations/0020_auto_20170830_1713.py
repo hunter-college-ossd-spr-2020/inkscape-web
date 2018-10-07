@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='enrole',
-            field=models.CharField(default=b'O', max_length=1, verbose_name='Enrollment', choices=[(b'O', 'Open'), (b'P', 'Peer Approval'), (b'T', 'Admin Approval'), (b'C', 'Closed'), (b'S', 'Secret'), (b'E', 'Elected')]),
+            field=models.CharField(default='O', max_length=1, verbose_name='Enrollment', choices=[('O', 'Open'), ('P', 'Peer Approval'), ('T', 'Admin Approval'), ('C', 'Closed'), ('S', 'Secret'), ('E', 'Elected')]),
         ),
     ]

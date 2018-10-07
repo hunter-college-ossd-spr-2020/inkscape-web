@@ -25,13 +25,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='platform',
             name='icon',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='platform',
             name='image',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=256, min_height=0, max_height=256, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='release/icons', max_width=256, min_height=0, max_height=256, blank=True, min_width=0, null=True),
             preserve_default=True,
         ),
     ]

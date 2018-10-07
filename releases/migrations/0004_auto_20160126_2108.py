@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='release',
             name='background',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/background', max_width=960, min_height=0, max_height=300, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='release/background', max_width=960, min_height=0, max_height=300, blank=True, min_width=0, null=True),
             preserve_default=True,
         ),
     ]

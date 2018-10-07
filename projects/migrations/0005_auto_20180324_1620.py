@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='banner',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', default=b'/static/images/project_banner.png', upload_to=b'project/banner', max_width=920, min_height=90, max_height=120, min_width=600, verbose_name='Banner (920x120)'),
+            field=inkscape.fields.ResizedImageField(format='PNG', default='/static/images/project_banner.png', upload_to='project/banner', max_width=920, min_height=90, max_height=120, min_width=600, verbose_name='Banner (920x120)'),
         ),
         migrations.AlterField(
             model_name='project',
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='logo',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', default=b'/static/images/project_logo.png', upload_to=b'project/logo', max_width=150, min_height=150, max_height=150, min_width=150, verbose_name='Logo (150x150)'),
+            field=inkscape.fields.ResizedImageField(format='PNG', default='/static/images/project_logo.png', upload_to='project/logo', max_width=150, min_height=150, max_height=150, min_width=150, verbose_name='Logo (150x150)'),
         ),
         migrations.AlterField(
             model_name='project',
@@ -37,6 +37,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='report',
             name='image',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'project/update/%Y', max_width=400, min_height=0, max_height=400, blank=True, min_width=0, null=True, verbose_name='Image'),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='project/update/%Y', max_width=400, min_height=0, max_height=400, blank=True, min_width=0, null=True, verbose_name='Image'),
         ),
     ]

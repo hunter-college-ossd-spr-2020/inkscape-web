@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tableofcontents',
             name='div_class',
-            field=models.CharField(default=b'right', max_length=22, verbose_name='Class', choices=[(b'right', b'Float Right'), (b'inline', b'Inline')]),
+            field=models.CharField(default='right', max_length=22, verbose_name='Class', choices=[('right', 'Float Right'), ('inline', 'Inline')]),
             preserve_default=True,
         ),
     ]

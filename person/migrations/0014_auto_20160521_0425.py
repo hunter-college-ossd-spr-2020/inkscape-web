@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='mailman',
-            field=models.CharField(help_text=b'The name of the pre-configured mailing list for this team', max_length=32, null=True, verbose_name='Email List', blank=True),
+            field=models.CharField(help_text='The name of the pre-configured mailing list for this team', max_length=32, null=True, verbose_name='Email List', blank=True),
         ),
     ]

@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='resource',
             name='download',
-            field=models.FileField(storage=resources.storage.ResourceStorage(), upload_to=b'resources/file', null=True, verbose_name='Consumable File', blank=True),
+            field=models.FileField(storage=resources.storage.ResourceStorage(), upload_to='resources/file', null=True, verbose_name='Consumable File', blank=True),
         ),
     ]

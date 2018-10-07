@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gallery',
             name='status',
-            field=models.CharField(blank=True, max_length=1, null=True, db_index=True, choices=[(None, b'No Status'), (b' ', b'Casual Wish'), (b'1', b'Draft'), (b'2', b'Proposal'), (b'3', b'Reviewed Proposal'), (b'+', b'Under Development'), (b'=', b'Complete'), (b'-', b'Rejected')]),
+            field=models.CharField(blank=True, max_length=1, null=True, db_index=True, choices=[(None, 'No Status'), (' ', 'Casual Wish'), ('1', 'Draft'), ('2', 'Proposal'), ('3', 'Reviewed Proposal'), ('+', 'Under Development'), ('=', 'Complete'), ('-', 'Rejected')]),
         ),
         migrations.AddField(
             model_name='gallery',

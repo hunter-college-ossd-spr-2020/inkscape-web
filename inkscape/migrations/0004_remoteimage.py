@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('md5_prefix', models.CharField(max_length=16, null=True, blank=True)),
-                ('local_file', models.FileField(storage=inkscape.utils.ReplaceStore(), null=True, upload_to=b'remote', blank=True)),
+                ('local_file', models.FileField(storage=inkscape.utils.ReplaceStore(), null=True, upload_to='remote', blank=True)),
                 ('remote_url', models.URLField()),
             ],
         ),

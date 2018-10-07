@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=32)),
                 ('desc', models.CharField(max_length=128, verbose_name='Description')),
-                ('style', models.CharField(blank=True, max_length=32, null=True, choices=[(b'blue', 'Blue')])),
-                ('icon', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True)),
+                ('style', models.CharField(blank=True, max_length=32, null=True, choices=[('blue', 'Blue')])),
+                ('icon', inkscape.fields.ResizedImageField(format='PNG', upload_to='release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True)),
             ],
         ),
         migrations.AddField(

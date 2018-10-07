@@ -26,12 +26,12 @@ class Migration(migrations.Migration):
             bases=('cms.cmsplugin',),
         ),
         migrations.CreateModel(
-            name='Tab',
+            name='Ta',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('link', models.URLField(null=True, verbose_name='External Link', blank=True)),
                 ('name', models.CharField(max_length=64)),
-                ('download', models.FileField(upload_to=b'shields/backgrounds', verbose_name='Background')),
+                ('download', models.FileField(upload_to='shields/backgrounds', verbose_name='Background')),
                 ('order', models.IntegerField(null=True, blank=True)),
                 ('tab_name', models.CharField(max_length=64, verbose_name='Heading')),
                 ('tab_text', models.CharField(max_length=128, verbose_name='Sub-Heading')),
@@ -39,14 +39,14 @@ class Migration(migrations.Migration):
                 ('banner_foot', models.CharField(max_length=128, null=True, blank=True)),
                 ('btn_text', models.CharField(max_length=32, null=True, verbose_name='Button Text', blank=True)),
                 ('btn_link', models.CharField(max_length=255, null=True, verbose_name='Button Link', blank=True)),
-                ('btn_icon', models.CharField(blank=True, max_length=12, null=True, verbose_name='Button Icon', choices=[(b'download', 'Download Icon')])),
-                ('draft', models.ForeignKey(blank=True, to='cmstabs.Tab', null=True)),
+                ('btn_icon', models.CharField(blank=True, max_length=12, null=True, verbose_name='Button Icon', choices=[('download', 'Download Icon')])),
+                ('draft', models.ForeignKey(blank=True, to='cmstabs.Ta', null=True)),
                 ('license', models.ForeignKey(to='resources.License')),
                 ('shield', models.ForeignKey(related_name='tabs', to='cmstabs.ShieldPlugin')),
             ],
             options={
                 'ordering': ('order',),
-                'db_table': 'extra_tab',
+                'db_table': 'extra_ta',
             },
             bases=(models.Model,),
         ),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=22)),
-                ('icon', inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon')),
+                ('icon', inkscape.fields.ResizedImageField(format='PNG', upload_to='shields/icons', max_height=32, min_height=0, max_width=32, min_width=0, verbose_name='Icon')),
             ],
             options={
                 'db_table': 'extra_tabcategory',
@@ -63,13 +63,13 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.AddField(
-            model_name='tab',
+            model_name='ta',
             name='tab_cat',
             field=models.ForeignKey(verbose_name='Tab Icon', to='cmstabs.TabCategory'),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='tab',
+            model_name='ta',
             name='user',
             field=models.ForeignKey(related_name='front_tabs', blank=True, to=settings.AUTH_USER_MODEL, null=True),
             preserve_default=True,
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
             name='GroupPhotoPlugin',
             fields=[
                 ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('style', models.CharField(max_length=1, verbose_name='Display Style', choices=[(b'L', 'Simple List'), (b'P', 'Photo Heads'), (b'B', 'Photo Bios')])),
+                ('style', models.CharField(max_length=1, verbose_name='Display Style', choices=[('L', 'Simple List'), ('P', 'Photo Heads'), ('B', 'Photo Bios')])),
                 ('source', models.ForeignKey(to='auth.Group')),
             ],
             options={

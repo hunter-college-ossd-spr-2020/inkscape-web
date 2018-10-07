@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='platform',
             name='match_bits',
-            field=models.PositiveIntegerField(blank=True, null=True, db_index=True, choices=[(32, b'32bit'), (64, b'64bit')]),
+            field=models.PositiveIntegerField(blank=True, null=True, db_index=True, choices=[(32, '32bit'), (64, '64bit')]),
         ),
         migrations.AddField(
             model_name='platform',
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='release',
             name='background',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'release/background', max_width=960, min_height=0, max_height=360, blank=True, min_width=0, null=True),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='release/background', max_width=960, min_height=0, max_height=360, blank=True, min_width=0, null=True),
         ),
         migrations.AlterField(
             model_name='release',

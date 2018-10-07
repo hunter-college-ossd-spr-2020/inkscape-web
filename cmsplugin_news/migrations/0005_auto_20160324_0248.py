@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='news',
             name='slug',
-            field=models.SlugField(unique_for_date=b'pub_date', help_text='A slug is a short name which provides a unique url.', null=True, verbose_name='Slug'),
+            field=models.SlugField(unique_for_date='pub_date', help_text='A slug is a short name which provides a unique url.', null=True, verbose_name='Slug'),
         ),
     ]

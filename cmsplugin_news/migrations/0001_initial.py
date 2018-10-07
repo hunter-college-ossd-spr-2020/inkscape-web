@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=255, verbose_name='Title')),
-                ('slug', models.SlugField(unique_for_date=b'pub_date', blank=True, help_text='A slug is a short name which uniquely identifies the news item.', null=True, verbose_name='Slug')),
+                ('slug', models.SlugField(unique_for_date='pub_date', blank=True, help_text='A slug is a short name which uniquely identifies the news item.', null=True, verbose_name='Slug')),
                 ('excerpt', models.TextField(verbose_name='Excerpt', blank=True)),
                 ('content', models.TextField(verbose_name='Content', blank=True)),
                 ('is_published', models.BooleanField(default=False, verbose_name='Published')),
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('link', models.URLField(help_text='This link will be used a absolute url for this item and replaces the view logic. <br />Note that by default this only applies for items with an empty "content" field.', null=True, verbose_name='Link', blank=True)),
-                ('language', models.CharField(help_text='Translated version of another news item.', max_length=5, verbose_name='Language', choices=[(b'de', b'German'), (b'da', b'Danish'), (b'fr', b'French'), (b'nl', b'Dutch'), (b'it', b'Italian'), (b'es', b'Spanish'), (b'pt', b'Portuguese'), (b'pt-br', b'Brazilian Portuguese'), (b'cs', b'Czech'), (b'ru', b'Russian'), (b'ja', b'Japanese'), (b'zh', b'Chinese'), (b'zh-tw', b'Simplified Chinese'), (b'ko', b'Korean')])),
+                ('language', models.CharField(help_text='Translated version of another news item.', max_length=5, verbose_name='Language', choices=[('de', 'German'), ('da', 'Danish'), ('fr', 'French'), ('nl', 'Dutch'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Chinese'), ('zh-tw', 'Simplified Chinese'), ('ko', 'Korean')])),
                 ('creator', models.ForeignKey(related_name='created_news', default=cms.utils.permissions.get_current_user, to=settings.AUTH_USER_MODEL)),
                 ('editor', models.ForeignKey(related_name='edited_news', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('translation_of', models.ForeignKey(related_name='translations', blank=True, to='cmsplugin_news.News', null=True)),

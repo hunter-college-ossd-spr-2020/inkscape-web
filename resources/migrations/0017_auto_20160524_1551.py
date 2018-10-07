@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='new_checked_sig',
-            field=models.FileField(upload_to=b'resources/sigs', null=True, verbose_name='Counter Signature', blank=True),
+            field=models.FileField(upload_to='resources/sigs', null=True, verbose_name='Counter Signature', blank=True),
         ),
         migrations.AddField(
             model_name='resource',
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='new_download',
-            field=models.FileField(upload_to=b'resources/file', null=True, verbose_name='Consumable File', blank=True),
+            field=models.FileField(upload_to='resources/file', null=True, verbose_name='Consumable File', blank=True),
         ),
         migrations.AddField(
             model_name='resource',
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='new_signature',
-            field=models.FileField(upload_to=b'resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True),
+            field=models.FileField(upload_to='resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True),
         ),
         migrations.AddField(
             model_name='resource',

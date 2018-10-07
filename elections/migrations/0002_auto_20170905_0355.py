@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='election',
             name='status',
-            field=models.CharField(default=b'.', max_length=1, db_index=True, choices=[(b'.', 'Planning the election.'), (b'N', 'Nominating candidates to stand.'), (b'S', 'Candidates accepting to stand'), (b'V', 'Voting is open to constituents'), (b'F', 'Voting is closed, Results announced'), (b'!', 'Electing Canceled, Failed to get enough candidates.'), (b'*', 'Electing Canceled, Failed to get enough voters to vote.')]),
+            field=models.CharField(default='.', max_length=1, db_index=True, choices=[('.', 'Planning the election.'), ('N', 'Nominating candidates to stand.'), ('S', 'Candidates accepting to stand'), ('V', 'Voting is open to constituents'), ('F', 'Voting is closed, Results announced'), ('!', 'Electing Canceled, Failed to get enough candidates.'), ('*', 'Electing Canceled, Failed to get enough voters to vote.')]),
         ),
     ]

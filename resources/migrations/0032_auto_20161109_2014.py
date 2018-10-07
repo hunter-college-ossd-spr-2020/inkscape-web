@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='resource',
             name='thumbnail',
-            field=inkscape.fields.ResizedImageField(format=b'PNG', upload_to=b'resources/thumb', max_width=780, min_height=190, max_height=600, blank=True, min_width=190, null=True, verbose_name='Thumbnail'),
+            field=inkscape.fields.ResizedImageField(format='PNG', upload_to='resources/thum', max_width=780, min_height=190, max_height=600, blank=True, min_width=190, null=True, verbose_name='Thumbnail'),
         ),
     ]

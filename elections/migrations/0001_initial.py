@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('slug', models.SlugField(help_text='Unique name used to identify this election in urls.', max_length=32)),
                 ('called_on', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(default=b'.', max_length=1, db_index=True, choices=[(b'.', 'Planning the election.'), (b'N', 'Nominating candidates to stand.'), (b'S', 'Candidates accepting to stand'), (b'V', 'Voting is open to constituents'), (b'F', 'Voting is closed, Results announced'), (b'!', 'Electing Canceled, Failed.')])),
+                ('status', models.CharField(default='.', max_length=1, db_index=True, choices=[('.', 'Planning the election.'), ('N', 'Nominating candidates to stand.'), ('S', 'Candidates accepting to stand'), ('V', 'Voting is open to constituents'), ('F', 'Voting is closed, Results announced'), ('!', 'Electing Canceled, Failed.')])),
                 ('invite_from', models.DateField(help_text='Start the nominations process on this date, invitations are collected (UTC).')),
                 ('accept_from', models.DateField(help_text='Invitation process stops and emails sent out to potential candidates. (UTC)')),
                 ('voting_from', models.DateField(help_text='Finish the nominations and start voting (UTC).')),

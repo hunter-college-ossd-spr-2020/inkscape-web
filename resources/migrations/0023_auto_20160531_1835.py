@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='symbol',
-            field=models.FileField(upload_to=b'category/icon', null=True, verbose_name='Category Icon (svg:128x128)', blank=True),
+            field=models.FileField(upload_to='category/icon', null=True, verbose_name='Category Icon (svg:128x128)', blank=True),
         ),
         migrations.AlterField(
             model_name='resource',
