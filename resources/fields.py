@@ -33,12 +33,12 @@ class FilterSelect(Select):
 
         super(FilterSelect, self).__init__(replace.attrs, replace.choices)
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, **kwargs):
         attrs = attrs or {}
         if value is None:
             attrs['novalue'] = 'true'
         attrs['data-filter_by'] = self.filter_by
-        return super(FilterSelect, self).render(name, value, attrs, choices)
+        return super(FilterSelect, self).render(name, value, attrs, **kwargs)
 
     def render_option(self, selected_choices, value, label):
         label = force_text(label)
@@ -52,11 +52,11 @@ class FilterSelect(Select):
 
 class DisabledSelect(Select):
     """If there is only one choice, disable and set to this choice"""
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, **kwargs):
         attrs = attrs or {}
         attrs['disabled'] = 'disabled'
         self.name = name
-        return super(DisabledSelect, self).render(name+'_disabled', value, attrs, choices)[:-9]
+        return super(DisabledSelect, self).render(name+'_disabled', value, attrs, **kwargs)[:-9]
 
     def render_option(self, selected_choices, value, label):
         label = force_text(label)
@@ -67,27 +67,24 @@ class DisabledSelect(Select):
 
 class CategorySelect(Select):
     """Provide extra data for validating a resource within the option"""
-    def render(self, name, value, attrs=None, choices=()):
-        attrs = attrs or {}
-        if value is None:
-            attrs['novalue'] = 'true'
-        return super(CategorySelect, self).render(name, value, attrs, choices)
+    def get_context(self, *args, **kwargs):
+        context = super().get_context(*args, **kwargs)
+        if not context['widget']['value']:
+            context['widget']['attrs']['novalue'] = 'true'
+        return context
 
-    def render_option(self, selected_choices, obj, label):
+    #def create_option(self, selected_choices, obj, label):
+    def create_option(self, name, value, label, selected, *args, **kwargs):
         """Reimplement and generate option tags for this select"""
-        # TODO: Upgrade to django 1.11 will involve using template html files
-        # instead of this in-code generation.
-        label = force_text(label)
-        value = force_text(obj or '')
-        html = ''
-        if obj and not isinstance(obj, (int, str)):
-            attrs = {}
+        context = super().create_option(name, value, label, selected, *args, **kwargs)
+        if value and not isinstance(value, (int, str)):
+            attrs = context['attrs']
             # CSV list of types, treat as string
-            if obj.acceptable_types:
-                html += ' data-types="%s"' % obj.acceptable_types
+            if value.acceptable_types:
+                attrs['data-types'] = value.acceptable_types
 
             for field in ('media_x', 'media_y', 'size'):
-                f_value = getattr(obj, 'acceptable_' + field)
+                f_value = getattr(value, 'acceptable_' + field)
                 if f_value not in (None, ''):
                     scale = 1024 if field == 'size' else 1
                     for method in (min, max):
@@ -97,64 +94,24 @@ class CategorySelect(Select):
 
             # Add tag options, if needed
             names = []
-            for x, tagcat in enumerate(obj.tags.all()):
+            for x, tagcat in enumerate(value.tags.all()):
                 names.append(tagcat.name)
                 key = 'data-tagcat-{}'.format(x)
                 attrs[key] = json.dumps(list(tagcat.tags.values_list('name', flat=True)))
 
             attrs['data-tagcat'] = json.dumps(names)
-            html = ' '.join(["{}='{}'".format(name, val) for name, val in attrs.items()])
-            value = force_text(obj.pk)
-
-        html += ' selected="selected"' if value in selected_choices else ''
-        return '<option value="%s" %s>%s</option>' % (value, html, label)
+            context['value'] = force_text(value.pk)
+        return context
 
 class SelectTags(SelectMultiple):
-    SCRIPT = """
-    <script>
-      var existingTags = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: {
-                    url: '/json/tags.json',
-                    transform: function(response){
-                                 return response.tags;
-                                },
-                    ttl: 60*1000 /* 1 minute */
-        }
-      });
-       
-      existingTags.initialize();
-
-      $('#id_%(id)s').tagsinput({
-        maxTags: 12,
-        maxChars: 16,
-        trimValue: true,
-        typeaheadjs: {
-          name: 'existingTags',
-          display: 'name',
-          source: existingTags.ttAdapter()
-        }
-      });
-    </script>"""
+    template_name = 'widgets/select_tags.html'
+    option_template_name = 'widgets/select_tags_option.html'
 
     class Media:
         css = {
             'all': ('css/bootstrap-tagsinput.css', 'css/bootstrap-tagsinput-typeahead.css',)
         }
         js = ('js/bootstrap-tagsinput.js', 'js/typeahead.js')
-
-    def render(self, name, value, **kwargs):
-        html = super(SelectTags, self).render(name, value, **kwargs)
-        url = reverse('ajax_lookup', kwargs={'channel': 'tags'})
-        return mark_safe(html + (self.SCRIPT % {'id':name, 'ajax': url}))
-
-    def render_option(self, selected_choices, option_value, label):
-        """Only supply selected tags so tagsinput won't add them all"""
-        if force_text(option_value) in selected_choices:
-            return super(SelectTags, self).render_option([], label, 'hidden')
-        return ''
-
 
 class TagsChoiceField(ModelMultipleChoiceField):
     widget = SelectTags
