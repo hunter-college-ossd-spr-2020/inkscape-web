@@ -1,0 +1,5 @@
+
+{% if widget.attrs.selected %}
+  <option value="{{ widget.value|stringformat:'s' }}"{% include "django/forms/widgets/attrs.html" %}>{{ widget.label }}</option></select>
+  <input type="hidden" name="{{ widget.name }}" value="{{ widget.value|stringformat:'s' }}">
+{% endif %}

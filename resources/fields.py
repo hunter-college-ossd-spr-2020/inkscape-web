@@ -33,47 +33,40 @@ class FilterSelect(Select):
 
         super(FilterSelect, self).__init__(replace.attrs, replace.choices)
 
-    def render(self, name, value, attrs=None, **kwargs):
-        attrs = attrs or {}
-        if value is None:
-            attrs['novalue'] = 'true'
-        attrs['data-filter_by'] = self.filter_by
-        return super(FilterSelect, self).render(name, value, attrs, **kwargs)
+    def get_context(self, *args, **kwargs):
+        context = super().get_context(*args, **kwargs)
+        if not context['widget']['value']:
+            context['widget']['attrs']['novalue'] = 'true'
+        context['widget']['attrs']['data-filter_by'] = self.filter_by
+        return context
 
-    def render_option(self, selected_choices, value, label):
-        label = force_text(label)
-        value = force_text(value or '')
-        html = ' selected="selected"' if value in selected_choices else ''
+    def create_option(self, name, value, label, selected, *args, **kwargs):
+        """Reimplement and generate option tags for this select"""
+        context = super().create_option(name, value, label, selected, *args, **kwargs)
+        attrs = context['attrs']
         if value and int(value) in self.filters:
-            html += ' data-filter="%s"' % str(self.filters[int(value)])
-            return '<option value="%s"%s>%s</option>' % (value, html, label)
-        return ''
+            attrs['data-filter'] = str(self.filters[int(value)])
+        return context
 
 
 class DisabledSelect(Select):
     """If there is only one choice, disable and set to this choice"""
-    def render(self, name, value, attrs=None, **kwargs):
-        attrs = attrs or {}
-        attrs['disabled'] = 'disabled'
-        self.name = name
-        return super(DisabledSelect, self).render(name+'_disabled', value, attrs, **kwargs)[:-9]
+    option_template_name = 'widgets/select_disabled_option.html'
 
-    def render_option(self, selected_choices, value, label):
-        label = force_text(label)
-        if value:
-            return '<option value="%s" selected="selected">%s</option></select>' % (value, label) + \
-                   '<input type="hidden" name="%s" value="%s">' % (self.name, value)
-        return ''
+    def get_context(self, *args, **kwargs):
+        context = super().get_context(*args, **kwargs)
+        context['widget']['attrs']['disabled'] = 'disabled'
+        self.name = context['widget']['name']
+        return context
 
 class CategorySelect(Select):
     """Provide extra data for validating a resource within the option"""
     def get_context(self, *args, **kwargs):
         context = super().get_context(*args, **kwargs)
-        if not context['widget']['value']:
+        if context['widget']['value']:
             context['widget']['attrs']['novalue'] = 'true'
         return context
 
-    #def create_option(self, selected_choices, obj, label):
     def create_option(self, name, value, label, selected, *args, **kwargs):
         """Reimplement and generate option tags for this select"""
         context = super().create_option(name, value, label, selected, *args, **kwargs)

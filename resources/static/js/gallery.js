@@ -96,8 +96,8 @@ function setupUpload() {
   }
   $('.uploader label').show();
   $('.uploader label img').error(function(e) {
-      if($(this).data('static')) {
-          target = $(this).data('static') + 'mime/unknown.svg';
+      if($(this).attr('data-static')) {
+          target = $(this).attr('data-static') + 'mime/unknown.svg';
           if(this.src != target) { this.src = target; }
           return false;
       }
@@ -118,7 +118,7 @@ function setupUpload() {
   }).on('change', function() {
     var label = $('label[for="' + this.id + '"]');
     var clear = $('input[name=' + $(this).attr('name') + '-clear]');
-    var st = $('img', label).data('static');
+    var st = $('img', label).attr('data-static');
     if (this.files && this.files[0]) {
       var file = this.files[0];
       var icon = get_mime_icon(file.type);
@@ -147,7 +147,7 @@ function setupUpload() {
       clear.prop('checked', true);;
       $('strong', label).hide();
       $('img', label).attr('src', st + 'images/upload.svg');
-      $('p', label).html(label.data('label'));
+      $('p', label).html(label.attr('data-label'));
     }
   });
 
@@ -164,12 +164,12 @@ function setupUpload() {
     $('.tagcat').remove();
     var category = $('select#id_category');
     var opt = $('option:selected', category);
-    var cats = opt.data('tagcat')
+    var cats = JSON.parse(opt.attr('data-tagcat'));
     if(cats) {
       var tagbox = $('#id_tags');
       var boxed_tags = tagbox.tagsinput('items');
       $.each(cats, function(index, name) {
-        var tags = opt.data('tagcat-' + index);
+        var tags = JSON.parse(opt.attr('data-tagcat-' + index));
         var segment = $('<div class="tagcat"><h2>'+name+'</h2><select></select></div>');
         var select = $('select', segment);
         $(select).append('<option value="">---</option>');
@@ -202,13 +202,14 @@ function setupUpload() {
 
     $('option', target).each(function() {
         // Record all filters into one list for counter test
-        var filter = $(this).data('filter');
+        var filter = $(this).attr('data-filter');
+        console.log("Found filter: " + filter);
         if(filter != undefined) {
-            filters = filters.concat(filter);
+            filters = filters.concat(JSON.parse(filter));
         }
     });
 
-    var filter_by = $('#' + target.data('filter_by'));
+    var filter_by = $('#' + target.attr('data-filter_by'));
     $('option', filter_by).each(function() {
         // Disble any counter options with no filters, this should
         // Warn admins that their license selection isn't working.
@@ -227,7 +228,7 @@ function setupUpload() {
       }
       var val = parseInt($(this).val());
       $('option', target).each(function() {
-          var filter = $(this).data('filter');
+          var filter = $(this).attr('data-filter');
           if(filter != undefined) {
             if(filter.indexOf(val) >= 0) {
               $(this).removeAttr("disabled");
@@ -251,7 +252,7 @@ function setupImageFullscreen() {
       if(isFullscreen && $(this).find('img').height() < window.innerHeight) {
         container.addClass('horizontal');
       }
-      var url = $('img', this).data('fullview');
+      var url = $('img', this).attr('data-fullview');
       if(url) {
         $('img', this).attr('src', url);
       }
