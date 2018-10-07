@@ -4,6 +4,7 @@ local_settings.py
 *.pyc
 *.swp
 *~
+.mypy_cache
 .gitignore
 .git
 pythonenv
