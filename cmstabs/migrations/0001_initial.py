@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             bases=('cms.cmsplugin',),
         ),
         migrations.CreateModel(
-            name='Ta',
+            name='Tab',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('link', models.URLField(null=True, verbose_name='External Link', blank=True)),
@@ -40,13 +40,13 @@ class Migration(migrations.Migration):
                 ('btn_text', models.CharField(max_length=32, null=True, verbose_name='Button Text', blank=True)),
                 ('btn_link', models.CharField(max_length=255, null=True, verbose_name='Button Link', blank=True)),
                 ('btn_icon', models.CharField(blank=True, max_length=12, null=True, verbose_name='Button Icon', choices=[('download', 'Download Icon')])),
-                ('draft', models.ForeignKey(blank=True, to='cmstabs.Ta', null=True)),
+                ('draft', models.ForeignKey(blank=True, to='cmstabs.Tab', null=True)),
                 ('license', models.ForeignKey(to='resources.License')),
                 ('shield', models.ForeignKey(related_name='tabs', to='cmstabs.ShieldPlugin')),
             ],
             options={
                 'ordering': ('order',),
-                'db_table': 'extra_ta',
+                'db_table': 'extra_tab',
             },
             bases=(models.Model,),
         ),
@@ -63,13 +63,13 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.AddField(
-            model_name='ta',
+            model_name='tab',
             name='tab_cat',
             field=models.ForeignKey(verbose_name='Tab Icon', to='cmstabs.TabCategory'),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='ta',
+            model_name='tab',
             name='user',
             field=models.ForeignKey(related_name='front_tabs', blank=True, to=settings.AUTH_USER_MODEL, null=True),
             preserve_default=True,

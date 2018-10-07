@@ -13,8 +13,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='ta',
+            model_name='tab',
             name='draft',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='cmstabs.Ta', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='cmstabs.Tab', null=True),
         ),
     ]
