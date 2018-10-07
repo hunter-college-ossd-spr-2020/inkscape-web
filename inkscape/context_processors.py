@@ -39,12 +39,14 @@ PATH = settings.PROJECT_PATH
 INKSCAPE_VERSION = ''
 WEBSITE_VERSION = ''
 WEBSITE_REVISION = ''
+DONATE_NOW = False
 
 VERSION_FILE = join(PATH, 'version')
 if isfile(VERSION_FILE):
     emai_msg = email.message_from_file(open(VERSION_FILE))
     WEBSITE_VERSION = emai_msg["version"]
     INKSCAPE_VERSION = emai_msg["inkscape"]
+    DONATE_NOW = emai_msg.get("donate", None)
 
 REVISION_FILE = join(PATH, 'data', 'revision')
 if isfile(REVISION_FILE):
@@ -53,6 +55,7 @@ if isfile(REVISION_FILE):
 
 def version(request):
     return {
+      'DONATE_NOW': DONATE_NOW,
       'INKSCAPE_VERSION': INKSCAPE_VERSION,
       'WEBSITE_REVISION': WEBSITE_REVISION,
       'WEBSITE_VERSION': WEBSITE_VERSION,

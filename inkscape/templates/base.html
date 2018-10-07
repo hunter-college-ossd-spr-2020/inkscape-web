@@ -59,9 +59,11 @@
       <div id="header-right">
         <ul id="tabs">
           <!--Remove this header when hackfest is over-->
-          <!--li id="tab_hackfest" class="link">
-            <p><a href="/support-us/hackfests/">{% blocktrans %}Donate to the March 2018 <strong>Inkscape Hackfest</strong>{% endblocktrans %} <span class="ico heart"></span></a></p>
-          </li-->
+          {% if DONATE_NOW %}
+          <li id="tab_hackfest" class="link">
+              <p><a href="/support-us/hackfests/">{{ DONATE_NOW|safe }} <span class="ico heart"></span></a></p>
+          </li>
+          {% endif %}
 
           {% language_chooser "languages.html" %}
 
@@ -95,7 +97,7 @@
         </ul>
         {% block rightheader %}
         <form id="topsearch" method="get" action="{% url "search" %}">
-          <input type="text" name="q" id="q" placeholder="{% trans "Search" %}">
+          <input type="text" name="q" id="q" placeholder="{% trans "Search website" %}">
           <button><img src="{% static "images/search.svg" %}" alt="{% trans "Search" %}"/></button>
         </form>
         {% endblock %}
