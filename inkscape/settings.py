@@ -383,6 +383,14 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'filters': ['ratelimit'],
         },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(PROJECT_PATH, 'data', 'logs', 'django.log'),
+            'maxBytes': (2 ** 20) * 5, # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose'
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -399,7 +407,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        #'django.db.backends': {'level': 'DEBUG', 'handlers': ['console']},
+        'django':{
+            'handlers':['file'],
+            'propagate': True,
+            'level':'ERROR',
+        },
     },
 }
 
