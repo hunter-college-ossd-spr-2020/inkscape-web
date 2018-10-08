@@ -378,7 +378,7 @@ class ResourceList(CategoryListView):
     def get_galleries(self):
         if 'username' in self.kwargs:
             user = get_object_or_404(User, username=self.kwargs['username'])
-            return user.galleries.all() #.filter(group__isnull=True)
+            return user.galleries.exclude(status="=")
         team = self.get_value('team')
         if team:
             return get_object_or_404(Group, team__slug=team).galleries.all()
