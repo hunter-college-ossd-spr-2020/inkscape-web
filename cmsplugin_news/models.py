@@ -1,5 +1,5 @@
 #
-# Copyright 2015, Martin Owens <doctormo@gmail.com>
+# Copyright 2015-2018, Martin Owens <doctormo@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
@@ -17,21 +17,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Models for website news"""
 
-from django.db.models import *
+from django.db.models import Model, Manager,\
+    CharField, TextField, SlugField, BooleanField, DateTimeField, ForeignKey,\
+    ImageField, URLField, PositiveIntegerField
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.conf import settings
-from .settings import OTHER_LANGS, DEFAULT_LANG, \
-    LINK_AS_ABSOLUTE_URL, USE_LINK_ON_EMPTY_CONTENT_ONLY
 from django.utils import timezone
 
-from cms.utils.permissions import get_current_user as get_user
 from cms.models import CMSPlugin
+from cms.utils.permissions import get_current_user as get_user
 
-import sys
-import inspect
+from .settings import OTHER_LANGS, DEFAULT_LANG, \
+    LINK_AS_ABSOLUTE_URL, USE_LINK_ON_EMPTY_CONTENT_ONLY
 
 class LanguageNotSet(Exception):
     pass
@@ -41,32 +42,36 @@ class PublishedManager(Manager):
     """This manager allows filtering of published vs not-published as well as language
        selection at display time."""
     def select_language(self, lang):
+        """Select the language (set attribute)"""
         self.language = lang
         return self
 
     def with_language(self, lang, **kwargs):
+        """Returns the news queryset with a given language"""
         return self.select_language(lang).get_queryset(**kwargs)
 
     def get_queryset(self, is_staff=False):
+        """Return the queryset for published news"""
         if not hasattr(self, 'language'):
-            raise LanguageNotSet("Can't do a language dependant query before the language is selected.")
+            raise LanguageNotSet("Can't do a language dependant query before"
+                                 " the language is selected.")
 
-        qs = super(PublishedManager, self).get_queryset()
-        english = qs.filter(translation_of__isnull=True)
+        qset = super(PublishedManager, self).get_queryset()
+        english = qset.filter(translation_of__isnull=True)
 
         if self.language == 'en':
-            qs = english
+            qset = english
         else:
             untranslated = english.exclude(translations__language=self.language)
-            qs = untranslated | qs.filter(language=self.language)
+            qset = untranslated | qset.filter(language=self.language)
         if not is_staff:
-            qs = qs.filter(is_published=True, pub_date__lte=timezone.now())
-        return qs
+            qset = qset.filter(is_published=True, pub_date__lte=timezone.now())
+        return qset
 
 
 class News(Model):
     title = CharField(_('Title'), max_length=255)
-    slug = SlugField(_('Slug'), unique_for_date='pub_date', null=True,
+    slug = SlugField(_('Slug'), unique_for_date='pub_date', null=True,\
            help_text=_('A slug is a short name which provides a unique url.'))
 
     excerpt = TextField(_('Excerpt'), blank=True)
@@ -74,21 +79,21 @@ class News(Model):
 
     is_published = BooleanField(_('Published'), default=False)
     pub_date = DateTimeField(_('Publication date'), default=timezone.now)
-    group = ForeignKey(Group, null=True, blank=True,
-        help_text=_('News group indicates that this news is exclusive to '
-          'this group only. This usually means it won\'t be visible on '
+    group = ForeignKey(Group, null=True, blank=True,\
+        help_text=_('News group indicates that this news is exclusive to '\
+          'this group only. This usually means it won\'t be visible on '\
           'the main news listings, but instead is listed elsewhere.'))
 
     created = DateTimeField(auto_now_add=True, editable=False)
     updated = DateTimeField(auto_now=True, editable=False)
 
     creator = ForeignKey(settings.AUTH_USER_MODEL, related_name="created_news", default=get_user)
-    editor  = ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="edited_news")
+    editor = ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="edited_news")
 
-    link = URLField(_('Link'), blank=True, null=True,
-         help_text=_('This link will be used as absolute url for this item '
-           'and replaces the view logic. <br />Note that by default this '
-           'only applies for items with an empty "content" field.'))
+    link = URLField(_('Link'), blank=True, null=True,\
+         help_text=_('This link will be used as absolute url for this item '\
+         'and replaces the view logic. <br />Note that by default this '\
+         'only applies for items with an empty "content" field.'))
 
     # The translation functionality could be brought into a more generic format
     # By making a meta class which doesn't have its own table but contains

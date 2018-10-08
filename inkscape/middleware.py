@@ -358,7 +358,7 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
                     name = "Name Error"
         if hasattr(obj, 'get_absolute_url'):
             url = obj.get_absolute_url()
-        if name is not None and name.startswith('['):
+        if name and name[0] in '<[':
             return None
         return (url, name)
 

@@ -21,6 +21,7 @@
 News views (non-staff views)
 """
 
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView, DateDetailView, \
         YearArchiveView, MonthArchiveView, DayArchiveView
 
@@ -29,7 +30,7 @@ from django.utils import translation
 from django.shortcuts import get_object_or_404
 
 from .models import News
-from .mixins import PublishedNewsMixin, NeverCacheMixin
+from .mixins import PublishedNewsMixin
 from .settings import ARCHIVE_PAGE_SIZE
 
 class DetailNews(PublishedNewsMixin, DetailView):
@@ -68,6 +69,7 @@ class ArchiveIndexView(PublishedNewsMixin, ListView):
     paginate_by = ARCHIVE_PAGE_SIZE
     template_name = 'cmsplugin_news/news_archive.html'
     include_yearlist = True
+    title = _("Latest News")
 
     def get_context_data(self, **kwargs):
         context = super(ArchiveIndexView, self).get_context_data(**kwargs)
