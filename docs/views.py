@@ -28,7 +28,7 @@ import codecs
 from cms.utils import get_language_from_request
 
 from django.http import Http404
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template import RequestContext
 
 from django.conf import settings
@@ -99,11 +99,8 @@ def page(request, uri):
             .replace('src="', 'src="%s/' % os.path.join(settings.MEDIA_URL,
               'doc', *uri.split('/')[:-1]))\
             .replace('|src|', 'src="http')
-    c = {
+    context = {
         'title': title,
         'content': content,
     }
-    return render_to_response('docs/page.html', c,
-        context_instance=RequestContext(request))
-
-
+    return render(request, 'docs/page.html', context)
