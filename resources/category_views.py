@@ -157,7 +157,7 @@ class CategoryListView(View, MultipleObjectMixin):
     opts = ()
     orders = ()
     order = None
-    rss_view = None
+    rss_view = ''
     redirect = False
     using = 'default'
     paginate_by = 20

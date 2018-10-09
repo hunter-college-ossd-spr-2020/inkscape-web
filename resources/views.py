@@ -28,7 +28,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.contrib.syndication.views import Feed
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.views.generic import DetailView, ListView, DeleteView, CreateView, UpdateView, View
@@ -42,8 +41,12 @@ from .mixins import (
     OwnerDeleteMixin, OwnerCreateMixin, OwnerUpdateMixin,
     OwnerViewMixin, ResourceJSONEncoder,
 )
-from .models import *
-from .forms import *
+from .rss import ListFeed
+from .models import Category, License, Gallery, Resource, Tag
+from .forms import (
+    GalleryForm, GalleryMoveForm,
+    ResourceForm, ResourceBaseForm, ResourceAddForm, ResourcePasteForm, ResourceLinkForm
+)
 
 class GalleryMixin(object):
     """Load up a single gallery from the kwargs"""
@@ -315,20 +318,20 @@ class ResourceList(CategoryListView):
     """
     rss_view = 'resources_rss'
     model = Resource
-    opts = (
+    opts = ( # type: ignore
         ('username', 'user__username'),
         ('team', 'galleries__group__team__slug', False),
         ('gallery_id', 'galleries__id', False),
         ('tags', 'tags__name', False),
     )
-    cats = (
+    cats = ( # type: ignore
         #('media_type', _("Media Type")),
         ('category', _("Media Category"), 'get_categories'),
         ('license', _("License"), 'get_licenses'),
         ('galleries', _("Galleries"), 'get_galleries'),
     )
-    order = '-liked'
-    orders = (
+    order = '-liked' # type: ignore
+    orders = ( # type: ignore
         ('-liked', _('Most Popular')),
         ('-viewed', _('Most Views')),
         ('-downed', _('Most Downloaded')),
@@ -336,10 +339,10 @@ class ResourceList(CategoryListView):
     )
 
     def base_queryset(self):
-        qs = super(ResourceList, self).base_queryset()
+        qset = super(ResourceList, self).base_queryset()
         if not self.request.user.has_perm('moderation.can_moderate'):
-            qs = qs.exclude(is_removed=True)
-        return qs
+            qset = qset.exclude(is_removed=True)
+        return qset
 
     def get_template_names(self):
         if self.get_value('category'):
@@ -353,29 +356,34 @@ class ResourceList(CategoryListView):
 
     @property
     def is_user(self):
-        if not hasattr(self.request, '_is_user'):
+        """Returns True if the user is defined in the request arguments"""
+        if not hasattr(self.request, 'my_is_user'):
             username = self.request.user.username
-            self.request._is_user = self.get_value('username') == username
-        return self.request._is_user
+            self.request.my_is_user = self.get_value('username') == username
+        return self.request.my_is_user
 
     @property
     def in_team(self):
-        if not hasattr(self.request, '_in_team'):
+        """Returns True if the user is in a team"""
+        if not hasattr(self.request, 'my_in_team'):
             if self.request.user.is_authenticated():
                 teams = self.request.user.teams
             else:
                 teams = Team.objects.none()
             slug = self.get_value('team')
-            self.request._in_team = teams.filter(slug=slug).count() == 1
-        return self.request._in_team
+            self.request.my_in_team = teams.filter(slug=slug).count() == 1
+        return self.request.my_in_team
 
     def get_licenses(self):
+        """Return a list of licenses"""
         return License.objects.filter(filterable=True)
 
     def get_categories(self):
+        """Return a list of Categories"""
         return Category.objects.all()
 
     def get_galleries(self):
+        """Return a list of galleries depending on the user/team selection"""
         if 'username' in self.kwargs:
             user = get_object_or_404(User, username=self.kwargs['username'])
             return user.galleries.exclude(status="=")
@@ -388,6 +396,7 @@ class ResourceList(CategoryListView):
         return None
 
     def get_context_data(self, **kwargs):
+        """Add all the meta data together for the template"""
         data = super(ResourceList, self).get_context_data(**kwargs)
         for key in self.kwargs:
             if data.get(key, None) is None:
@@ -403,7 +412,7 @@ class ResourceList(CategoryListView):
             if 'username' not in data or not data['username']:
                 raise Http404("User not found")
             data['object_list'].instance = data['username']
-        
+
         if 'galleries' in data:
             # our options are not yet returning the correct item
             data['galleries'] = get_object_or_404(Gallery, slug=data['galleries'])
@@ -442,13 +451,17 @@ class ResourceList(CategoryListView):
 
 class GalleryView(ResourceList):
     """Allow for a special version of the resource display for galleries"""
-    opts = ResourceList.opts + \
-       (('galleries', 'galleries__slug', False),)
-    cats = (('category', _("Media Category"), 'get_categories'),)
+    opts = ResourceList.opts + (('galleries', 'galleries__slug', False),) # type: ignore
+    cats = (('category', _("Media Category"), 'get_categories'),) # type: ignore
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.limit = 20
+
+    def get_gallery(self):
+        """Get the Gallery in context object"""
+        opts = dict(self.get_value_opts)
+        return get_object_or_404(Gallery, slug=opts['galleries'])
 
     def get_template_names(self):
         return ['resources/resourcegallery_specific.html']
@@ -461,7 +474,7 @@ class GalleryView(ResourceList):
     @property
     def orders(self):
         """Restrict ordering when doing a contest"""
-        gallery = get_object_or_404(Gallery, slug=self.kwargs['galleries'])
+        gallery = self.get_gallery()
         if gallery.is_contest:
             if gallery.is_submitting:
                 return (('-created', _('Created Date')),)
@@ -480,48 +493,38 @@ class ResourcePick(ResourceList):
     def get_template_names(self):
         return ['resources/resource_picker.html']
 
+class ResourceFeed(ListFeed):
+    """A list of resources in an RSS Feed"""
+    list_class = ResourceList
 
-class FeedMixin(Feed):
-    """Feed via xml a list of resources in any of the galleries"""
-    title = _("Gallery Feed")
-    description = "Gallery Resources RSS Feed"
+    @property
+    def title(self):
+        context = self.list.context_data
+        if 'object' in context:
+            return str(context['object'])
+        return _("Resources Feed")
 
-    def get_feed(self, obj, request):
-        self.request = request
-        return super().get_feed(self, request)
+    @property
+    def description(self):
+        context = self.list.context_data
+        if 'object' in context:
+            if hasattr(context['object'], 'desc'):
+                return context['object'].desc
+            elif hasattr(context['object'], 'description'):
+                return context['object'].description
+        return "Resources RSS Feed"
 
-    def lister_view(self):
-        """Returns the category list for this feed (as a view)"""
-        if not hasattr(self, '_lister'):
-            self._lister = self.lister.as_view()(
-                request=self.request, kwargs=self.kwargs, args=self.args)
-        return self._lister
+class GalleryFeed(ListFeed):
+    list_class = GalleryView
+    @property
+    def title(self):
+        """Get the gallery name"""
+        return self.get_gallery().name
 
-    def items(self):
-        """Returns the items for this feed, depends on query"""
-        for item in self.lister_view().get_queryset():
-            if item is not None:
-                if self.query:
-                    if item.object is not None:
-                        yield item.object
-                else:
-                    yield item
-
-    item_link = lambda self, item: item.link
-    item_guid = lambda self, item: '#'+str(item.pk)
-    item_title = lambda self, item: item.name
-    item_pubdate = lambda self, item: item.created
-    item_updateddate = lambda self, item: item.edited
-    item_description = lambda self, item: item.description
-    item_author_name = lambda self, item: str(item.user)
-    item_author_link = lambda self, item: item.user.get_absolute_url()
-
-
-class ResourceFeed(FeedMixin):
-    lister = ResourceList
-
-class GalleryFeed(FeedMixin):
-    lister = GalleryView
+    @property
+    def description(self):
+        """Get the gallery description"""
+        return self.get_gallery().desc or _("Gallery Resources RSS Feed")
 
 class ResourceJson(ResourceList):
     """Take any list of resources, and produce json output"""

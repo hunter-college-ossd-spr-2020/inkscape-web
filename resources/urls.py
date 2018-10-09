@@ -43,7 +43,7 @@ def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
         url_tree(
             r'^=(?P<category>[^\/]+)/',
             url(r'^$', lst.as_view(), name='resources'),
-            #url(r'^rss/$', feed.as_view(), name='resources_rss'),
+            url(r'^rss/$', feed(), name='resources_rss'),
             url(r'^json/$', json.as_view(), name='resources_json'),
             *args)
     ]
