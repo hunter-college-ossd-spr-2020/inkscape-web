@@ -50,9 +50,9 @@ class NewNewsAlert(BaseAlert):
         help_text=_('Limit the news to this language only. Default is all '
             'news languages.'))
 
-    def call(self, sender, instance, **kwargs):
+    def call(self, instance, **kwargs):
         if instance.is_published:
-            return super(NewNewsAlert, self).call(sender, instance=instance, **kwargs)
+            return super(NewNewsAlert, self).call(instance=instance, **kwargs)
         return False
 
     def show_settings_now(self, user):
