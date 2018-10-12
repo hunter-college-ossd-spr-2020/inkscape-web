@@ -170,7 +170,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'django.contrib.sites',
     'django.contrib.auth',
-    'registration',
+    'django_registration',
     'social_django',
     'filer',
     'django.contrib.sessions',
