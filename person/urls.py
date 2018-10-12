@@ -20,7 +20,7 @@
 #
 """Views for both user and group actions and views"""
 
-from registration.backends.default.views import ActivationView as AV, RegistrationView
+from django_registration.backends.activation.views import ActivationView as AV, RegistrationView
 
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
@@ -34,9 +34,9 @@ from inkscape.url_utils import url_tree
 from .views import EditProfile, TeamList, MyProfile, AgreeToCla, Welcome
 from .forms import RegisForm, PasswordForm
 
-AC = TemplateView.as_view(template_name='registration/activation_complete.html')
-RC = TemplateView.as_view(template_name='registration/registration_complete.html')
-RK = TemplateView.as_view(template_name='registration/registration_closed.html')
+AC = TemplateView.as_view(template_name='django_registration/activation_complete.html')
+RC = TemplateView.as_view(template_name='django_registration/registration_complete.html')
+RK = TemplateView.as_view(template_name='django_registration/registration_closed.html')
 RG = RegistrationView.as_view(form_class=RegisForm)
 PWDCONFIRM = r'^(?P<uidb64>[0-9A-Za-z_\-]+?)/(?P<token>.+)/$'
 
@@ -59,9 +59,10 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^register/',
         url(r'^$', RG, name='auth_register'),
-        url(r'^closed/$', RK, name='registration_disallowed'),
-        url(r'^complete/$', RC, name='registration_complete'),
-        url(r'^activate/(?P<activation_key>\w+)/$', AV.as_view(), name='registration_activate'),
-        url(r'^activated/$', AC, name='registration_activation_complete'),
+        url(r'^closed/$', RK, name='django_registration_disallowed'),
+        url(r'^complete/$', RC, name='django_registration_complete'),
+        url(r'^activate/(?P<activation_key>[^\/]+)/$',\
+            AV.as_view(), name='django_registration_activate'),
+        url(r'^activated/$', AC, name='django_registration_activation_complete'),
     ),
 ]

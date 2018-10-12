@@ -4,6 +4,6 @@
 
 {% trans "Please open the following link in your web browser. If the link is split over several lines, you may need to copy it in the address bar." %}
 
-http://{{ site.domain }}{% url 'registration_activate' activation_key=activation_key %}
+http://{{ site.domain }}{% url 'django_registration_activate' activation_key=activation_key %}
 
 {% endfilter%}{% endautoescape %}

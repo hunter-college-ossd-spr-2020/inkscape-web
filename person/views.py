@@ -58,7 +58,7 @@ class MyProfile(NeverCacheMixin, UserMixin, UserDetail):
     pass
   
 class Welcome(UserMixin, TemplateView):
-    template_name = 'registration/welcome.html'
+    template_name = 'django_registration/welcome.html'
     title = _('Welcome')
 
 # ====== FRIENDSHIP VIEWS =========== #

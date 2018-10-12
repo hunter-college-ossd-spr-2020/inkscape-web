@@ -24,7 +24,7 @@ cmsplugin-diff==1.2
 beautifulsoup4==4.6.0
 
 # person - User, login and registration
-django-registration==2.4.1
+django-registration==3.0
 social-auth-app-django==2.1.0
 python3-vote-core==20170329.0
 django-nocaptcha-recaptcha==0.0.20
