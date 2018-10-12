@@ -1,6 +1,7 @@
 {% if is_paginated %}
-{% load i18n %}
-  {% with request.GET.urlencode as getvars %}
+{% load i18n inkscape %}
+  {% with request.GET|querydict_pop:"page" as get %}
+    {% with get.urlencode as getvars %}
   <div class="pagination">
     {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}&{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo; {% trans "previous" %}</a>
@@ -22,5 +23,6 @@
         <span class="disabled next">{% trans "next" %} &rsaquo;&rsaquo;</span>
     {% endif %}
   </div>
+    {% endwith %}
   {% endwith %}
 {% endif %}

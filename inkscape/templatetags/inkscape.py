@@ -45,6 +45,13 @@ def _dt(arg):
                         arg.microsecond, timezone.utc)
     return arg
 
+@register.filter("querydict_pop")
+def kwarg_remove(qdict, item):
+    """Removes a QueryDict item"""
+    qdict = qdict.copy()
+    qdict.pop(item, None)
+    return qdict
+
 @register.filter("placeholder")
 def add_placeholder(form, text=None):
     """Add a placeholder attribute to input widgets"""
