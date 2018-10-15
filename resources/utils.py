@@ -195,10 +195,11 @@ VIDEO_URLS = {
 
 def video_embed(url):
     """Embed the video using known video_urls"""
-    for site_id, regex in VIDEO_URLS.items():
-        match = re.match(regex, url)
-        if match:
-            return {'type': site_id, 'id': match.group('video_id')}
+    if url is not None:
+        for site_id, regex in VIDEO_URLS.items():
+            match = re.match(regex, url)
+            if match:
+                return {'type': site_id, 'id': match.group('video_id')}
     return None
 
 def hash_verify(sig_type, sig, data):
@@ -269,7 +270,7 @@ class FileEx(object):
         if self.mime.is_text() or self.mime.is_xml():
             # GZip magic number for svgz files.
             if lines is not None:
-                return "".join(line for line in self.content.readlines())
+                return "".join(line.decode('utf-8') for line in self.content.readlines())
             return self.content.read().decode('utf-8')
         return "Not text!"
 
