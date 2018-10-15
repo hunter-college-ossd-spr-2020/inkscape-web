@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,17 +17,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Move the election forwards automatically"""
 
-from django.conf import settings
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from elections.models import Election
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Advance Election"
 
-    def handle_noargs(self, **options):
+    @staticmethod
+    def handle(**options):
+        """Handle the call to the election handle"""
         today = now().date()
         for election in Election.objects.exclude(status='F'):
             if election.status == '.' and election.invite_from <= today:
@@ -38,4 +40,3 @@ class Command(NoArgsCommand):
                 election.voting_open()
             elif election.status == 'V' and election.finish_on <= today:
                 election.voting_close()
-
