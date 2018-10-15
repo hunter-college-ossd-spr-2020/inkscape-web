@@ -30,6 +30,7 @@ import os
 import mimetypes
 
 from pygments import highlight, lexers, formatters
+from pygments.util import ClassNotFound
 
 from django.utils.safestring import mark_safe
 from django.conf import settings
@@ -59,12 +60,13 @@ def syntaxer(text, mime):
     formatter = CodeHtmlFormatter(encoding='utf8')
     try:
         lexer = lexers.get_lexer_for_mimetype(str(mime))
-    except:
+    except ClassNotFound:
         try:
             lexer = lexers.guess_lexer(text)
-        except:
+        except ClassNotFound:
             return text
-    return mark_safe(''.join(highlight(text, lexer, formatter)))
+    text_bytes = highlight(text, lexer, formatter)
+    return mark_safe(text_bytes.decode('utf-8'))
 
 def get_range(text):
     """Turns text 1-2 into two integers as their range"""
