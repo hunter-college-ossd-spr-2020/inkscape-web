@@ -25,38 +25,9 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/../
 
-if [ ! -f "data/deployment" ]; then
-    echo "Can not deploy a server instance."
-    echo "the server information has not been set."
-    exit 1
-fi
-
 if [ "$(id -u)" != "0" ]; then
     echo "This script must be run as root" 1>&2
     exit 5
-fi
-
-TEST=$@ #"--dry-run"
-SOURCE="/tmp/code"
-source "data/deployment"
-
-if [ ! -d "$TARGET" ]; then
-    echo "Target doesn't exist: $TARGET"
-    exit 2
-fi
-
-EX="$TARGET/keep-local.conf"
-if [ ! -f "$EX" ]; then
-    echo "!!!!!!!!!"
-    echo "!"
-    echo "! Excludes file not set, deployment will delete all data every time!"
-    echo "!"
-    echo "!!!!!!!!!"
-fi
-
-if [ ! -d "$SOURCE" ]; then
-    SOURCE="./"
-    exit 1
 fi
 
 SETTINGS="inkscape/settings.py"
@@ -65,24 +36,16 @@ REQUIRES="requirements.txt"
 PYTHON="./pythonenv/bin/python"
 PIP="./pythonenv/bin/pip"
 
-cd $SOURCE
-
 # Instead the git branch is considered to be set up correctly
 git pull
-if [ -d $TARGET ]; then
-  if [[ $? == 0 ]]; then
+if [[ $? == 0 ]]; then
     echo "New revisions found, updating!"
-    rsync -rtuv $TEST --delete --exclude-from="$EX" . $TARGET
-    rsync -rtuv $TEST data/ $TARGET/data
-    git log -1 --date=local --format="%cd (%h)" > $TARGET/data/revision
-    git log --format="------------------%n%nAUTHOR:%aN%nTIME:%at%nEMAIL:%aE%n%h : %s%n%aD%n" > $TARGET/data/revision.log # I'm not sure why we needed to prune history
-  fi
+    git log -1 --date=local --format="%cd (%h)" > data/revision
+    git log --format="------------------%n%nAUTHOR:%aN%nTIME:%at%nEMAIL:%aE%n%h : %s%n%aD%n" > data/revision.log # I'm not sure why we needed to prune history
 fi
-
-cd $TARGET
 
 ./utils/update
 
 ./utils/manage clear_fastly_cache
 
-touch ./data/wsgi.conf
+systemctl restart inkscape.uwsgi.service
