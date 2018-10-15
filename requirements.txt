@@ -18,7 +18,7 @@ djangocms-text-ckeditor==3.6.0
 cmsplugin-objects==1.0
 cmsplugin-search==0.8.0
 cmsplugin-alerts==1.2
-cmsplugin-diff==1.2
+cmsplugin-diff==1.2.1
 
 # download_remote_images command
 beautifulsoup4==4.6.0
