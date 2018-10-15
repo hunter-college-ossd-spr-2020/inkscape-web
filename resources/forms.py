@@ -324,7 +324,7 @@ class ResourceBaseForm(ModelForm):
             if self.cleaned_data['comment'] and obj.desc:
                 obj.desc = obj.desc + "\n---\n" + self.cleaned_data['comment']
 
-        obj.save(commit)
+        obj.save()
         obj.tags = self.clean_tags()
         if self.gallery is not None:
             self.gallery.items.add(obj)
