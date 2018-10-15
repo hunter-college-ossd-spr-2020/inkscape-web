@@ -143,9 +143,12 @@ class FastlyCache(object):
             domain = get_current_site(None).domain
             location = url.lstrip('/')
 
+        var = (url, domain, location)
         if self.api is None:
-            var = (url, domain, location)
             sys.stderr.write("No-cache: purging %s -> %s/%s (ignored)\n" % var)
             return False
 
-        return self.api.purge_url(domain, '/' + location)
+        try:
+            return self.api.purge_url(domain, '/' + location)
+        except Exception:
+            sys.stderr.write("Error: purging %s -> %s/%s (ignored)\n" % var)
