@@ -253,11 +253,11 @@ class TrackCacheMiddleware(BaseMiddleware):
         return response
 
 
-@receiver(signals.post_delete)
+#@receiver(signals.post_delete)
 def object_deleted(sender, instance, **kw):
     TrackCacheMiddleware.invalidate(instance)
 
-@receiver(signals.post_save)
+#@receiver(signals.post_save)
 def object_saved(sender, instance, created=False, **kw):
     """Invalidate page caches for an object if not 'updating_fields'"""
     model = type(instance).__name__
