@@ -88,7 +88,6 @@ DESIGN_ROOT = os.path.join(PROJECT_PATH, 'data', 'static', 'design')
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'data', 'media', '')
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'data', 'static')
 FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'data', 'fixtures'),)
-IRCBOT_PID = os.path.join(PROJECT_PATH, 'data', 'ircbot.pid')
 
 STATICFILES_DIRS = []
 LOCALE_PATHS = (
@@ -205,7 +204,6 @@ INSTALLED_APPS = (
     'django_comments',
     'forums',
     'alerts',
-    'ircbot',
     'markdown_deux',
 )
 
@@ -222,7 +220,6 @@ TRANSLATED_APPS = (
     'forums',
     'haystack',
     'inkscape',
-    'ircbot',
     'moderation',
     'person',
     'elections',
@@ -352,7 +349,6 @@ OPENID_AX_PROVIDER_MAP = {
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 
 GEOIP_PATH = os.path.join(PROJECT_PATH, 'data', 'geoip')
-IRC_LOGS = os.path.join(PROJECT_PATH, 'data', 'irc')
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 

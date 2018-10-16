@@ -24,8 +24,9 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.contrib import admin
+from django.views.generic import TemplateView
 
-from .views import ContactUs, ContactOk, SearchView, Authors, Errors, Error
+from .views import ContactUs, ContactOk, SearchView, Authors
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^social/', include('social_django.urls', namespace='social')),
@@ -37,7 +38,6 @@ urlpatterns += i18n_patterns(
     url(r'^contact/us/$', ContactUs.as_view(), name='contact'),
     url(r'^contact/ok/$', ContactOk.as_view(), name='contact.ok'),
     url(r'^search/$', SearchView(), name='search'),
-    url(r'^error/$', Errors.as_view(), name='errors'),
     url(r'^credits/$', Authors.as_view(), name='authors'),
     url(r'^admin/lookups/', include('ajax_select.urls')),
     url(r'^admin/', include(admin.site.urls)),
@@ -58,8 +58,9 @@ urlpatterns += i18n_patterns(
 )
 
 for e in ('403', '404', '500'):
-    locals()['handler'+e] = Error.as_error(e)
-    urlpatterns.append(url('^error/%s/$' % e, Error.as_error(e)))
+    view = TemplateView.as_view(template_name='error/{}.html'.format(e))
+    locals()['handler'+e] = view
+    urlpatterns.append(url('^error/%s/$' % e, view))
 
 if settings.ENABLE_DEBUG_TOOLBAR:
     import debug_toolbar

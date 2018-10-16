@@ -5,7 +5,6 @@
 
 {% block content %}
   <div class="errtext">
-    <img src="{% static "images/" %}{{ status }}.svg" title="{{ status }} {{ title }}"/>
     {% block "error-msg" %}{% endblock %}
   </div>
 {% endblock %}

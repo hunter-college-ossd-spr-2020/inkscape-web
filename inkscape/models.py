@@ -29,41 +29,6 @@ from django.conf import settings
 
 from .utils import ReplaceStore, URLFile
 
-class ErrorLog(Model):
-    uri    = CharField(max_length=255, db_index=True)
-    status = IntegerField(db_index=True)
-    count  = IntegerField(default=0)
-    added  = DateTimeField(auto_now=True, db_index=True)
-
-    class Meta:
-        ordering = ('-count',)
-
-    def __str__(self):
-        return "%s (%d)" % (self.uri, self.status)
-
-    def add(self):
-        self.count += 1
-        self.save()
-
-class HeartBeat(Model):
-    """
-    Track processes, updates and other items happening behind the scenes.
-    """
-    name = CharField(max_length=128, db_index=True, unique=True)
-    status = IntegerField(default=0)
-    error = TextField()
-
-    beats = IntegerField(default=1)
-    created = DateTimeField(auto_now_add=True)
-    updated = DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, **kw):
-        self.beats += 1
-        super(HeartBeat, self).save(**kw)
-
 class RemoteImage(Model):
     """
     When http images are included in parts of the website, this model will
@@ -94,8 +59,6 @@ class RemoteImage(Model):
         return super(RemoteImage, self).save(**kw)
 
 
-# We could add this to middleware.py, but it's getting a bit full
-# and this file is empty enough that it won't bother anyone.
 class UserOnErrorMiddleware(object):
     """Add a link to the user in errors (if possible)"""
     cookie_key = getattr(settings, 'SESSION_COOKIE_NAME', None)

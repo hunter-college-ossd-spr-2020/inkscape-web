@@ -1,7 +1,8 @@
 {% extends "error/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block "error-msg" %}
+  <img src="{% static "images/404.svg" %}" title="404 {{ title }}"/>
   <h1>{% block title %}{% trans "Page Not Found" %}{% endblock %}</h1>
   {% blocktrans trimmed %}
     <p>Couldn't find what you were looking for.</p>

@@ -1,7 +1,7 @@
 #
 # Copyright 2016, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,16 +17,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Some core views for the inkscape website"""
 
 __all__ = (
-  'ContactOk', 'ContactUs', 'Errors', 'Error',
-  'Robots', 'SearchView', 'Authors',
+    'ContactOk', 'ContactUs',
+    'Robots', 'SearchView', 'Authors',
 )
 from collections import defaultdict
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import TemplateView, FormView, ListView
+from django.views.generic import TemplateView, FormView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.admin.models import LogEntry
 
@@ -34,14 +35,13 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet, SQ
+from haystack.query import SearchQuerySet
 from haystack.views import SearchView as BaseView
 
 from cms.utils import get_language_from_request
 
 from .authors import CODERS, TRANSLATORS, DOCUMENTORS
 from .forms import FeedbackForm
-from .models import ErrorLog
 
 class ContactOk(TemplateView):
     title = _('Contact Inkscape')
@@ -80,36 +80,6 @@ class ContactUs(FormView):
 class Robots(TemplateView):
     template_name = 'robots.txt'
     content_type = 'text/plain'
-
-class Errors(ListView):
-    template_name = 'error/list.html'
-    title = _('All Website Errors')
-    model = ErrorLog
-
-class Error(TemplateView):
-    @classmethod
-    def as_error(cls, status):
-        view = cls.as_view(template_name='error/%s.html' % status)
-        def _inner(request):
-            response = view(request, status=int(status))
-            if hasattr(response, 'render'):
-                response.render()
-            return response
-        return _inner
-
-    def post(self, request, **kw):
-        return self.get(request, **kw)
-
-    def get(self, request, **kw):
-        context = self.get_context_data(**kw)
-        if not settings.DEBUG or kw['status'] != 404:
-            try:
-                path = request.get_full_path()
-                ErrorLog.objects.get_or_create(uri=path, **kw)[0].add()
-            except:
-                pass
-        return self.render_to_response(context, **kw)
-
 
 class SearchView(BaseView):
     """Restrict the search to the selected language only"""
