@@ -64,22 +64,22 @@ def delete(field=None, row=None, **kwargs):
     if not field:
         # Delete model (whole entry)
         raise DeleteValue(kwargs['item'])
-    if row.has_key(field):
+    if field in row:
         # Delete field
-        row.pop(field)
+        row.pop(field, None)
         return True
     return False
 
 def set_to(field, r, where=None, value=None, row=None, **kwargs):
     if where and row[where] != value:
         return False
-    if row.has_key(field) and row[field] != r:
+    if field in row and row[field] != r:
         row[field] = r
         return True
     return False
 
 def add_to(field, r, row, **kwargs):
-    if not row.has_key(field):
+    if not field in row:
         row[field] = r
         return True
     return False
@@ -90,7 +90,7 @@ def rename(field=None, to=None, row=None, **kwargs):
         kwargs['item']['model'] = field
         return True
 
-    if row.has_key(field):
+    if field in row:
         # Rename field
         row[to] = row.pop(field)
         return True
