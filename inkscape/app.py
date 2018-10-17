@@ -47,6 +47,9 @@ class InkscapeConfig(AppConfig):
             if language is None:
                 language = get_current_language()
 
+            if not self.pk or not language:
+                return slow_url(self, language=language, fallback=fallback)
+
             key = "{:d}:{:s}".format(self.pk, language)
             result = InkscapeConfig.cache.get(key)
             if not result:
