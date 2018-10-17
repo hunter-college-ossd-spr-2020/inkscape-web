@@ -371,7 +371,8 @@ SILENCED_SYSTEM_CHECKS = ["1_6.W002"]
 
 ERROR_RATE_LIMIT = 300 # 5 minutes
 
-ERROR_FILE = os.path.join(PROJECT_PATH, 'data', 'logs', 'django.log')
+ERROR_ROOT = os.path.join(PROJECT_PATH, 'data', 'logs')
+ERROR_FILE = os.path.join(ERROR_ROOT, 'django.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -460,3 +461,11 @@ if ENABLE_DEBUG_TOOLBAR:
     if ENABLE_PYMPLER_TOOLBAR:
         INSTALLED_APPS += ('pympler',)
         DEBUG_TOOLBAR_PANELS += ('pympler.panels.MemoryPanel',)
+
+
+import logging
+for name, value in locals().copy().items():
+    if name.endswith('_ROOT') and value.startswith(PROJECT_PATH):
+        if not os.path.exists(value):
+            os.makedirs(value)
+            logging.warning("Making {}: {}".format(name, value))
