@@ -54,22 +54,22 @@ class Error(Model):
 
     def get_traceback(self):
         """Return the traceback as a structured object"""
+        def pkg(item, cls, filename):
+            item['pkg'], item['file'] = filename.split('/', 1)
+            item['class'] = cls
+
         for tbk in json.loads(self.traceback):
             if 'site-packages' in tbk['fn']:
                 fnm = tbk['fn'].split('site-packages/')[-1]
-                tbk['pkg'], tbk['file'] = fnm.split('/', 1)
-                if 'pythonenv' in tbk['fn']:
-                    tbk['class'] = 'env'
-                else:
-                    tbk['class'] = 'sys'
+                cls = 'env' if 'pythonenv' in tbk['fn'] else 'sys'
+                pkg(tbk, cls, fnm)
+            elif 'python3.6' in tbk['fn']:
+                pkg(tbk, 'sys', tbk['fn'].split('python3.6/')[-1])
             elif settings.PROJECT_PATH in tbk['fn']:
-                tbk['class'] = 'web'
                 fnm = tbk['fn'].replace(settings.PROJECT_PATH, '')
-                tbk['pkg'], tbk['file'] = fnm.split('/', 1)
+                pkg(tbk, 'web', fnm)
             elif tbk['fn'].startswith('./'):
-                tbk['class'] = 'web'
-                fnm = tbk['fn'][2:]
-                tbk['pkg'], tbk['file'] = fnm.split('/', 1)
+                pkg(tbk, 'web', tbk['fn'][2:])
             else:
                 tbk['pkg'] = 'unknown'
                 tbk['class'] = 'unknown'
