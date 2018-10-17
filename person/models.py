@@ -1,7 +1,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,12 +17,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Customise the user model"""
 
 import os
-from datetime import datetime
+
+from datetime import timedelta
 
 from django.conf import settings
-from django.db.models import *
+from django.db.models import (
+    F, Q, QuerySet, Max, Model, Manager, TextField, CharField, URLField,
+    DateTimeField, BooleanField, IntegerField, ForeignKey, SlugField,
+    ImageField,
+)
+from django.utils.timezone import now
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 
@@ -33,7 +40,7 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.sessions.models import Session
 
-from django.contrib.auth.models import Group, AbstractUser
+from django.contrib.auth.models import Group, AbstractUser, UserManager, Permission
 from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True)
@@ -48,6 +55,15 @@ def linked_users_only(qs, *rels):
         for field in ('photo', 'bio', 'gpg_key', 'last_seen', 'website'):
             only.append(rel + '__' + field)
     return qs.select_related(*rels).defer(*only)
+
+class PersonManager(UserManager):
+    """Overwrite the creation functions because we customise is_staff"""
+    def _create_user(self, username, email, password, **extra_fields):
+        add_is_staff = extra_fields.pop('is_staff', False)
+        user = super()._create_user(username, email, password, **extra_fields)
+        if add_is_staff:
+            user.user_permissions.add(Permission.objects.get(codename='is_staff'))
+        return user
 
 class User(AbstractUser):
     bio   = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
@@ -79,6 +95,8 @@ class User(AbstractUser):
     # Replaces is_staff from the parent abstractuser
     is_admin = BooleanField(_('staff status'), default=False, db_column='is_staff',
       help_text=_('Designates whether the user can log into this admin site.'))
+
+    objects = PersonManager()
 
     @property
     def is_staff(self):
@@ -405,17 +423,18 @@ class Team(Model):
         obj, created = self.memberships.update_or_create(user=user, defaults=kw)
         return obj, created
 
-    def expire_if_needed(self, dt):
+    def expire_if_needed(self, dtm):
+        """Expire any members who have expired from this team"""
         delta = timedelta(days=self.auto_expire)
-        for membership in team.members:
+        for membership in self.members:
             if membership.joined + delta < now():
                 self.update_membership(membership.user, expired=now(), removed_by=None)
                 yield membership.user
 
-    def warn_if_needed(self, dt, days):
-        delta = timedelta(days=team.auto_expire - days)
-        for membership in team.members:
-            if (membership.joined + warn_delta).date == now().date:
+    def warn_if_needed(self, dtm, days):
+        delta = timedelta(days=self.auto_expire - days)
+        for membership in self.members:
+            if (membership.joined + delta).date == now().date:
                 # XXX Send warning email
                 yield membership.user
 
@@ -430,4 +449,3 @@ def get_team_url(self):
     except Team.DoesNotExist:
         return '/'
 Group.get_absolute_url = get_team_url
-
