@@ -148,6 +148,7 @@ def update_cms(field, row, **kwargs):
 
 
 UPDATES = OrderedDict([
+  ('sites.site', ()),
   ('cms.treenode', ()),
   ('cms.page', (
     [update_cms, 'template'],
@@ -286,7 +287,7 @@ def update(content, updates):
 
     for item in content:
         model = item['model']
-        item['fields'] = RowObject(item['pk'], item['fields'])
+        item['fields'] = RowObject(item.get('pk', None), item['fields'])
         for up in updates.get(model, ()):
             kwargs = dict(row=item['fields'], item=item, model=model)
             try:
