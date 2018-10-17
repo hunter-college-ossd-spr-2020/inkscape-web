@@ -1,8 +1,11 @@
-{% extends "base.html" %}
+{% extends "admin/index.html" %}
 {% load i18n inkscape %}
 
-{% block "css" %}{{ block.super }}
+{% block extrastyle %}{{ block.super }}
 <style>
+.dashboard #content {
+  width: 990px;
+}
 .table td {
   text-align: left;
   white-space: nowrap;
@@ -27,9 +30,10 @@
 </style>
 {% endblock %}
 
-{% block content %}
-  <h1>{{ title }}</h1>
+{% block sidebar %}{% endblock %}
 
+{% block content %}
+<div id="content-main">
   <table class="table">
     <tr>
       <th scope="col">Count</th>
@@ -52,4 +56,5 @@
       </tr>
     {% endfor %}
   </table>
+</div>
 {% endblock %}

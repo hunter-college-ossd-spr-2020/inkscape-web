@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "admin/index.html" %}
 {% load i18n inkscape %}
 
-{% block "css" %}{{ block.super }}
+{% block extrastyle %}{{ block.super }}
 <style>
 .traceback {
   background-color: #ffc;
@@ -37,13 +37,15 @@ code {
 .fixed {
   background-color: #ff0;
 }
+.dashboard #content {
+  width: 990px;
+}
 </style>
 {% endblock %}
 
+{% block sidebar %}{% endblock %}
+
 {% block content %}
-  <h1>{{ title }}</h1>
-
-
   <ul>
     {% if object.fixed %}
       <li class="fixed">Fixed {{ object.fixed|timesince }} ago | {{ object.fixed }}</li>
@@ -61,7 +63,7 @@ code {
   <hr/>
   <ul>
     {% for url in object.get_urls %}
-      <li>{{ url }}</li>
+      <li><a href="{{ url }}">{{ url }}</a></li>
     {% endfor %}
   </ul>
   <hr/>
