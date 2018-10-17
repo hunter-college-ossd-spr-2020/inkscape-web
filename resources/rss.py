@@ -68,7 +68,7 @@ class ListFeed(Feed):
                 else:
                     yield item
 
-    item_link = lambda self, item: item().link
+    item_link = lambda self, item: str(item().link)
     item_guid = lambda self, item: '#'+str(item().pk)
     item_title = lambda self, item: item().name
     item_pubdate = lambda self, item: item().created
