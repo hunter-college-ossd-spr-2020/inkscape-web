@@ -148,8 +148,12 @@ def update_cms(field, row, **kwargs):
 
 
 UPDATES = OrderedDict([
-  ('sites.site', ()),
-  ('cms.treenode', ()),
+  ('sites.site', (
+    [set_to, 'domain', 'localhost:8000'],
+  )),
+  ('cms.treenode', (
+    [set_to, 'site', 1],
+  )),
   ('cms.page', (
     [update_cms, 'template'],
     [delete, 'moderator_state'],
