@@ -165,7 +165,7 @@ UPDATES = OrderedDict([
   ('cmsplugin_news.SocialMediaType', (
     [download, 'icon'],
   )),
-  ('djangocms_file.file', (
+  ('filer.file', (
     [download, 'file'],
   )),
   ('djangocms_picture.picture', (
