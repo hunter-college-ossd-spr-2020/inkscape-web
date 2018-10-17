@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n inkscape %}
+
+{% block "css" %}{{ block.super }}
+<style>
+.table td {
+  text-align: left;
+  white-space: nowrap;
+}
+.table td.name {
+  overflow: hidden;
+  background-color: #eee;
+  text-overflow: ellipsis;
+  max-width: 450px;
+}
+.fixed {
+  background-color: #8c0;
+  text-align: center;
+  padding: 5px;
+}
+.tofix a {
+  color: white;
+  background-color: #800;
+  text-align: center;
+  padding: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+
+  <table class="table">
+    <tr>
+      <th scope="col">Count</th>
+      <th scope="col">Name</th>
+      <th scope="col">Started</th>
+      <th scope="col">Ended</th>
+      <th scope="col">Fixed</th>
+    </tr>
+    {% for error in object_list %}
+      <tr>
+        <td>{{ error.count }}</td>
+        <td class="name"><a href="{{ error.get_absolute_url }}">{{ error.name }}</a></td>
+        <td>{{ error.started|date:"M D dS" }} {{ error.started|time:"fA" }}</td>
+        <td title="{{ error.ended|date:"M D dS" }} {{ error.ended|time:"fA" }}">{{ error.ended|timesince }}</td>
+        {% if error.fixed %}
+          <td class="fixed">{{ error.fixed|timesince }}</td>
+        {% else %}
+          <td class="tofix"><a href="{% url "cog:fix" error.traceback_id %}">Mark Fixed</a></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

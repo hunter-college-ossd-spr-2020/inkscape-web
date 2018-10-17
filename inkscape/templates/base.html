@@ -85,6 +85,7 @@
                 {% endif %}
                 {% if request.user.is_staff %}
                   <p><a href="/admin/">{% trans "Administration" %}</a></p>
+                  <p><a href="{% url "cog:errors" %}">{% trans "Site Errors" %}</a></p>
                 {% endif %}
                 <p><a href="{% url "edit_profile" %}">{% trans "My Settings" %}</a></p>
                 <p><a href="{% url "auth_logout" %}?next={{ request.path }}">{% trans "Logout" %}</a></p>

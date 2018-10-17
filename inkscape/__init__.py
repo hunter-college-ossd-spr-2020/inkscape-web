@@ -24,56 +24,56 @@ settings and keys which should /NEVER/ be committed to a repository and it
 seperates out the sys-admin responsibility from the programmer's.
 """
 
-from shutil import copyfile
-
-import logging
 import os
+import logging
+from shutil import copyfile
+from collections import defaultdict
+
+from django.contrib import admin
+from django.contrib.admin import sites
 
 default_app_config = 'inkscape.app.InkscapeConfig'
 BASE_DIR = os.path.dirname(__file__)
 SETTINGS = 'local_settings.py'
 
 try:
-  from .local_settings import *
+    from .local_settings import *
 except ImportError:
-  target = os.path.join(BASE_DIR, SETTINGS)
-  if not os.path.exists(target):
-      for template in (target + '.template', target[:-3] + '.template'):
-          if os.path.exists(template):
-              copyfile(template, target)
-              break
-  try:
-      from .local_settings import *
-  except ImportError:
-      logging.error("No local_settings found in PYTHON_PATH.")
-      exit(3)
+    target = os.path.join(BASE_DIR, SETTINGS)
+    if not os.path.exists(target):
+        for template in (target + '.template', target[:-3] + '.template'):
+            if os.path.exists(template):
+                copyfile(template, target)
+                break
+    try:
+        from .local_settings import *
+    except ImportError:
+        logging.error("No local_settings found in PYTHON_PATH.")
+        exit(3)
 
 
-from django.contrib import admin
-from django.contrib.admin import sites
-from collections import defaultdict
 
 class MyAdminSite(admin.AdminSite):
     merge = {
-      'person': 'auth',
-      'user_sessions': 'auth',
-      'registration': 'auth',
-      'social_auth': 'auth',
-      'cmsplugin_diff': 'cms',
-      'cmsplugin_news': 'cmstabs',
-      'redirects': 'sites',
-      'django_comments': 'forums',
-      'contenttypes': 'sites',
+        'person': 'auth',
+        'user_sessions': 'auth',
+        'registration': 'auth',
+        'social_auth': 'auth',
+        'cmsplugin_diff': 'cms',
+        'cmsplugin_news': 'cmstabs',
+        'redirects': 'sites',
+        'django_comments': 'forums',
+        'contenttypes': 'sites',
     }
     rename = {
-      'auth': 'All Users and Teams',
-      'cms': 'Django CMS',
-      'cmstabs': 'Inkscape CMS Extras',
-      'List': 'E-Mailing Lists',
-      'UserDetails': 'User Profiles',
-      'django_comments': 'Comments',
-      'UserSocialAuth': 'Social Authentications',
-      'TabCategory': 'Tab Categories',
+        'auth': 'All Users and Teams',
+        'cms': 'Django CMS',
+        'cmstabs': 'Inkscape CMS Extras',
+        'List': 'E-Mailing Lists',
+        'UserDetails': 'User Profiles',
+        'django_comments': 'Comments',
+        'UserSocialAuth': 'Social Authentications',
+        'TabCategory': 'Tab Categories',
     }
 
     def index(self, request, **kwargs):
@@ -102,5 +102,3 @@ class MyAdminSite(admin.AdminSite):
 mysite = MyAdminSite()
 admin.site = mysite
 sites.site = mysite
-
-

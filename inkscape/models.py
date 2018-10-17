@@ -23,9 +23,7 @@ Utility models which store data for the whole website's use.
 import urllib
 import hashlib
 
-from django.db.models import Model, CharField, IntegerField, DateTimeField,\
-    FileField, TextField, URLField
-from django.conf import settings
+from django.db.models import Model, CharField, FileField, URLField
 
 from .utils import ReplaceStore, URLFile
 
@@ -57,29 +55,3 @@ class RemoteImage(Model):
                 # Set the local_file to an 'image not found'
                 self.local_file.name = RemoteImage.objects.get(pk=1).local_file.name
         return super(RemoteImage, self).save(**kw)
-
-
-class UserOnErrorMiddleware(object):
-    """Add a link to the user in errors (if possible)"""
-    cookie_key = getattr(settings, 'SESSION_COOKIE_NAME', None)
-
-    def process_exception(self, request, exception):
-        http = ['http', 'https'][request.META.get('HTTPS', 'off') == 'on']
-        server = http + '://' + request.META.get('HTTP_HOST', 'localhost')
-
-        # The database might have disapeared, so we can attempt
-        # a link to the user, but otherwise the query contains the
-        # session id, which is the pk for the admin.
-        if self.cookie_key is not None:
-            pk = request.COOKIES.get(self.cookie_key, None)
-            if pk is not None:
-                url = server + '/admin/user_sessions/session/%(pk)s/'
-                request.META['SESSION_URL'] = url % {'pk': pk}
-        # But try and put a direct link in anyway (if possible)
-        try:
-            if request.user.is_authenticated():
-                url = request.user.get_absolute_url()
-                request.META['USER_URL'] = server + url
-        except:
-            request.META['USER_URL'] = 'Error getting user'
-

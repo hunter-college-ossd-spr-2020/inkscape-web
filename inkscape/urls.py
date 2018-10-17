@@ -41,6 +41,7 @@ urlpatterns += i18n_patterns(
     url(r'^credits/$', Authors.as_view(), name='authors'),
     url(r'^admin/lookups/', include('ajax_select.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^cog/', include('cog.urls', namespace='cog')),
     url(r'^doc/', include('docs.urls')),
     url(r'^projects/', include('projects.urls', namespace='projects')),
     url(r'^forums/', include('forums.urls', namespace='forums')),

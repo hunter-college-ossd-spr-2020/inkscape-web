@@ -120,8 +120,8 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE_CLASSES = (
+    'cog.middleware.UserOnErrorMiddleware',
     'inkscape.middleware.AutoBreadcrumbMiddleware',
-    'inkscape.models.UserOnErrorMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -185,6 +185,7 @@ INSTALLED_APPS = (
     'treebeard',
     'cmsplugin_diff',
     'cms',
+    'cog',
     'menus',
     'sekizai',
     'djangocms_text_ckeditor',
@@ -370,6 +371,7 @@ SILENCED_SYSTEM_CHECKS = ["1_6.W002"]
 
 ERROR_RATE_LIMIT = 300 # 5 minutes
 
+ERROR_FILE = os.path.join(PROJECT_PATH, 'data', 'logs', 'django.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -382,7 +384,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(PROJECT_PATH, 'data', 'logs', 'django.log'),
+            'filename': ERROR_FILE,
             'maxBytes': (2 ** 20) * 5, # 5 MB
             'backupCount': 5,
             'formatter': 'verbose'
@@ -394,7 +396,7 @@ LOGGING = {
     },
     'filters': {
         'ratelimit': {
-            '()': 'inkscape.ratelimit.RateLimitFilter',
+            '()': 'cog.ratelimit.RateLimitFilter',
         }
     },
     'loggers': {
