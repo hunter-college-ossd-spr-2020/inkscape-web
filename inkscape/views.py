@@ -28,6 +28,7 @@ from collections import defaultdict
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, FormView
+from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.admin.models import LogEntry
 
@@ -46,6 +47,12 @@ from .forms import FeedbackForm
 class ContactOk(TemplateView):
     title = _('Contact Inkscape')
     template_name = 'feedback.html'
+
+class RedirectEnglish(RedirectView):
+    """Redirect any page to the given url usually prefixed /en/"""
+    def get_redirect_url(self, url): # pylint: disable=arguments-differ
+        """Redirect to the correct page in English"""
+        return '/' + url
 
 class ContactUs(FormView):
     title = _('Contact Inkscape Website Administrators')

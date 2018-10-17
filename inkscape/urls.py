@@ -26,7 +26,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from .views import ContactUs, ContactOk, SearchView, Authors
+from .views import ContactUs, ContactOk, SearchView, RedirectEnglish, Authors
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^social/', include('social_django.urls', namespace='social')),
@@ -54,8 +54,10 @@ urlpatterns += i18n_patterns(
     url(r'^~(?P<username>[^\/]+)/', include('person.user_urls')),
     url(r'^\*(?P<team>[^\/]+)/', include('person.team_urls')),
     url(r'^user/', include('person.urls')),
+    url(r'^en/(?P<url>.*)$', RedirectEnglish.as_view()),
     url(r'^', include('resources.urls')),
     url(r'^', include('cms.urls')),
+    prefix_default_language=False,
 )
 
 for e in ('403', '404', '500'):
