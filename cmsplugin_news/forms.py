@@ -25,10 +25,7 @@ from __future__ import absolute_import
 
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm
-from django.conf import settings
-from django.contrib.admin import widgets
 
-from cms.plugin_pool import plugin_pool
 from djangocms_text_ckeditor.widgets import TextEditorWidget
 
 from .models import News
@@ -51,12 +48,12 @@ class NewsAdminForm(ModelForm):
         if 'translation_of' in self.fields:
             self.fields['translation_of'].queryset = self.english
 
-        kw = dict(configuration='CKEDITOR_NEWS')
+        kwarg = dict(configuration='CKEDITOR_NEWS')
         if 'excerpt' in self.fields:
-            self.fields['excerpt'].widget = TextEditorWidget(**kw)
+            self.fields['excerpt'].widget = TextEditorWidget(**kwarg)
 
         if 'content' in self.fields:
-            self.fields['content'].widget = TextEditorWidget(**kw)
+            self.fields['content'].widget = TextEditorWidget(**kwarg)
 
 
 class TranslationForm(NewsAdminForm):
@@ -88,4 +85,3 @@ class TranslationForm(NewsAdminForm):
             editor = TextEditorWidget(configuration='CKEDITOR_READONLY')
             text = editor.render(attrs['id'], content, attrs)
             self.fields[key].help_text = self.template % text
-
