@@ -3,6 +3,10 @@
 
 {% block title %}{{ title }} | {% trans "Inkscape Website Administration" %}{% endblock %}
 
+{% block extrahead %}{{ block.super }}
+  <link rel="shortcut icon" href="{% static "images/inkscape-admin-logo.png" %}"/>
+{% endblock %}
+
 {% block branding %}
 <style>
   #site-name a {
