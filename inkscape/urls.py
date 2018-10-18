@@ -54,7 +54,7 @@ urlpatterns += i18n_patterns(
     url(r'^~(?P<username>[^\/]+)/', include('person.user_urls')),
     url(r'^\*(?P<team>[^\/]+)/', include('person.team_urls')),
     url(r'^user/', include('person.urls')),
-    url(r'^en/(?P<url>.*)$', RedirectEnglish.as_view()),
+    url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectEnglish.as_view()),
     url(r'^', include('resources.urls')),
     url(r'^', include('cms.urls')),
     prefix_default_language=False,
