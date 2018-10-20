@@ -31,6 +31,7 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.admin.models import LogEntry
+from django.shortcuts import render
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -100,6 +101,18 @@ class SearchView(BaseView):
         self.searchqueryset = SearchQuerySet().filter(language=language)
         return BaseView.__call__(self, request)
 
+class SearchJson(SearchView):
+    template = "search/search.json"
+
+    def get_context(self):
+        return {
+            'query': self.query,
+            'object_list': self.results[:30],
+        }
+
+    def create_response(self):
+        context = self.get_context()
+        return render(self.request, self.template, context, content_type="application/json")
 
 class Authors(TemplateView):
     """Show a list of authors for the website"""

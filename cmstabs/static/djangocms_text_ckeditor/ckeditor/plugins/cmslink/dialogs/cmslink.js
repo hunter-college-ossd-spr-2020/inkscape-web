@@ -5,6 +5,37 @@
 
 'use strict';
 
+function removeChildren(node) {
+   while (node !== undefined && node.hasChildNodes()) {
+      node.removeChild(node.firstChild);
+   }
+}
+
+function searchFor(textBox, listElem, query) {
+    if(listElem.request) {
+        listElem.request.abort();
+    }
+    var request = new XMLHttpRequest();
+    listElem.request = request;
+
+    if(query.length > 3 && !query.includes('/')) {
+        textBox.classList.add('loading');
+        request.onload = function(result) {
+            var results = JSON.parse(request.responseText)['results'];
+            removeChildren(listElem);
+            results.forEach((result, index) => {
+                var opt = document.createElement("option");
+                opt.textContent = "[" + result['type'] + "] " + result['title'];
+                opt.setAttribute('value', result['url']);
+                listElem.appendChild(opt);
+            });
+            textBox.classList.remove('loading');
+        };
+        request.open("get", "/search/json/?q=" + query, true);
+        request.send();
+    }
+}
+
 ( function() {
 	CKEDITOR.dialog.add( 'cmslink', function( editor ) {
 		var plugin = CKEDITOR.plugins.link,
@@ -45,7 +76,7 @@
 		// Handles the event when the "Type" selection box is changed.
 		var linkTypeChanged = function() {
 				var dialog = this.getDialog(),
-					partIds = [ 'urlOptions', 'anchorOptions', 'emailOptions', 'webpageOptions' ],
+					partIds = [ 'urlOptions', 'anchorOptions', 'emailOptions' ],
 					typeValue = this.getValue(),
 					uploadTab = dialog.definition.getContents( 'upload' ),
 					uploadInitiallyHidden = uploadTab && uploadTab.hidden;
@@ -142,7 +173,6 @@
 						[ linkLang.toUrl, 'url' ],
 						[ linkLang.toAnchor, 'anchor' ],
 						[ linkLang.toEmail, 'email' ],
-						[ 'Web Page Link', 'webpage' ]
 					],
 					onChange: linkTypeChanged,
 					setup: function( data ) {
@@ -156,109 +186,58 @@
 					type: 'vbox',
 					id: 'urlOptions',
 					children: [ {
-						type: 'hbox',
-						widths: [ '25%', '75%' ],
-						children: [ {
-							id: 'protocol',
-							type: 'select',
-							label: commonLang.protocol,
-							'default': 'http://',
-							items: [
-								// Force 'ltr' for protocol names in BIDI. (#5433)
-								[ 'http://\u200E', 'http://' ],
-								[ 'https://\u200E', 'https://' ],
-								[ 'ftp://\u200E', 'ftp://' ],
-								[ 'news://\u200E', 'news://' ],
-								[ linkLang.other, '' ]
-							],
-							setup: function( data ) {
-								if ( data.url )
-									this.setValue( data.url.protocol || '' );
-							},
-							commit: function( data ) {
-								if ( !data.url )
-									data.url = {};
+						    type: 'text',
+						    id: 'url',
+						    label: commonLang.url,
+						    required: true,
+						    onLoad: function() {
+							this.allowOnChange = true;
+						    },
+						    onKeyUp: function() {
+                                                        this.allowOnChange = false;
+							var urlBox = this.getDialog().getContentElement( 'info', 'url' ).getInputElement().$;
+                                                        searchFor(urlBox, this.list, this.getValue());
+                                                        urlBox.focus();
+						    },
+						    validate: function() {
+							var dialog = this.getDialog();
 
-								data.url.protocol = this.getValue();
-							}
-						},
-						{
-							type: 'text',
-							id: 'url',
-							label: commonLang.url,
-							required: true,
-							onLoad: function() {
-								this.allowOnChange = true;
-							},
-							onKeyUp: function() {
-								this.allowOnChange = false;
-								var protocolCmb = this.getDialog().getContentElement( 'info', 'protocol' ),
-									url = this.getValue(),
-									urlOnChangeProtocol = /^(http|https|ftp|news):\/\/(?=.)/i,
-									urlOnChangeTestOther = /^((javascript:)|[#\/\.\?])/i;
+							if ( dialog.getContentElement( 'info', 'linkType' ) && dialog.getValueOf( 'info', 'linkType' ) != 'url' )
+							    return true;
 
-								var protocol = urlOnChangeProtocol.exec( url );
-								if ( protocol ) {
-									this.setValue( url.substr( protocol[ 0 ].length ) );
-									protocolCmb.setValue( protocol[ 0 ].toLowerCase() );
-								} else if ( urlOnChangeTestOther.test( url ) ) {
-									protocolCmb.setValue( '' );
-								}
+							if ( this.getDialog().fakeObj ) // Edit Anchor.
+							    return true;
 
-								this.allowOnChange = true;
-							},
-							onChange: function() {
-								if ( this.allowOnChange ) // Dont't call on dialog load.
-								this.onKeyUp();
-							},
-							validate: function() {
-								var dialog = this.getDialog();
-
-								if ( dialog.getContentElement( 'info', 'linkType' ) && dialog.getValueOf( 'info', 'linkType' ) != 'url' )
-									return true;
-
-								if ( !editor.config.linkJavaScriptLinksAllowed && ( /javascript\:/ ).test( this.getValue() ) ) {
-									alert( commonLang.invalidValue ); // jshint ignore:line
-									return false;
-								}
-
-								if ( this.getDialog().fakeObj ) // Edit Anchor.
-								return true;
-
-								var func = CKEDITOR.dialog.validate.notEmpty( linkLang.noUrl );
-								return func.apply( this );
-							},
-							setup: function( data ) {
-								this.allowOnChange = false;
-								if ( data.url )
-									this.setValue( data.url.url );
-								this.allowOnChange = true;
-
-							},
-							commit: function( data ) {
-								// IE will not trigger the onChange event if the mouse has been used
-								// to carry all the operations #4724
-								this.onChange();
-
-								if ( !data.url )
-									data.url = {};
-
-								data.url.url = this.getValue();
-								this.allowOnChange = false;
-							}
-						} ],
-						setup: function() {
+							var func = CKEDITOR.dialog.validate.notEmpty( linkLang.noUrl );
+							return func.apply( this );
+                                                    },
+						    setup: function( data ) {
 							if ( !this.getDialog().getContentElement( 'info', 'linkType' ) )
 								this.getElement().show();
-						}
-					},
-					{
-						type: 'button',
-						id: 'browse',
-						hidden: 'true',
-						filebrowser: 'info:url',
-						label: commonLang.browseServer
-					} ]
+
+							this.allowOnChange = false;
+							if ( data.url )
+							    this.setValue( data.url.url );
+							this.allowOnChange = true;
+
+							var urlBox = this.getDialog().getContentElement( 'info', 'url' ).getInputElement().$;
+                                                        var listId = urlBox.id + '-list';
+                                                        this.list = document.createElement("datalist");
+                                                        this.list.setAttribute('id', listId);
+                                                        urlBox.parentNode.insertBefore(this.list, urlBox);
+                                                        urlBox.setAttribute('list', listId);
+                                                        urlBox.setAttribute('autocomplete', "off");
+						    },
+						    commit: function( data ) {
+							// IE will not trigger the onChange event if the mouse has been used
+							// to carry all the operations #4724
+							if ( !data.url )
+							    data.url = {};
+
+							data.url.url = this.getValue();
+							this.allowOnChange = false;
+						    }
+						} ],
 				},
 				{
 					type: 'vbox',
@@ -426,44 +405,6 @@
 								data.email = {};
 
 							data.email.body = this.getValue();
-						}
-					} ],
-					setup: function() {
-						if ( !this.getDialog().getContentElement( 'info', 'linkType' ) )
-							this.getElement().hide();
-					}
-				},
-				{
-					type: 'vbox',
-					id: 'webpageOptions',
-					padding: 1,
-					children: [ {
-						type: 'text',
-						id: 'searchBox',
-						label: "Search for Page",
-						required: true,
-						validate: function() {
-							var dialog = this.getDialog();
-
-							if ( !dialog.getContentElement( 'info', 'linkType' ) || dialog.getValueOf( 'info', 'linkType' ) != 'webpage' )
-								return true;
-
-							var func = CKEDITOR.dialog.validate.notEmpty( linkLang.noEmail );
-							return func.apply( this );
-						},
-						setup: function( data ) {
-							if ( data.email )
-								this.setValue( data.email.address );
-
-							var linkType = this.getDialog().getContentElement( 'info', 'linkType' );
-							if ( linkType && linkType.getValue() == 'webpage' )
-								this.select();
-						},
-						commit: function( data ) {
-							if ( !data.email )
-								data.email = {};
-
-							data.search.text = this.getValue();
 						}
 					} ],
 					setup: function() {

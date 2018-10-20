@@ -26,7 +26,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from .views import ContactUs, ContactOk, SearchView, RedirectEnglish, Authors
+from .views import ContactUs, ContactOk, SearchView, SearchJson, RedirectEnglish, Authors
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^social/', include('social_django.urls', namespace='social')),
@@ -38,6 +38,7 @@ urlpatterns += i18n_patterns(
     url(r'^contact/us/$', ContactUs.as_view(), name='contact'),
     url(r'^contact/ok/$', ContactOk.as_view(), name='contact.ok'),
     url(r'^search/$', SearchView(), name='search'),
+    url(r'^search/json/$', SearchJson(), name='search.json'),
     url(r'^credits/$', Authors.as_view(), name='authors'),
     url(r'^admin/lookups/', include('ajax_select.urls')),
     url(r'^admin/', include(admin.site.urls)),

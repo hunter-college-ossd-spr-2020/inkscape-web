@@ -41,7 +41,6 @@
 					// Opera works better with "middle" (even if not perfect)
 					'vertical-align:text-bottom;' +
 				'}';
-
 			// Styles with contents direction awareness.
 			function cssWithDir( dir ) {
 				return template.replace( /%1/g, dir == 'rtl' ? 'right' : 'left' ).replace( /%2/g, 'cke_contents_' + dir );
