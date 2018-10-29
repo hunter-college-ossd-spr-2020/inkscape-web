@@ -190,7 +190,6 @@ INSTALLED_APPS = (
     'sekizai',
     'djangocms_text_ckeditor',
     'djangocms_file',
-    'djangocms_link',
     'cmsplugin_toc',
     'cmsplugin_search',
     'cmsplugin_news',

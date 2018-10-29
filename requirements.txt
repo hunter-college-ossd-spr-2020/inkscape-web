@@ -12,7 +12,6 @@ django-boxed-alerts==1.2.3
 
 # cms
 django-cms==3.5.2
-djangocms-link==2.1.2
 djangocms-file==2.0.2
 djangocms-text-ckeditor==3.6.0
 cmsplugin-objects==1.0
