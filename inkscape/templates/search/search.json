@@ -1,0 +1,12 @@
+{{% load static %}
+  "q": "{{ query }}",
+  "results": [{% for result in object_list %}    {{% if result.model_name == "title" %}
+      "type": "cms",
+      "url": "{{ result.object.page.get_absolute_url }}",
+      "title": "{{ result.object.title }}"{% else %}
+      "type": "news",
+      "url": "{{ result.object.get_absolute_url }}",
+      "title": "{{ result.object }}"{% endif %}
+    }{% if not forloop.last %},{% endif %}
+  {% endfor %}]
+}
