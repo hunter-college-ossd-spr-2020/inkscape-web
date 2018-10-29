@@ -79,6 +79,5 @@ class ModeratorDeletedAlert(EditedAlert):
     def post_send(self, *users, **kw):
         """Delete object after so message can be sent to deleted users."""
         instance = kw['instance']
-        if instance.resolution == False and instance.obj:
+        if instance.resolution is False and instance.obj:
             instance.obj.delete()
-
