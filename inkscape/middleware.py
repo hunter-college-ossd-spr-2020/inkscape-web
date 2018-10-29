@@ -287,7 +287,10 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
     def get_title(self, data):
         """If no title specified in context, use last breadcrumb"""
         if data.get('breadcrumbs', False):
-            return list(data['breadcrumbs'])[-1][-1]
+            try:
+                return list(data['breadcrumbs'])[-1][-1]
+            except Exception: # pylint: disable=broad-except
+                return None
         return None
 
     @to(list)
