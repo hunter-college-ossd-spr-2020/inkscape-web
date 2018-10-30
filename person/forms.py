@@ -64,6 +64,13 @@ class RegisForm(RegistrationForm):
     """Registration form with custom User model and NoReCapture"""
     recaptcha = NoReCaptchaField(label=_("Human Test"))
 
+    def clean_username(self):
+        """Make sure the username isn't already used by someone else"""
+        username = self.cleaned_data['username']
+        if '/' in username:
+            raise ValidationError("Username must not include a forward slash '/'.")
+        return username
+
     class Meta(RegistrationForm.Meta):
         model = User
 
@@ -118,6 +125,8 @@ class UserForm(ModelForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        if '/' in username:
+            raise ValidationError("Username must not include a forward slash '/'.")
         user = User.objects.filter(username=username)
         if user and user[0] != self.instance:
             raise ValidationError('Username already taken')
