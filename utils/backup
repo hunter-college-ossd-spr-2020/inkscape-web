@@ -38,7 +38,7 @@ cd $DEST/cms_db
 $MANAGE dumpdata --natural-foreign --natural-primary sites\
                 cms djangocms_text_ckeditor menus sekizai \
                 djangocms_file filer cmsplugin_image \
-                djangocms_link cmsplugin_news \
+                cmsplugin_news \
                 cmstabs cmsplugin_toc releases \
     | gzip -9 > $DATE
 
