@@ -68,7 +68,7 @@ class RegisForm(RegistrationForm):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
         if '/' in username:
-            raise ValidationError("Username must not include a forward slash '/'.")
+            raise ValidationError(_("Username must not include a forward slash '/'."))
         return username
 
     class Meta(RegistrationForm.Meta):
@@ -118,7 +118,7 @@ class UserForm(ModelForm):
 
         if password1 and password2:
             if password1 != password2:
-                raise ValidationError("Passwords don't match")
+                raise ValidationError(_("Passwords don't match"))
             self.cleaned_data['password'] = password1
         return self.cleaned_data
 
@@ -126,10 +126,10 @@ class UserForm(ModelForm):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
         if '/' in username:
-            raise ValidationError("Username must not include a forward slash '/'.")
+            raise ValidationError(_("Username must not include a forward slash '/'."))
         user = User.objects.filter(username=username)
         if user and user[0] != self.instance:
-            raise ValidationError('Username already taken')
+            raise ValidationError(_("Username already taken"))
         return username
 
     def clean_first_name(self):
