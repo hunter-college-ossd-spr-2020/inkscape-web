@@ -78,6 +78,18 @@
 	</ul>
        {% endif %}
       {% endfor %}
+      {% if projects.count > 1 %}
+        <h2>All Projects</h2>
+	<ul class="ellipses-hidden">
+        {% for project in projects %}
+          <li class="subtle{% if project == object.project %} active{% endif %}">
+            <a{% if project != object.project %} href="{{ project.get_absolute_url }}"{% endif %}>
+                <label>{{ project }}</label>
+            </a>
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

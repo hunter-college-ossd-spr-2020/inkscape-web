@@ -23,27 +23,30 @@ from django.http import Http404
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
 from django.views.generic.base import RedirectView
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from .models import Platform, Release, ReleasePlatform, CACHE, Q
+from .models import Project, Platform, Release, ReleasePlatform, CACHE, Q
 
 class DownloadRedirect(RedirectView):
     """Attempts to redirect the user to the right page for their os"""
     permanent = False
 
     def get_redirect_url(self, *args, **kw):
+        project = self.request.GET.get('project', None)
         language = get_language()
         (family, version, bits) = self.get_os()
         key = slugify('download-%s-%s-%s' % (language, family, str(version)))
+        if project is not None:
+            key += '#' + project
         if bits:
             key += '-%d' % bits
 
         url = CACHE.get(key)
         if not url:
             try:
-                url = self.get_url(family, version, bits)
+                url = self.get_url(project, family, version, bits)
             except Release.DoesNotExist:
                 raise Http404
             CACHE.set(key, url, 2 * 3600) # Two hours
@@ -52,12 +55,18 @@ class DownloadRedirect(RedirectView):
             url += '?os=' + key
         return url
 
-    def get_url(self, family, version, bits=None):
+    def get_url(self, project, family, version, bits=None):
         # A selected release MUST have a release date AND must either
         # have no parent at all, or the parent MUST also have a release date
-        qs = Release.objects.filter(release_date__isnull=False, project__default=True)
-        qs = qs.filter(Q(parent__isnull=True) | Q(parent__release_date__isnull=False))
-        release = qs.exclude(is_prerelease=True).latest()
+        qset = Release.objects.filter(release_date__isnull=False)
+
+        if project is not None:
+            qset = qset.filter(project_id=project)
+        else:
+            qset = qset.filter(project__default=True)
+
+        qset = qset.filter(Q(parent__isnull=True) | Q(parent__release_date__isnull=False))
+        release = qset.exclude(is_prerelease=True).latest()
         platforms = list(release.platforms.for_os(family, version, bits))
 
         if len(platforms) == 1:
@@ -175,6 +184,7 @@ class ReleaseView(DetailView):
         if self.request.GET.get('latest', False):
             data['object'] = selected.latest
 
+        data['projects'] = Project.objects.all()
         data['platforms'] = self.object.platforms.for_level('')
         return data
 

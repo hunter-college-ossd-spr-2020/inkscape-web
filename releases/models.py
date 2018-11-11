@@ -79,6 +79,9 @@ class Project(Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('releases:download') + '?project=' + self.slug
+
 
 class ReleaseQuerySet(QuerySet):
     """Release breadcrumb crontrols"""
