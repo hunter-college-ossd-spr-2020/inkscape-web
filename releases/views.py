@@ -2,7 +2,7 @@
 #
 # Copyright 2014, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class DownloadRedirect(RedirectView):
     def get_url(self, family, version, bits=None):
         # A selected release MUST have a release date AND must either
         # have no parent at all, or the parent MUST also have a release date
-        qs = Release.objects.filter(release_date__isnull=False)
+        qs = Release.objects.filter(release_date__isnull=False, project__default=True)
         qs = qs.filter(Q(parent__isnull=True) | Q(parent__release_date__isnull=False))
         release = qs.exclude(is_prerelease=True).latest()
         platforms = list(release.platforms.for_os(family, version, bits))
@@ -96,11 +96,6 @@ class DownloadRedirect(RedirectView):
         return ('Unknown', None, None)
 
 
-class ReleaseList(ListView):
-    template_name = 'releases/release_detail.html'
-    model = Release
-
-
 class ReleaseView(DetailView):
     cache_tracks = (Release, Platform)
     model = Release
@@ -110,9 +105,13 @@ class ReleaseView(DetailView):
 
     def get_queryset(self):
         from person.models import linked_users_only
-        qs = super(ReleaseView, self).get_queryset()
-        qs = linked_users_only(qs, 'manager', 'reviewer', 'translation_manager', 'bug_manager')
-        return qs
+        qset = super(ReleaseView, self).get_queryset()
+        if 'project' in self.kwargs:
+            qset = qset.filter(project_id=self.kwargs['project'])
+        else:
+            qset = qset.filter(Q(project__isnull=True) | Q(project__default=True))
+        qset = linked_users_only(qset, 'manager', 'reviewer', 'translation_manager', 'bug_manager')
+        return qset
 
     def get_context_data(self, **kwargs):
         data = super(ReleaseView, self).get_context_data(**kwargs)
@@ -213,12 +212,17 @@ class PlatformView(DetailView):
 
 
 class ReleasePlatformView(DetailView):
+    """Veiw a specific platform-release which is a download page"""
     title = _('Download Started')
     model = ReleasePlatform
 
     def get_object(self):
-        return get_object_or_404(self.model,
-            release__version=self.kwargs['version'],
-            platform__codename=self.kwargs['platform']
-          )
+        """Returns the right object given the version, platform and optional projet name"""
+        query = Q(release__version=self.kwargs['version'],
+                  platform__codename=self.kwargs['platform'])
+        if 'project' in self.kwargs:
+            query &= Q(release__project_id=self.kwargs['project'])
+        else:
+            query &= (Q(release__project__isnull=True) | Q(release__project__default=True))
 
+        return get_object_or_404(self.model, query)

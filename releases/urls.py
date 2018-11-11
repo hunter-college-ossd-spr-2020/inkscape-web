@@ -24,15 +24,21 @@ from inkscape.url_utils import url_tree
 
 from .views import DownloadRedirect, ReleaseView, PlatformList, ReleasePlatformView, PlatformView
 
+version_urls = url_tree( # pylint: disable=invalid-name
+    r'^(?P<version>[\w\+\.-]+)/',
+    url('^$', ReleaseView.as_view(), name="release"),
+    url(r'^platforms/$', PlatformList.as_view(), name="platforms"),
+
+    # We don't use url_tree here because .+ competes with /dl/
+    url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
+    url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
+)
+
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', DownloadRedirect.as_view(), name="download"),
     url_tree(
-        r'^(?P<version>[\w\+\.-]+)/',
-        url('^$', ReleaseView.as_view(), name="release"),
-        url(r'^platforms/$', PlatformList.as_view(), name="platforms"),
-
-        # We don't use url_tree here because .+ competes with /dl/
-        url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
-        url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
+        r'(?P<project>[\w\-\.]+)-',
+        version_urls,
     ),
+    version_urls,
 ]

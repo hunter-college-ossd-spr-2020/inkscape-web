@@ -24,36 +24,39 @@ Record and control releases.
 import os
 from collections import defaultdict
 
-from django.db.models import *
+from django.db.models import (
+    Model, SlugField, CharField, TextField, ForeignKey,
+    BooleanField, IntegerField, PositiveIntegerField,
+    DateField, DateTimeField, URLField,
+    QuerySet, Q
+)
 from django.conf import settings
 
 from django.utils.translation import ugettext_lazy as _
-from django.utils.timezone import now
 from django.utils.text import slugify
-
-from django.contrib.contenttypes.models import ContentType
 
 from django.core.cache import caches
 from django.core.urlresolvers import reverse
-from django.core.validators import MaxLengthValidator
 
 from inkscape.fields import ResizedImageField
 from inkscape.templatetags.i18n_fields import OTHER_LANGS, translate_field
 
-null = dict(null=True, blank=True)
-User = settings.AUTH_USER_MODEL
+null = dict(null=True, blank=True) # pylint: disable=invalid-name
+User = settings.AUTH_USER_MODEL # pylint: disable=invalid-name
 
 CACHE = caches['default']
 
-def upload_to(name, w=960, h=300):
-    return dict(null=True, blank=True, upload_to='release/'+name,\
-                  max_height=h, max_width=w)
+def upload_to(name, width=960, height=300):
+    """Quick upload for releases"""
+    return dict(null=True, blank=True,
+                upload_to=os.path.join('release', name),
+                max_height=height, max_width=width)
 
 
 class ReleaseStatus(Model):
     """For non-released (finalised) Releases, what stage are we at"""
     STYLES = (
-      ('blue', _('Blue')),
+        ('blue', _('Blue')),
     )
     name = CharField(max_length=32)
     desc = CharField(_('Description'), max_length=128)
@@ -67,60 +70,82 @@ class ReleaseStatus(Model):
         return self.name
 
 
+class Project(Model):
+    """A project such as Inkscape which has releases"""
+    slug = SlugField(max_length=128, primary_key=True)
+    name = CharField(max_length=128)
+    default = BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+
 class ReleaseQuerySet(QuerySet):
+    """Release breadcrumb crontrols"""
+    breadcrumb_name = lambda self: _("Releases")
+    get_absolute_url = lambda self: reverse('releases:download')
+
     def for_parent(self, parent):
-        pk = parent.parent_id if parent.parent_id else parent.pk
-        return self.filter(Q(parent__isnull=True) | Q(parent_id=pk))
-
-    def breadcrumb_name(self):
-        return _("Releases")
-
-    def get_absolute_url(self):
-        return reverse('releases:download')
-
+        """Get all items that have no parent or are children of the given parent"""
+        pkey = parent.parent_id if parent.parent_id else parent.pk
+        qset = self.filter(Q(parent__isnull=True) | Q(parent_id=pkey))
+        return qset.filter(project_id=parent.project_id)
 
 
 class Release(Model):
     """A release of inkscape"""
+    project = ForeignKey(Project, related_name='releases', **null)
     parent = ForeignKey('self', related_name='children', **null)
-    version = CharField(_('Version'), max_length=16, db_index=True, unique=True)
-    is_prerelease = BooleanField(_('is Pre-Release'), default=False,
-        help_text=_("If set, will indicate that this is a testing pre-release and should not be given to users."))
-    html_desc  = CharField(_('HTML Description'), max_length=255, **null)
-    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
+    version = CharField(_('Version'), max_length=16, db_index=True)
+    is_prerelease = BooleanField(_('is Pre-Release'), default=False, \
+        help_text=_("If set, will indicate that this is a testing "
+                    "pre-release and should not be given to users."))
+    html_desc = CharField(_('HTML Description'), max_length=255, **null)
+    keywords = CharField(_('HTML Keywords'), max_length=255, **null)
 
     release_notes = TextField(_('Release notes'), **null)
-    release_date = DateField(_('Release date'), db_index=True,
-        help_text=_("ONLY set this when THIS release is ready to go. Set pre-release dates on pre-releases and remember, as soon as this is released, it will take over the default redirection and users will start downloading this release."), **null)
-    status = ForeignKey(ReleaseStatus,
-        help_text=_("When release isn't finalised, document if we are in freezing, etc, useful for development."), **null)
+    release_date = DateField(_('Release date'), db_index=True, \
+        help_text=_("ONLY set this when THIS release is ready to go. Set "
+                    "pre-release dates on pre-releases and remember, as s"
+                    "oon as this is released, it will take over the defau"
+                    "lt redirection and users will start downloading this"
+                    " release."), **null)
+    status = ForeignKey(ReleaseStatus, \
+        help_text=_("When release isn't finalised, document if we are in f"
+                    "reezing, etc, useful for development."), **null)
 
     edited = DateTimeField(_('Last edited'), auto_now=True)
-    created = DateTimeField(_('Date created'), auto_now_add=True,
-                                                     db_index=True)
+    created = DateTimeField(_('Date created'), auto_now_add=True, db_index=True)
     background = ResizedImageField(**upload_to('background', 960, 360))
 
-    manager = ForeignKey(User, verbose_name=_("Manager"), related_name='releases',
+    manager = ForeignKey(User, verbose_name=_("Manager"), related_name='releases', \
         help_text=_("Looks after the release schedule and release meetings."), **null)
-    reviewer = ForeignKey(User, verbose_name=_("Reviewer"), related_name='rev_releases',
+    reviewer = ForeignKey(User, verbose_name=_("Reviewer"), related_name='rev_releases', \
         help_text=_("Reviewers help to make sure the release is working."), **null)
-    bug_manager = ForeignKey(User, verbose_name=_("Bug Manager"), related_name='bug_releases',
+    bug_manager = ForeignKey(User, verbose_name=_("Bug Manager"), related_name='bug_releases', \
         help_text=_("Manages critical bugs and decides what needs fixing."), **null)
-    translation_manager = ForeignKey(User, verbose_name=_("Translation Manager"), related_name='tr_releases',
-        help_text=_("Translation managers look after all translations for the release."),
-        **null)
+    translation_manager = ForeignKey(User, verbose_name=_("Translation Manager"), \
+        help_text=_("Translation managers look after all translations for the release."), \
+        related_name='tr_releases', **null)
 
     objects = ReleaseQuerySet.as_manager()
 
     class Meta:
-        ordering = '-release_date',
+        ordering = ('-release_date',)
         get_latest_by = 'release_date'
+        unique_together = ('project', 'version')
 
     def __str__(self):
-        return "Inkscape %s" % self.version
+        if self.project:
+            return "{} {}".format(self.project.name, self.version)
+        return self.version
 
     def get_absolute_url(self):
-        return reverse('releases:release', kwargs={'version': self.version})
+        """Return a specific url for this release"""
+        kwargs = {'version': self.version}
+        if self.project_id:
+            kwargs['project'] = self.project_id
+        return reverse('releases:release', kwargs=kwargs)
 
     def breadcrumb_parent(self):
         return self.parent if self.parent else Release.objects.all()
@@ -147,8 +172,8 @@ class ReleaseTranslation(Model):
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
 
-    html_desc     = CharField(_('HTML Description'), max_length=255, **null)
-    keywords      = CharField(_('HTML Keywords'), max_length=255, **null)
+    html_desc = CharField(_('HTML Description'), max_length=255, **null)
+    keywords = CharField(_('HTML Keywords'), max_length=255, **null)
     release_notes = TextField(_('Release notes'))
 
     class Meta:
@@ -157,33 +182,35 @@ class ReleaseTranslation(Model):
 
 class Platform(Model):
     """A list of all platforms we release to"""
-    name       = CharField(_('Name'), max_length=64)
-    desc       = CharField(_('Description'), max_length=255)
-    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
-    parent     = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), **null)
-    manager    = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
-    codename   = CharField(max_length=255, **null)
-    order      = PositiveIntegerField(default=0)
-    instruct   = TextField(_('Instructions'), blank=True, null=True,
+    name = CharField(_('Name'), max_length=64)
+    desc = CharField(_('Description'), max_length=255)
+    keywords = CharField(_('HTML Keywords'), max_length=255, **null)
+    parent = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), **null)
+    manager = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
+    codename = CharField(max_length=255, **null)
+    order = PositiveIntegerField(default=0)
+    instruct = TextField(_('Instructions'), blank=True, null=True,\
         help_text=_("If supplied, this text will appear after the tabs,"
                     " but before the release notes. Will propergate to"
                     " all child platforms that do not have their own."))
 
-    match_family = CharField(max_length=32, db_index=True,
+    match_family = CharField(max_length=32, db_index=True,\
             help_text=_('User agent os match, whole string.'), **null)
-    match_version = CharField(max_length=32, db_index=True,
-            help_text=_('User agent os version partial match, e.g. |10|11| will match both version 10 and version 11, must have pipes at start and end of string.'), **null)
+    match_version = CharField(max_length=32, db_index=True,\
+            help_text=_('User agent os version partial match, e.g. |10|11| '
+                        'will match both version 10 and version 11, must ha'
+                        've pipes at start and end of string.'), **null)
     match_bits = PositiveIntegerField(db_index=True, choices=((32, '32bit'), (64, '64bit')), **null)
 
-    icon       = ResizedImageField(**upload_to('icons', 32, 32))
-    image      = ResizedImageField(**upload_to('icons', 256, 256))
+    icon = ResizedImageField(**upload_to('icons', 32, 32))
+    image = ResizedImageField(**upload_to('icons', 256, 256))
 
-    uuid       = lambda self: slugify(self.name)
-    tab_name   = lambda self: self.name
-    tab_text   = lambda self: self.desc
-    tab_cat    = lambda self: {'icon': self.icon}
-    root       = lambda self: self.ancestors()[-1]
-    depth      = lambda self: len(self.ancestors) - 1
+    uuid = lambda self: slugify(self.name)
+    tab_name = lambda self: self.name
+    tab_text = lambda self: self.desc
+    tab_cat = lambda self: {'icon': self.icon}
+    depth = lambda self: len(self.ancestors) - 1
+    root = lambda self: self.ancestors()[-1]
 
     class Meta:
         ordering = '-order', 'codename'
@@ -243,10 +270,10 @@ class PlatformTranslation(Model):
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
 
-    name       = CharField(_('Name'), max_length=64)
-    desc       = CharField(_('Description'), max_length=255)
-    keywords   = CharField(_('HTML Keywords'), max_length=255, **null)
-    instruct   = TextField(_('Instructions'), blank=True, null=True)
+    name = CharField(_('Name'), max_length=64)
+    desc = CharField(_('Description'), max_length=255)
+    keywords = CharField(_('HTML Keywords'), max_length=255, **null)
+    instruct = TextField(_('Instructions'), blank=True, null=True)
 
     class Meta:
         unique_together = ('platform', 'language')
@@ -313,18 +340,19 @@ class ReleasePlatform(Model):
     def __str__(self):
         return "%s - %s" % (self.release, self.platform)
 
+    def get_url_kwargs(self):
+        kwargs = {'version': self.release.version,
+                  'platform': self.platform.codename}
+        if self.release.project_id:
+            kwargs['project'] = self.release.project_id
+        return kwargs
+
     def get_absolute_url(self):
-        return reverse('releases:platform', kwargs={
-            'version': self.release.version,
-            'platform': self.platform.codename,
-        })
+        return reverse('releases:platform', kwargs=self.get_url_kwargs())
 
     def get_download_url(self):
         """Returns a download link with a thank you"""
-        return reverse('releases:download', kwargs={
-            'version': self.release.version,
-            'platform': self.platform.codename,
-        })
+        return reverse('releases:download', kwargs=self.get_url_kwargs())
 
     def get_resource_url(self):
         """Returns the download url or the resources download url"""
