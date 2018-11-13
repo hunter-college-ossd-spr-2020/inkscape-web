@@ -252,7 +252,7 @@ function setupMenu() {
 
   if(screen.width >= 960) {
     var expectedWidth = $("#menu").parent().width(), currentWidth;
-    var fontSize = 15, minFontSize = 12;
+    var fontSize = 18, minFontSize = 1;
     var paddingSize = 23, paddingFactor = 0.7;
     do {
       $("#menu > li > a").css({
@@ -260,7 +260,13 @@ function setupMenu() {
         'padding-left': Math.round(paddingSize) + 'px',
         'padding-right': Math.round(paddingSize) + 'px'
       });
-      currentWidth = $("#menu").width();
+      // Width of menu is based on the width of it's children, not on the
+      // width of the menu object which is subject to fix width parent and
+      // wrapping issues.
+      currentWidth = 0;
+      $("#menu").children("li").each(function() {
+          currentWidth += $(this).width();
+      });
       fontSize--;
       paddingSize *= paddingFactor;
     } while(currentWidth > expectedWidth && fontSize >= minFontSize);
