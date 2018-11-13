@@ -37,7 +37,7 @@ version_urls = url_tree( # pylint: disable=invalid-name
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', DownloadRedirect.as_view(), name="download"),
     url_tree(
-        r'(?P<project>[\w\-\.]+)-',
+        r'^(?P<project>[\w\-\.]+)-',
         version_urls,
     ),
     version_urls,
