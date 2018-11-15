@@ -1,4 +1,4 @@
-{% load i18n static inkscape %}
+{% load i18n static inkscape svg %}
 
 {% load sekizai_tags %}
 {% addtoblock "css" %}
@@ -65,7 +65,7 @@
             {% endif %}
           {% endif %}
           {% if object.is_available %}
-            <dt>{% trans "Size" %}</dt><dd>{{ object.download.size|filesizeformat }}</dd>
+            <dt>{% trans "Size" %}</dt><dd>{{ object.download|filefieldsize }}</dd>
           {% endif %}
         {% else %}
           <dt>{% trans "Linked From" %}</dt><dd>{{ object.link_from }}</dd>

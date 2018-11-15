@@ -21,10 +21,20 @@
 Provide useful tools for showing svg file in the templates directly.
 """
 
+import os
+
 from xml.dom.minidom import parseString
 from django.template import Library
 
+from django.template.defaultfilters import filesizeformat
+
 register = Library() # pylint: disable=invalid-name
+
+@register.filter("filefieldsize")
+def filefieldsize(field):
+    if field and os.path.isfile(field.path):
+        filesizeformat(field.size)
+    return ''
 
 def coord(num):
     """Turns a string (from svg) into an integer"""
