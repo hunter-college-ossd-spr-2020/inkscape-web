@@ -1,0 +1,46 @@
+{% load i18n comments static inkscape moderator %}
+
+<div>   
+  {% for comment in comment_list %}
+    {% if not comment.moderation.is_deleted %}
+      {% with forloop.counter0|add:1 as comment_counter %}
+      {% url 'view_profile' comment.user.username as profile_url %}
+
+  <div class="panel-body">
+    <a name="c{{ comment.id }}"></a>
+    <ul class="comment">
+      <li class="left clearfix">
+        <span class="comment-img pull-left">
+        <img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> </span>
+        <div class="comment-body clearfix">
+          <div class="header">
+            <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a></strong>
+
+            <small class="pull-right text-muted"><a href="{% get_comment_permalink comment %}">#{{ comment_counter }}</a></small>
+
+            <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
+
+
+            {% if request.user.is_authenticated %}
+              {% if comment|is_flagged:request.user %}
+                <small class="pull-right text-muted" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></small>
+              {% else %}
+                <small class="pull-right text-muted">
+                  <a title="{% trans "Report Comment" %}" class="flag" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
+                  <script>popUpLink('{% trans "Are you sure you want to report this comment?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "");</script> 
+                </small>
+              {% endif %}
+            {% endif %}
+          </div>
+          <p>
+            {{ comment.comment|urlize|linebreaks }}
+          </p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+</div>
