@@ -22,29 +22,25 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import ListView, DetailView, FormView
+from django.views.generic import ListView, DetailView, FormView, TemplateView
 from django.http import Http404
-from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
 
-from django_comments.models import Comment
+from haystack.forms import SearchForm
+from haystack.query import SearchQuerySet
+from haystack.views import SearchView as SearchBase
 
 from .forms import NewTopicForm
-from .mixins import UserRequired
-from .models import Q, ForumGroup, Forum, ForumTopic
+from .mixins import UserRequired, ForumMixin
+from .models import Comment, Forum, ForumTopic
 
-class ForumList(UserRequired, ListView):
+class ForumList(ForumMixin, TemplateView):
     """A list of all available forums"""
-    cache_tracks = [ForumGroup, ForumTopic, Comment]
-    paginate_by = 12
+    template_name = 'forums/forum_list.html'
 
-    def get_queryset(self):
-        language = translation.get_language()
-        return Forum.objects.filter(Q(lang=language) | Q(lang=''))
 
-class TopicList(UserRequired, ListView):
+class TopicList(ForumMixin, ListView):
     """A list of all topics in a forum"""
     paginate_by = 20
 
@@ -54,10 +50,10 @@ class TopicList(UserRequired, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object'] = self.forum
+        context['forum'] = self.forum
         return context
 
-class TopicDetail(UserRequired, DetailView):
+class TopicDetail(DetailView):
     """A single topic view"""
     def get_queryset(self):
         return ForumTopic.objects.filter(forum__slug=self.kwargs['forum'])
@@ -90,3 +86,25 @@ class AddTopic(UserRequired, FormView):
         topic = form.save()
         self.success_url = topic.get_absolute_url()
         return super().form_valid(form)
+
+class CommentSearch(SearchBase):
+    """Restrict the search to the selected language only"""
+    template = "forums/comment_search.html"
+    results_per_page = 10
+    form_class = SearchForm
+
+    def __init__(self, *args, **kwargs):
+        kwargs['searchqueryset'] = SearchQuerySet().models(Comment)
+        super().__init__(*args, **kwargs)
+
+class TopicSearch(SearchBase):
+    """Restrict the search to the selected language only"""
+    template = "forums/topic_search.html"
+    results_per_page = 10
+    form_class = SearchForm
+
+    def __init__(self, *args, **kwargs):
+        kwargs['searchqueryset'] = SearchQuerySet().models(ForumTopic)
+        super().__init__(*args, **kwargs)
+
+

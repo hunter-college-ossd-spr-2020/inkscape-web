@@ -73,7 +73,7 @@ class NewTopicForm(CommentForm):
         subject = self.cleaned_data['subject']
         self.target_object = self.target_object.topics.create(
                 subject=subject, last_posted=now())
-        
+
         self.cleaned_data['name'] = self.user.username
         self.cleaned_data['email'] = self.user.email
 
