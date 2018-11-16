@@ -10,31 +10,45 @@
     <a name="c{{ comment.id }}"></a>
     <ul class="comment">
       <li class="left clearfix">
+        <small class="pull-left text-muted">#{{ comment_counter }}</small>
         <span class="comment-img pull-left">
-        <img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> </span>
+          <img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" />
+        </span>
         <div class="comment-body clearfix">
           <div class="header">
             <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a></strong>
 
-            <small class="pull-right text-muted"><a href="{% get_comment_permalink comment %}">#{{ comment_counter }}</a></small>
-
+            <small class="pull-right text-muted"><a title="{% trans "Link" %}" href="{% get_comment_permalink comment %}"><span class="glyphicon glyphicon-link"></span></a></small>
             <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
-
-
-            {% if request.user.is_authenticated %}
-              {% if comment|is_flagged:request.user %}
-                <small class="pull-right text-muted" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></small>
-              {% else %}
-                <small class="pull-right text-muted">
-                  <a title="{% trans "Report Comment" %}" class="flag" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
-                  <script>popUpLink('{% trans "Are you sure you want to report this comment?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "");</script> 
-                </small>
-              {% endif %}
-            {% endif %}
           </div>
           <p>
             {{ comment.comment|urlize|linebreaks }}
           </p>
+        </div>
+        <div class="footer">
+          <small class="btn-group emoji-bar">
+            {% for flag in comment.flags.all %}
+              {% if flag.flag|length == 1 %}
+                <span class="emoji">{{ flag.flag }}</span>
+              {% endif %}
+            {% endfor %}
+          </small>
+          <small class="btn-group pull-right">
+            <a class="btn btn-sm"><span class="glyphicon glyphicon-edit"></span></a>
+          </small>
+          <small class="btn-group pull-right" style="padding-right: 5px;">
+              <a class="btn btn-sm" href="{# url 'forums:emote' comment.id #}" title="{% trans "Emote" %}">
+                <img class="emoji" src="{% static "emoji/48/1f559.png" %}"/>
+              </a>
+            {% if request.user.is_authenticated %}
+              {% if comment|is_flagged:request.user %}
+                <a class="btn btn-sm" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></a>
+              {% else %}
+                <a class="btn btn-sm" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
+                <script>popUpLink('{% trans "Are you sure you want to report this comment?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "");</script> 
+              {% endif %}
+            {% endif %}
+          </small>
         </div>
       </li>
     </ul>
