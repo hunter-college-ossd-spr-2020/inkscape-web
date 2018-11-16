@@ -424,7 +424,24 @@ ul {
      padding: 0px 10px;
 }
 .input-group textarea {
-  width: 100%;
-  margin: 6px 0px;
-  padding: 10px;
+    width: 100%;
+    margin: 6px 0px;
+    padding: 10px;
+}
+.emoji-selector .dropdown-menu {
+    padding: 4px;
+}
+.emoji-selector .dropdown-menu img {
+    width: 27px;
+    padding: 2px;
+}
+.emoji-selector .dropdown-menu img:hover {
+    background-color: #eee;
+}
+.emoji-bar {
+    padding: 6px 10px 0px;
+    font-size: 18px;
+}
+img.emoji {
+    width: 22px;
 }
