@@ -33,12 +33,11 @@
             <a class="btn btn-sm"><span class="glyphicon glyphicon-edit"></span></a>
           </small>
           <small class="btn-group pull-right" style="padding-right: 5px;">
-            {% if request.user.is_authenticated and 0 %}
+            {% if request.user.is_authenticated %}
               {% if comment|is_flagged:request.user %}
-                <a class="btn btn-sm" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></a>
+                <a class="btn btn-sm disabled" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></a>
               {% else %}
                 <a class="btn btn-sm" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
-                <script>popUpLink('{% trans "Are you sure you want to report this comment?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "");</script> 
               {% endif %}
             {% endif %}
           </small>
