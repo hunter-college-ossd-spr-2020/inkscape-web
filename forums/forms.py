@@ -26,6 +26,7 @@ from django.utils.timezone import now
 
 from django.forms import *
 from django_comments.forms import CommentForm, ContentType, ErrorDict
+from djangocms_text_ckeditor.widgets import TextEditorWidget
 
 from .models import Forum, ForumTopic
 
@@ -33,6 +34,10 @@ class AddCommentForm(CommentForm):
     """This CommentForm replaces the django_comments one, what it provides is
        comment thread locking which is global no matter where the comment is.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget = TextEditorWidget(configuration='CKEDITOR_FORUM')
+
     def is_locked(self, **kw):
         """Return true if this configured comment form is locked"""
         pk = kw.get('object_pk', self.initial['object_pk'])

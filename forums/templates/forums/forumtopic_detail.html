@@ -21,13 +21,12 @@
     </div>
   {% endif %}
 
-  {% with object.comment_subject as comment_subject %}
-    {% with object.get_absolute_url as next %}
-      {% get_forum_comment_list for comment_subject as comment_list %}
+{% get_forum_comment_list for object.comment_subject as comment_list %}
 
-      {% include "forums/comment_list.html" %}
+  {% include "forums/comment_list.html" %}
   
-{% get_comment_form for comment_subject as form %}
+{% get_comment_form for object.comment_subject as comment_form %}
+{{ comment_form.media }}
 
   <div class="panel-footer">
     <div class="input-group">
@@ -41,12 +40,12 @@
           <form action="{% comment_form_target %}" method="POST" class="block">
             <div class="row">
               {% csrf_token %}
-              {{ form.comment }}
-              {{ form.honeypot }}
-              {{ form.content_type }}
-              {{ form.object_pk }}
-              {{ form.timestamp }}
-              {{ form.security_hash }}
+              {{ comment_form.comment }}
+              {{ comment_form.honeypot }}
+              {{ comment_form.content_type }}
+              {{ comment_form.object_pk }}
+              {{ comment_form.timestamp }}
+              {{ comment_form.security_hash }}
               <input type="hidden" name="next" value="{{ request.path }}"/>
             </div>
 
@@ -74,7 +73,4 @@
       {% endif %}
     </div>
   </div>
-
-    {% endwith %}
-  {% endwith %}
 {% endblock %}
