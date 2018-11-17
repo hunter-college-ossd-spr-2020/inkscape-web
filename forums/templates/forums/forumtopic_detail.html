@@ -1,5 +1,5 @@
 {% extends "forums/base.html" %}
-{% load i18n static cached_comments inkscape comments %}
+{% load i18n static forum_comments inkscape comments %}
 
 {% block "header" %}
    <a href="{{ object.forum.get_absolute_url }}"><img src="{{ object.forum.icon.url }}" title="{{ object.form }}"></a>
@@ -23,7 +23,7 @@
 
   {% with object.comment_subject as comment_subject %}
     {% with object.get_absolute_url as next %}
-      {% get_cached_comment_list for comment_subject as comment_list %}
+      {% get_forum_comment_list for comment_subject as comment_list %}
 
       {% include "forums/comment_list.html" %}
   
