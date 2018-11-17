@@ -22,14 +22,16 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import ListView, DetailView, FormView, TemplateView
-from django.http import Http404
+from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView as SearchBase
+
+from django_comments.models import CommentFlag
 
 from .forms import NewTopicForm
 from .mixins import UserRequired, ForumMixin
@@ -108,3 +110,19 @@ class TopicSearch(SearchBase):
         super().__init__(*args, **kwargs)
 
 
+class CommentEmote(UserRequired, UpdateView):
+    """Update an Emote on a comment using a comment flag"""
+    model = CommentFlag
+    fields = ('flag',)
+
+    def form_valid(self, form):
+        """Redirect OR return Empty 200 SUCESS"""
+        self.object = form.save()
+        url = self.request.POST.get('next', self.request.GET.get('next', None))
+        if url:
+            HttpResponseRedirect(url)
+        return HttpResponse('')
+
+    def get_object(self, queryset=None):
+        return self.get_queryset().get_or_create(user=self.request.user,
+                                                 comment_id=self.kwargs['pk'])[0]
