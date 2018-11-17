@@ -55,10 +55,9 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
         span.data('chr', chr);
         dropdown.append(span);
         span.click(function() {
-            var csrftoken = getCookie('csrftoken');
             var span = $(this);
             $.post(post_url, {
-                csrfmiddlewaretoken: getCookie('csrftoken'),
+                csrfmiddlewaretoken: Cookies.get('csrftoken'),
                 flag: $(this).data('chr'),
             }, function() {
                 var bar_span = $('<span class="emoji">'+span.data('chr')+'</span>');
@@ -94,20 +93,3 @@ function clean_emoji(index, elem) {
         }
     }
 }
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-

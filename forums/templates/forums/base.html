@@ -15,8 +15,12 @@
     {% block "js" %}
     <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
     <script type="text/javascript" src="{% static "forums/js/bootstrap.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "forums/js/has_changed.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/js.cookie.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/inkscape.js" %}"></script>
+    <script type="text/javascript" src="{% static "forums/js/forums.js" %}"></script>
     {% endblock %}
+
+    {{ form.media }}
   </head>
   <body data-static="{% static '' %}">
     <div class="container">
