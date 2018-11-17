@@ -21,20 +21,25 @@
 Admin interfaces for comments and forums.
 """
 
+from django_comments.models import CommentFlag
+from django_comments.admin import CommentsAdmin
+
 from django.contrib.admin import ModelAdmin, site, TabularInline
 
-from .models import ForumGroup, Forum, ForumTopic
+from .models import ForumGroup, Forum, ForumTopic, CommentAttachment
 
 site.register(ForumGroup)
 site.register(Forum)
 site.register(ForumTopic)
-
-from django_comments.models import CommentFlag
-from django_comments.admin import CommentsAdmin
 
 class FlagInline(TabularInline):
     raw_id_fields = ('user',)
     model = CommentFlag
     extra = 0
 
-CommentsAdmin.inlines = (FlagInline,)
+class AttachmentsInline(TabularInline):
+    raw_id_fields = ('resource',)
+    model = CommentAttachment
+    extra = 0
+
+CommentsAdmin.inlines = (FlagInline, AttachmentsInline)

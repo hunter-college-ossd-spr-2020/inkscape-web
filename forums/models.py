@@ -46,6 +46,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
 from django.utils.text import slugify
 from django_comments.models import Comment
+from resources.models import Resource
 
 from django.apps import apps
 app = apps.get_app_config('forums')
@@ -325,6 +326,17 @@ class ForumTopic(Model):
                 self.slug = original + '_' + get_random_string(length=5)
 
         return super(ForumTopic, self).save(**kw)
+
+
+class CommentAttachment(Model):
+    """A single attachment on a comment"""
+    resource = ForeignKey(Resource, related_name='comment_hosts')
+    comment = ForeignKey(Comment, related_name='attachments')
+
+    desc = CharField(max_length=128, null=True, blank=True)
+
+    def __str__(self):
+        return "{} attached to comment in the forum.".format(self.resource)
 
 class CommentLink(Model):
     """We extend our comment model with links to sync'd or imported comments"""

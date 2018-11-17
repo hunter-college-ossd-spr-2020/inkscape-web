@@ -539,6 +539,10 @@ class Resource(Model):
             return reverse('pasted_item', args=[str(self.pk)])
         if self.slug:
             return reverse('resource', kwargs={'username': self.user.username, 'slug': self.slug})
+        return self.get_pk_url()
+
+    def get_pk_url(self):
+        """A url that will not hit the database for the user's name"""
         return reverse('resource', kwargs={'pk': self.pk})
 
     @property

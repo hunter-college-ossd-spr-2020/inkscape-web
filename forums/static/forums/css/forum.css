@@ -385,18 +385,12 @@ ul {
     margin: 0;
     padding: 0;
 }
- .comment li {
+ .comment > li {
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 1px dotted #B3A9A9;
 }
- .comment li.left .comment-body {
-    margin-left: 60px;
-}
- .comment li.right .comment-body {
-    margin-right: 60px;
-}
- .comment li .comment-body > p {
+ .comment > li .comment-body > p {
     margin: 10px;
     color: #777777;
 }

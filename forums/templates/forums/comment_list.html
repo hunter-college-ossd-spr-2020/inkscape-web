@@ -18,6 +18,7 @@
           <div class="header">
             <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a></strong>
 
+            <small class="pull-right text-muted"><a href="#" title="Edit"><span class="glyphicon glyphicon-edit"></span></a></small>
             <small class="pull-right text-muted"><a title="{% trans "Link" %}" href="{% get_comment_permalink comment %}"><span class="glyphicon glyphicon-link"></span></a></small>
             <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
           </div>
@@ -29,16 +30,29 @@
           <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
             {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
           </small>
+          {% if comment.attachments.count %}
+            <div class="dropdown pull-right">
+                <a href="#" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Attachments" %}" id="attachments-{{ comment.pk }}"><span class="glyphicon glyphicon-paperclip"></span> {% trans "Attachments" %}</a>
+              <ul class="dropdown-menu" aria-labelledby="attachments-{{ comment.pk }}">
+                {% for attachment in comment.attachments.all %}
+                <li class="dropdown-item">
+                  <a href="{{ attachment.resource.get_pk_url }}">
+                  {% if attachment.resource.mime.is_image %}
+                    <span class="glyphicon glyphicon-picture text-muted"></span>
+                  {% elif attachment.resource.mime.is_video %}
+                    <span class="glyphicon glyphicon-facetime-video text-muted"></span>
+                  {% else %}
+                    <span class="glyphicon glyphicon-file text-muted"></span>
+                  {% endif %}
+
+                      {{ attachment.resource.filename }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
           <small class="btn-group pull-right">
-            <a class="btn btn-sm"><span class="glyphicon glyphicon-edit"></span></a>
-          </small>
-          <small class="btn-group pull-right" style="padding-right: 5px;">
             {% if request.user.is_authenticated %}
-              {% if comment|is_flagged:request.user %}
-                <a class="btn btn-sm disabled" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></a>
-              {% else %}
-                <a class="btn btn-sm" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
-              {% endif %}
+              <a class="btn btn-sm" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
             {% endif %}
           </small>
           <div class="dropdown emoji-selector pull-right">
