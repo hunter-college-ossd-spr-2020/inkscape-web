@@ -58,7 +58,9 @@ class TopicList(ForumMixin, ListView):
 class TopicDetail(DetailView):
     """A single topic view"""
     def get_queryset(self):
-        return ForumTopic.objects.filter(forum__slug=self.kwargs['forum'])
+        return ForumTopic.objects\
+            .filter(forum__slug=self.kwargs['forum'])\
+            .select_related('forum', 'forum__group')
 
 class AddTopic(UserRequired, FormView):
     """

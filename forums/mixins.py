@@ -45,7 +45,7 @@ class ForumMixin(object):
         if not self.request.GET.get('all'):
             language = translation.get_language()
             qset = qset.filter(Q(lang=language) | Q(lang=''))
-        return qset
+        return qset.select_related('group')
 
     def get_context_data(self, **kwargs):
         """Add standard context data elements"""
