@@ -15,35 +15,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-Just like the comments templatetag from django_comments but tracks the
-queryset for the caching middleware to pick up.
+Try to make forum comment requests faster.
 """
 
 from django.template import Library
 from django_comments.templatetags.comments import CommentListNode
 
-from inkscape.middleware import TrackCacheMiddleware
+register = Library() # pylint: disable=invalid-name
 
-register = Library()
-
-class CachedCommentListNode(CommentListNode):
-    def render(self, context):
-        request = context['request']
-        if hasattr(request, 'cache_tracks'):
-            qs = self.comment
-            ctype, object_pk = self.get_target_ctype_pk(context)
-            if object_pk:
-                qset = self.comment_model.objects.filter(
-                      content_type=ctype,
-                      object_pk=str(object_pk),
-                   )
-                request.cache_tracks.append(qset)
-        return super(CachedCommentListNode, self).render(context)
+class ForumCommentListNode(CommentListNode):
+    """Tweaks for forum comment listing"""
+    def get_queryset(self, context):
+        qset = super().get_queryset(context)
+        qset = qset.prefetch_related('flags')
+        return qset
 
 @register.tag
-def get_cached_comment_list(parser, token):
-    """ 
+def get_forum_comment_list(parser, token):
+    """
     See django_comments.templatetags.comments.get_comment_list
     """
-    return CachedCommentListNode.handle_token(parser, token)
-
+    return ForumCommentListNode.handle_token(parser, token)
