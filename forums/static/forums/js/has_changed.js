@@ -1,6 +1,7 @@
 /*
  * Provides a way for javascript to show if links have changed since the last visit.
  */
+var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '2622', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438'];
 
 $(document).ready(function() {
   $(".changes").each(function() {
@@ -24,28 +25,89 @@ $(document).ready(function() {
     }
   });
 
-  var static_dir = $('body').data('static');
-  /* Emojis */
-  $('span.emoji').each(function() {
-    var emoji = $(this).text();
+  $('.emoji-selector').each(function() {
+      var selector = $(this);
+      var a = $('a', this);
+      var pot = $('#bar-' + a.attr('id'));
+      // Move href to data
+      a.data('href', a.attr('href')).attr('href', '#')
+
+      a.click(function() {
+          $('.dropdown-menu', selector).each(function() {
+              if($(this).children().length == 0) {
+                  generate_emoji_pallet($(this), a.data('href'), pot);
+              }
+          });
+          return true;
+      });
+  });
+
+  /* Page Emojis */
+  $('span.emoji').each(clean_emoji);
+});
+
+function generate_emoji_pallet(dropdown, post_url, pot) {
+    for(var i = 0; i < emojis.length; i++) {
+        var code = emojis[i];
+        var chr = String.fromCodePoint(parseInt(code, 16));
+        var span = $('<span class="dropdown-item emoji">'+chr+'</span>');
+        clean_emoji(-1, span);
+        span.data('chr', chr);
+        dropdown.append(span);
+        span.click(function() {
+            var csrftoken = getCookie('csrftoken');
+            var span = $(this);
+            $.post(post_url, {
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+                flag: $(this).data('chr'),
+            }, function() {
+                var bar_span = $('<span class="emoji">'+span.data('chr')+'</span>');
+                pot.append(bar_span);
+                clean_emoji(-1, bar_span);
+            });
+        });
+    }
+}
+
+function clean_emoji(index, elem) {
+    var static_dir = $('body').data('static');
+    var emoji = $(elem).text();
     if(emoji) {
-        $(this).empty();
-        var code = emoji.charCodeAt(0).toString(16);
-        var sibling = $('.code-' + code, $(this).parent());
+        var code = emoji.codePointAt(0).toString(16);
+        var sibling = $('.code-' + code, $(elem).parent());
+
+        $(elem).empty();
 
         if(sibling.length) {
             // Count number of emojis of the same kind
-            $(this).remove();
+            $(elem).remove();
             var count = sibling.data('count') + 1;
             sibling.data('count', count);
             $('i', sibling).text(count).show();
         } else {
             // Create a new emoji of the right kind
-            $(this).data('count', 1);
-            $(this).addClass('code-'+code);
-            $(this).append($('<img src="'+static_dir+'/emoji/48/'+code+'.png" alt="'+emoji+'" class="emoji">'));
-            $(this).append($('<i class="count" style="display: none;">1</i>'));
+            $(elem).data('count', 1);
+            $(elem).addClass('code-'+code);
+            $(elem).append($('<img src="' + static_dir + 'emoji/48/'
+                + code+'.png" alt="'+emoji+'" class="emoji">'));
+            $(elem).append($('<i class="count" style="display: none;">1</i>'));
         }
     }
-  });
-});
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+

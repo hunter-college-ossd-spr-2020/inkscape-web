@@ -445,3 +445,18 @@ ul {
 img.emoji {
     width: 22px;
 }
+span.emoji i {
+    display: inline-block;
+    padding: 1.7px 5px;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    vertical-align: bottom;
+    background-color: #555;
+    border-radius: 10px;
+    opacity: 0.8;
+    margin-left: -10px;
+    margin-bottom: 2px;
+}

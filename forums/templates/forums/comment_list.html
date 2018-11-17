@@ -26,21 +26,14 @@
           </p>
         </div>
         <div class="footer">
-          <small class="btn-group emoji-bar">
-            {% for flag in comment.flags.all %}
-              {% if flag.flag|length == 1 %}
-                <span class="emoji">{{ flag.flag }}</span>
-              {% endif %}
-            {% endfor %}
+          <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
+            {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
           </small>
           <small class="btn-group pull-right">
             <a class="btn btn-sm"><span class="glyphicon glyphicon-edit"></span></a>
           </small>
           <small class="btn-group pull-right" style="padding-right: 5px;">
-              <a class="btn btn-sm" href="{# url 'forums:emote' comment.id #}" title="{% trans "Emote" %}">
-                <img class="emoji" src="{% static "emoji/48/1f559.png" %}"/>
-              </a>
-            {% if request.user.is_authenticated %}
+            {% if request.user.is_authenticated and 0 %}
               {% if comment|is_flagged:request.user %}
                 <a class="btn btn-sm" title="{% trans "You have reported this comment" %}"><span class="glyphicon glyphicon-flag"></span></a>
               {% else %}
@@ -49,6 +42,12 @@
               {% endif %}
             {% endif %}
           </small>
+          <div class="dropdown emoji-selector pull-right">
+            <a class="btn btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'forums:emote' comment.id %}" title="{% trans "Emote" %}" id="emote-{{ comment.pk }}">
+              <img class="emoji" src="{% static "emoji/48/1f600.png" %}"/>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="emote-{{ comment.pk }}"></div>
+          </div>
         </div>
       </li>
     </ul>
