@@ -283,6 +283,7 @@ ul.forum-pagination li {
 }
 .table-forum .text-right {
     width: 1%;
+    white-space: nowrap;
 }
 .view-forum a {
     color: #ff6c60;
@@ -400,7 +401,8 @@ ul {
     color: #777777;
 }
 .comment .comment-img {
-    min-width: 140px;
+    min-width: 130px;
+    min-height: 130px;
 }
 .comment .comment-img img {
     max-width: 120px;
