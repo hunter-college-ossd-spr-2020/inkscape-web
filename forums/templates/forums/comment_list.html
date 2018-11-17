@@ -22,7 +22,7 @@
             <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
           </div>
           <p>
-            {{ comment.comment|urlize|linebreaks }}
+            {{ comment.comment|safe|urlize }}
           </p>
         </div>
         <div class="footer">
