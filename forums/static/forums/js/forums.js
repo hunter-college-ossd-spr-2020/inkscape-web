@@ -44,6 +44,18 @@ $(document).ready(function() {
 
   /* Page Emojis */
   $('span.emoji').each(clean_emoji);
+
+  /* Attachments */
+  $('.check-dropdown .dropdown-menu').each(function() {
+      if(!$(this).children().length) {
+          $(this).parent().hide();
+      }
+  });
+  $('.inline-attachments').each(function() {
+      if(!$(this).children().length) {
+          $(this).hide();
+      }
+  });
 });
 
 function generate_emoji_pallet(dropdown, post_url, pot) {

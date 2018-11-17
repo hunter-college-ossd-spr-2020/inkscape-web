@@ -332,6 +332,7 @@ class CommentAttachment(Model):
     """A single attachment on a comment"""
     resource = ForeignKey(Resource, related_name='comment_hosts')
     comment = ForeignKey(Comment, related_name='attachments')
+    inline = BooleanField(default=False)
 
     desc = CharField(max_length=128, null=True, blank=True)
 
