@@ -469,7 +469,7 @@ if ENABLE_DEBUG_TOOLBAR:
 
 import logging
 for name, value in locals().copy().items():
-    if name.endswith('_ROOT') and value.startswith(PROJECT_PATH):
+    if name.endswith('_ROOT') and value and value.startswith(PROJECT_PATH):
         if not os.path.exists(value):
             os.makedirs(value)
             logging.warning("Making {}: {}".format(name, value))
