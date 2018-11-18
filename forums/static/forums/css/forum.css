@@ -99,6 +99,9 @@ ul.forum-nav li a {
     padding: 0 20px;
     width: 100%;
 }
+.unchanged {
+    font-weight: bold;
+}
 #forum-list .forum-item img {
     width: 22px;
     margin: -2px 2px 0px 0px;

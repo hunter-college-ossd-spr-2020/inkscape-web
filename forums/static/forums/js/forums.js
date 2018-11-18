@@ -6,7 +6,8 @@ var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f
 $(document).ready(function() {
   $(".changes").each(function() {
     primary_key = 'changed-' + $(this).data('pk');
-    localStorage.setItem(primary_key, +new Date);
+    localStorage.setItem(primary_key + '-date', +new Date);
+    localStorage.setItem(primary_key + '-count', $(this).data('count'));
   });
   $(".unchanged").each(function() {
     var target = $(this);
@@ -16,8 +17,9 @@ $(document).ready(function() {
     if(!changed || !target.data('pk')) {
       return;
     }
-    var timestamp = localStorage.getItem(primary_key);
+    var timestamp = localStorage.getItem(primary_key + '-date');
     var lastvisit = new Date(parseInt(timestamp));
+    var count = localStorage.getItem(primary_key + '-count');
 
     if (!timestamp || changed > lastvisit) {
         target.removeClass("unchanged");
