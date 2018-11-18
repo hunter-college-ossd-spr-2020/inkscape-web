@@ -27,27 +27,36 @@ import json
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import (
-    Model, CharField, URLField, IntegerField, ForeignKey
+    Model, Manager, CharField, URLField, IntegerField, ForeignKey
 )
 
-class basic_menu(Model):
+class Menu(Manager):
+    def showLevel(self, language, parent):
+        self.filter(language = language).filter(parent = parent).order_by('order')
+    
+    def showMenu(self, language):
+        menu = "" 
+        for item in showLevel(self, language, NULL):
+            menu += "<li>"
+            menu += "<a href=" + item.url + ">"
+            menu += item.name
+            menu += "</a>"
+            submenu = ""
+            for subitem in showLevel(self, language, item.parent):
+                submenu += "<li>"
+                submenu += "<a href=" + subitem.url + ">"
+                submenu += subitem.name
+                submenu += "</a>"
+                submenu += "</li>"
+            menu += submenu
+            menu += "</li>"
+        return menu
+
+class MenuItem(Model):
     """A collection menus"""
     parent = ForeignKey('self', null=True, blank=True)
     url = URLField(help_text="Location of content.", unique=True)
     name = CharField(max_length=128)
     order = IntegerField(default=0)
     language = CharField(max_length=8, choices=settings.LANGUAGES)
-
-    def add(self, parent, url, name, language):
-        self.parent = parent
-        self.url = url
-        self.order = order
-        self.name = name
-        self.language = language
-        self.save()
-    def remove(self, url):
-        self.filter(url=url).delete()
-        self.save()
-    
-    def showLevel(self, language, parent):
-        self.filter(language = language).filter(parent = parent)
+    objects = Menu()
