@@ -66,7 +66,9 @@ CACHE_PAGE_SETTING = 3600
 
 DEBUG = False
 SITE_ADDRESS = None
-PROJECT_PATH = None
+
+CODE_PATH = os.path.dirname(os.path.abspath(__file__))
+PROJECT_PATH = os.path.abspath(os.path.join(CODE_PATH, ".."))
 
 # Allow realtime updates of pages
 #HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
