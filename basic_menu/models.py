@@ -26,6 +26,8 @@ import json
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+
 from django.db.models import (
     Model, Manager, CharField, URLField, IntegerField, ForeignKey
 )
@@ -35,22 +37,16 @@ class Menu(Manager):
         self.filter(language = language).filter(parent = parent).order_by('order')
     
     def showMenu(self, language):
-        menu = "" 
+        menu = {}
         for item in showLevel(self, language, NULL):
-            menu += "<li>"
-            menu += "<a href=" + item.url + ">"
-            menu += item.name
-            menu += "</a>"
-            submenu = ""
-            for subitem in showLevel(self, language, item.parent):
-                submenu += "<li>"
-                submenu += "<a href=" + subitem.url + ">"
-                submenu += subitem.name
-                submenu += "</a>"
-                submenu += "</li>"
-            menu += submenu
-            menu += "</li>"
-        return menu
+            submenu = {}
+            for subitem in showLevel(self, language, item):
+                submenu[url] = subitem.url
+                submenu[name] = subitem.name
+            menu[url] = item.url
+            menu[name] = item.name
+            menu[sumenu] = submenu
+        return render_to_string('menu.html', menu)
 
 class MenuItem(Model):
     """A collection menus"""
