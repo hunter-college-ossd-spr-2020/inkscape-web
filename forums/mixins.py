@@ -27,9 +27,17 @@ from django.utils import translation
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.utils.decorators import method_decorator, decorator_from_middleware
 
+from .middleware import RecentUsersMiddleware
 from .models import Forum
+
+class UserVisit(object):
+    """Record that a user visited this page"""
+    @decorator_from_middleware(RecentUsersMiddleware)
+    def dispatch(self, request, *args, **kwargs):
+        """Empty dispatch for running middleware decorator"""
+        return super().dispatch(request, *args, **kwargs)
 
 class UserRequired(object):
     """Only allow a logged in user for flagging"""

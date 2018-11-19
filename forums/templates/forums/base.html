@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n static inkscape %}
+{% load i18n static inkscape extras %}
 <html>
   <head>
     <title>{% block title %}{{ title|default:"Talk Freely" }}{% endblock %} - {% trans "Inkscape Forum" %}</title>
@@ -48,16 +48,29 @@
           </ul>
           {% endfor %}
 
+          {% if visitors %}
           <ul class="nav nav-pills nav-stacked labels-info" id="users-online">
             <li>
               <h4>Online</h4>
             </li>
-            {% for person in online %}
+            {% static "forums/images/user.svg" as default_photo %}
             <li>
-              <a href="#">{{ person }}</a>
-            </li>
+            {% for pk, visitor in visitors.items reversed %}
+              {% if pk == request.user.pk %}
+              <a  class="me" href="{% url 'view_profile' visitor.username %}">
+                <img src="{{ visitor.photo_url|default:default_photo }}"/>
+                <span>{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }}</span>
+              </a>
+              <li>
+              {% else %}
+              <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}">
+                <img src="{{ visitor.photo_url|default:default_photo }}"/>
+              </a>
+              {% endif %}
             {% endfor %}
+            </li>
           </ul>
+          {% endif %}
         </aside>
         {% endblock %}
         <aside class="lg-side">

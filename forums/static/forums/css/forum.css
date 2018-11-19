@@ -477,3 +477,29 @@ span.emoji i {
     max-width: 90px;
     max-height: 90px;
 }
+/* Users online palette */
+#users-online {
+    padding: 8px;
+}
+#users-online li {
+}
+#users-online li a.me {
+    border-bottom: 1px solid #aaa;
+    display: block;
+    height: initial;
+    width: initial;
+    padding-bottom: 8px;
+    margin-bottom: 5px;
+}
+#users-online li a {
+    display: inline-block;
+    padding: 4px;
+    height: 48px;
+    width: 48px;
+}
+#users-online li img {
+    border: 1px solid #eee;
+    max-width: 48px;
+    max-height: 48px;
+    border-radius: 6px;
+}

@@ -34,15 +34,15 @@ from haystack.views import SearchView as SearchBase
 from django_comments.models import CommentFlag
 
 from .forms import NewTopicForm
-from .mixins import UserRequired, ForumMixin
+from .mixins import UserVisit, UserRequired, ForumMixin
 from .models import Comment, Forum, ForumTopic
 
-class ForumList(ForumMixin, TemplateView):
+class ForumList(UserVisit, ForumMixin, TemplateView):
     """A list of all available forums"""
     template_name = 'forums/forum_list.html'
 
 
-class TopicList(ForumMixin, ListView):
+class TopicList(UserVisit, ForumMixin, ListView):
     """A list of all topics in a forum"""
     paginate_by = 20
 
@@ -55,7 +55,7 @@ class TopicList(ForumMixin, ListView):
         context['forum'] = self.forum
         return context
 
-class TopicDetail(DetailView):
+class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
     def get_queryset(self):
         return ForumTopic.objects\
