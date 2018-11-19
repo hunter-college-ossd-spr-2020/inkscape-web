@@ -3,7 +3,10 @@
 <html>
   <head>
     <title>{{ title }}</title>
-    <link href="{% static "forums/css/bootstrap.min.css" %}" rel="stylesheet" id="bootstrap-css">
+    {% block "css" %}
+      <link href="{% static "forums/css/bootstrap.min.css" %}" rel="stylesheet" id="bootstrap-css">
+    {% endblock %}
+    {{ form.media }}
   </head>
   <body>
 
