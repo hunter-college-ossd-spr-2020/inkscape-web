@@ -21,11 +21,9 @@
 """Simple menu urls"""
 
 from django.conf.urls import url
-from inkscape.url_utils import url_tree
 
 from .views import ShowMenu
 
 urlpatterns = [ # pylint: disable=invalid-name
-    url(r'^$', ShowMenu.as_view(), name='menu_items'),
+    url(r'^$', ShowMenu.as_view(), name='show'),
 ]
-

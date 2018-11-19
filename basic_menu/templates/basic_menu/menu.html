@@ -1,16 +1,22 @@
-<ul id="menu222">
-{% for url, name, submenu in menu %}
-          <li>
+<html>
+  <head>
+    <title>Debug Website Menu</title>
+  </head>
+  <body>
+
+    <h1>Debug Website Menu</h1>
+
+    <ul id="menu">
+      {% for menu_item in object.children.all %}
+        <li>
             <a href="{{ url }}">{{ name }}</a>
             {% for sub_url, sub_name in submenu %}
               <li>
                 <a href="{{ sub_url }}">{{ sub_name }}</a>
               </li>
             {% endfor %}
-          </li>
-{% endfor %}
-        </ul>
-<!-- Here the js or CSS to make items selected -->
-
-
-
+        </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

@@ -18,36 +18,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+# pylint: disable=too-many-ancestors
 """
 Basic menu are a custom app to show inkscape menu.
 """
 
-__all__ = (
-    'ShowMenu',
-)
+from django.views.generic import DetailView
 
-import json
+from .models import MenuRoot
 
-from django.http import request
-from django.conf import settings
-from django.template import Context, Template
-from django.views.generic import TemplateView
-from django.contrib.admin.models import LogEntry
-from django.shortcuts import render
-from django.utils.functional import cached_property
-from collections import defaultdict
-from .models import MenuItem, Menu
-
-class ShowMenu(TemplateView):
-    """Returns menu"""
-    title = 'Show Menu'
+class ShowMenu(DetailView):
+    """Render the menu as it would appear to the user"""
     template_name = 'basic_menu/menu.html'
-    model = MenuItem
-
-    def get_context_data(self, **kwargs):
-        """Add standard context data elements"""
-        data = super().get_context_data(**kwargs)
-        menuinkscape = Menu()
-        menu = menuinkscape.get_menu("en")
-        data['menu'] = menu
-        return data
+    slug_field = 'language'
+    model = MenuRoot
