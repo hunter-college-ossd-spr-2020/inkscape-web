@@ -28,7 +28,7 @@ from inkscape.templatetags.inkscape import timetag_filter
 from cms.models.pagemodel import Page
 
 
-from .models import MenuItem, Menu
+from .models import MenuItem
 
 BOLD = "<strong style='display: block; width: 98%%; padding: 6px; color: white; background-color: %s;'>%s</strong>"
 

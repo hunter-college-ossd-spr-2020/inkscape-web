@@ -70,6 +70,6 @@ urlpatterns += i18n_patterns(
     url(r'^', include('resources.urls')),
     # This URL is Very GREEDY, it must go last!
     url(r'^', include('cms.urls')),
-    url(r'^', include('basic_menu.urls')),
+    #url(r'^', include('basic_menu.urls', namespace='basic_menu')),
     prefix_default_language=False,
 )

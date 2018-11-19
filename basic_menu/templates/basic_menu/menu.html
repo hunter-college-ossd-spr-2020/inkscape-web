@@ -1,11 +1,10 @@
-<ul id="menu">
-{{ menu_items }}
-{% for menu_item in menu_items %}
+<ul id="menu222">
+{% for url, name, submenu in menu %}
           <li>
-            <a href="{{ menu_item.url }}">{{ menu_item.name }}</a>
-            {% for sub_menu_item in menu_item.submenu %}
+            <a href="{{ url }}">{{ name }}</a>
+            {% for sub_url, sub_name in submenu %}
               <li>
-                <a href="{{ sub_menu_item.url }}">{{ sub_menu_item.name }}</a>
+                <a href="{{ sub_url }}">{{ sub_name }}</a>
               </li>
             {% endfor %}
           </li>
