@@ -1,5 +1,5 @@
 <ul id="menu">
-{% for menuitem in menu %}
+{% for menuitem in show_menu %}
           <li>
             <a href="{{ menuitem.url }}">{{ menu.name }}</a>
             {% for submenuitem in menuitem.submenu %}
