@@ -187,7 +187,6 @@ INSTALLED_APPS = (
     'cms',
     'cog',
     'menus',
-    'basic_menu',
     'sekizai',
     'djangocms_text_ckeditor',
     'djangocms_file',
@@ -303,9 +302,6 @@ CKEDITOR_NEWS = {
         ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
         ['Source']
     ],
-}
-CKEDITOR_FORUM = {
-    'extraPlugins': 'image',
 }
 CKEDITOR_READONLY = {
     'readOnly': True,
