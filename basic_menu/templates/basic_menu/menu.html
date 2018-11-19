@@ -1,0 +1,17 @@
+<ul id="menu">
+{{ menu_items }}
+{% for menu_item in menu_items %}
+          <li>
+            <a href="{{ menu_item.url }}">{{ menu_item.name }}</a>
+            {% for sub_menu_item in menu_item.submenu %}
+              <li>
+                <a href="{{ sub_menu_item.url }}">{{ sub_menu_item.name }}</a>
+              </li>
+            {% endfor %}
+          </li>
+{% endfor %}
+        </ul>
+<!-- Here the js or CSS to make items selected -->
+
+
+

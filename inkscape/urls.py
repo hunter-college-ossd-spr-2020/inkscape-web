@@ -58,6 +58,7 @@ urlpatterns += i18n_patterns(
     url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectEnglish.as_view()),
     url(r'^', include('resources.urls')),
     url(r'^', include('cms.urls')),
+    url(r'^', include('basic_menu.urls')),
     prefix_default_language=False,
 )
 
