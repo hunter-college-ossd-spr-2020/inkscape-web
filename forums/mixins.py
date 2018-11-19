@@ -25,6 +25,7 @@ Basic mixin classes for forums
 from django.db.models import Q
 from django.utils import translation
 
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -35,7 +36,23 @@ class UserRequired(object):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """Add login_required decorator to dispatch"""
+        if hasattr(self, 'is_allowed') and not self.is_allowed(request.user):
+            raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)
+
+class ModeratorRequired(UserRequired):
+    """Restrict to just moderators permission"""
+    @staticmethod
+    def is_allowed(user):
+        """Only moderators can see this"""
+        return user.is_moderator()
+
+class OwnerRequired(UserRequired):
+    """Restrict to the owner of an object"""
+    def is_allowed(self, user):
+        """Make sure only owners can do or see this view, or is a moderator"""
+        obj = self.get_object()
+        return obj.user == user or user.is_moderator()
 
 class ForumMixin(object):
     """Provide standard outputs for forum listings"""
