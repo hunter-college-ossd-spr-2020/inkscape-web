@@ -27,7 +27,12 @@ class ForumCommentListNode(CommentListNode):
     """Tweaks for forum comment listing"""
     def get_queryset(self, context):
         qset = super().get_queryset(context)
-        qset = qset.prefetch_related('flags', 'attachments', 'attachments__resource')
+        qset = qset.prefetch_related('flags', 'attachments', 'attachments__resource',
+                                     'user', 'user__forum_flags')\
+                   .defer('user_email', 'user_name', 'user_url', 'ip_address',
+                          'user__password', 'user__email', 'user__bio', 'user__ircnick',
+                          'user__ircpass', 'user__dauser', 'user__ocuser', 'user__tbruser',
+                          'user__gpg_key', 'user__last_seen', 'user__visits', 'user__website')
         return qset
 
 @register.tag
