@@ -348,8 +348,8 @@ class UserFlag(Model):
     user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                       related_name="forum_flags", on_delete=CASCADE)
     # Translators: 'flag' is a noun here.
-    flag = CharField(_('flag'), max_length=30, db_index=True)
-    flag_date = DateTimeField(_('date'), auto_now=True)
+    flag = CharField(_('flag'), max_length=5, db_index=True)
+    title = CharField(_('title'), max_length=32, null=True, blank=True)
 
     class Meta:
         unique_together = [('user', 'flag')]
@@ -357,8 +357,8 @@ class UserFlag(Model):
         verbose_name_plural = _('user forum flags')
 
     def __str__(self):
-        return "%s flag of forum user %s" % (
-            self.flag, self.user.get_username()
+        return "%s flag of forum user %s (%s)" % (
+            self.flag, self.user.get_username(), self.title
         )
 
 class CommentLink(Model):

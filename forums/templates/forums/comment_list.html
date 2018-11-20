@@ -17,7 +17,7 @@
         <div class="comment-body clearfix">
           <div class="header">
             <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a>
-              {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
+                {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
             </strong>
 
             {% if comment.user_id == request.user.pk or request.user.is_moderator %}
