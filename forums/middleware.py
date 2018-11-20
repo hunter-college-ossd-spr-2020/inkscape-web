@@ -63,7 +63,7 @@ class RecentUsersMiddleware(object):
     def process_template_response(self, view, response):
         """Add visiting user data into context"""
         if hasattr(view.request, 'user') and view.request.user.is_authenticated:
-            if settings.DEBUG:
+            if getattr(settings, 'FORUM_DEBUG_ONLINE', False):
                 # Add some test users when in debug mode
                 user_qset = User.objects.exclude(photo__isnull=True).exclude(photo='')
                 for user in user_qset.order_by('?')[:3]:
