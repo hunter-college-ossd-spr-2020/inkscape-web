@@ -305,9 +305,6 @@ CKEDITOR_NEWS = {
         ['Source']
     ],
 }
-CKEDITOR_FORUM = {
-    'extraPlugins': 'image',
-}
 CKEDITOR_READONLY = {
     'readOnly': True,
     'disableReadonlyStyling': True,

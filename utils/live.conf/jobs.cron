@@ -8,9 +8,6 @@
 
 # This updates the search index each night
 45 0 * * * /var/www/.../utils/manage update_index
-20 3 * * * /var/www/.../utils/manage update_forum_counts
-# This update comments in search index every 5 minutes
-*/10 * * * * /var/www/.../utils/manage update_index -a 1 django_comments.comment
 
 # This clears user sessions for the website
 33 * * * * /var/www/.../utils/manage clearsessions

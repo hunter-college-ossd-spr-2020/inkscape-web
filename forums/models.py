@@ -24,29 +24,23 @@ shouldn't be much functionality contained within this app.
 
 import json
 
-from collections import OrderedDict
 from unidecode import unidecode
+from collections import OrderedDict
 
-from django.db.models.functions import Cast
-from django.db.models import (
-    Model, QuerySet,
-    ForeignKey, OneToOneField, IntegerField, DateTimeField, BooleanField,
-    CharField, SlugField, TextField, FileField, PositiveIntegerField,
-)
+from django.db.models import *
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
-from django.conf import settings
 
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
+from django.utils.timezone import now
 from django.utils.text import slugify
 from django_comments.models import Comment
-from resources.models import Resource
 
 from django.apps import apps
 app = apps.get_app_config('forums')
@@ -55,10 +49,9 @@ class SelectRelatedQuerySet(QuerySet):
     """Automatically select related ForeignKeys to queryset"""
     def __init__(self, *args, **kw):
         super(SelectRelatedQuerySet, self).__init__(*args, **kw)
-        #self.query.select_related = True
+        self.query.select_related = True
 
     def groups(self):
-        """Batch each forum into groups by their name"""
         ret = OrderedDict()
         for item in self:
             if item.group.name not in ret:
@@ -91,7 +84,6 @@ class ForumQuerySet(SelectRelatedQuerySet):
 
 
 class Forum(Model):
-    """A collection of topics for discussion"""
     group = ForeignKey(ForumGroup, related_name='forums')
     sort = IntegerField(default=0, null=True, blank=True)
 
@@ -100,18 +92,18 @@ class Forum(Model):
     desc = TextField(validators=[MaxLengthValidator(1024)], null=True, blank=True)
     icon = FileField(upload_to='forum/icon', null=True, blank=True)
 
-    lang = CharField(max_length=8, null=True, blank=True,\
-        help_text=_('Set this ONLY if you want this forum restricted to this language'))
+    lang = CharField(max_length=8, null=True, blank=True,
+            help_text=_('Set this ONLY if you want this forum restricted to this language'))
 
-    content_type = ForeignKey(ContentType, verbose_name=_('Fixed Content From'),\
-        help_text=_("When fixed content is set, new topics can not be created. Instead, "
-                    "commented items are automatically posted as topics."), null=True, blank=True)
-    sync = CharField(max_length=64, choices=app.sync_choices, verbose_name=_('Sync From'),\
-         help_text=_("When sync source is set, new topics and messages can not be created. "
-                     "Instead, sync messages are collated into topics and replies by scripts."),
-                     null=True, blank=True)
+    content_type = ForeignKey(ContentType, null=True, blank=True,
+            verbose_name=_('Fixed Content From'), help_text="When fixed conte"
+            "nt is set, new topics can not be created. Instead, commented ite"
+            "ms are automatically posted as topics.")
+    sync = CharField(max_length=64, null=True, blank=True, choices=app.sync_choices,
+            verbose_name=_('Sync From'), help_text="When sync source is "
+            "set, new topics and messages can not be created. Instead, sync m"
+            "essages are collated into topics and replies by helper scripts")
 
-    post_count = PositiveIntegerField(_('Number of Posts'), default=0)
     last_posted = DateTimeField(_('Last Posted'), db_index=True, null=True, blank=True)
 
     objects = ForumQuerySet.as_manager()
@@ -125,44 +117,21 @@ class Forum(Model):
 
     @property
     def parent(self):
-        """Return the forum group as the parent for breadcrumbs"""
         return self.group
 
     def model_class(self):
-        """Return a content type class if this forum is based on objects"""
-        if self.content_type:
-            return self.content_type.model_class()
-        return ForumTopic
+        return self.content_type.model_class()
 
     def get_absolute_url(self):
-        """Return a link to this forum"""
         return reverse('forums:detail', kwargs={'slug': self.slug})
 
-    def save(self, **kwargs):
-        """Save and add a slug if not yet created"""
+    def save(self, **kw):
         if not self.slug:
             self.slug = slugify(unidecode(self.name))
-        return super(Forum, self).save(**kwargs)
-
-    @property
-    def comments(self):
-        """Returns a queryset of all comments on all the topics in this forum"""
-        if self.content_type:
-            # Count all comments that have this content type
-            return Comment.objects.filter(content_type=self.content_type)
-
-        # Count only topics which are in this forum, content_type links use
-        # a generic CharField for primaryKeys, so to match them we have to
-        # convert the keys to a string in the database.
-        objects = self.topics.annotate(str_id=Cast('pk', CharField(max_length=32)))
-        return Comment.objects.filter(
-            content_type=ForumTopic.content_type(),
-            object_pk__in=objects.values_list('str_id'),
-        )
+        return super(Forum, self).save(**kw)
 
     @property
     def sync_config(self):
-        """Return a configuration for forum sync plugins"""
         return settings.FORUM_SYNCS.get(self.sync, {})
 
     def sync_message(self, message):
@@ -183,10 +152,10 @@ class Forum(Model):
             created = None
         else:
             topic, created = self.topics.get_or_create(
-                message_id=message_id,
-                defaults={
-                    'subject': str(message.get_subject()),
-                }
+              message_id=message_id,
+              defaults={
+                'subject': str(message.get_subject()),
+              }
             )
 
         if created in (None, True):
@@ -201,7 +170,7 @@ class Forum(Model):
                 content_object=topic,
             )
 
-            objects.create(
+            link = objects.create(
                 comment=comment,
                 message_id=message_id,
                 reply_id=reply_id,
@@ -234,12 +203,11 @@ class ForumTopic(Model):
 
     message_id = CharField(max_length=255, db_index=True, null=True, blank=True)
 
-    post_count = PositiveIntegerField(_('Number of Posts'), default=0)
     last_posted = DateTimeField(_('Last Posted'), db_index=True, null=True, blank=True)
-    sticky = IntegerField(_('Sticky Priority'), default=0,\
+    sticky = IntegerField(_('Sticky Priority'), default=0,
         help_text=_('If set, will stick this post to the top of the topics '
-                    'list. Higher numbers appear nearer the top. Same numbers '
-                    'will appear together, sorted by date.'))
+          'list. Higher numbers appear nearer the top. Same numbers will '
+          'appear together, sorted by date.'))
     locked = BooleanField(default=False, help_text=_('Topic is locked by moderator.'))
 
     objects = SelectRelatedQuerySet.as_manager()
@@ -251,35 +219,13 @@ class ForumTopic(Model):
     def __str__(self):
         return self.subject
 
-    @classmethod
-    def content_type(cls):
-        """Return the content type for ForumTopic types"""
-        if not hasattr(cls, '_ct'):
-            cls._ct = ContentType.objects.get_for_model(cls)
-        return cls._ct
-
     @property
     def object(self):
-        """Return the focus object for this topic starter"""
-        return self.forum.content_type.get_object_for_this_type(pk=self.object_pk)
-
-    @property
-    def comment_subject(self):
-        """The ulimate object that all the comments point towards"""
-        if self.object_pk and self.forum.content_type:
-            return self.object
-        return self
-
-    @property
-    def comments(self):
-        """Returns a list of comment associated with this topic"""
-        obj = self.comment_subject
-        ctype = ContentType.objects.get_for_model(obj)
-        return Comment.objects.filter(object_pk=obj.pk, content_type=ctype)
+        return self.forum.content_type.\
+                get_object_for_this_type(pk=self.object_pk)
 
     @property
     def parent(self):
-        """Return the parent object for breadcrumbs"""
         return self.forum
 
     @property
@@ -287,8 +233,8 @@ class ForumTopic(Model):
         """Returns a custom template if needed for this item."""
         custom_template = None
         if self.object_pk:
-            ctype = self.forum.content_type
-            custom_template = '%s/%s_comments.html' % (ctype.app_label, ctype.model)
+            ct = self.forum.content_type
+            custom_template = '%s/%s_comments.html' % (ct.app_label, ct.model)
 
         elif self.forum.sync:
             conf = self.forum.sync_config
@@ -305,18 +251,22 @@ class ForumTopic(Model):
         return 'forums/forumtopic_header.html'
 
     @property
+    def comment_subject(self):
+        if self.object_pk:
+            return self.object
+        return self
+
+    @property
     def is_sticky(self):
-        """Return true if this topic is sticky (shows at the top of forums)"""
         return bool(self.sticky)
 
     def get_absolute_url(self):
-        """Return a link to this topic"""
         if self.slug:
             return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
-        return "error"
+        else:
+            return "error"
 
     def save(self, **kw):
-        """Save this topic and generate a slug if needed"""
         self.subject = self.subject[:120]
 
         if not self.slug:
@@ -328,29 +278,21 @@ class ForumTopic(Model):
         return super(ForumTopic, self).save(**kw)
 
 
-class CommentAttachment(Model):
-    """A single attachment on a comment"""
-    resource = ForeignKey(Resource, related_name='comment_hosts')
-    comment = ForeignKey(Comment, related_name='attachments')
-    inline = BooleanField(default=False)
-
-    desc = CharField(max_length=128, null=True, blank=True)
-
-    def __str__(self):
-        return "{} attached to comment in the forum.".format(self.resource)
-
 class CommentLink(Model):
     """We extend our comment model with links to sync'd or imported comments"""
     comment = OneToOneField(Comment, related_name='link')
 
     message_id = CharField(max_length=255, db_index=True, unique=True,
-                           help_text="A unique identifier for this message")
+            help_text="A unique identifier for this message")
+
     reply_id = CharField(max_length=255, null=True, blank=True, db_index=True,
-                         help_text="Either the previous message in the chain, or the parent id")
+            help_text="Either the previous message in the chain, or the parent id")
+
     subject = CharField(max_length=255, null=True, blank=True, db_index=True,
-                        help_text="A matchable subject line for this comment.")
+            help_text="A matchable subject line for this comment.")
 
     extra_data = TextField(null=True, blank=True)
 
     def __str__(self):
         return self.message_id
+

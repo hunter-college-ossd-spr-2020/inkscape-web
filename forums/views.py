@@ -22,27 +22,29 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.views.generic import ListView, DetailView, FormView
+from django.http import Http404
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 
-from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet
-from haystack.views import SearchView as SearchBase
-
-from django_comments.models import CommentFlag
+from django_comments.models import Comment
 
 from .forms import NewTopicForm
-from .mixins import UserRequired, ForumMixin
-from .models import Comment, Forum, ForumTopic
+from .mixins import UserRequired
+from .models import Q, ForumGroup, Forum, ForumTopic
 
-class ForumList(ForumMixin, TemplateView):
+class ForumList(UserRequired, ListView):
     """A list of all available forums"""
-    template_name = 'forums/forum_list.html'
+    cache_tracks = [ForumGroup, ForumTopic, Comment]
+    paginate_by = 12
 
+    def get_queryset(self):
+        language = translation.get_language()
+        return Forum.objects.filter(Q(lang=language) | Q(lang=''))
 
-class TopicList(ForumMixin, ListView):
+class TopicList(UserRequired, ListView):
     """A list of all topics in a forum"""
     paginate_by = 20
 
@@ -52,10 +54,10 @@ class TopicList(ForumMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['forum'] = self.forum
+        context['object'] = self.forum
         return context
 
-class TopicDetail(DetailView):
+class TopicDetail(UserRequired, DetailView):
     """A single topic view"""
     def get_queryset(self):
         return ForumTopic.objects.filter(forum__slug=self.kwargs['forum'])
@@ -88,41 +90,3 @@ class AddTopic(UserRequired, FormView):
         topic = form.save()
         self.success_url = topic.get_absolute_url()
         return super().form_valid(form)
-
-class CommentSearch(SearchBase):
-    """Restrict the search to the selected language only"""
-    template = "forums/comment_search.html"
-    results_per_page = 10
-    form_class = SearchForm
-
-    def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet().models(Comment)
-        super().__init__(*args, **kwargs)
-
-class TopicSearch(SearchBase):
-    """Restrict the search to the selected language only"""
-    template = "forums/topic_search.html"
-    results_per_page = 10
-    form_class = SearchForm
-
-    def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet().models(ForumTopic)
-        super().__init__(*args, **kwargs)
-
-
-class CommentEmote(UserRequired, UpdateView):
-    """Update an Emote on a comment using a comment flag"""
-    model = CommentFlag
-    fields = ('flag',)
-
-    def form_valid(self, form):
-        """Redirect OR return Empty 200 SUCESS"""
-        self.object = form.save()
-        url = self.request.POST.get('next', self.request.GET.get('next', None))
-        if url:
-            HttpResponseRedirect(url)
-        return HttpResponse('')
-
-    def get_object(self, queryset=None):
-        return self.get_queryset().get_or_create(user=self.request.user,
-                                                 comment_id=self.kwargs['pk'])[0]

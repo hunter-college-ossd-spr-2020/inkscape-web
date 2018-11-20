@@ -1,76 +1,55 @@
-{% extends "forums/base.html" %}
-{% load i18n static forum_comments inkscape comments %}
+{% extends "base.html" %}
+{% load i18n static inkscape %}
 
-{% block "header" %}
-   <a href="{{ object.forum.get_absolute_url }}"><img src="{{ object.forum.icon.url }}" title="{{ object.form }}"></a>
-   <h3>{{ object.subject }}</h3>
+{% block "css" %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static "css/forums.css" %}"/>
 {% endblock %}
 
-{% block "side" %}{% endblock %}
-{% block "search" %}{% endblock %}
+{% block "js" %}{{ block.super }}
+  <script type="text/javascript" src="{% static "js/has_changed.js" %}"></script>
+{% endblock %}
 
-{% block "content" %}
-
-  {% if object.object_pk %}
-    <div class="comment changes" data-pk="topic-{{ object.pk }}">
-      {% with object.object_template as template %}
-        {% with object.object as object %}
-          {% include template %}
-        {% endwith %}
-      {% endwith %}
-    </div>
+{% block supercontent %}
+  {% if object.forum and not object.forum.model_class %}
+    <ul id="messages">
+      <li class="error">{% trans "This forum is broken, it is attached to a defunct content type and needs to be reconfigured by a system's administrator." %}</li>
+    </ul>
   {% endif %}
+  {{ block.super }}
+{% endblock %}
 
-{% get_forum_comment_list for object.comment_subject as comment_list %}
-
-  {% include "forums/comment_list.html" %}
-  
-{% get_comment_form for object.comment_subject as comment_form %}
-{{ comment_form.media }}
-
-  <div class="panel-footer">
-    <div class="input-group">
-      {% if object.form.is_locked or object.is_locked %}
-        <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" />
-        <span class="input-group-btn">
-          <a class="btn btn-default btn-sm disabled"><span class="glyphicon glyphicon-lock"></span> {% trans "Locked" %}</a>
-        </span>
-      {% elif user.is_authenticated %}
-        {% if user.email %}
-          <form action="{% comment_form_target %}" method="POST" class="block">
-            <div class="row">
-              {% csrf_token %}
-              {{ comment_form.comment }}
-              {{ comment_form.honeypot }}
-              {{ comment_form.content_type }}
-              {{ comment_form.object_pk }}
-              {{ comment_form.timestamp }}
-              {{ comment_form.security_hash }}
-              <input type="hidden" name="next" value="{{ request.path }}"/>
-            </div>
-
-            <div class="row">
-              <span class="btn-group pull-right">
-                <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Comment" %}</button>
-                <button class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-paperclip"></span></button>
-              </span>
-              <span class="btn-group pull-left">
-                <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
-              </span>
-            </div>
-          </form>
-        {% else %}
-          <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" placeholder="You must have an email address to post!" />
-          <span class="input-group-btn">
-            <a href="{% url 'edit_profile' %}?next={{ request.path }}" class="btn btn-default btn-sm"> {% trans "Edit Profile" %}</a>
-          </span>
-        {% endif %}
+{% block content %}
+  {% if not object.forum.model_class %}
+    <p>{% trans "Comments hidden because of misconfiguration." %}</p>
+  {% else %}
+    <div class="comment changes" data-pk="topic-{{ object.pk }}">
+      {% if object.object_pk %}
+        <div class="details">
+          <div class="title"><h2>{{ object.subject }}</h2></div>
+        </div>
+        <div class="body">
+          {% with object.object_template as template %}
+          {% with object.object as object %}
+            {% include template %}
+          {% endwith %}
+          {% endwith %}
+        </div>
+        <div class="cfooter">
+          <div class="index">Last Post: {{ object.last_posted|timetag }}</div>
+        </div>
       {% else %}
-        <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" placeholder="You must be logged in to post!" />
-        <span class="input-group-btn">
-          <a href="{% url 'auth_login' %}?next={{ request.path }}" class="btn btn-danger btn-sm"> {% trans "Login Now" %}</a>
-        </span>
+        <div class="details">
+          <div class="title"><h1>{{ title }}</h1></div>
+        </div>
       {% endif %}
     </div>
-  </div>
+
+    {% with object.comment_subject as comment_subject %}
+      {% with object.get_absolute_url as next %}
+        {% trans "Post reply:" as comment_label %}
+        {% include "comments/comment_area.html" %}
+      {% endwith %}
+    {% endwith %}
+  {% endif %}
 {% endblock %}

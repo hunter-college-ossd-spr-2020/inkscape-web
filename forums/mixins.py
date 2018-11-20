@@ -17,38 +17,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-# pylint: disable=no-member,too-few-public-methods
 """
 Basic mixin classes for forums
 """
 
-from django.db.models import Q
-from django.utils import translation
-
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
-from .models import Forum
 
 class UserRequired(object):
     """Only allow a logged in user for flagging"""
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """Add login_required decorator to dispatch"""
-        return super().dispatch(request, *args, **kwargs)
+        return super(UserRequired, self).dispatch(request, *args, **kwargs)
 
-class ForumMixin(object):
-    """Provide standard outputs for forum listings"""
-    def get_forum_list(self):
-        """Return a standard list of forums"""
-        qset = Forum.objects.all()
-        if not self.request.GET.get('all'):
-            language = translation.get_language()
-            qset = qset.filter(Q(lang=language) | Q(lang=''))
-        return qset
-
-    def get_context_data(self, **kwargs):
-        """Add standard context data elements"""
-        data = super().get_context_data(**kwargs)
-        data['forums'] = self.get_forum_list()
-        return data

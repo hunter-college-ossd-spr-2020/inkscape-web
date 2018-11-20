@@ -38,9 +38,6 @@ def post_create(model, func):
 
 
 class ForumsConfig(AppConfig):
-    """
-    Control the signals and plugins for forum and comment creation
-    """
     name = 'forums'
     # plugins is a list of all Plugin classes (based on BasePlugin)
     plugins = []
@@ -60,11 +57,11 @@ class ForumsConfig(AppConfig):
                 self.plugins.append(module.Plugin)
                 self.plugin[key] = self.plugins[-1](key, conf.copy())
             except (KeyError, AttributeError) as err:
-                logging.warning("Failed to load plugin %s", key)
-                logging.warning(" -> Engine error: %s", str(err))
+                logging.warning("Failed to load plugin %s" % key)
+                logging.warning(" -> Engine error: %s" % str(err))
             except ImportError as err:
-                logging.warning("Failed to load plugin %s", (key))
-                logging.warning(" -> %s", str(err))
+                logging.warning("Failed to load plugin %s" % (key))
+                logging.warning(" -> " + str(err))
 
     @property
     def sync_choices(self):
@@ -98,14 +95,13 @@ class ForumsConfig(AppConfig):
 
             self.update_times(forum, topic, instance.submit_date)
 
-        obj = instance.content_object
+        co = instance.content_object
         if isinstance(instance.content_object, ForumTopic):
-            self.update_times(obj.forum, obj, instance.submit_date)
+            self.update_times(co.forum, co, instance.submit_date)
 
     def update_times(self, forum, topic, submit_date):
         """Updates the topic and forum last modified stamp"""
         for obj in (forum, topic):
             if not obj.last_posted or obj.last_posted < submit_date:
-                obj.post_count += 1
                 obj.last_posted = submit_date
-                obj.save(update_fields=['last_posted', 'post_count'])
+                obj.save(update_fields=['last_posted'])
