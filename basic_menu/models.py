@@ -56,7 +56,7 @@ class MenuRoot(Model):
 
     def get_absolute_url(self):
         """Return a link to the debug page for menus"""
-        return reverse('menu:show', kwargs={'lang': self.language})
+        return "https://www.inkscape.org"
 
 class MenuItem(Model):
     """A collection menus"""

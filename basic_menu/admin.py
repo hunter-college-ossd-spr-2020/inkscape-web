@@ -18,9 +18,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+from django.http import HttpResponseRedirect
 from django.contrib.admin import ModelAdmin, TabularInline, site
-
+from django.conf.urls import include, url
+from cms.models.pagemodel import Page
+from django.conf import settings
 from .models import MenuItem, MenuRoot
 
 class NestableTabularInline(TabularInline):
@@ -36,5 +38,49 @@ class MenuItemsInline(NestableTabularInline):
 class MenuRootAdmin(ModelAdmin):
     """Customise the root menu in the admin interface"""
     inlines = (MenuItemsInline,)
+    
+    def get_urls(self):
+        urls = super(MenuRootAdmin, self).get_urls()
+        urls.append(url(
+                r'menugenerate',
+                self.populize_menu,
+                name='populize_menu',
+            ))
+        return urls
+
+    def populize_menu(self, request):
+        #TODO: clear all
+        MenuItem.objects.all().delete()
+        MenuRoot.objects.all().delete()
+        for language  in settings.LANGUAGES :
+            lang = language[0]
+            root = MenuRoot(lang)
+            root.save()
+            cms_pages = Page.objects.public()
+            root_counter = 0
+            for page in cms_pages:
+                if page.soft_root == 0:
+                    root_counter += 1
+                    menuitem = MenuItem()
+                    menuitem.parent = None
+                    menuitem.id = page.id
+                    menuitem.url = page.get_absolute_url(lang)
+                    menuitem.name = page.get_menu_title(lang)
+                    menuitem.orden = root_counter
+                    menuitem.root = root
+                    menuitem.save()
+                    child_counter = 0
+                    for subpage in cms_pages:
+                        if subpage.soft_root == page.id:
+                            child_counter += 1
+                            submenuitem = MenuItem()
+                            submenuitem.parent = menuitem
+                            submenuitem.url = subpage.get_absolute_url(lang)
+                            submenuitem.name = page.get_menu_title(lang)
+                            submenuitem.id = page.id
+                            submenuitem.orden = child_counter
+                            submenuitem.root = root
+                            submenuitem.save()
+        return HttpResponseRedirect('/admin/basic_menu/')
 
 site.register(MenuRoot, MenuRootAdmin)
