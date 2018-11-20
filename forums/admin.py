@@ -26,8 +26,13 @@ from django_comments.admin import CommentsAdmin
 
 from django.contrib.admin import ModelAdmin, site, TabularInline
 
-from .models import ForumGroup, Forum, ForumTopic, CommentAttachment
+from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag
 
+class UserFlagAdmin(ModelAdmin):
+    raw_id_fields = ('user',)
+    list_filter = ('flag',)
+
+site.register(UserFlag, UserFlagAdmin)
 site.register(ForumGroup)
 site.register(Forum)
 site.register(ForumTopic)

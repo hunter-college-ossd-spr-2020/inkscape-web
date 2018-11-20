@@ -16,7 +16,9 @@
         </span>
         <div class="comment-body clearfix">
           <div class="header">
-            <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a></strong>
+            <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a>
+              {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
+            </strong>
 
             {% if comment.user_id == request.user.pk or request.user.is_moderator %}
             <small class="pull-right text-muted"><a href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a></small>

@@ -29,7 +29,7 @@ from unidecode import unidecode
 
 from django.db.models.functions import Cast
 from django.db.models import (
-    Model, QuerySet,
+    Model, QuerySet, CASCADE,
     ForeignKey, OneToOneField, IntegerField, DateTimeField, BooleanField,
     CharField, SlugField, TextField, FileField, PositiveIntegerField,
 )
@@ -338,6 +338,28 @@ class CommentAttachment(Model):
 
     def __str__(self):
         return "{} attached to comment in the forum.".format(self.resource)
+
+class UserFlag(Model):
+    """
+    Record a flag on a user. Much like the comment flag functionality in
+    django_comments app, this is a flexible way to tag users with all sorts of
+    important social symbols and flags.
+    """
+    user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
+                      related_name="forum_flags", on_delete=CASCADE)
+    # Translators: 'flag' is a noun here.
+    flag = CharField(_('flag'), max_length=30, db_index=True)
+    flag_date = DateTimeField(_('date'), auto_now=True)
+
+    class Meta:
+        unique_together = [('user', 'flag')]
+        verbose_name = _('user forum flag')
+        verbose_name_plural = _('user forum flags')
+
+    def __str__(self):
+        return "%s flag of forum user %s" % (
+            self.flag, self.user.get_username()
+        )
 
 class CommentLink(Model):
     """We extend our comment model with links to sync'd or imported comments"""
