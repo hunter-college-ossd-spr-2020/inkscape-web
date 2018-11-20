@@ -115,6 +115,7 @@ TEMPLATES = [{
             'django.template.context_processors.static',
             'cms.context_processors.cms_settings',
             'sekizai.context_processors.sekizai',
+            'basic_menu.context_processors.basic_menu',
         )
     }
 }]

@@ -1,22 +1,18 @@
-<html>
-  <head>
-    <title>Debug Website Menu</title>
-  </head>
-  <body>
-
-    <h1>Debug Website Menu</h1>
-
-    <ul id="menu">
-      {% for menu_item in object.children.all %}
+<ul id="menu">
+      {% for item in basic_menu %}
         <li>
-            <a href="{{ url }}">{{ name }}</a>
-            {% for sub_url, sub_name in submenu %}
-              <li>
-                <a href="{{ sub_url }}">{{ sub_name }}</a>
-              </li>
-            {% endfor %}
+            <a href="{{ item.url }}">{{ item.name }}</a>
+            {% if item.submenu != None %}
+                <ul>
+                {% for sub_menu_item in item.submenu %}
+                  <li>
+                    <a href="{{ sub_menu_item.url }}">{{ sub_menu_item.name }}</a>
+                  </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </li>
       {% endfor %}
     </ul>
-  </body>
-</html>
+
+

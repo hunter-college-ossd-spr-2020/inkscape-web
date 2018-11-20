@@ -53,7 +53,7 @@ urlpatterns += i18n_patterns(
     url(r'^credits/$', Authors.as_view(), name='authors'),
     url(r'^admin/lookups/', include('ajax_select.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^menu/', include('basic_menu.urls', namespace='menu')),
+    
     url(r'^cog/', include('cog.urls', namespace='cog')),
     url(r'^doc/', include('docs.urls')),
     url(r'^projects/', include('projects.urls', namespace='projects')),
@@ -68,6 +68,8 @@ urlpatterns += i18n_patterns(
     url(r'^\*(?P<team>[^\/]+)/', include('person.team_urls')),
     url(r'^user/', include('person.urls')),
     url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectEnglish.as_view()),
+    #url(r'^.*', include('basic_menu.urls', namespace='menu')),
+    #url(r'^', include('basic_menu.urls', namespace='basic_menu')),
     url(r'^', include('resources.urls')),
     # This URL is Very GREEDY, it must go last!
     url(r'^', include('cms.urls')),

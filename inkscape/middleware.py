@@ -365,7 +365,6 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
             return None
         return (url, name)
 
-
 class PrintMemoryMiddleware(object):
     """
     Measure memory taken by requested view, and response. Prints to stdout (Devel ONLY!)

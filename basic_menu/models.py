@@ -26,12 +26,30 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from django.db.models import (
-    Model, Manager, CharField, URLField, IntegerField, ForeignKey
+    Model, Manager, CharField, IntegerField, ForeignKey
 )
 
 class MenuRoot(Model):
     """A whole menu for a language"""
     language = CharField(max_length=12, choices=settings.LANGUAGES, primary_key=True)
+    
+    def show_menu(self):
+        menuitems = MenuItem.objects.filter(root = self)
+        menu = []
+        for item in menuitems.filter(parent = None):
+            submenu = []
+            menudict = dict()
+            for subitem in menuitems.filter(parent = item):
+                submenudict = dict()
+                submenudict['url'] = subitem.url
+                submenudict['name'] = subitem.name
+                submenu.append(submenudict)
+            menudict['url'] = item.url
+            menudict['name'] = item.name
+            if len(submenu) > 0:
+                menudict['submenu'] = submenu
+            menu.append(menudict)
+        return menu
 
     def __str__(self):
         return self.get_language_display()

@@ -1,5 +1,5 @@
 #
-# Copyright 2014, Martin Owens <doctormo@gmail.com>
+# Copyright 2016, Martin Owens <doctormo@gmail.com>
 # Copyright 2018, Jabiertxo Arraiza <jabiertxof@gmail.com>
 #
 # This file is part of the software inkscape-web, consisting of custom
@@ -18,12 +18,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""Simple menu urls"""
+"""
+Basic menu are a custom app to show inkscape menu.
+"""
+from .models import MenuRoot, MenuItem
+from cms.utils import get_language_from_request
 
-from django.conf.urls import url
+def basic_menu(request):
+    context_data = dict()
+    context_data['basic_menu'] = MenuRoot(get_language_from_request(request)).show_menu()
+    return context_data
 
-from .views import ShowMenu
-
-urlpatterns = [ # pylint: disable=invalid-name
-    url(r'^$', ShowMenu.as_view(), name='show'),
-]

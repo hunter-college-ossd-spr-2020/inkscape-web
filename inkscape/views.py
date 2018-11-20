@@ -36,6 +36,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.mail import send_mail
 
+from basic_menu.models import MenuItem, MenuRoot
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView as BaseView
@@ -149,5 +150,6 @@ class Authors(TemplateView):
             {'name': _('Documentation'), 'desc': _('Contributors to Inkscape-docs team'), 'people': DOCUMENTORS},
         ]
         return data
+
 
 
