@@ -76,9 +76,8 @@ class MenuCustom(Menu):
             .filter(title_set__language__in=languages)
             .select_related('node')
             .order_by('node__path')
-            .distinct().published()
+            .distinct()
         )
-        print(pages)
 
         if not self.renderer.draft_mode_active:
             # we're dealing with public pages.
@@ -190,12 +189,12 @@ class MenuRootAdmin(ModelAdmin):
             counter = 0
             items = []
             for node in nodes:
-                if node.path != "" and node.lang == lang:
+                if node.path != "" and node.lang == lang and node.visible == True:
                     item = dict()
                     counter += 1
                     item['parent'] = node.parent_id
                     item['id'] = node.id
-                    item['url'] = node.lang + "/" + node.path
+                    item['url'] = node.path
                     item['name'] = node.title
                     items.append(item)
             root_counter = 0

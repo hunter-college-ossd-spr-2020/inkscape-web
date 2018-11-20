@@ -64,7 +64,7 @@ class MenuItem(Model):
     parent = ForeignKey('self', null=True, blank=True, related_name='children')
     # This must NOT be a URLField as a URLField is restricted to external
     # fully qualified urls and doesn't accept local page URLs.
-    url = CharField(max_length=255, help_text="Location of content.", unique=True)
+    url = CharField(max_length=255, help_text="Location of content.")
     name = CharField(max_length=128)
     order = IntegerField(default=0)
 
