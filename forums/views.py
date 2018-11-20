@@ -87,9 +87,7 @@ class AddTopic(UserRequired, FormView):
         return kwargs
 
     def form_valid(self, form):
-        topic = form.save()
-        self.success_url = topic.get_absolute_url()
-        return super().form_valid(form)
+        return HttpResponseRedirect(form.save().get_absolute_url())
 
 class CommentSearch(SearchBase):
     """Restrict the search to the selected language only"""
