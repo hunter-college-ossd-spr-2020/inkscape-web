@@ -18,12 +18,15 @@
 {% endblock %}
 
 {% block "dialog-title" %}
+  <a href="{{ form.target_object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
 <h3><img id="forum-logo" src="{{ form.target_object.icon.url }}"> {{ form.target_object }}</h3>
 {% endblock %}
 
 {% block "form-buttons" %}
   <span class="btn-group pull-right">
-    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Comment" %}</button>
+    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Topic" %}</button>
     <button class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-paperclip"></span></button>
   </span>
   <span class="btn-group pull-left">
