@@ -28,7 +28,7 @@
 {% get_comment_form for object.comment_subject as comment_form %}
 {{ comment_form.media }}
 
-  <div class="panel-footer">
+  <div class="panel-footer haveseen" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
     <div class="input-group">
       {% if object.form.is_locked or object.is_locked %}
         <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" />

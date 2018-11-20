@@ -5,6 +5,18 @@
   src: url("../../fonts/euphoriascript-regular.ttf") format("truetype");
 }
 
+.forum-item.old {
+    font-weight: normal;
+}
+.forum-item.new {
+    font-weight: bold;
+}
+.table-forum tr.old .topic-item {
+    font-weight: normal;
+}
+.table-forum tr.new .topic-item {
+    font-weight: bold;
+}
 .forum-box {
     border-collapse: collapse;
     border-spacing: 0;

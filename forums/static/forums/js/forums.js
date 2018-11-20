@@ -4,27 +4,26 @@
 var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '2622', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438'];
 
 $(document).ready(function() {
-  $(".changes").each(function() {
-    primary_key = 'changed-' + $(this).data('pk');
+  console.log('ready');
+  /* Each haveseen item is a HTML element that expresses how the user
+     has seen this item. Once seen, the date and the counts are recorded
+     for use in listings of this item. */
+  $(".haveseen").each(function() {
+    primary_key = 'seen-' + $(this).data('pk');
     localStorage.setItem(primary_key + '-date', +new Date);
     localStorage.setItem(primary_key + '-count', $(this).data('count'));
   });
-  $(".unchanged").each(function() {
-    var target = $(this);
-    var primary_key = 'changed-' + target.data('pk');
-    var changed = new Date(target.data('changed'));
 
-    if(!changed || !target.data('pk')) {
-      return;
-    }
-    var timestamp = localStorage.getItem(primary_key + '-date');
-    var lastvisit = new Date(parseInt(timestamp));
-    var count = localStorage.getItem(primary_key + '-count');
+  $(".new").each(function() { have_you_seen_this(this); });
 
-    if (!timestamp || changed > lastvisit) {
-        target.removeClass("unchanged");
-        target.addClass("changed");
-    }
+  // Special button for marking all as read/seen
+  $('#seenall').click(function() {
+    $(".new").each(function() {
+        var primary_key = 'seen-' + $(this).data('pk');
+        localStorage.setItem(primary_key + '-date', +new Date);
+        localStorage.setItem(primary_key + '-count', $(this).data('count'));
+        have_you_seen_this(this);
+    });
   });
 
   $('.emoji-selector').each(function() {
@@ -106,4 +105,34 @@ function clean_emoji(index, elem) {
             $(elem).append($('<i class="count" style="display: none;">1</i>'));
         }
     }
+}
+
+/* Each new item is a HTML element that is marked as containing new unread
+   items. All things are unread/new by default, unless the user hasseen
+   the ahove element that contains the date/counts contained in this listing */
+function have_you_seen_this(elem) {
+    var primary_key = 'seen-' + $(elem).data('pk');
+    var this_changed = new Date($(elem).data('changed'));
+    var this_count = parseInt($(elem).data('count'));
+
+    // Should we downgrade the visual apperence of the item because we've seen everything?
+    var last_seen = new Date(parseInt(localStorage.getItem(primary_key + '-date')));
+    if (last_seen && this_changed && last_seen >= this_changed) {
+        $(elem).removeClass("new");
+        $(elem).addClass("old");
+    }
+
+    // Should we modify the counter and change the style of the counter because we've not
+    // seen some items?
+    var last_count = parseInt(localStorage.getItem(primary_key + '-count'));
+    $('.counter', elem).each(function() {
+        var delta = this_count - last_count;
+        if(delta == 0 || this_count == 0) {
+            $(this).hide();
+        } else if(delta > 0) {
+            $(this).text(delta);
+            $(this).removeClass('label-default');
+            $(this).addClass('label-primary');
+            }
+    });
 }

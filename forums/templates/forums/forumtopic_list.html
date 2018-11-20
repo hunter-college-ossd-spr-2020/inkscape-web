@@ -17,23 +17,24 @@
     {% else %}
     <a href="{% url "forums:create" forum.slug %}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span> New Topic</a>
     {% endif %}
+    <a href="#" id="seenall" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Mark all as Read" %}</a>
   </div>
 
   {{ block.super }}
 {% endblock %}
 
 {% block "content" %}
-  <table class="table table-forum table-hover" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
+  <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}">
     <tbody>
     {% for topic in object_list %}
-      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
+      <tr class="{% cycle 'odd' 'even' %} new" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
         <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-star-empty"></span></td>
-        <td class="view-message"><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></td>
-        <td class="view-message forum-small-cells">
+        <td class="topic-item"><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></td>
+        <td class="forum-small-cells">
           {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}
         </td>
-        <td class="view-message text-right">{{ topic.post_count }}</td>
-        <td class="view-message text-right">{{ topic.last_posted|timetag }}</td>
+        <td class="text-center"><span class="label label-default counter">{{ topic.post_count }}</span></td>
+        <td class="text-right">{{ topic.last_posted|timetag }}</td>
       </tr>
     {% empty %}
       <tr>
