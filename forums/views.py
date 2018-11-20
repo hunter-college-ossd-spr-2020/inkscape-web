@@ -33,8 +33,8 @@ from haystack.views import SearchView as SearchBase
 
 from django_comments.models import CommentFlag
 
-from .forms import NewTopicForm
-from .mixins import UserVisit, UserRequired, ForumMixin
+from .forms import NewTopicForm, EditCommentForm
+from .mixins import UserVisit, UserRequired, OwnerRequired, ForumMixin
 from .models import Comment, Forum, ForumTopic
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
@@ -62,10 +62,18 @@ class TopicDetail(UserVisit, DetailView):
             .filter(forum__slug=self.kwargs['forum'])\
             .select_related('forum', 'forum__group')
 
+class CommentEdit(OwnerRequired, UpdateView):
+    """
+    Edit comment in place.
+    """
+    model = Comment
+    title = _('Edit Comment')
+    form_class = EditCommentForm
+    template_name = "forums/comment_form.html"
+
 class AddTopic(UserRequired, FormView):
     """
-    Topics can be made manually like this, or auto
-       generated when attached to a content type
+    Add a topic manually to the forum creating topics and comments.
     """
     title = _("Create a new Forum Topic")
     template_name = "forums/forumtopic_form.html"

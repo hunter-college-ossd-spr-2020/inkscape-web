@@ -24,9 +24,11 @@ I can't believe I had to re-write this after copying over it.
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
-from django.forms import CharField, ValidationError
-from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
+from django.forms import ModelForm, CharField, ValidationError
 from djangocms_text_ckeditor.widgets import TextEditorWidget
+
+from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
+from django_comments.models import Comment
 
 from .models import ForumTopic
 
@@ -62,7 +64,30 @@ class AddCommentForm(CommentForm):
                 errors[field] = self.errors[field]
         return errors
 
+class EditCommentForm(ModelForm):
+    """Edit a comment as a normal django model"""
+    class Meta:
+        model = Comment
+        fields = ('comment',)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget = TextEditorWidget(configuration='CKEDITOR_FORUM')
+
+    def save(self, commit=True):
+        """
+        Bug: in django_comment trying to save an existing comment object leads to an error
+        because the ip_address field gets mangled and causes database errors on save.
+
+        This patch limits the save to just the comment field itself, which also protects
+        a lot of other bits from being overwritten.
+        """
+        if self.errors:
+            super().save(commit=commit)
+        if commit:
+            self.instance.save(update_fields=('comment',))
+            # No m2m saves required, code not copied from super()
+        return self.instance
 
 class NewTopicForm(CommentForm):
     """

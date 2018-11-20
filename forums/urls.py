@@ -26,7 +26,7 @@ from inkscape.url_utils import url_tree
 
 from .views import (
     ForumList, TopicList, AddTopic, TopicDetail, TopicSearch,
-    CommentSearch, CommentEmote,
+    CommentEdit, CommentSearch, CommentEmote,
 )
 
 urlpatterns = [ # pylint: disable=invalid-name
@@ -36,6 +36,8 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
+        url(r'^edit/$', CommentEdit.as_view(), name='comment_edit'),
+        #url(r'^del/$', CommentDelete.as_view(), name='comment_delete'),
     ),
     url_tree(
         r'^(?P<slug>[\w-]+)/',

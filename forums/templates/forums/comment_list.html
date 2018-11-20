@@ -18,7 +18,9 @@
           <div class="header">
             <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a></strong>
 
-            <small class="pull-right text-muted"><a href="#" title="Edit"><span class="glyphicon glyphicon-edit"></span></a></small>
+            {% if comment.user_id == request.user.pk or request.user.is_moderator %}
+            <small class="pull-right text-muted"><a href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a></small>
+            {% endif %}
             <small class="pull-right text-muted"><a title="{% trans "Link" %}" href="{% get_comment_permalink comment %}"><span class="glyphicon glyphicon-link"></span></a></small>
             <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
           </div>

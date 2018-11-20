@@ -1,0 +1,36 @@
+{% extends "forums/modal.html" %}
+{% load i18n static extras inkscape %}
+
+{% block "css" %}{{ block.super }}
+<style>
+  h3 { margin-top: 0px; }
+  #forum-logo {
+    width: 48px;
+  }
+  #id_honeypot,
+  label[for="id_honeypot"] {
+    display: none;
+  }
+  .cke {
+    display: contents !important;
+  }
+</style>
+{% endblock %}
+
+{% block "dialog-title" %}
+<h3><img id="forum-logo" src="{{ object.content_object.forum.icon.url }}"> {% if object.user_id == request.user.pk %}{% trans "Edit: " %}{% else %}{% trans "Moderate: " %}{% endif %} {{ object.content_object }}</h3>
+{% endblock %}
+
+{% block "form-buttons" %}
+  <span class="btn-group pull-right">
+    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Comment" %}</button>
+    <button class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-paperclip"></span></button>
+  </span>
+  <span class="btn-group pull-left">
+    {% if object.user_id == request.user.pk %}
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
+    {% else %}
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care editing <strong>other people's comments</strong>.{% endblocktrans %}</a>
+    {% endif %}
+  </span>
+{% endblock %}

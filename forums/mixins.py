@@ -56,7 +56,7 @@ class ModeratorRequired(UserRequired):
         return user.is_moderator()
 
 class OwnerRequired(UserRequired):
-    """Restrict to the owner of an object"""
+    """Restrict to the owner of an object or the moderator"""
     def is_allowed(self, user):
         """Make sure only owners can do or see this view, or is a moderator"""
         obj = self.get_object()
