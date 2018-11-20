@@ -22,10 +22,13 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView
+from django.views.generic import (
+    ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
+)
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
@@ -34,16 +37,18 @@ from haystack.views import SearchView as SearchBase
 from django_comments.models import CommentFlag
 
 from .forms import NewTopicForm, EditCommentForm
-from .mixins import UserVisit, UserRequired, OwnerRequired, ForumMixin
+from .mixins import UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
 from .models import Comment, Forum, ForumTopic
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
     """A list of all available forums"""
+    breadcrumbs = []
     template_name = 'forums/forum_list.html'
 
 
 class TopicList(UserVisit, ForumMixin, ListView):
     """A list of all topics in a forum"""
+    breadcrumbs = []
     paginate_by = 20
 
     def get_queryset(self):
@@ -57,6 +62,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
+    breadcrumbs = []
     def get_queryset(self):
         return ForumTopic.objects\
             .filter(forum__slug=self.kwargs['forum'])\
@@ -71,10 +77,29 @@ class CommentEdit(OwnerRequired, UpdateView):
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
 
-class AddTopic(UserRequired, FormView):
+class TopicMixin(object):
+    template_name = "forums/moderator_form.html"
+    model = ForumTopic
+
+class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
+    title = _('Move Topic')
+    fields = ('forum',)
+
+class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
+    title = _('Edit Topic')
+    fields = ('subject',)
+
+class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
+    title = _('Delete Topic')
+
+    def get_success_url(self):
+        return self.object.forum.get_absolute_url()
+
+class TopicCreate(UserRequired, FormView):
     """
     Add a topic manually to the forum creating topics and comments.
     """
+    breadcrumbs = []
     title = _("Create a new Forum Topic")
     template_name = "forums/forumtopic_form.html"
     form_class = NewTopicForm
@@ -99,6 +124,7 @@ class AddTopic(UserRequired, FormView):
 
 class CommentSearch(SearchBase):
     """Restrict the search to the selected language only"""
+    breadcrumbs = []
     template = "forums/comment_search.html"
     results_per_page = 10
     form_class = SearchForm
@@ -109,6 +135,7 @@ class CommentSearch(SearchBase):
 
 class TopicSearch(SearchBase):
     """Restrict the search to the selected language only"""
+    breadcrumbs = []
     template = "forums/topic_search.html"
     results_per_page = 10
     form_class = SearchForm

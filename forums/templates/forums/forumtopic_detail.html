@@ -9,8 +9,21 @@
 {% block "side" %}{% endblock %}
 {% block "search" %}{% endblock %}
 
-{% block "content" %}
+{% block "tools" %}
+  <div class="btn-group">
+    <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
+  </div>
+  {% if request.user.is_moderator %}
+    <div class="btn-group">
+      <a href="#" class="btn btn-sm btn-default disabled">{% trans "Moderator Tools:" %}</a>
+      <a href="{% url "forums:topic_move" object.slug %}" class="btn btn-sm btn-primary" title="{% trans "Move Topic" %}"><span class="glyphicon glyphicon-move"></span></a>
+      <a href="{% url "forums:topic_edit" object.slug %}" class="btn btn-sm btn-warning" title="{% trans "Edit Topic" %}"><span class="glyphicon glyphicon-edit"></span></a>
+      <a href="{% url "forums:topic_delete" object.slug %}" class="btn btn-sm btn-danger" title="{% trans "Delete Topic" %}"><span class="glyphicon glyphicon-remove-sign"></span></a>
+    </div>
+  {% endif %}
+{% endblock %}
 
+{% block "content" %}
   {% if object.object_pk %}
     <div class="comment changes" data-pk="topic-{{ object.pk }}">
       {% with object.object_template as template %}

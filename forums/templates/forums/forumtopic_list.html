@@ -12,7 +12,9 @@
     <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
   </div>
   <div class="btn-group">
-    {% if forum.content_type %}
+    {% if not request.user.is_authenticated %}
+    <a class="btn btn-sm btn-danger" href="{% url 'auth_login' %}?next={{ request.path }}"><span class="glyphicon glyphicon-lock"></span> Login to Post</a>
+    {% elif forum.content_type_id %}
     <a class="btn btn-sm btn-default disabled"><span class="glyphicon glyphicon-lock"></span> Content Forum</a>
     {% else %}
     <a href="{% url "forums:create" forum.slug %}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span> New Topic</a>
@@ -26,7 +28,7 @@
 {% block "content" %}
   <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}">
     <tbody>
-    {% for topic in object_list %}
+    {% for topic in page_obj %}
       <tr class="{% cycle 'odd' 'even' %} new" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
         <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-star-empty"></span></td>
         <td class="topic-item"><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></td>
