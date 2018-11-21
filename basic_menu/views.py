@@ -22,15 +22,32 @@
 Basic menu views
 """
 
-
 from django.utils.functional import cached_property
-from cms.utils.conf import get_cms_setting
+from django.core.cache import cache
 from django.contrib.sites.models import Site
 from cms.utils.moderator import use_draft
+from cms.utils.conf import get_cms_setting
 from menus.models import CacheKey
-from menus.modifiers import Marker, Level
-from django.core.cache import cache
+from menus.menu_pool import menu_pool, MenuRenderer
 from .models import MenuItem, MenuRoot
+
+class MenuRendererOverloaded(MenuRenderer):
+    # The main logic behind this class is to decouple
+    # the singleton menu pool from the menu rendering logic.
+    # By doing this we can be sure that each request has it's
+    # private instance that will always have the same attributes.
+
+    def __init__(self, pool, request, language):
+        self.pool = pool
+        # It's important this happens on init
+        # because we need to make sure that a menu renderer
+        # points to the same registered menus as long as the
+        # instance lives.
+        self.menus = pool.get_registered_menus(for_rendering=True)
+        self.request = request
+        self.request_language = language
+        self.site = Site.objects.get_current(request)
+        self.draft_mode_active = use_draft(request)
 
 class MenuShow():
     def __init__(self, language, request):
@@ -61,18 +78,70 @@ class MenuShow():
             site=self.site.pk,
         )
         return db_cache_key_lookup.exists()
-    
+
+    def get_nodes(self):
+        return MenuRendererOverloaded(menu_pool, self.request, self.language).get_nodes()
+
+    def populize_lang(self):
+        nodes = self.get_nodes()
+        lang = self.language[0]
+        root = MenuRoot(self.language)
+        MenuRoot.objects.all().filter(language = self.language).delete()
+        MenuItem.objects.all().filter(root = root).delete()
+        root.save()
+        counter = 0
+        items = []
+        if lang == "en":
+            pathlang = ""
+        else:
+            pathlang = "/" + lang + "/"
+        for node in nodes:
+            if node.visible == True:
+                item = dict()
+                counter += 1
+                item['parent'] = node.parent_id
+                item['id'] = node.id
+                if node.attr and node.attr['redirect_url']:
+                    item['url'] = node.attr['redirect_url']
+                else:
+                    item['url'] = pathlang + node.get_absolute_url()
+                
+                item['name'] = node.title
+                items.append(item)
+        root_counter = 0
+        for item in items:
+            if item['parent'] == None:
+                root_counter += 1
+                menuitem = MenuItem(
+                    parent = None,
+                    url = item['url'],
+                    name = item['name'],
+                    order = root_counter,
+                    root = root)
+                menuitem.save()
+                child_counter = 0
+                for subitem in items:
+                    if subitem['parent'] == item['id'] and item['parent'] == None:
+                        child_counter += 1
+                        submenuitem = MenuItem(
+                            parent = menuitem,
+                            url = subitem['url'],
+                            name = subitem['name'],
+                            order = child_counter,
+                            root = root)
+                        submenuitem.save()
+                        
     def show_menu(self):
         key = self.cache_key
 
         cached_nodes = cache.get(key, None)
-
+        
         if cached_nodes and self.is_cached:
             # Only use the cache if the key is present in the database.
             # This prevents a condition where keys which have been removed
             # from the database due to a change in content, are still used.
             return cached_nodes
-        
+        self.populize_lang()
         root = MenuRoot(self.language)
         menuitems = MenuItem.objects.filter(root = root)
         menu = []
