@@ -69,7 +69,7 @@ class ForumMixin(object):
         qset = Forum.objects.all()
         if not self.request.GET.get('all'):
             language = translation.get_language()
-            qset = qset.filter(Q(lang=language) | Q(lang=''))
+            qset = qset.filter(Q(lang=language) | Q(lang='') | Q(lang__isnull=True))
         return qset.select_related('group')
 
     def get_context_data(self, **kwargs):
