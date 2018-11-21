@@ -33,6 +33,7 @@ from django.contrib import messages
 from django.views.generic import DetailView, ListView, DeleteView, CreateView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import RedirectView
+from django.template.defaultfilters import filesizeformat
 
 from person.models import User, Team
 
@@ -163,6 +164,22 @@ class DropResource(UploadResource):
         super().form_valid(form)
         context = self.get_context_data(item=form.instance)
         return self.render_to_response(context)
+
+class QuotaJson(View):
+    """Returns a Json snippet with information about a user's quota"""
+    def get(self, request):
+        context = {'user': 'unknown', 'quota': 0, 'used': 0}
+        if request.user.is_authenticated():
+            context.update({
+                'user': request.user.username,
+                'used': request.user.resources.disk_usage(),
+                'quota': request.user.quota(),
+            })
+        context['remain'] = context['quota'] - context['used']
+        context['used_label'] = filesizeformat(context['used'])
+        context['quota_label'] = filesizeformat(context['quota'])
+        return JsonResponse(context, safe=False, content_type='application/json; charset=utf-8')
+
 
 class LinkToResource(UploadResource):
     """Create a link to a resource instead of an upload"""
