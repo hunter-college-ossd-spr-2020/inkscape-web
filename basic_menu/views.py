@@ -61,13 +61,13 @@ class MenuShow():
 
         key = '%sbasic_menu_nodes_%s_%s' % (prefix, self.language[0], self.site.pk)
 
-#        if self.request.user.is_authenticated():
-#            key += '_%s_user' % self.request.user.pk
+        if self.request.user.is_authenticated():
+            key += '_%s_user' % self.request.user.pk
 
-#        if use_draft(self.request):
-#            key += ':draft'
-#        else:
-        key += ':public'
+        if use_draft(self.request):
+            key += ':draft'
+        else:
+            key += ':public'
         return key
 
     @cached_property
@@ -85,8 +85,10 @@ class MenuShow():
     def populize_lang(self):
         nodes = self.get_nodes()
         lang = self.language[0]
-        root = MenuRoot(self.language)
-        MenuRoot.objects.all().filter(language = self.language).delete()
+        if len(lang) == 1: #boring hack one letter root menu added, need to fix
+            return
+        root = MenuRoot(self.language[0])
+        MenuRoot.objects.all().filter(language = lang).delete()
         MenuItem.objects.all().filter(root = root).delete()
         root.save()
         counter = 0

@@ -21,10 +21,12 @@
 from django.http import HttpResponseRedirect
 from django.contrib.admin import ModelAdmin, TabularInline, site
 from django.conf.urls import include, url
+from django.core.cache import cache
 from cms.models.pagemodel import Page
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from .models import MenuItem, MenuRoot
+from .views import MenuShow
 
 class NestableTabularInline(TabularInline):
     class Media:
@@ -53,40 +55,13 @@ class MenuRootAdmin(ModelAdmin):
         #TODO: clear all
         MenuItem.objects.all().delete()
         MenuRoot.objects.all().delete()
-        for language  in settings.LANGUAGES :
-            lang = language[0]
-            root = MenuRoot(lang)
-            root.save()
-            cms_pages = Page.objects.public()
-            counter = 0
-            items = []
-            for page in cms_pages:
-                    counter += 1
-                    items['parent'] = page.parent_id
-                    items['id'] = page.id
-                    items['url'] = page.get_absolute_url(lang)
-                    items['name'] = page.get_menu_title(lang)
-                    items['orden'] = counter
-            root_counter = 0
-            for item in items.filter(item.parent = 0):
-                root_counter += 1
-                menuitem = MenuItem()
-                menuitem.parent = None
-                menuitem.url = item.url
-                menuitem.name = item.name
-                menuitem.orden = root_counter
-                menuitem.root = root
-                menuitem.save()
-                child_counter = 0
-                for subitem in items.filter(item.parent = item.id):
-                        child_counter += 1
-                        submenuitem = MenuItem()
-                        submenuitem.parent = menuitem.id
-                        submenuitem.url = subitem.url
-                        submenuitem.name = subitem.name
-                        submenuitem.orden = child_counter
-                        submenuitem.root = root
-                        submenuitem.save()
-        return HttpResponseRedirect('/admin/basic_menu/')
+        for language  in settings.LANGUAGES:
+            menu_show = MenuShow(language, request)
+            key = menu_show.cache_key
+            cached_nodes = cache.get(key, None)
+            if 1> 2 and cached_nodes and self.is_cached:
+                cache.delete(key)
+            menu_show.populize_lang()
+        return HttpResponseRedirect('/admin/basic_menu/menuroot')
 
 site.register(MenuRoot, MenuRootAdmin)
