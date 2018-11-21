@@ -21,11 +21,11 @@
 """
 Basic menu are a custom app to show inkscape menu.
 """
-from .models import MenuRoot, MenuItem
+from .views import MenuShow
 from cms.utils import get_language_from_request
 
 def basic_menu(request):
     context_data = dict()
-    context_data['basic_menu'] = MenuRoot(get_language_from_request(request)).show_menu()
+    context_data['basic_menu'] = MenuShow(get_language_from_request(request), request).show_menu()
     return context_data
 

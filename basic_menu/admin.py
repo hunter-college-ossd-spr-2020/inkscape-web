@@ -20,148 +20,37 @@
 #
 from django.http import HttpResponseRedirect
 from django.contrib.admin import ModelAdmin, TabularInline, site
-from django.db.models.query import Prefetch, prefetch_related_objects
-from django.conf.urls import include, url
+from django.conf.urls import url
 from cms.models.pagemodel import Page
-from cms.utils.conf import get_cms_setting
-from cms.utils.conf import get_languages
-from cms.cms_menus import CMSMenu, get_menu_node_for_page
-from cms.utils.page import get_page_queryset
-from menus.menu_pool import menu_pool, Menu
-from cms.cms_menus import get_visible_nodes
-from django.utils.translation import ugettext_lazy as _
+from menus.menu_pool import menu_pool, MenuRenderer
 from django.conf import settings
-from cms.models import EmptyTitle
 from .models import MenuItem, MenuRoot
-from cms.utils.i18n import (
-    get_fallback_languages,
-    get_public_languages,
-    hide_untranslated,
-    is_valid_site_language,
-)
-import logging
-
-logger = logging.getLogger(__name__)
-
-class NestableTabularInline(TabularInline):
-    class Media:
-        js = ('js/jquery.nestable.js', 'js/admin.nestable.js')
+from django.contrib.sites.models import Site
+from cms.utils.moderator import use_draft
 
 
-class MenuItemsInline(NestableTabularInline):
+class MenuItemsInline(TabularInline):
     """Show MenuItems in a stacked tab interface"""
     model = MenuItem
     extra = 1
 
-class MenuCustom(Menu):
+class MenuRendererOverloaded(MenuRenderer):
+    # The main logic behind this class is to decouple
+    # the singleton menu pool from the menu rendering logic.
+    # By doing this we can be sure that each request has it's
+    # private instance that will always have the same attributes.
 
-    def get_nodes(self, request, language):
-        from cms.models import Title
-
-        site = self.renderer.site
-        lang = language[0]
-        pages = get_page_queryset(
-            site,
-            draft=self.renderer.draft_mode_active,
-            published=not self.renderer.draft_mode_active,
-        )
-
-        _valid_language = True
-        _hide_untranslated = False
-
-        languages = [lang]
-
-        pages = (
-            pages
-            .filter(title_set__language__in=languages)
-            .select_related('node')
-            .order_by('node__path')
-            .distinct()
-        )
-
-        if not self.renderer.draft_mode_active:
-            # we're dealing with public pages.
-            # prefetch the draft versions.
-            pages = pages.select_related('publisher_public__node')
-        pages = get_visible_nodes(request, pages, site)
-
-        if not pages:
-            return []
-
-        try:
-            homepage = [page for page in pages if page.is_home][0]
-        except IndexError:
-            homepage = None
-
-        titles = Title.objects.filter(
-            language__in=languages,
-            publisher_is_draft=self.renderer.draft_mode_active,
-        )
-
-        lookup = Prefetch(
-            'title_set',
-            to_attr='filtered_translations',
-            queryset=titles,
-        )
-
-        #if DJANGO_1_9:
-            # This function was made public in django 1.10
-            # and as a result its signature changed
-        #prefetch_related_objects(pages, [lookup])
-        #else:
-        prefetch_related_objects(pages, lookup)
-
-        # Build the blank title instances only once
-        blank_title_cache = {language: EmptyTitle(language=language) for language in languages}
-
-        if lang not in blank_title_cache:
-            blank_title_cache[lang] = EmptyTitle(language=lang)
-
-        # Maps a node id to its page id
-        node_id_to_page = {}
-
-        def _page_to_node(page):
-            # EmptyTitle is used to prevent the cms from trying
-            # to find a translation in the database
-            page.title_cache = blank_title_cache.copy()
-
-            for trans in page.filtered_translations:
-                page.title_cache[trans.language] = trans
-            menu_node =  get_menu_node_for_page(
-                self.renderer,
-                page,
-                lang,
-                None
-            )
-            menu_node.lang = lang
-            return menu_node
-
-        menu_nodes = []
-
-        for page in pages:
-            node = page.node
-            parent_id = node_id_to_page.get(node.parent_id)
-
-            if node.parent_id and not parent_id:
-                # If the parent page is not available (unpublished, etc..)
-                # don't bother creating menu nodes for its descendants.
-                continue
-
-            menu_node = _page_to_node(page)
-            cut_homepage = homepage and not homepage.in_navigation
-
-            if cut_homepage and parent_id == homepage.pk:
-                # When the homepage is hidden from navigation,
-                # we need to cut all its direct children from it.
-                menu_node.parent_id = None
-            else:
-                menu_node.parent_id = parent_id
-            node_id_to_page[node.pk] = page.pk
-            menu_nodes.append(menu_node)
-        return menu_nodes
-
-
-menu_pool.register_menu(MenuCustom)
+    def __init__(self, pool, request, language):
+        self.pool = pool
+        # It's important this happens on init
+        # because we need to make sure that a menu renderer
+        # points to the same registered menus as long as the
+        # instance lives.
+        self.menus = pool.get_registered_menus(for_rendering=True)
+        self.request = request
+        self.request_language = language
+        self.site = Site.objects.get_current(request)
+        self.draft_mode_active = use_draft(request)
 
 class MenuRootAdmin(ModelAdmin):
     """Customise the root menu in the admin interface"""
@@ -181,26 +70,34 @@ class MenuRootAdmin(ModelAdmin):
         for language  in settings.LANGUAGES :
             self.populize_menu_lang(request, language, False)
         return HttpResponseRedirect('/admin/basic_menu/menuroot/')
-        
+    
     def populize_menu_lang(self, request, language, redirect):
         #TODO: clear all
         lang = language[0]
         root = MenuRoot(lang)
         MenuRoot.objects.all().filter(language = language ).delete()
         MenuItem.objects.all().filter(root = root).delete()
-        menupool = menu_pool.get_renderer(request)
-        nodes = menupool.get_menu('MenuCustom').get_nodes(request, language)
+        pool = menu_pool
+        nodes = MenuRendererOverloaded(pool, request, lang).get_nodes()
         root = MenuRoot(lang)
         root.save()
         counter = 0
         items = []
+        if lang == "en":
+            pathlang = ""
+        else:
+            pathlang = "/" + lang + "/"
         for node in nodes:
-            if node.path != "" and node.lang == lang and node.visible == True:
+            if node.visible == True:
                 item = dict()
                 counter += 1
                 item['parent'] = node.parent_id
                 item['id'] = node.id
-                item['url'] = node.path
+                if node.attr and node.attr['redirect_url']:
+                    item['url'] = node.attr['redirect_url']
+                else:
+                    item['url'] = pathlang + node.get_absolute_url()
+                
                 item['name'] = node.title
                 items.append(item)
         root_counter = 0
@@ -227,6 +124,6 @@ class MenuRootAdmin(ModelAdmin):
                         submenuitem.save()
         if redirect:
             return HttpResponseRedirect('/admin/basic_menu/menuroot/')
-
+        
 site.register(MenuRoot, MenuRootAdmin)
 
