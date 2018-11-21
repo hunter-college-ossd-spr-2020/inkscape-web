@@ -59,7 +59,7 @@ class MenuRootAdmin(ModelAdmin):
             menu_show = MenuShow(language, request)
             key = menu_show.cache_key
             cached_nodes = cache.get(key, None)
-            if 1> 2 and cached_nodes and self.is_cached:
+            if cached_nodes and self.is_cached:
                 cache.delete(key)
             menu_show.populize_lang()
         return HttpResponseRedirect('/admin/basic_menu/menuroot')

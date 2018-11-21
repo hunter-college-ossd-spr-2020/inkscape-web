@@ -22,10 +22,25 @@
 Basic menu are a custom app to show inkscape menu.
 """
 from .views import MenuShow
+from django.conf import settings
+from django.core.cache import cache
 from cms.utils import get_language_from_request
 
 def basic_menu(request):
     context_data = dict()
     context_data['basic_menu'] = MenuShow(get_language_from_request(request), request).show_menu()
+    path = request.get_full_path()
+    if path[:16] == "/admin/cms/page/":
+        lang = path.rsplit('=', 1)
+        for language  in settings.LANGUAGES:
+            if language[0] == lang[1]:
+                menu_show = MenuShow(language, request)
+                key = menu_show.cache_key
+                cached_nodes = cache.get(key, None)
+                if cached_nodes and self.is_cached:
+                    cache.delete(key)
+                menu_show.populize_lang()
+                break
     return context_data
+
 

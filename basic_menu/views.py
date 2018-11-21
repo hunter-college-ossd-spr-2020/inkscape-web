@@ -80,7 +80,7 @@ class MenuShow():
         return db_cache_key_lookup.exists()
 
     def get_nodes(self):
-        return MenuRendererOverloaded(menu_pool, self.request, self.language).get_nodes()
+        return MenuRendererOverloaded(menu_pool, self.request, self.language[0]).get_nodes()
 
     def populize_lang(self):
         nodes = self.get_nodes()
@@ -88,7 +88,7 @@ class MenuShow():
         if len(lang) == 1: #boring hack one letter root menu added, need to fix
             return
         root = MenuRoot(self.language[0])
-        MenuRoot.objects.all().filter(language = lang).delete()
+        MenuRoot.objects.all().filter(language = self.language).delete()
         MenuItem.objects.all().filter(root = root).delete()
         root.save()
         counter = 0
@@ -96,7 +96,7 @@ class MenuShow():
         if lang == "en":
             pathlang = ""
         else:
-            pathlang = "/" + lang + "/"
+            pathlang = "/" + lang 
         for node in nodes:
             if node.visible == True:
                 item = dict()
@@ -138,12 +138,11 @@ class MenuShow():
 
         cached_nodes = cache.get(key, None)
         
-        if cached_nodes and self.is_cached:
-            # Only use the cache if the key is present in the database.
-            # This prevents a condition where keys which have been removed
-            # from the database due to a change in content, are still used.
-            return cached_nodes
-        self.populize_lang()
+#        if cached_nodes and self.is_cached:
+#            # Only use the cache if the key is present in the database.
+#            # This prevents a condition where keys which have been removed
+#            # from the database due to a change in content, are still used.
+#            return cached_nodes
         root = MenuRoot(self.language)
         menuitems = MenuItem.objects.filter(root = root)
         menu = []
