@@ -178,48 +178,55 @@ class MenuRootAdmin(ModelAdmin):
 
     def populize_menu(self, request):
         #TODO: clear all
-        MenuItem.objects.all().delete()
-        MenuRoot.objects.all().delete()
         for language  in settings.LANGUAGES :
-            lang = language[0]
-            menupool = menu_pool.get_renderer(request)
-            nodes = menupool.get_menu('MenuCustom').get_nodes(request, language)
-            root = MenuRoot(lang)
-            root.save()
-            counter = 0
-            items = []
-            for node in nodes:
-                if node.path != "" and node.lang == lang and node.visible == True:
-                    item = dict()
-                    counter += 1
-                    item['parent'] = node.parent_id
-                    item['id'] = node.id
-                    item['url'] = node.path
-                    item['name'] = node.title
-                    items.append(item)
-            root_counter = 0
-            for item in items:
-                if item['parent'] == None:
-                    root_counter += 1
-                    menuitem = MenuItem(
-                        parent = None,
-                        url = item['url'],
-                        name = item['name'],
-                        order = root_counter,
-                        root = root)
-                    menuitem.save()
-                    child_counter = 0
-                    for subitem in items:
-                        if subitem['parent'] == item['id'] and item['parent'] == None:
-                            child_counter += 1
-                            submenuitem = MenuItem(
-                                parent = menuitem,
-                                url = subitem['url'],
-                                name = subitem['name'],
-                                order = child_counter,
-                                root = root)
-                            submenuitem.save()
+            self.populize_menu_lang(request, language, False)
         return HttpResponseRedirect('/admin/basic_menu/menuroot/')
+        
+    def populize_menu_lang(self, request, language, redirect):
+        #TODO: clear all
+        lang = language[0]
+        root = MenuRoot(lang)
+        MenuRoot.objects.all().filter(language = language ).delete()
+        MenuItem.objects.all().filter(root = root).delete()
+        menupool = menu_pool.get_renderer(request)
+        nodes = menupool.get_menu('MenuCustom').get_nodes(request, language)
+        root = MenuRoot(lang)
+        root.save()
+        counter = 0
+        items = []
+        for node in nodes:
+            if node.path != "" and node.lang == lang and node.visible == True:
+                item = dict()
+                counter += 1
+                item['parent'] = node.parent_id
+                item['id'] = node.id
+                item['url'] = node.path
+                item['name'] = node.title
+                items.append(item)
+        root_counter = 0
+        for item in items:
+            if item['parent'] == None:
+                root_counter += 1
+                menuitem = MenuItem(
+                    parent = None,
+                    url = item['url'],
+                    name = item['name'],
+                    order = root_counter,
+                    root = root)
+                menuitem.save()
+                child_counter = 0
+                for subitem in items:
+                    if subitem['parent'] == item['id'] and item['parent'] == None:
+                        child_counter += 1
+                        submenuitem = MenuItem(
+                            parent = menuitem,
+                            url = subitem['url'],
+                            name = subitem['name'],
+                            order = child_counter,
+                            root = root)
+                        submenuitem.save()
+        if redirect:
+            return HttpResponseRedirect('/admin/basic_menu/menuroot/')
 
 site.register(MenuRoot, MenuRootAdmin)
 
