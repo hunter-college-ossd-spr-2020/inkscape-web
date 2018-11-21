@@ -515,3 +515,10 @@ span.emoji i {
     max-height: 48px;
     border-radius: 6px;
 }
+#id_honeypot,
+label[for="id_honeypot"] {
+    display: none;
+}
+.cke {
+    display: contents !important;
+}
