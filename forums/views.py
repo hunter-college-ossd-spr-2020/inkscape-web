@@ -87,7 +87,7 @@ class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
 
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
     title = _('Edit Topic')
-    fields = ('subject',)
+    fields = ('subject', 'locked')
 
 class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     title = _('Delete Topic')
