@@ -23,6 +23,7 @@ from django.contrib.admin import ModelAdmin, TabularInline, site
 from django.conf.urls import url
 from cms.models.pagemodel import Page
 from menus.menu_pool import menu_pool, MenuRenderer
+from menus.modifiers import Marker, Level
 from django.conf import settings
 from .models import MenuItem, MenuRoot
 from django.contrib.sites.models import Site
@@ -33,6 +34,72 @@ class MenuItemsInline(TabularInline):
     """Show MenuItems in a stacked tab interface"""
     model = MenuItem
     extra = 1
+
+class MarkerOverloaded(Marker):
+    """
+    searches the current selected node and marks them.
+    current_node: selected = True
+    siblings: sibling = True
+    descendants: descendant = True
+    ancestors: ancestor = True
+    """
+    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
+        if post_cut or breadcrumb:
+            return nodes
+        selected = None
+        root_nodes = []
+        for node in nodes:
+            if not hasattr(node, "descendant"):
+                node.descendant = False
+            if not hasattr(node, "ancestor"):
+                node.ancestor = False
+            if not node.parent:
+                if selected and not selected.parent:
+                    node.sibling = True
+                root_nodes.append(node)
+            if node.selected:
+                if node.parent:
+                    newnode = node
+                    while newnode.parent:
+                        newnode = newnode.parent
+                        newnode.ancestor = True
+                    for sibling in node.parent.children:
+                        if not sibling.selected:
+                            sibling.sibling = True
+                else:
+                    for root_node in root_nodes:
+                        if not root_node.selected:
+                            root_node.sibling = True
+                if node.children:
+                    self.mark_descendants(node.children)
+                selected = node
+            if node.children:
+                node.is_leaf_node = False
+            else:
+                node.is_leaf_node = True
+        MenuRootAdmin.populize_menu_lang(nodes)
+        return nodes
+
+
+class LevelOverloaded(Level):
+    """
+    marks all node levels
+    """
+    post_cut = True
+
+    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
+        if breadcrumb:
+            return nodes
+        for node in nodes:
+
+            if not node.parent:
+                if post_cut:
+                    node.menu_level = 0
+                else:
+                    node.level = 0
+                self.mark_levels(node, post_cut)
+        MenuRootAdmin.populize_menu_lang(nodes)
+        return nodes
 
 class MenuRendererOverloaded(MenuRenderer):
     # The main logic behind this class is to decouple
@@ -68,18 +135,19 @@ class MenuRootAdmin(ModelAdmin):
     def populize_menu(self, request):
         #TODO: clear all
         for language  in settings.LANGUAGES :
-            self.populize_menu_lang(request, language, False)
+            self.populize_menu_lang(self.get_nodes(request, language, False), language, False)
         return HttpResponseRedirect('/admin/basic_menu/menuroot/')
     
-    def populize_menu_lang(self, request, language, redirect):
-        #TODO: clear all
+    def get_nodes(self, request, language, redirect):
+        lang = language[0]
+        pool = menu_pool
+        return MenuRendererOverloaded(pool, request, lang).get_nodes()
+    
+    def populize_menu_lang(self, nodes, language, redirect):
         lang = language[0]
         root = MenuRoot(lang)
-        MenuRoot.objects.all().filter(language = language ).delete()
+        MenuRoot.objects.all().filter(language = language).delete()
         MenuItem.objects.all().filter(root = root).delete()
-        pool = menu_pool
-        nodes = MenuRendererOverloaded(pool, request, lang).get_nodes()
-        root = MenuRoot(lang)
         root.save()
         counter = 0
         items = []

@@ -28,9 +28,9 @@ from cms.utils.conf import get_cms_setting
 from django.contrib.sites.models import Site
 from cms.utils.moderator import use_draft
 from menus.models import CacheKey
+from menus.modifiers import Marker, Level
 from django.core.cache import cache
 from .models import MenuItem, MenuRoot
-
 
 class MenuShow():
     def __init__(self, language, request):
