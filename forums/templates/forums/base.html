@@ -23,6 +23,7 @@
     {{ form.media }}
   </head>
   <body data-static="{% static '' %}">
+    {% block "container" %}
     <div class="container">
       <div class="forum-box">
         {% block "side" %}
@@ -116,5 +117,6 @@
         </aside>
       </div>
     </div>
+    {% endblock %}
   </body>
 </html>

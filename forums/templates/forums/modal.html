@@ -1,16 +1,6 @@
-<!DOCTYPE html>
+{% extends "forums/base.html" %}
 {% load i18n static inkscape %}
-<html>
-  <head>
-    <title>{{ title }}</title>
-    {% block "css" %}
-      <link href="{% static "forums/css/bootstrap.min.css" %}" rel="stylesheet" id="bootstrap-css">
-      <link href="{% static "forums/css/forum.css" %}" rel="stylesheet">
-    {% endblock %}
-    {{ form.media }}
-  </head>
-  <body>
-
+{% block "container" %}
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -79,8 +69,7 @@
           <div class="modal-footer">{% block "dialog-buttons" %}{% endblock %}
           </div>
         {% endif %}
-        </div>
       </div>
+    </div>
   </div>
-  </body>
-</html>
+{% endblock %}
