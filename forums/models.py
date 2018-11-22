@@ -330,8 +330,8 @@ class ForumTopic(Model):
 
 class CommentAttachment(Model):
     """A single attachment on a comment"""
-    resource = ForeignKey(Resource, related_name='comment_hosts')
-    comment = ForeignKey(Comment, related_name='attachments')
+    resource = ForeignKey(Resource, related_name='comment_hosts', on_delete=CASCADE)
+    comment = ForeignKey(Comment, related_name='attachments', on_delete=CASCADE)
     inline = BooleanField(default=False)
 
     desc = CharField(max_length=128, null=True, blank=True)

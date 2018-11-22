@@ -57,6 +57,8 @@ $(document).ready(function() {
           $(this).hide();
       }
   });
+  $('.group-id_attachments').hide();
+  $('.group-id_inlines').hide();
 });
 
 function generate_emoji_pallet(dropdown, post_url, pot) {

@@ -74,6 +74,14 @@
               {{ comment_form.security_hash }}
               <input type="hidden" name="next" value="{{ request.path }}"/>
             </div>
+            <div class="row group-id_attachments">
+              {{ comment_form.attachments.label_tag }}
+              {{ comment_form.attachments }}
+            </div>
+            <div class="row group-id_inlines">
+              {{ comment_form.inlines.label_tag }}
+              {{ comment_form.inlines }}
+            </div>
 
             <div class="row">
               <span class="btn-group pull-right">
