@@ -225,10 +225,6 @@ ul.labels-info li a i {
     background: none repeat scroll 0 0 #f7f7f7;
     font-weight: 600;
 }
-.table-forum .subscribed {
-    color: #aaa;
-    width: 32px;
-}
 ul.forum-pagination {
     float: right;
 }
@@ -520,4 +516,34 @@ span.emoji i {
 }
 .cke {
     display: contents !important;
+}
+.table-forum .icon {
+    color: #aaa;
+    width: 32px;
+}
+.table tr.locked {
+    color: #888;
+    background-color: #eee;
+}
+.table tr.locked:hover {
+    background-color: #eee;
+}
+.table tr.locked .icon {
+    color: #ccc;
+}
+.table tr.locked a {
+    color: #888;
+}
+.table tr.sticky {
+    color: #3c763d;
+    background-color: #dff0d8;
+}
+.table tr.sticky:hover {
+    background-color: #c4ecb4;
+}
+.table tr.sticky a {
+    color: #3c763d;
+}
+.table tr.sticky .icon {
+    color: #3c763d;
 }

@@ -29,8 +29,10 @@
   <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}">
     <tbody>
     {% for topic in page_obj %}
-      <tr class="{% cycle 'odd' 'even' %} new" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
-        <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-star-empty"></span></td>
+    <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
+        <td class="icon forum-small-cells">
+            <span class="glyphicon glyphicon-{% if topic.locked %}lock{% elif topic.sticky %}bookmark{% else %}{% endif %}"></span>
+        </td>
         <td class="topic-item"><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></td>
         <td class="forum-small-cells">
           {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}
