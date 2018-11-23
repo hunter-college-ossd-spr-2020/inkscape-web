@@ -23,6 +23,9 @@
             {% if comment.user_id == request.user.pk or request.user.is_moderator %}
             <small class="pull-right text-muted"><a href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a></small>
             {% endif %}
+            {% if request.user.is_moderator %}
+            <small class="pull-right text-muted"><a href="{% url "forums:comment_delete" comment.pk %}" title="Delete"><span class="glyphicon glyphicon-remove"></span></a></small>
+            {% endif %}
             <small class="pull-right text-muted"><a title="{% trans "Link" %}" href="{% get_comment_permalink comment %}"><span class="glyphicon glyphicon-link"></span></a></small>
             <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
           </div>

@@ -77,6 +77,16 @@ class CommentEdit(OwnerRequired, UpdateView):
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
 
+
+class CommentDelete(ModeratorRequired, DeleteView):
+    model = Comment
+    title = _('Delete Comment')
+    template_name = "forums/moderator_form.html"
+
+    def get_success_url(self):
+        return self.object.get_topic().get_absolute_url()
+
+
 class TopicMixin(object):
     template_name = "forums/moderator_form.html"
     model = ForumTopic

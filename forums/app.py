@@ -48,11 +48,26 @@ class ForumsConfig(AppConfig):
     plugin = {}
 
     def ready(self):
-        from .models import Forum
+        from .models import Forum, ForumTopic
         from django_comments.models import Comment
 
         post_create(Comment, self.new_comment)
         post_create(Forum, self.new_forum)
+
+        def get_topic(self):
+            """Get a topic for a comment"""
+            obj = self.content_object
+            if isinstance(obj, ForumTopic):
+                return obj
+            try:
+                return ForumTopic.objects.get(
+                    object_pk=self.object_pk,
+                    forum__content_type=self.content_type)
+            except ForumTopic.DoesNotExist:
+                pass
+            return None
+
+        Comment.get_topic = get_topic
 
         for key, conf in getattr(settings, 'FORUM_SYNCS', {}).items():
             try:
