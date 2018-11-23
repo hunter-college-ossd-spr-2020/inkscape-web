@@ -20,6 +20,7 @@
 """
 Fields for forum forms
 """
+from django.db.models import QuerySet
 from django.forms import ValidationError, CharField
 from resources.models import Resource
 
@@ -29,7 +30,9 @@ class ResourceList(CharField):
     """
     def prepare_value(self, value):
         if value is not None and value != '':
-            return ",".join([str(pk) for pk in value.values_list('resource_id', flat=True)])
+            if isinstance(value, QuerySet):
+                return ",".join([str(pk) for pk in value.values_list('resource_id', flat=True)])
+            return value
         return ''
 
     def to_python(self, value):

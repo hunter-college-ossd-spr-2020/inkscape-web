@@ -84,6 +84,12 @@ class AddCommentForm(AttachmentMixin, CommentForm):
     attachments = AttachmentMixin.attachments
     inlines = AttachmentMixin.inlines
 
+    # Remove fields from CommentForm, Meta exclude doesn't work
+    # because this isn't a ModelForm, but a bog standard Form
+    url = None
+    name = None
+    email = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['comment'].widget = TextEditorWidget(configuration='CKEDITOR_FORUM')
@@ -117,6 +123,10 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         Save with attachments, normally this would be save() but django_comment
         doesn't use normal form handling and instead uses this function.
         """
+        self.cleaned_data['name'] = ''
+        self.cleaned_data['email'] = ''
+        self.cleaned_data['url'] = ''
+
         comment = super().get_comment_object(site_id=site_id)
         comment.save()
         self.save_attachments(comment)
