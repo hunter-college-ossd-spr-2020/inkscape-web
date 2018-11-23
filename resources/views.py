@@ -166,6 +166,15 @@ class DropResource(UploadResource):
         context = self.get_context_data(item=form.instance)
         return self.render_to_response(context)
 
+class UploadJson(UploadResource):
+    """Upload with Json response"""
+    form_class = ResourceAddForm
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        return JsonResponse(form.instance.as_json(), safe=False,
+                            content_type='application/json; charset=utf-8')
+
 class QuotaJson(View):
     """Returns a Json snippet with information about a user's quota"""
     def get(self, request):
@@ -210,18 +219,7 @@ class ResourcesJson(View):
             context['error'] = 'Too many results (>{}).format(max_num)'
             qset = qset.none()
 
-        context['resources'] = [{
-            'pk': resource.pk,
-            'name': resource.name,
-            'summary': resource.summary_string(),
-            'filename': resource.filename(),
-            'thumbnail': resource.thumbnail_url(),
-            'rendering': resource.rendering_url(),
-            'download': resource.download_url(),
-            'link': resource.link,
-            'is_image': resource.mime().is_image(),
-            'is_video': resource.is_video,
-        } for resource in qset]
+        context['resources'] = [resource.as_json() for resource in qset]
 
         return JsonResponse(context, safe=False,
                             content_type='application/json; charset=utf-8')

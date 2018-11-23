@@ -25,8 +25,6 @@ __all__ = ('License', 'Category', 'Resource', 'ResourceMirror',
            'Gallery', 'Vote', 'Quota', 'GalleryPlugin', 'CategoryPlugin',
            'Tag', 'TagCategory')
 
-import gzip
-import sys
 import os
 
 from django.db.models import *
@@ -594,15 +592,31 @@ class Resource(Model):
 
     @property
     def gallery(self):
+        """Return first gallery, or None"""
         try:
             return self.galleries.all()[0]
         except IndexError:
             return None
 
+    def as_json(self):
+        """Return a standard dictionary for json output"""
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'link': self.link,
+            'summary': self.summary_string(),
+            'filename': self.filename(),
+            'thumbnail': self.thumbnail_url(),
+            'rendering': self.rendering_url(),
+            'download': self.download_url(),
+            'is_image': self.mime().is_image(),
+            'is_video': self.is_video,
+        }
+
     @cached
     def mime(self):
         """Returns an encapsulated media_type as a MimeType object"""
-        return MimeType( self.media_type or 'application/unknown' )
+        return MimeType(self.media_type or 'application/unknown')
 
     def link_from(self):
         """Returns the domain name or useful name if known for link"""

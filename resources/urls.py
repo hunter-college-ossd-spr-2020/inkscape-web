@@ -30,7 +30,7 @@ from .views import (
     PasteInResource, UploadResource, DropResource, LinkToResource,
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
-    TagsJson, QuotaJson, ResourcesJson,
+    UploadJson, TagsJson, QuotaJson, ResourcesJson,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
@@ -70,6 +70,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^json/tags.json$', TagsJson.as_view(), name='tags.json'),
     url(r'^json/quota.json$', QuotaJson.as_view(), name='quota.json'),
     url(r'^json/resources.json$', ResourcesJson.as_view(), name='resources.json'),
+    url(r'^json/upload.json$', UploadJson.as_view(), name='upload.json'),
 
     url_tree(
         r'^gallery/',
