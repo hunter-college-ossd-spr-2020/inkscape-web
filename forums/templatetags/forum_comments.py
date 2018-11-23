@@ -21,6 +21,8 @@ Try to make forum comment requests faster.
 from django.template import Library
 from django_comments.templatetags.comments import CommentListNode
 
+from alerts.models import AlertSubscription
+
 register = Library() # pylint: disable=invalid-name
 
 def defer(base, *args):
@@ -50,3 +52,11 @@ def get_forum_comment_list(parser, token):
     See django_comments.templatetags.comments.get_comment_list
     """
     return ForumCommentListNode.handle_token(parser, token)
+
+@register.filter("subscription")
+def sub(topic, user):
+    """Return if the user is subscribed to the topic"""
+    try:
+        return topic.subscriptions.get(user_id=user.pk)
+    except AlertSubscription.DoesNotExist:
+        return None
