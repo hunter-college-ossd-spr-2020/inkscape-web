@@ -15,10 +15,14 @@
 <h3><img id="forum-logo" src="{{ form.target_object.icon.url }}"> {{ form.target_object }}</h3>
 {% endblock %}
 
+{% block "modal-rest" %}
+  {% include "forums/attachment_draw.html" %}
+{% endblock %}
+
 {% block "form-buttons" %}
   <span class="btn-group pull-right">
-    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Topic" %}</button>
-    <button class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-paperclip"></span></button>
+    <button class="btn btn-primary btn-sm" type="submit"> {% trans "Submit Topic" %}</button>
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
   </span>
   <span class="btn-group pull-left">
     <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read the <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>

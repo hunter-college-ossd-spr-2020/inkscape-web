@@ -58,6 +58,7 @@
                 {% endwith %}
               {% endif %}
 
+              {% block "modal-rest" %}{% endblock %}
               <div class="modal-footer">
                 {% block "form-buttons" %}
                   <button type="submit" class="btn btn-primary">Go</button>
@@ -69,7 +70,6 @@
           <div class="modal-footer">{% block "dialog-buttons" %}{% endblock %}
           </div>
         {% endif %}
-        {% block "modal-rest" %}{% endblock %}
       </div>
     </div>
   </div>

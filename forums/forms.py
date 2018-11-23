@@ -172,6 +172,9 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         max_length=COMMENT_MAX_LENGTH)
     field_order = ('subject', 'comment', 'honeypot')
 
+    attachments = AttachmentMixin.attachments
+    inlines = AttachmentMixin.inlines
+
     def __init__(self, user, ip_address, *args, **kwargs):
         self.user = user
         self.ip_address = ip_address

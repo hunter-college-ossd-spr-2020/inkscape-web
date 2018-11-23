@@ -15,10 +15,14 @@
 <h3><img id="forum-logo" src="{{ object.content_object.forum.icon.url }}"> {% if object.user_id == request.user.pk %}{% trans "Edit: " %}{% else %}{% trans "Moderate: " %}{% endif %} {{ object.content_object }}</h3>
 {% endblock %}
 
+{% block "modal-rest" %}
+  {% include "forums/attachment_draw.html" %}
+{% endblock %}
+
 {% block "form-buttons" %}
   <span class="btn-group pull-right">
     <button class="btn btn-primary btn-sm"type="submit"> {% trans "Save Edit" %}</button>
-    <a href="#" class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-paperclip"></span></a>
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
   </span>
   <span class="btn-group pull-left">
     {% if object.user_id == request.user.pk %}

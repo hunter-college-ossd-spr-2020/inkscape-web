@@ -1,0 +1,38 @@
+{% load i18n %}
+<div class="modal-footer" id="attachment-draw" style="display: none;">
+  <div class="card-pf-body" id="quota">
+    <div class="progress-container progress-description-left progress-label-right">
+      <div class="progress-description">Quota <span><strong>0 of 0.</strong> MB</span></div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped" style="width: 0%;" data-toggle="tooltip" title="0% Used">
+        </div>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped" id="file_box">
+    <tbody>
+      <tr class="file row" id="file_template" style="display: none;">
+        <th scope="row">
+          <span class="glyphicon glyphicon-paperclip"></span> <span class="fn">$_filename</span>
+        </th>
+        <td>
+          <div class="btn-group">
+            <a href="#" class="btn btn-sm btn-default inline"><span class="glyphicon"></span></a>
+            <a href="#" class="btn btn-sm btn-danger delete"><span class="glyphicon glyphicon-trash"></span></a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <hr/>
+  <div class="row">
+    <div class="input-group pull-left">
+        <input type="text" class="input-sm form-control" placeholder="{% trans "Search for Existing Resource" %}" id="resource_search">
+      <span class="input-group-btn">
+        <button id="resource_add" class="btn btn-sm btn-default" type="button"><span class="glyphicon glyphicon-search"></button>
+        <input type="file" id="file_add" style="display: none;">
+        <label for="file_add" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-upload"></span> {% trans "Upload File" %}</label>
+      </span>
+    </div>
+  </div>
+</div>
