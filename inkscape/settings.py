@@ -203,8 +203,8 @@ INSTALLED_APPS = (
     'moderation',
     'projects',
     'releases',
-    'django_comments',
     'forums',
+    'django_comments',
     'alerts',
     'markdown_deux',
 )
