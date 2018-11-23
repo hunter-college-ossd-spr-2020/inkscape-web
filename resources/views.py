@@ -34,6 +34,7 @@ from django.views.generic import DetailView, ListView, DeleteView, CreateView, U
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import RedirectView
 from django.template.defaultfilters import filesizeformat
+from django.db.models import Q
 
 from person.models import User, Team
 
@@ -178,8 +179,52 @@ class QuotaJson(View):
         context['remain'] = context['quota'] - context['used']
         context['used_label'] = filesizeformat(context['used'])
         context['quota_label'] = filesizeformat(context['quota'])
-        return JsonResponse(context, safe=False, content_type='application/json; charset=utf-8')
+        return JsonResponse(context, safe=False)
 
+class ResourcesJson(View):
+    """Returns information about resources"""
+    def get(self, request):
+        context = {}
+
+        qset = Resource.objects.all()
+        max_num = 1
+        if 'pks[]' in request.GET:
+            pks = request.GET.getlist('pks[]')
+            qset = qset.filter(pk__in=pks)
+            max_num += len(pks)
+        elif 'q' in request.GET:
+            query = Q()
+            for qey in request.GET.getlist('q'):
+                max_num += 2
+                if qey.isnumeric():
+                    context['pk'] = qey
+                    query |= Q(pk=qey)
+                elif qey:
+                    context['query'] = qey
+                    query |= Q(name__iexact=qey)\
+                           | Q(slug__iexact=qey)\
+                           | Q(download__iendswith=qey)
+            qset = qset.filter(query)
+
+        if qset.count() > max_num:
+            context['error'] = 'Too many results (>{}).format(max_num)'
+            qset = qset.none()
+
+        context['resources'] = [{
+            'pk': resource.pk,
+            'name': resource.name,
+            'summary': resource.summary_string(),
+            'filename': resource.filename(),
+            'thumbnail': resource.thumbnail_url(),
+            'rendering': resource.rendering_url(),
+            'download': resource.download_url(),
+            'link': resource.link,
+            'is_image': resource.mime().is_image(),
+            'is_video': resource.is_video,
+        } for resource in qset]
+
+        return JsonResponse(context, safe=False,
+                            content_type='application/json; charset=utf-8')
 
 class LinkToResource(UploadResource):
     """Create a link to a resource instead of an upload"""

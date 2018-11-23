@@ -518,6 +518,12 @@ class Resource(Model):
             return self.mime().static(icon)
         return self.mime().icon()
 
+    def download_url(self):
+        """Return the link to the download if it exists"""
+        if self.download:
+            return self.download.url
+        return None
+
     def as_lines(self):
         """Returns the contents as text"""
         return syntaxer(self.as_text(), self.mime())
