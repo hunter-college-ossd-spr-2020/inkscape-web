@@ -236,6 +236,9 @@ class ForumTopic(Model):
 
     post_count = PositiveIntegerField(_('Number of Posts'), default=0)
     last_posted = DateTimeField(_('Last Posted'), db_index=True, null=True, blank=True)
+    has_attachments = BooleanField(default=False)
+    last_username = CharField(max_length=128, null=True, blank=True)
+
     sticky = IntegerField(_('Sticky Priority'), default=0,\
         help_text=_('If set, will stick this post to the top of the topics '
                     'list. Higher numbers appear nearer the top. Same numbers '

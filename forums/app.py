@@ -51,7 +51,7 @@ class ForumsConfig(AppConfig):
         from .models import Forum, ForumTopic
         from django_comments.models import Comment
 
-        post_create(Comment, self.new_comment)
+        post_save.connect(self.save_comment, sender=Comment, weak=False)
         post_create(Forum, self.new_forum)
 
         def get_topic(self):
@@ -99,7 +99,14 @@ class ForumsConfig(AppConfig):
                     self.new_comment(comment)
                     done.append(comment.object_pk)
 
-    def new_comment(self, instance, **kw):
+    def save_comment(self, instance, created=False, **kw):
+        """Called when any comment is saved"""
+        if created:
+            self.create_comment(instance, **kw)
+        elif instance.user:
+            self.update_topic(instance.get_topic(), instance)
+
+    def create_comment(self, instance, **kw):
         """Called when a new comment has been saved"""
         from .models import Forum, ForumTopic
         defaults = {'subject': str(instance.content_object)}
@@ -111,16 +118,22 @@ class ForumsConfig(AppConfig):
             except ForumTopic.MultipleObjectsReturned:
                 continue
 
-            self.update_times(forum, topic, instance.submit_date)
+            self.update_times(forum, topic, instance)
 
         obj = instance.content_object
         if isinstance(instance.content_object, ForumTopic):
-            self.update_times(obj.forum, obj, instance.submit_date)
+            self.update_times(obj.forum, obj, instance)
 
-    def update_times(self, forum, topic, submit_date):
+    def update_times(self, forum, topic, instance):
         """Updates the topic and forum last modified stamp"""
         for obj in (forum, topic):
-            if not obj.last_posted or obj.last_posted < submit_date:
+            if not obj.last_posted or obj.last_posted < instance.submit_date:
                 obj.post_count += 1
-                obj.last_posted = submit_date
+                obj.last_posted = instance.submit_date
                 obj.save(update_fields=['last_posted', 'post_count'])
+
+    def update_topic(self, topic, instance):
+        """Updates other meta data for quick access from the topic"""
+        topic.last_username = instance.user.username
+        topic.has_attachments = bool(topic.has_attachments or instance.attachments.count())
+        topic.save()
