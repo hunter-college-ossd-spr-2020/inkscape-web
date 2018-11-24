@@ -38,17 +38,19 @@ from django_comments.models import CommentFlag
 
 from .forms import NewTopicForm, EditCommentForm
 from .mixins import UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
-from .models import Comment, Forum, ForumTopic
+from .models import Comment, Forum, ForumTopic, ModerationLog
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
     """A list of all available forums"""
-    breadcrumbs = []
     template_name = 'forums/forum_list.html'
 
+class ModerationList(ListView):
+    """A list of all moderation actions logged"""
+    model = ModerationLog
+    paginate_by = 20
 
 class TopicList(UserVisit, ForumMixin, ListView):
     """A list of all topics in a forum"""
-    breadcrumbs = []
     paginate_by = 20
 
     def get_queryset(self):
@@ -62,7 +64,6 @@ class TopicList(UserVisit, ForumMixin, ListView):
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
-    breadcrumbs = []
     def get_queryset(self):
         return ForumTopic.objects\
             .filter(forum__slug=self.kwargs['forum'])\
@@ -77,6 +78,8 @@ class CommentEdit(OwnerRequired, UpdateView):
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
 
+    def log_details(self):
+        return {'diff': 'TBD'}
 
 class CommentDelete(ModeratorRequired, DeleteView):
     model = Comment
@@ -84,8 +87,12 @@ class CommentDelete(ModeratorRequired, DeleteView):
     template_name = "forums/moderator_form.html"
 
     def get_success_url(self):
+        self.record_action()
         return self.object.get_topic().get_absolute_url()
 
+    def log_details(self):
+        """Return the full text of the comment"""
+        return {'text': self.get_object().comment}
 
 class TopicMixin(object):
     template_name = "forums/moderator_form.html"
@@ -95,6 +102,11 @@ class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
     title = _('Move Topic')
     fields = ('forum',)
 
+    def log_details(self):
+        """Return the old and new forums"""
+        obj = self.get_object()
+        return {'from_forum': obj.forum.slug}
+
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
     title = _('Edit Topic')
     fields = ('subject', 'sticky', 'locked')
@@ -103,7 +115,12 @@ class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     title = _('Delete Topic')
 
     def get_success_url(self):
+        self.record_action()
         return self.object.forum.get_absolute_url()
+
+    def log_details(self):
+        obj = self.get_object()
+        return {'subject': obj.subject}
 
 class TopicCreate(UserRequired, FormView):
     """

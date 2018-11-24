@@ -25,7 +25,7 @@ from django.conf.urls import url
 from inkscape.url_utils import url_tree
 
 from .views import (
-    ForumList,
+    ModerationList, ForumList,
     TopicList, TopicDetail, TopicSearch, TopicCreate,
     TopicMove, TopicEdit, TopicDelete,
     CommentEdit, CommentSearch, CommentEmote, CommentDelete,
@@ -33,6 +33,7 @@ from .views import (
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
+    url(r'^log/$', ModerationList.as_view(), name="log"),
     url(r'^search/$', TopicSearch(), name='search'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url_tree(

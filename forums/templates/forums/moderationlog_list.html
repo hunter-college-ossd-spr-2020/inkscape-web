@@ -1,0 +1,45 @@
+{% extends "forums/base.html" %}
+{% load i18n static inkscape %}
+
+{% block "header" %}
+  <h3><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</h3>
+{% endblock %}
+
+{% block "tools" %}
+    <a class="btn btn-default" href="{% url "forums:list" %}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+    {{ block.super }}
+{% endblock %}
+
+{% block "content" %}
+  <table class="table table-forum" data-pk="forum-{{ forum.pk }}">
+    <tbody>
+    {% for log in object_list %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="view-message">{{ log.action }}</td>
+        <td class="view-message">{{ log.moderator }}</td>
+        <td class="view-message forum-small-cells text-muted">
+          {% if log.comment %}
+            <span class="glyphicon glyphicon-comment"></span> <a href="{{ log.comment.get_absolute_url }}">#{{ log.comment.pk }}</a>
+          {% elif log.topic %}
+            <span class="glyphicon glyphicon-list-alt"></span> <a href="{{ log.topic.get_absolute_url }}">{{ log.topic.subject }}</a>
+          {% else %}
+            {% if log.details.subject %}
+              <span class="glyphicon glyphicon-list-alt"></span> {{ log.details.subject }}
+            {% elif log.details.text %}
+              <span class="glyphicon glyphicon-comment"></span> #{{ log.details.comment_id }}
+            {% else %}
+              <span class="glyphicon glyphicon-remove-circle"></span> Deleted
+            {% endif %}
+          {% endif %}
+        </td>
+        <td class="view-message text-right">{{ log.performed|timetag }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+          <td style="text-align: center;"><h1>{% trans "Nothing logged" %}</h1></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

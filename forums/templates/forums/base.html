@@ -72,6 +72,9 @@
             </li>
           </ul>
           {% endif %}
+          <ul class="nav nav-pills nav-stacked labels-info">
+            <li><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
+          </ul>
         </aside>
         {% endblock %}
         <aside class="lg-side">

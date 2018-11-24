@@ -29,7 +29,7 @@ from unidecode import unidecode
 
 from django.db.models.functions import Cast
 from django.db.models import (
-    Model, QuerySet, CASCADE,
+    Model, QuerySet, CASCADE, SET_NULL,
     ForeignKey, OneToOneField, IntegerField, DateTimeField, BooleanField,
     CharField, SlugField, TextField, FileField, PositiveIntegerField,
 )
@@ -70,7 +70,6 @@ class SelectRelatedQuerySet(QuerySet):
 class ForumGroup(Model):
     name = CharField(max_length=128, unique=True)
 
-    breadcrumb_name = lambda self: self.forums.all().breadcrumb_name()
     get_absolute_url = lambda self: self.forums.all().get_absolute_url()
     parent = property(lambda self: self.forums.all().parent)
 
@@ -82,9 +81,6 @@ class ForumQuerySet(SelectRelatedQuerySet):
     def parent(self):
         page = reverse('pages-details-by-slug', kwargs={'slug': 'community'})
         return (page, _('Community'))
-
-    def breadcrumb_name(self):
-        return _('Forums')
 
     def get_absolute_url(self):
         return reverse('forums:list')
@@ -122,11 +118,6 @@ class Forum(Model):
 
     def __str__(self):
         return self.name
-
-    @property
-    def parent(self):
-        """Return the forum group as the parent for breadcrumbs"""
-        return self.group
 
     def model_class(self):
         """Return a content type class if this forum is based on objects"""
@@ -281,11 +272,6 @@ class ForumTopic(Model):
         return Comment.objects.filter(object_pk=obj.pk, content_type=ctype)
 
     @property
-    def parent(self):
-        """Return the parent object for breadcrumbs"""
-        return self.forum
-
-    @property
     def object_template(self):
         """Returns a custom template if needed for this item."""
         custom_template = None
@@ -341,6 +327,32 @@ class CommentAttachment(Model):
 
     def __str__(self):
         return "{} attached to comment in the forum.".format(self.resource)
+
+class ModerationLog(Model):
+    """
+    Record each moderation action, what was done and any other details.
+    """
+    action = CharField(max_length=128)
+    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="forum_moderation_actions")
+    performed = DateTimeField(auto_now=True, db_index=True)
+
+    user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL)
+    comment = ForeignKey(Comment, null=True, blank=True, on_delete=SET_NULL)
+    topic = ForeignKey(ForumTopic, null=True, blank=True, on_delete=SET_NULL)
+
+    detail = TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('performed',)
+
+    def __str__(self):
+        return self.action
+
+    def details(self):
+        try:
+            return json.loads(self.detail)
+        except ValueError:
+            return {}
 
 class UserFlag(Model):
     """
