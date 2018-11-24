@@ -193,8 +193,14 @@ class NewTopicForm(AttachmentMixin, CommentForm):
     def save(self, **_):
         """Save the comment under a topic's object"""
         subject = self.cleaned_data['subject']
+
+        att = bool(self.cleaned_data['attachments'])
+        inl = bool(self.cleaned_data['inlines'])
+
         self.target_object = self.target_object.topics.create(
-            subject=subject, last_posted=now())
+            subject=subject, last_posted=now(),
+            last_username=self.user.username,
+            has_attachments=(att or inl))
 
         self.cleaned_data['name'] = self.user.username
         self.cleaned_data['email'] = self.user.email
