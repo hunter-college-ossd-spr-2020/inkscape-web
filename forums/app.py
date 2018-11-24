@@ -96,7 +96,7 @@ class ForumsConfig(AppConfig):
             cms = Comment.objects.filter(content_type=instance.content_type)
             for comment in cms.order_by('-submit_date'):
                 if comment.object_pk not in done:
-                    self.new_comment(comment)
+                    self.create_comment(comment)
                     done.append(comment.object_pk)
 
     def save_comment(self, instance, created=False, **kw):
