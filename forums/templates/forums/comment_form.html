@@ -1,0 +1,34 @@
+{% extends "forums/modal.html" %}
+{% load i18n static extras inkscape %}
+
+{% block "css" %}{{ block.super }}
+<style>
+  h3 { margin-top: 0px; }
+  #forum-logo { width: 48px; }
+</style>
+{% endblock %}
+
+{% block "dialog-title" %}
+  <a href="{{ object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+<h3><img id="forum-logo" src="{{ object.content_object.forum.icon.url }}"> {% if object.user_id == request.user.pk %}{% trans "Edit: " %}{% else %}{% trans "Moderate: " %}{% endif %} {{ object.content_object }}</h3>
+{% endblock %}
+
+{% block "modal-rest" %}
+  {% include "forums/attachment_draw.html" %}
+{% endblock %}
+
+{% block "form-buttons" %}
+  <span class="btn-group pull-right">
+    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Save Edit" %}</button>
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
+  </span>
+  <span class="btn-group pull-left">
+    {% if object.user_id == request.user.pk %}
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
+    {% else %}
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care editing <strong>other people's comments</strong>.{% endblocktrans %}</a>
+    {% endif %}
+  </span>
+{% endblock %}

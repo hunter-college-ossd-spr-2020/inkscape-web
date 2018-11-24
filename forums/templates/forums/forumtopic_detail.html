@@ -1,55 +1,131 @@
-{% extends "base.html" %}
-{% load i18n static inkscape %}
+{% extends "forums/base.html" %}
+{% load i18n static forum_comments inkscape comments %}
 
-{% block "css" %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static "css/forums.css" %}"/>
+{% block "header" %}
+   <a href="{{ object.forum.get_absolute_url }}"><img src="{{ object.forum.icon.url }}" title="{{ object.form }}"></a>
+   <h3>{{ object.subject }}</h3>
 {% endblock %}
 
-{% block "js" %}{{ block.super }}
-  <script type="text/javascript" src="{% static "js/has_changed.js" %}"></script>
-{% endblock %}
+{% block "side" %}{% endblock %}
+{% block "search" %}{% endblock %}
 
-{% block supercontent %}
-  {% if object.forum and not object.forum.model_class %}
-    <ul id="messages">
-      <li class="error">{% trans "This forum is broken, it is attached to a defunct content type and needs to be reconfigured by a system's administrator." %}</li>
-    </ul>
+{% block "tools" %}
+  <div class="btn-group">
+    <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
+  </div>
+  {% if request.user.is_moderator %}
+    <div class="btn-group">
+      <a href="#" class="btn btn-sm btn-default disabled">{% trans "Moderator Tools:" %}</a>
+      <a href="{% url "forums:topic_move" object.slug %}" class="btn btn-sm btn-primary" title="{% trans "Move Topic" %}"><span class="glyphicon glyphicon-move"></span></a>
+      <a href="{% url "forums:topic_edit" object.slug %}" class="btn btn-sm btn-warning" title="{% trans "Edit Topic" %}"><span class="glyphicon glyphicon-edit"></span></a>
+      <a href="{% url "forums:topic_delete" object.slug %}" class="btn btn-sm btn-danger" title="{% trans "Delete Topic" %}"><span class="glyphicon glyphicon-remove-sign"></span></a>
+    </div>
   {% endif %}
-  {{ block.super }}
+  {% if request.user.is_authenticated %}
+      {% with object|subscription:request.user as subscription %}
+        {% if not subscription %}
+          {% url "alert.subscribe" "forums.forum_topic_alert" object.pk as sub_url %}
+        {% else %}
+          {% url "alert.unsubscribe" "forums.forum_topic_alert" object.pk as sub_url %}
+        {% endif %}
+        <form class="btn-group" method="POST" action="{{ sub_url }}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}"/>
+          {% if not subscription %}
+            <button class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-heart"></span> {% trans "Subscribe" %}</button>
+          {% else %}
+            <button class="btn btn-sm btn-default"><span class="glyphicon glyphicon-heart-empty"></span> {% trans "Unsubscribe" %}</button>
+          {% endif %}
+          <a href="{% url "alert.settings" %}?tab=forums.forum_topic_alert" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
+        </form>
+      {% endwith %}
+  {% endif %}
+
+  {% if object.locked %}
+    <div class="btn-group">
+      <a href="#" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-lock"></span> Topic Locked</a>
+    </div>
+  {% endif %}
 {% endblock %}
 
-{% block content %}
-  {% if not object.forum.model_class %}
-    <p>{% trans "Comments hidden because of misconfiguration." %}</p>
-  {% else %}
+{% block "content" %}
+  {% if object.object_pk %}
     <div class="comment changes" data-pk="topic-{{ object.pk }}">
-      {% if object.object_pk %}
-        <div class="details">
-          <div class="title"><h2>{{ object.subject }}</h2></div>
-        </div>
-        <div class="body">
-          {% with object.object_template as template %}
-          {% with object.object as object %}
-            {% include template %}
-          {% endwith %}
-          {% endwith %}
-        </div>
-        <div class="cfooter">
-          <div class="index">Last Post: {{ object.last_posted|timetag }}</div>
-        </div>
+      {% with object.object_template as template %}
+        {% with object.object as object %}
+          {% include template %}
+        {% endwith %}
+      {% endwith %}
+    </div>
+  {% endif %}
+
+  {% get_forum_comment_list for object.comment_subject as comment_list %}
+  <div class="panel-body haveseen" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
+  {% include "forums/comment_list.html" %}
+  </div>
+  
+  {% if object.locked %}
+    <div class="panel-footer" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
+        <h5 class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "Moderators have closed this thread, you may not post further comments here." %}</h5>
+    </div>
+  {% else %}
+
+    {% get_comment_form for object.comment_subject as comment_form %}
+    {{ comment_form.media }}
+
+  <div class="panel-footer">
+    <div class="input-group">
+      {% if object.form.is_locked or object.is_locked %}
+        <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" />
+        <span class="input-group-btn">
+          <a class="btn btn-default btn-sm disabled"><span class="glyphicon glyphicon-lock"></span> {% trans "Locked" %}</a>
+        </span>
+      {% elif user.is_authenticated %}
+        {% if user.email %}
+          <form action="{% comment_form_target %}" method="POST" class="block">
+            <div class="row">
+              {% csrf_token %}
+              {{ comment_form.comment }}
+              {{ comment_form.honeypot }}
+              {{ comment_form.content_type }}
+              {{ comment_form.object_pk }}
+              {{ comment_form.timestamp }}
+              {{ comment_form.security_hash }}
+              <input type="hidden" name="next" value="{{ request.path }}"/>
+            </div>
+            <div class="row group-id_attachments">
+              {{ comment_form.attachments.label_tag }}
+              {{ comment_form.attachments }}
+            </div>
+            <div class="row group-id_inlines">
+              {{ comment_form.inlines.label_tag }}
+              {{ comment_form.inlines }}
+            </div>
+
+            {% include "forums/attachment_draw.html" %}
+            <div class="row">
+              <span class="btn-group pull-right">
+                <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Comment" %}</button>
+                <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
+              </span>
+              <span class="btn-group pull-left">
+                <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
+              </span>
+            </div>
+          </form>
+        {% else %}
+          <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" placeholder="You must have an email address to post!" />
+          <span class="input-group-btn">
+            <a href="{% url 'edit_profile' %}?next={{ request.path }}" class="btn btn-default btn-sm"> {% trans "Edit Profile" %}</a>
+          </span>
+        {% endif %}
       {% else %}
-        <div class="details">
-          <div class="title"><h1>{{ title }}</h1></div>
-        </div>
+        <input id="btn-input" disabled="disabled" type="text" class="form-control input-sm" placeholder="You must be logged in to post!" />
+        <span class="input-group-btn">
+          <a href="{% url 'auth_login' %}?next={{ request.path }}" class="btn btn-danger btn-sm"> {% trans "Login Now" %}</a>
+        </span>
       {% endif %}
     </div>
-
-    {% with object.comment_subject as comment_subject %}
-      {% with object.get_absolute_url as next %}
-        {% trans "Post reply:" as comment_label %}
-        {% include "comments/comment_area.html" %}
-      {% endwith %}
-    {% endwith %}
+  </div>
   {% endif %}
 {% endblock %}

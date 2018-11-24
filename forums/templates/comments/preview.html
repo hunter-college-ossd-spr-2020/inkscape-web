@@ -1,36 +1,9 @@
-{% extends "comments/base.html" %}
-{% load i18n comments sekizai_tags %}
+{% extends "forums/comment_form.html" %}
 
-{% block title %}{% trans "Write a comment" %}{% endblock %}
-
-{% block content %}
-  <h2>{% trans "Please write a comment or cancel:" %}</h2>
-  
-  {% for field in form %}
-    {% if field.errors %}{{ field.errors }}{% endif %}
-  {% endfor %}
-  
-  
-  <form class="block" action="{% comment_form_target %}" method="post">{% csrf_token %}
-    {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
-    <div class="comment">
-      <div class="details">
-        <div class="title">{% trans "Leave a comment:" %}</div>
-      </div>
-      <div class="body">
-        {{ form.comment }}
-        {{ form.honeypot }}
-        {{ form.content_type }}
-        {{ form.object_pk }}
-        {{ form.timestamp }}
-        {{ form.security_hash }}
-      </div>
-      <div class="cfooter">
-        <div class="buttonbar">
-          <a class="button" id="cancel" href="{{ next }}">{% trans "Cancel" %}</a>
-          <input class="button" type="submit" value="{% trans "Send" %}" id="id_submit" />
-        </div>
-      </div>
-    </div>   
-  </form>   
+{% block "dialog-title" %}
+  <a href="{{ form.target_object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+<h3><img id="forum-logo" src="{{ form.target_object.forum.icon.url }}"> {{ form.target_object }}</h3>
 {% endblock %}
+

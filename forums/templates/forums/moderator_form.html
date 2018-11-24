@@ -1,0 +1,31 @@
+{% extends "forums/modal.html" %}
+{% load i18n static extras inkscape %}
+
+{% block "dialog-title" %}
+  <a href="{{ object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+  {{ block.super }}
+{% endblock %}
+
+{% block "dialog-buttons" %}
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="msie11bug" value="http://stackoverflow.com/questions/20149751/ie11-only-submit-bug" />
+        <span class="btn-group pull-right">
+          <button class="btn btn-danger btn-sm"type="submit"> {% trans "Delete" %}</button>
+        </span>
+        <span class="btn-group pull-left">
+          <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care deleting <strong>other people's comments</strong>.{% endblocktrans %}</a>
+        </span>
+    </form>
+{% endblock %}
+
+{% block "form-buttons" %}
+  <span class="btn-group pull-right">
+    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Go" %}</button>
+  </span>
+  <span class="btn-group pull-left">
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care editing <strong>other people's comments</strong>.{% endblocktrans %}</a>
+  </span>
+{% endblock %}

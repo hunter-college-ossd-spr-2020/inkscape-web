@@ -1,0 +1,9 @@
+{{ object.subject }}
+---
+{% for comment in object.comments.all %}
+{{ comment.comment }}
+---
+{% endfor %}
+{% with target as object.comment_subject %}
+  {{ target.name }} {{ target.desc }}
+{% endwith %}

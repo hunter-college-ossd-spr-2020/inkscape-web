@@ -5,7 +5,7 @@
 {% endfor %}
 
 {% for field in fieldset.visible_fields|default:fieldset %}
-  <div class="form-group{% if field.errors %} has-error{% endif %}">
+  <div class="form-group group-{{ field.auto_id }}{% if field.errors %} has-error{% endif %}">
     {% if field.errors %}
     <span class="text-danger">
       {% for error in field.errors %}

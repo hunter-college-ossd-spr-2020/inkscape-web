@@ -1,42 +1,30 @@
-{% extends "base.html" %}
+{% extends "forums/modal.html" %}
 {% load i18n static extras inkscape %}
 
 {% block "css" %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static "css/forums.css" %}"/>
+<style>
+  h3 { margin-top: 0px; }
+  #forum-logo { width: 48px; }
+</style>
 {% endblock %}
 
-{% block content %}
-  <h1>{{ title }}</h1>
+{% block "dialog-title" %}
+  <a href="{{ form.target_object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+<h3><img id="forum-logo" src="{{ form.target_object.icon.url }}"> {{ form.target_object }}</h3>
+{% endblock %}
 
-  <form method="post">
-    {% csrf_token %}
-    <div class="comment">
-      {% if form.non_field_errors %}
-        {{ form.non_field_errors }}
-      {% endif %}
-      {% for error, msg in form.errors.items %}
-        <div class="details">
-          <div class="title">{{ msg }}</div>
-        </div>
-      {% endfor %}
-      <div class="details">
-	<div class="title">{{ form.subject|placeholder:form.subject.label|tabindex:1 }}</div>
-      </div>
-      <div class="body">
-	{{ form.comment|tabindex:2 }}
-	{{ form.honeypot }}
-	{{ form.content_type }}
-	{{ form.object_pk }}
-	{{ form.timestamp }}
-	{{ form.security_hash }}
-      </div>
-      <div class="cfooter">
-	<div class="buttonbar">
-	  <div id="cochint">{% blocktrans %}Please read Inkscape's <a tabindex="10" href="/community/coc">Code of Conduct</a> before posting.{% endblocktrans %}</div>
-	  <input tabindex="3" class="unique start end" type="submit" value="{% trans "Submit new Topic" %}" id="id_submit" />
-	</div>
-      </div>
-    </div>   
-  </form>
+{% block "modal-rest" %}
+  {% include "forums/attachment_draw.html" %}
+{% endblock %}
+
+{% block "form-buttons" %}
+  <span class="btn-group pull-right">
+    <button class="btn btn-primary btn-sm" type="submit"> {% trans "Submit Topic" %}</button>
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
+  </span>
+  <span class="btn-group pull-left">
+    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read the <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
+  </span>
 {% endblock %}

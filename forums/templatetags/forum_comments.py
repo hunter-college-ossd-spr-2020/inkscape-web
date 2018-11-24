@@ -1,0 +1,62 @@
+#
+# Copyright (C) 2016, Martin Owens <doctormo@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+"""
+Try to make forum comment requests faster.
+"""
+
+from django.template import Library
+from django_comments.templatetags.comments import CommentListNode
+
+from alerts.models import AlertSubscription
+
+register = Library() # pylint: disable=invalid-name
+
+def defer(base, *args):
+    """Build a quick deferment list"""
+    for arg in args:
+        if isinstance(arg, str):
+            yield base + '__' + arg
+        else:
+            for subarg in arg:
+                yield base + '__' + subarg
+
+FORUM_DEFER = ['user_email', 'user_name', 'user_url', 'ip_address'] + \
+    list(defer('user', 'password', 'email', 'bio', 'ircnick', 'ircpass', 'dauser', 'ocuser',
+               'tbruser', 'gpg_key', 'last_seen', 'visits', 'website'))
+
+class ForumCommentListNode(CommentListNode):
+    """Tweaks for forum comment listing"""
+    def get_queryset(self, context):
+        qset = super().get_queryset(context)
+        qset = qset.prefetch_related('flags', 'attachments', 'attachments__resource',
+                                     'user', 'user__forum_flags').defer(*FORUM_DEFER)
+        return qset
+
+@register.tag
+def get_forum_comment_list(parser, token):
+    """
+    See django_comments.templatetags.comments.get_comment_list
+    """
+    return ForumCommentListNode.handle_token(parser, token)
+
+@register.filter("subscription")
+def sub(topic, user):
+    """Return if the user is subscribed to the topic"""
+    try:
+        return topic.subscriptions.get(user_id=user.pk)
+    except AlertSubscription.DoesNotExist:
+        return None

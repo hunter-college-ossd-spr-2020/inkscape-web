@@ -1,45 +1,51 @@
-{% extends "base.html" %}
+{% extends "forums/base.html" %}
 {% load i18n static inkscape %}
 
-{% block "css" %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static "css/forums.css" %}"/>
-{% endblock %}
-
-{% block "js" %}{{ block.super }}
-  <script type="text/javascript" src="{% static "js/has_changed.js" %}"></script>
-{% endblock %}
-
-{% block supercontent %}
-  {% if object and not object.model_class %}
-    <ul id="messages">
-      <li class="error">{% trans "This forum is broken, it is attached to a defunct content type and needs to be reconfigured by a system's administrator." %}</li>
-    </ul>
-  {% endif %}
+{% block "header" %}
+  <img id="forum-logo" src="{{ forum.icon.url }}">
+  <h3>{{ forum }}</h3>
   {{ block.super }}
 {% endblock %}
 
-{% block content %}
-  <div class="comment changes" data-pk="forum-{{ object.pk }}">
-    <div class="details">
-      <div class="title"><h2>{{ object.name }}</h2></div>
-      {% if not object.content_type %}
-        <div class="index new_topic"><a href="{% url "forums:create" object.slug %}"><img src="{% static "images/new_topic.svg" %}"> {% trans "New Topic" %}</a></div>
-      {% endif %}
-    </div>
-    <table class="topic_list">
-      {% for topic in object_list %}
-        {% ifchanged topic.is_sticky %}{% if not topic.sticky %}<tr class="sticky-bar"><td colspan="2"></tr>{% endif %}{% endifchanged %}
-        <tr class="{% cycle 'odd' 'even' %} unchanged" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
-          <th><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></th>
-          <td>{{ topic.last_posted|timetag }}</td>
-        </tr>
-      {% empty %}
-        <tr>
-          <th>{% trans "No topics yet" %}</th>
-          <td>&nbsp;</td>
-        </tr>
-      {% endfor %}
-    </table>
+{% block "tools" %}
+  <div class="btn-group">
+    <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
   </div>
+  <div class="btn-group">
+    {% if not request.user.is_authenticated %}
+    <a class="btn btn-sm btn-danger" href="{% url 'auth_login' %}?next={{ request.path }}"><span class="glyphicon glyphicon-lock"></span> Login to Post</a>
+    {% elif forum.content_type_id %}
+    <a class="btn btn-sm btn-default disabled"><span class="glyphicon glyphicon-lock"></span> Content Forum</a>
+    {% else %}
+    <a href="{% url "forums:create" forum.slug %}" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus"></span> New Topic</a>
+    {% endif %}
+    <a href="#" id="seenall" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Mark all as Read" %}</a>
+  </div>
+
+  {{ block.super }}
+{% endblock %}
+
+{% block "content" %}
+  <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}">
+    <tbody>
+    {% for topic in page_obj %}
+    <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
+        <td class="icon forum-small-cells">
+            <span class="glyphicon glyphicon-{% if topic.locked %}lock{% elif topic.sticky %}bookmark{% else %}{% endif %}"></span>
+        </td>
+        <td class="topic-item"><a href="{{ topic.get_absolute_url }}">{{ topic.subject }}</a></td>
+        <td class="forum-small-cells">
+          {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}
+        </td>
+        <td class="text-center"><span class="label label-default counter">{{ topic.post_count }}</span></td>
+        <td class="text-center">{{ topic.last_username }}</td>
+        <td class="text-right">{{ topic.last_posted|timetag }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+          <td style="text-align: center;"><h1>{% trans "No topics yet" %}</h1></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

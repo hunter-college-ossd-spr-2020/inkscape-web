@@ -26,10 +26,11 @@ from person import user_urls, team_urls
 
 from .views import (
     ResourceList, ResourcePick, ResourceFeed, ResourceJson, ViewResource,
-    GalleryList, GalleryView, GalleryFeed, TagsJson, CreateGallery,
+    GalleryList, GalleryView, GalleryFeed, CreateGallery,
     PasteInResource, UploadResource, DropResource, LinkToResource,
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
+    UploadJson, TagsJson, QuotaJson, ResourcesJson,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
@@ -67,6 +68,9 @@ team_urls.urlpatterns += list(owner_patterns)
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^paste/(?P<pk>\d+)/$', ViewResource.as_view(), name='pasted_item'),
     url(r'^json/tags.json$', TagsJson.as_view(), name='tags.json'),
+    url(r'^json/quota.json$', QuotaJson.as_view(), name='quota.json'),
+    url(r'^json/resources.json$', ResourcesJson.as_view(), name='resources.json'),
+    url(r'^json/upload.json$', UploadJson.as_view(), name='upload.json'),
 
     url_tree(
         r'^gallery/',

@@ -24,14 +24,31 @@ Forum views accessable from the website.
 from django.conf.urls import url
 from inkscape.url_utils import url_tree
 
-from .views import ForumList, TopicList, AddTopic, TopicDetail
+from .views import (
+    ModerationList, ForumList,
+    TopicList, TopicDetail, TopicSearch, TopicCreate,
+    TopicMove, TopicEdit, TopicDelete,
+    CommentEdit, CommentSearch, CommentEmote, CommentDelete,
+)
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
+    url(r'^log/$', ModerationList.as_view(), name="log"),
+    url(r'^search/$', TopicSearch(), name='search'),
+    url(r'^search/posts/$', CommentSearch(), name='search.posts'),
+    url_tree(
+        r'^c(?P<pk>\d+)/',
+        url(r'^emote/$', CommentEmote.as_view(), name='emote'),
+        url(r'^edit/$', CommentEdit.as_view(), name='comment_edit'),
+        url(r'^del/$', CommentDelete.as_view(), name='comment_delete'),
+    ),
     url_tree(
         r'^(?P<slug>[\w-]+)/',
         url(r'^$', TopicList.as_view(), name='detail'),
-        url(r'^new/$', AddTopic.as_view(), name='create'),
+        url(r'^new/$', TopicCreate.as_view(), name='create'),
+        url(r'^move/$', TopicMove.as_view(), name='topic_move'),
+        url(r'^edit/$', TopicEdit.as_view(), name='topic_edit'),
+        url(r'^del/$', TopicDelete.as_view(), name='topic_delete'),
     ),
     url_tree(
         r'^(?P<forum>[\w-]+)/(?P<slug>[\w-]+)/',

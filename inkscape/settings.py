@@ -66,7 +66,9 @@ CACHE_PAGE_SETTING = 3600
 
 DEBUG = False
 SITE_ADDRESS = None
-PROJECT_PATH = None
+
+CODE_PATH = os.path.dirname(os.path.abspath(__file__))
+PROJECT_PATH = os.path.abspath(os.path.join(CODE_PATH, ".."))
 
 # Allow realtime updates of pages
 #HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
@@ -121,7 +123,7 @@ TEMPLATES = [{
 
 MIDDLEWARE_CLASSES = (
     'cog.middleware.UserOnErrorMiddleware',
-    'inkscape.middleware.AutoBreadcrumbMiddleware',
+    #'inkscape.middleware.AutoBreadcrumbMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -201,8 +203,8 @@ INSTALLED_APPS = (
     'moderation',
     'projects',
     'releases',
-    'django_comments',
     'forums',
+    'django_comments',
     'alerts',
     'markdown_deux',
 )
@@ -302,6 +304,9 @@ CKEDITOR_NEWS = {
         ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
         ['Source']
     ],
+}
+CKEDITOR_FORUM = {
+    'extraPlugins': 'image',
 }
 CKEDITOR_READONLY = {
     'readOnly': True,
@@ -464,7 +469,7 @@ if ENABLE_DEBUG_TOOLBAR:
 
 import logging
 for name, value in locals().copy().items():
-    if name.endswith('_ROOT') and value.startswith(PROJECT_PATH):
+    if name.endswith('_ROOT') and value and value.startswith(PROJECT_PATH):
         if not os.path.exists(value):
             os.makedirs(value)
             logging.warning("Making {}: {}".format(name, value))
