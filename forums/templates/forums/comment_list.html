@@ -23,7 +23,7 @@
         {% if request.user.is_moderator %}
         <small class="pull-right text-muted"><a href="{% url "forums:comment_delete" comment.pk %}" title="Delete"><span class="glyphicon glyphicon-remove"></span></a></small>
         {% endif %}
-        <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> <time datetime="{{ comment.submit_date|timetag }}">{{ comment.submit_date|timetag }}</time></small>
+        <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
       </header>
       <!-- End comment header -->
       
