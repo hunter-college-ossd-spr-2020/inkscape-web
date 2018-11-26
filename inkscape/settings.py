@@ -149,6 +149,7 @@ if ENABLE_CACHING or IS_TEST:
     CMS_CACHE_DURATIONS = {
         'content': CACHE_PAGE_SETTING,
         'menus': 3600, # One hour for menus which is important
+        'basic_menu': 3600, # One hour for menus which is important
         'permissions': 1800, # Half an hour for page permissions
     }
 
