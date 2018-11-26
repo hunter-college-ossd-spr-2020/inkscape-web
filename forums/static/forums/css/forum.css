@@ -664,6 +664,7 @@ span.emoji i {
 }
 
 .emoji-selector .btn {
+  mix-blend-mode: luminosity;
   padding: 0;
 }
 
