@@ -25,10 +25,10 @@ Basic menu views
 from django.utils.functional import cached_property
 from django.core.cache import cache
 from django.contrib.sites.models import Site
-from cms.utils.moderator import use_draft
-from cms.utils.conf import get_cms_setting
-from menus.models import CacheKey
+from django.conf import settings
+
 from menus.menu_pool import menu_pool, MenuRenderer
+
 from .models import MenuItem, MenuRoot
 
 class MenuRendererOverloaded(MenuRenderer):
@@ -47,7 +47,7 @@ class MenuRendererOverloaded(MenuRenderer):
         self.request = request
         self.request_language = language
         self.site = Site.objects.get_current(request)
-        self.draft_mode_active = use_draft(request)
+        self.draft_mode_active = False 
 
 class MenuShow():
     def __init__(self, language, request):
@@ -57,27 +57,12 @@ class MenuShow():
 
     @property
     def cache_key(self):
-        prefix = get_cms_setting('CACHE_PREFIX')
-
-        key = '%sbasic_menu_nodes_%s_%s' % (prefix, self.language[0], self.site.pk)
-
-        if self.request.user.is_authenticated():
-            key += '_%s_user' % self.request.user.pk
-
-        if use_draft(self.request):
-            key += ':draft'
-        else:
-            key += ':public'
-        return key
+        prefix = getattr(settings, 'MENU_CACHE_PREFIX', 'menu')
+        return '%s_%s_%s' % (prefix, self.language[0], self.site.pk)
 
     @cached_property
     def is_cached(self):
-        db_cache_key_lookup = CacheKey.objects.filter(
-            key=self.cache_key,
-            language=self.language[0],
-            site=self.site.pk,
-        )
-        return db_cache_key_lookup.exists()
+        return cache.get(self.cache_key)
 
     def get_nodes(self):
         return MenuRendererOverloaded(menu_pool, self.request, self.language[0]).get_nodes()
@@ -134,44 +119,23 @@ class MenuShow():
                         submenuitem.save()
                         
     def show_menu(self):
-        key = self.cache_key
+        """Generates the menu as a list of dictionaries and submenu lists"""
+        root_menu = cache.get(self.cache_key, None)
+        if not root_menu:
+            root_menu = self.generate_menu()
+            cache.set(self.cache_key, root_menu, getattr(settings, 'MENU_CACHE_DURATION', 300))
+        return root_menu
 
-        cached_nodes = cache.get(key, None)
-        
-#        if cached_nodes and self.is_cached:
-#            # Only use the cache if the key is present in the database.
-#            # This prevents a condition where keys which have been removed
-#            # from the database due to a change in content, are still used.
-#            return cached_nodes
-        root = MenuRoot(self.language)
-        menuitems = MenuItem.objects.filter(root = root)
-        menu = []
-        for item in menuitems.filter(parent = None):
-            submenu = []
-            menudict = dict()
-            for subitem in menuitems.filter(parent = item):
-                submenudict = dict()
-                submenudict['url'] = subitem.url
-                submenudict['name'] = subitem.name
-                submenu.append(submenudict)
-            menudict['url'] = item.url
-            menudict['name'] = item.name
-            if len(submenu) > 0:
-                menudict['submenu'] = submenu
-            menu.append(menudict)
-            
-        cache.set(key, menu, get_cms_setting('CACHE_DURATIONS')['menus'])
-        
-        if not self.is_cached:
-            # No need to invalidate the internal lookup cache,
-            # just set the value directly.
-            self.__dict__['is_cached'] = True
-            # We need to have a list of the cache keys for languages and sites that
-            # span several processes - so we follow the Django way and share through
-            # the database. It's still cheaper than recomputing every time!
-            # This way we can selectively invalidate per-site and per-language,
-            # since the cache is shared but the keys aren't
-            CacheKey.objects.create(key=key, language=self.language[0], site=self.site.pk)
+    def generate_menu(self):
+        """Generate the menu tree"""
+        root_menu = []
+        qset = MenuItem.objects.filter(root_id=self.language)
+        items = dict((item['pk'], {'item': item, 'submenu': []})
+                     for item in qset.values('pk', 'parent', 'name', 'url'))
+        items[None] = {'submenu': root_menu}
 
-        return menu
+        for datum in items.values():
+            if 'item' in datum:
+                items[datum['item']['parent']]['submenu'].append(datum['item'])
 
+        return root_menu
