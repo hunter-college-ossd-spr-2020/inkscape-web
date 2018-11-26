@@ -117,7 +117,6 @@ TEMPLATES = [{
             'django.template.context_processors.static',
             'cms.context_processors.cms_settings',
             'sekizai.context_processors.sekizai',
-            'basic_menu.context_processors.basic_menu',
         )
     }
 }]
@@ -148,9 +147,8 @@ if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
     CMS_CACHE_DURATIONS = {
         'content': CACHE_PAGE_SETTING,
-        'menus': 3600, # One hour for menus which is important
-        'basic_menu': 3600, # One hour for menus which is important
         'permissions': 1800, # Half an hour for page permissions
+        'menus': 0,
     }
 
     MIDDLEWARE_CLASSES = \
@@ -191,7 +189,7 @@ INSTALLED_APPS = (
     'cms',
     'cog',
     'menus',
-    'basic_menu',
+    'el_menu',
     'sekizai',
     'djangocms_text_ckeditor',
     'djangocms_file',

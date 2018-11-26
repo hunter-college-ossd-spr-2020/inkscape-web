@@ -1,0 +1,18 @@
+<ul id="menu">
+      {% for menu in menu_items %}
+        <li>
+            <a href="{{ menu.item.url }}">{{ menu.item.name }}</a>
+            {% if menu.submenu != None %}
+                <ul>
+                {% for sub_menu_item in menu.submenu %}
+                  <li>
+                    <a href="{{ sub_menu_item.item.url }}">{{ sub_menu_item.item.name }}</a>
+                  </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+

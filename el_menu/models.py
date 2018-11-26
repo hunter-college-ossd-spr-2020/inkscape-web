@@ -22,11 +22,7 @@
 Basic menu are a custom app to show inkscape menu.
 """
 
-from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.utils.functional import cached_property
-from cms.utils.conf import get_cms_setting
-from django.contrib.sites.models import Site
 
 from django.db.models import (
     Model, Manager, CharField, IntegerField, ForeignKey
@@ -35,13 +31,10 @@ from django.db.models import (
 class MenuRoot(Model):
     """A whole menu for a language"""
     language = CharField(max_length=12, choices=settings.LANGUAGES, primary_key=True)
-    
+
     def __str__(self):
         return self.get_language_display()
 
-    def get_absolute_url(self):
-        """Return a link to the debug page for menus"""
-        return "https://www.inkscape.org"
 
 class MenuItem(Model):
     """A collection menus"""
@@ -52,6 +45,8 @@ class MenuItem(Model):
     url = CharField(max_length=255, help_text="Location of content.")
     name = CharField(max_length=128)
     order = IntegerField(default=0)
+
+    cms_id = IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name

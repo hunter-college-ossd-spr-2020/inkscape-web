@@ -18,22 +18,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.http import HttpResponseRedirect
+"""
+Administration of menu items.
+"""
+
 from django.contrib.admin import ModelAdmin, TabularInline, site
-from django.conf.urls import include, url
-from django.core.cache import cache
-from cms.models.pagemodel import Page
-from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from .models import MenuItem, MenuRoot
-from .views import MenuShow
 
-class NestableTabularInline(TabularInline):
-    class Media:
-        js = ('js/jquery.nestable.js', 'js/admin.nestable.js')
-
-
-class MenuItemsInline(NestableTabularInline):
+class MenuItemsInline(TabularInline):
     """Show MenuItems in a stacked tab interface"""
     model = MenuItem
     extra = 1
@@ -41,27 +33,6 @@ class MenuItemsInline(NestableTabularInline):
 class MenuRootAdmin(ModelAdmin):
     """Customise the root menu in the admin interface"""
     inlines = (MenuItemsInline,)
-    
-    def get_urls(self):
-        urls = super(MenuRootAdmin, self).get_urls()
-        urls.append(url(
-                r'menugenerate',
-                self.populize_menu,
-                name='populize_menu',
-            ))
-        return urls
-
-    def populize_menu(self, request):
-        #TODO: clear all
-        MenuItem.objects.all().delete()
-        MenuRoot.objects.all().delete()
-        for language  in settings.LANGUAGES:
-            menu_show = MenuShow(language, request)
-            key = menu_show.cache_key
-            cached_nodes = cache.get(key, None)
-            if cached_nodes and self.is_cached:
-                cache.delete(key)
-            menu_show.populize_lang()
-        return HttpResponseRedirect('/admin/basic_menu/menuroot')
 
 site.register(MenuRoot, MenuRootAdmin)
+site.register(MenuItem)

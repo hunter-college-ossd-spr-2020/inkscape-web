@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n extras cms_tags menu_tags static %}
+{% load i18n extras cms_tags static el_menu menu_tags %}
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <title>{% block alltitle %}{% block title %}{{ title|default:"Draw Freely" }}{% endblock %} | Inkscape{% endblock %}</title>
@@ -107,7 +107,7 @@
     {% block menu %}
       <div class="nav">
         <button id="menu-toggle"><div></div><div></div><div></div></button>
-        {% include "basic_menu/menu.html" %}
+        {% render_menu lang=lang %}
       </div>
     {% endblock %}
     {% if messages %}
