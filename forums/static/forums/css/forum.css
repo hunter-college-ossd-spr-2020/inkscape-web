@@ -88,7 +88,7 @@ a.forum-dropdown {
     padding: 3px 5px;
 }
 .forum-body {
-    padding: 20px;
+    padding: 2vw 0;
 }
 ul.forum-nav {
     display: inline-block;
@@ -395,6 +395,7 @@ ul {
     list-style: none;
     margin: 0;
     padding: 0;
+    position: relative; /* context for header bg */
 }
  .comment > li {
     margin-bottom: 10px;
@@ -470,16 +471,18 @@ span.emoji i {
 /* Attachments */
 .inline-attachments {
     padding-top: 0px;
-    margin-top: -20px;
     margin-bottom: 15px;
     padding-bottom: 5px;
-    border-bottom: 1px dotted #B3A9A9;
 }
 .inline-attachments .inline {
     display: inline-block;
     border: 1px #fafafa solid;
     padding: 3px;
     margin: 5px;
+}
+.inline-attachments .inline:first-child {
+  margin-left: 0;
+  padding-left: 0;
 }
 .inline-attachments .inline img {
     max-width: 90px;
@@ -547,3 +550,232 @@ span.emoji i {
 .table tr.sticky .icon {
     color: #3c763d;
 }
+
+
+
+/**
+ * Forum topic colors and layout 
+ * One @media for > 700px
+ */
+
+.panel-body {
+  padding: 1vw 0;
+}
+
+.img-circle, 
+.comment-header-group::before,
+.comment-header-group,
+.comment-time {
+  background-color: #ebfcff;
+}
+
+.comment-header-group {
+  border-radius: 2em;
+  display: inline;
+  line-height: 23px;
+  margin: 0;
+  padding: 0.3em 1vw .3em 0;
+  position: relative;
+  z-index: 5;
+  
+}
+
+.comment-author-address {
+  display: inline;
+  font-weight: bold;
+  line-height: 2;
+  margin-bottom: 0;
+  /* bring back offset because of negative margin on image */ 
+  padding-left: 2.4vw;
+}
+
+.img-circle {
+  display: inline;
+  float: left;
+  max-width: 80px;
+  padding: 10px;
+  transition: padding .3s ease 0s;
+  vertical-align: top;
+}
+
+.comment-author:focus .img-circle,
+.comment-author:hover .img-circle {
+  padding: 0;
+}
+
+.comment-time {
+  border-radius: 2em;
+  margin-bottom: 1em;
+  padding: 0.2em .6em;
+}
+
+.comment-count, 
+.comment-remove,
+.comment-edit,
+.comment-report {
+  border-radius: 2em;
+  font-size: 11px;
+  line-height: 1;
+  margin: 0 0 0 5px;
+  padding: .6em .7em;
+  text-align: center;
+  transition: all .3s ease 0s;
+}
+.comment-count {
+  background-color: #f0ebff;
+  color: #1b006c;
+  margin: 0;
+}
+.comment-count:focus,
+.comment-count:hover {
+  background-color: #9F80FF;
+  color: #fff;
+  text-decoration: none;
+}
+.comment-remove {
+  background-color: #ffebeb;
+  color: #640000;
+}
+.comment-edit {
+  background-color: #ebffe1;
+  color: #104600;
+  font-size: 1.3em;
+  position: relative;
+  top: -.5em;
+}
+.comment-edit:focus,
+.comment-edit:hover {
+  background-color: #AAFF80;
+  color: inherit;
+}
+.comment-remove:focus,
+.comment-remove:hover {
+  background-color: #FF8080;
+  color: inherit;
+}
+.comment-report:focus,
+.comment-report:hover {
+  background-color: #FFF100;
+  color: inherit;
+}
+.comment-report {
+  background-color: #fff991;
+  color: #402b00;
+}
+
+.emoji-selector .btn {
+  padding: 0;
+}
+
+.comment-text {
+  clear: both;
+  padding: 1em 0;
+}
+
+.buttons-group {
+  clear: right;
+  margin-top: .5em;
+}
+
+
+@media (min-width: 700px) {
+  .comment {
+    display: grid;
+    grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
+    grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
+    margin-bottom: 4em;
+  }
+  .comment-text {
+    grid-column-start: 3;
+    grid-column-end: span 5;
+    grid-row-start: 2;
+    grid-row-end: span 4;
+    padding: 1em 2.4vw;
+  }
+  .comment-attachments {
+    grid-column-start: 3;
+    grid-column-end: span 5;
+    grid-row-start: 6;
+    grid-row-end: span 1;
+    margin: 0;
+    padding: 0 2.4vw;
+  }
+
+  .comment-header-group {
+    background: none;
+    grid-column-start: 2;
+    grid-column-end: span 3;
+    grid-row-start: 1;
+    grid-row-end: span 3;
+  }
+  
+  .comment-header-group::before {
+    border-radius: 2em;
+    content: "";
+    display: block;
+    height: 1.8em;
+    left: 60px; /* half the image width */
+    position: absolute;
+    top: .3em;
+    width: calc(100% - 60px);
+    z-index: -1;
+  }
+  
+  .img-circle {
+    max-width: 120px;
+    padding: 20px;
+  }
+  
+  .comment-time {
+    background-color: transparent;
+  }
+
+  .buttons-group {
+    grid-column-start: 5;
+    grid-column-end: span 3;
+    grid-row-start: 1;
+    grid-row-end: span 1;
+    margin-top: 0;
+  }
+
+  .comment-count {
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    grid-row-start: 1;
+    grid-row-end: span 1;
+    justify-self: start;
+  }
+
+  .comment-footer {
+    grid-column-start: 1;
+    grid-column-end: span 2;
+    grid-row-start: 3;
+    grid-row-end: span 1;
+  }
+
+  .emoji-selector {
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    grid-row-start: 3;
+    grid-row-end: span 1;
+  }
+
+  .emoji-bar {
+    grid-column-start: 1;
+    grid-column-end: span 2;
+    grid-row-start: 4;
+    grid-row-end: span 1;
+    align-self: center;
+  }
+
+  /* Attachments dropdown */
+  .check-dropdown {
+    grid-column-start: 1;
+    grid-column-end: span 2;
+    grid-row-start: 5;
+    grid-row-end: span 1;
+    justify-self: center;
+    align-self: center;
+  }
+}
+

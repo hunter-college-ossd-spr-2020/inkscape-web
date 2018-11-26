@@ -1,102 +1,111 @@
 {% load i18n comments static inkscape moderator %}
 
-<div>   
-  {% for comment in comment_list %}
+<div>
+  
+  <ol class="panel-body">
+    <!-- Start forum thread comment loop -->
+    {% for comment in comment_list %}
     {% if not comment.moderation.is_deleted %}
       {% with forloop.counter0|add:1 as comment_counter %}
       {% url 'view_profile' comment.user.username as profile_url %}
+    <li class="comment left clearfix">
+    
+      <!-- Start comment header info -->
+      <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
+      <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ comment_counter }}</a>
+      
+      <span class="comment-header-group">
+        <address class="comment-author-address"><a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+        <small class="pull-right text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
+      </span>
+      
+      <div class="buttons-group">
+        {% if request.user.is_authenticated %}
+        <a class="pull-right btn btn-sm comment-report" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
+        {% endif %}
+        
+        {% if request.user.is_moderator %}
+        <a class="pull-right text-muted comment-remove" href="{% url "forums:comment_delete" comment.pk %}" title="Delete"><span class="glyphicon glyphicon-remove"></span></a>
+        {% endif %}
+      
+        {% if comment.user_id == request.user.pk or request.user.is_moderator %}
+        <a class="pull-right text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a>
+        {% endif %}
+      </div>
 
-  <div class="panel-body">
-    <a name="c{{ comment.id }}"></a>
-    <ul class="comment">
-      <li class="left clearfix">
-        <small class="pull-left text-muted">#{{ comment_counter }}</small>
-        <span class="comment-img pull-left">
-          <img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" />
-        </span>
-        <div class="comment-body clearfix">
-          <div class="header">
-            <strong class="primary-font"><a href="{{ profile_url }}">{{ comment.user }}</a>
-                {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
-            </strong>
-
-            {% if comment.user_id == request.user.pk or request.user.is_moderator %}
-            <small class="pull-right text-muted"><a href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a></small>
-            {% endif %}
-            {% if request.user.is_moderator %}
-            <small class="pull-right text-muted"><a href="{% url "forums:comment_delete" comment.pk %}" title="Delete"><span class="glyphicon glyphicon-remove"></span></a></small>
-            {% endif %}
-            <small class="pull-right text-muted"><a title="{% trans "Link" %}" href="{% get_comment_permalink comment %}"><span class="glyphicon glyphicon-link"></span></a></small>
-            <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
-          </div>
-          <p>
-            {{ comment.comment|safe|urlize }}
-          </p>
-        </div>
-        <div class="footer">
-          <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
-            {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
-          </small>
-          {% if comment.attachments.count %}
-            <div class="dropdown pull-right check-dropdown">
-                <a href="#" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Attachments" %}" id="attachments-{{ comment.pk }}"><span class="glyphicon glyphicon-paperclip"></span> {% trans "Attachments" %}</a>
-              <ul class="dropdown-menu" aria-labelledby="attachments-{{ comment.pk }}">
-                {% for attachment in comment.attachments.all %}
-                  {% if not attachment.inline %}
-                    {% if attachment.resource.is_removed %}
-                      <li class="dropdown-item disabled">
-                        <a href="#"><span class="glyphicon glyphicon-ban-circle"></span> {{ attachment.resource.filename }}</a>
-                      </li>
+      <div class="dropdown emoji-selector pull-right">
+        <a class="btn btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'forums:emote' comment.id %}" title="{% trans "Emote" %}" id="emote-{{ comment.pk }}">
+          <img class="emoji" src="{% static "emoji/48/1f600.png" %}"/>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="emote-{{ comment.pk }}"></div>
+      </div>
+      
+      <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
+          {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
+      </small>
+      
+      <!-- Start attachment dropdown -->
+      {% if comment.attachments.count %}
+        <div class="dropdown pull-right check-dropdown">
+            <a href="#" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Attachments" %}" id="attachments-{{ comment.pk }}"><span class="glyphicon glyphicon-paperclip"></span> {% trans "Attachments" %}</a>
+          <ul class="dropdown-menu" aria-labelledby="attachments-{{ comment.pk }}">
+            {% for attachment in comment.attachments.all %}
+              {% if not attachment.inline %}
+                {% if attachment.resource.is_removed %}
+                  <li class="dropdown-item disabled">
+                    <a href="#"><span class="glyphicon glyphicon-ban-circle"></span> {{ attachment.resource.filename }}</a>
+                  </li>
+                {% else %}
+                  <li class="dropdown-item">
+                    {% if attachment.resource.is_video %}
+                      <a href="{{ attachment.resource.link }}">
+                    {% elif attachment.resource.published %}
+                      <a href="{{ attachment.resource.get_pk_url }}">
                     {% else %}
-                      <li class="dropdown-item">
-                        {% if attachment.resource.is_video %}
-                          <a href="{{ attachment.resource.link }}">
-                        {% elif attachment.resource.published %}
-                          <a href="{{ attachment.resource.get_pk_url }}">
-                        {% else %}
-                          <a href="{{ attachment.resource.download.url }}">
-                        {% endif %}
-                        {% if attachment.resource.mime.is_image %}
-                          <span class="glyphicon glyphicon-picture text-muted"></span>
-                        {% elif attachment.resource.is_video %}
-                          <span class="glyphicon glyphicon-facetime-video text-muted"></span>
-                        {% else %}
-                          <span class="glyphicon glyphicon-file text-muted"></span>
-                        {% endif %}
-                        {{ attachment.resource.filename|default:attachment.resource.name }}
-                        </a>
-                      {% endif %}
-                    </li>
+                      <a href="{{ attachment.resource.download.url }}">
+                    {% endif %}
+                    {% if attachment.resource.mime.is_image %}
+                      <span class="glyphicon glyphicon-picture text-muted"></span>
+                    {% elif attachment.resource.is_video %}
+                      <span class="glyphicon glyphicon-facetime-video text-muted"></span>
+                    {% else %}
+                      <span class="glyphicon glyphicon-file text-muted"></span>
+                    {% endif %}
+                    {{ attachment.resource.filename|default:attachment.resource.name }}
+                    </a>
                   {% endif %}
-                {% endfor %}
-              </ul>
-            </div>
-          {% endif %}
-          <small class="btn-group pull-right">
-            {% if request.user.is_authenticated %}
-              <a class="btn btn-sm" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
-            {% endif %}
-          </small>
-          <div class="dropdown emoji-selector pull-right">
-            <a class="btn btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="{% url 'forums:emote' comment.id %}" title="{% trans "Emote" %}" id="emote-{{ comment.pk }}">
-              <img class="emoji" src="{% static "emoji/48/1f600.png" %}"/>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="emote-{{ comment.pk }}"></div>
-          </div>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
         </div>
-      </li>
-    </ul>
-  </div>
-  <div class="panel-body inline-attachments">
-  {% for attachment in comment.attachments.all %}
-    {% if attachment.inline %}
-      {% with attachment.resource as object %}
-        {% include "forums/resource_inline.html" %}
+      {% endif %}
+      <!-- End attachment dropdown -->
+      <!-- End comment header info -->
+      
+      <!-- Start comment text -->
+      <section class="comment-text">
+        {{ comment.comment|safe|urlize }}
+      </section>
+      <!-- End comment text -->
+      
+      <!-- Start comment attachments -->
+      <section class="comment-attachments inline-attachments">
+      {% for attachment in comment.attachments.all %}
+        {% if attachment.inline %}
+          {% with attachment.resource as object %}
+            {% include "forums/resource_inline.html" %}
+          {% endwith %}
+        {% endif %}
+      {% endfor %}
+      </section>
+      <!-- End comment attachments -->
+
+    </li>
       {% endwith %}
     {% endif %}
   {% endfor %}
-  </div>
-      {% endwith %}
-    {% endif %}
-  {% endfor %}
+  <!-- End forum thread comment loop -->
+  </ol>
+
 </div>
