@@ -48,8 +48,8 @@ class Command(BaseCommand):
 def get_path(lang, path):
     """Generate the final path with language"""
     if lang == 'en' or not lang:
-        return '/' + path
-    return '/' + lang + '/' + path
+        return path
+    return '/' + lang + path
 
 def get_url(lang, node):
     """Return the right url for this cms node"""
