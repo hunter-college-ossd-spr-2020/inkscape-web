@@ -16,3 +16,4 @@ locale
 logs
 .coverage
 .autotest.conf
+.vscode

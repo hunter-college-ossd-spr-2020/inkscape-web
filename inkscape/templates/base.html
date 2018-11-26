@@ -107,7 +107,8 @@
     {% block menu %}
       <div class="nav">
         <button id="menu-toggle"><div></div><div></div><div></div></button>
-        <ul id="menu">{% show_menu 0 100 100 %}</ul>
+         {{  request.menu.product }}
+        {% include "basic_menu/menu.html" %}
       </div>
     {% endblock %}
     {% if messages %}

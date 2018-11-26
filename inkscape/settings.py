@@ -117,6 +117,7 @@ TEMPLATES = [{
             'django.template.context_processors.static',
             'cms.context_processors.cms_settings',
             'sekizai.context_processors.sekizai',
+            'basic_menu.context_processors.basic_menu',
         )
     }
 }]
@@ -189,6 +190,7 @@ INSTALLED_APPS = (
     'cms',
     'cog',
     'menus',
+    'basic_menu',
     'sekizai',
     'djangocms_text_ckeditor',
     'djangocms_file',
