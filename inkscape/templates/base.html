@@ -107,6 +107,7 @@
     {% block menu %}
       <div class="nav">
         <button id="menu-toggle"><div></div><div></div><div></div></button>
+        {% get_current_language as lang %}
         {% render_menu lang=lang %}
       </div>
     {% endblock %}
