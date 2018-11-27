@@ -49,7 +49,7 @@ class CommentIndex(SearchIndex, Indexable):
     Index the comment objects
     """
     text = CharField(document=True, model_attr='comment')
-    user_id = IntegerField(stored=True, model_attr='user_id')
+    user_id = IntegerField(stored=True, model_attr='user_id', null=True)
     submit_date = DateTimeField(stored=True, model_attr='submit_date')
 
     def get_model(self):
@@ -61,4 +61,3 @@ class CommentIndex(SearchIndex, Indexable):
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
         return self.get_model().objects.filter(is_removed=False, is_public=True)
-
