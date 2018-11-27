@@ -33,28 +33,26 @@ if ENABLE_CACHING:
         }
     }
 
-# This IRC setting is auto eaten by easyirc, so it's kinda sad
-# the name is so generic. Oh well.
-CONNECTIONS = [
-    {
-        'name': 'freenode',
-        'host': 'irc.freenode.net',
-        'port': 6667,
-        'nick': 'webbot',
-        'autojoins': ['#inkscape'],
-        'enabled': True,
-        'autoreconnect': False,
-    }
-]
-
 GOOGLE_ANID = 'UA-XXXXXX-X'
 YOUTUBE_API_KEY = ''
 
 # >= haystack 2.0
+# Enable realtime models if you have xapian
+#HAYSTACK_SIGNAL_PROCESSOR = 'inkscape.search.LimitedSignalProcessor'
+#HAYSTACK_REALTIME_MODELS = ['forums.forumtopic', 'django_comments.comment']
+# This router only really works for indexing single items
+HAYSTACK_ROUTERS = ['forums.routers.ForumRouter']
+
 HAYSTACK_CONNECTIONS = { 
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': "%s/data/woosh_search" % PROJECT_PATH,
+        'PATH': os.path.join(PROJECT_PATH, 'data', 'woosh_search'),
+    },
+    'forums': {
+        # Forums want to have very up-to-date indexes, but Whoosh
+        # is VERY slow because it reindexes the whole database.
+        #'ENGINE': 'xapian_backend.XapianEngine',
+        #'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
     },
 }
 

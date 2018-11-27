@@ -183,7 +183,7 @@ class CommentSearch(SearchBase):
     form_class = SearchForm
 
     def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet().models(Comment)
+        kwargs['searchqueryset'] = SearchQuerySet(using='forums').models(Comment)
         super().__init__(*args, **kwargs)
 
 class TopicSearch(SearchBase):
@@ -193,7 +193,7 @@ class TopicSearch(SearchBase):
     form_class = SearchForm
 
     def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet().models(ForumTopic)
+        kwargs['searchqueryset'] = SearchQuerySet(using='forums').models(ForumTopic)
         super().__init__(*args, **kwargs)
 
 

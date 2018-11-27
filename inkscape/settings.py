@@ -70,10 +70,6 @@ SITE_ADDRESS = None
 CODE_PATH = os.path.dirname(os.path.abspath(__file__))
 PROJECT_PATH = os.path.abspath(os.path.join(CODE_PATH, ".."))
 
-# Allow realtime updates of some models
-HAYSTACK_SIGNAL_PROCESSOR = 'inkscape.search.LimitedSignalProcessor'
-HAYSTACK_REALTIME_MODELS = ['forums.forumtopic', 'django_comments.comment']
-
 #
 # --- Above this line, settings can be over-ridden for deployment
 #
