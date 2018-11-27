@@ -304,7 +304,19 @@ CKEDITOR_NEWS = {
     ],
 }
 CKEDITOR_FORUM = {
-    'extraPlugins': 'image',
+    'toolbar_HTMLField': [
+        ['Undo', 'Redo'],
+        ['Format', 'Styles', '-', 'RemoveFormat'],
+        ['TextColor', 'BGColor', '-', 'PasteText'],
+        ['Maximize', ''],
+        '/',
+        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript'],
+        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+        ['HorizontalRule'],
+        ['Link', 'Unlink'],
+        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+    ],
+    'resize_enabled': False,
 }
 CKEDITOR_READONLY = {
     'readOnly': True,
