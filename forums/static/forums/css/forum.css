@@ -477,6 +477,9 @@ span.emoji i {
     margin-left: -10px;
     margin-bottom: 2px;
 }
+h3 small.label {
+    font-size: 50%;
+}
 /* Attachments */
 .inline-attachments {
     padding-top: 0px;

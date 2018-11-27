@@ -19,9 +19,11 @@ Try to make forum comment requests faster.
 """
 
 from django.template import Library
-from django_comments.templatetags.comments import CommentListNode
+from django_comments.templatetags.comments import CommentListNode, CommentFormNode
 
 from alerts.models import AlertSubscription
+
+from ..forms import AddCommentForm
 
 register = Library() # pylint: disable=invalid-name
 
@@ -37,6 +39,10 @@ def defer(base, *args):
 FORUM_DEFER = ['user_email', 'user_name', 'user_url', 'ip_address'] + \
     list(defer('user', 'password', 'email', 'bio', 'ircnick', 'ircpass', 'dauser', 'ocuser',
                'tbruser', 'gpg_key', 'last_seen', 'visits', 'website'))
+
+#
+# === Comment List === #
+#
 
 class ForumCommentListNode(CommentListNode):
     """Tweaks for forum comment listing"""
@@ -60,3 +66,29 @@ def sub(topic, user):
         return topic.subscriptions.get(user_id=user.pk)
     except AlertSubscription.DoesNotExist:
         return None
+
+#
+# === Comment Form === #
+#
+
+class ForumCommentFormNode(CommentFormNode):
+    """
+    Load the forum form instead with the right vars
+    """
+    def get_form(self, context):
+        obj = self.get_object(context)
+        if obj:
+            request = context['request']
+            return AddCommentForm(
+                user=request.user,
+                ip_address=request.META.get("REMOTE_ADDR", None),
+                target_object=obj,
+            )
+        return None
+
+@register.tag
+def get_forum_comment_form(parser, token):
+    """
+    See django_comments.templatetags.comments.get_comment_form
+    """
+    return ForumCommentFormNode.handle_token(parser, token)

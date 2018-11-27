@@ -22,9 +22,7 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import (
-    ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
-)
+from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -35,7 +33,7 @@ from haystack.views import SearchView as SearchBase
 
 from django_comments.models import CommentFlag
 
-from .forms import NewTopicForm, EditCommentForm
+from .forms import NewTopicForm, EditCommentForm, AddCommentForm
 from .mixins import (
     CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
 )
@@ -69,6 +67,35 @@ class TopicDetail(UserVisit, DetailView):
         return ForumTopic.objects\
             .filter(forum__slug=self.kwargs['forum'])\
             .select_related('forum', 'forum__group')
+
+class CommentCreate(UserRequired, FormView):
+    """
+    Create a new comment.
+    """
+    model = Comment
+    title = _('New Comment')
+    form_class = AddCommentForm
+    template_name = "forums/comment_form.html"
+
+    def get_parent(self):
+        """Return the parent, i.e. the topic object"""
+        topic = ForumTopic.objects.get(slug=self.kwargs['slug'])
+        return topic.comment_subject
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+            'ip_address': self.request.META.get("REMOTE_ADDR", None),
+            'target_object': self.get_parent(),
+        })
+        return kwargs
+
+    def form_valid(self, form):
+        obj = form.save()
+        topic = self.get_parent()
+        url = topic.get_absolute_url() + '#c' + str(obj.pk)
+        return HttpResponseRedirect(url)
 
 class CommentEdit(OwnerRequired, UpdateView):
     """
@@ -127,7 +154,6 @@ class TopicCreate(UserRequired, FormView):
     """
     Add a topic manually to the forum creating topics and comments.
     """
-    breadcrumbs = []
     title = _("Create a new Forum Topic")
     template_name = "forums/forumtopic_form.html"
     form_class = NewTopicForm
@@ -152,7 +178,6 @@ class TopicCreate(UserRequired, FormView):
 
 class CommentSearch(SearchBase):
     """Restrict the search to the selected language only"""
-    breadcrumbs = []
     template = "forums/comment_search.html"
     results_per_page = 10
     form_class = SearchForm
@@ -163,7 +188,6 @@ class CommentSearch(SearchBase):
 
 class TopicSearch(SearchBase):
     """Restrict the search to the selected language only"""
-    breadcrumbs = []
     template = "forums/topic_search.html"
     results_per_page = 10
     form_class = SearchForm

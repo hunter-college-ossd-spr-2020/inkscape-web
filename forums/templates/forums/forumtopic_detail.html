@@ -70,7 +70,7 @@
     </div>
   {% else %}
 
-    {% get_comment_form for object.comment_subject as comment_form %}
+    {% get_forum_comment_form for object.comment_subject as comment_form %}
     {{ comment_form.media }}
 
   <div class="panel-footer">
@@ -82,7 +82,7 @@
         </span>
       {% elif user.is_authenticated %}
         {% if user.email %}
-          <form action="{% comment_form_target %}" method="POST" class="block">
+          <form action="{% url "forums:comment_create" object.forum.slug object.slug %}" method="POST" class="block">
             <div class="row">
               {% csrf_token %}
               {{ comment_form.comment }}

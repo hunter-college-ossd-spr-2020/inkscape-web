@@ -9,10 +9,29 @@
 {% endblock %}
 
 {% block "dialog-title" %}
+{% if object %}
   <a href="{{ object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </a>
-<h3><img id="forum-logo" src="{{ object.content_object.forum.icon.url }}"> {% if object.user_id == request.user.pk %}{% trans "Edit: " %}{% else %}{% trans "Moderate: " %}{% endif %} {{ object.content_object }}</h3>
+  <h3>
+    <img id="forum-logo" src="{{ object.content_object.forum.icon.url }}">
+    {{ object.content_object }}
+    {% if object.user_id == request.user.pk %}
+      <small class="label label-warning">{% trans "Edit Comment" %}</small>
+    {% else %}
+      <small class="label label-danger">{% trans "Moderate Comment" %}</small>
+    {% endif %}
+  </h3>
+{% elif form.target_object %}
+  <a href="{{ form.target_object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+  <h3>
+    <img id="forum-logo" src="{{ form.target_object.forum.icon.url }}">
+    {{ form.target_object }}
+    <small class="label label-primary">{% trans "New Comment" %}</small>
+  </h3>
+{% endif %}
 {% endblock %}
 
 {% block "modal-rest" %}
@@ -21,12 +40,14 @@
 
 {% block "form-buttons" %}
   <span class="btn-group pull-right">
-    <button class="btn btn-primary btn-sm"type="submit"> {% trans "Save Edit" %}</button>
+    <button class="btn btn-primary btn-sm"type="submit"> {% if object %}{% trans "Save Edit" %}{% else %}{% trans "Post" %}{% endif %}</button>
     <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
   </span>
   <span class="btn-group pull-left">
     {% if object.user_id == request.user.pk %}
-    <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
+      <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
+    {% elif not object %}
+      <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
     {% else %}
     <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care editing <strong>other people's comments</strong>.{% endblocktrans %}</a>
     {% endif %}

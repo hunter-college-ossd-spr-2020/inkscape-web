@@ -90,7 +90,9 @@ class AddCommentForm(AttachmentMixin, CommentForm):
     name = None
     email = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, ip_address, *args, **kwargs):
+        self.user = user
+        self.ip_address = ip_address
         super().__init__(*args, **kwargs)
         self.fields['comment'].widget = TextEditorWidget(configuration='CKEDITOR_FORUM')
 
@@ -118,17 +120,17 @@ class AddCommentForm(AttachmentMixin, CommentForm):
                 errors[field] = self.errors[field]
         return errors
 
-    def get_comment_object(self, site_id=None):
-        """
-        Save with attachments, normally this would be save() but django_comment
-        doesn't use normal form handling and instead uses this function.
-        """
-        self.cleaned_data['name'] = ''
-        self.cleaned_data['email'] = ''
+    def save(self, **_):
+        """Use save to fill in various bits"""
+        self.cleaned_data['name'] = self.user.username
+        self.cleaned_data['email'] = self.user.email
         self.cleaned_data['url'] = ''
 
-        comment = super().get_comment_object(site_id=site_id)
+        comment = self.get_comment_object()
+        comment.user = self.user
+        comment.ip_address = self.ip_address
         comment.save()
+
         self.save_attachments(comment)
         return comment
 
@@ -188,7 +190,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
     def __init__(self, user, ip_address, *args, **kwargs):
         self.user = user
         self.ip_address = ip_address
-        super(NewTopicForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def save(self, **_):
         """Save the comment under a topic's object"""

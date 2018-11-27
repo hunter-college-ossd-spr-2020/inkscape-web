@@ -28,7 +28,7 @@ from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicSearch, TopicCreate,
     TopicMove, TopicEdit, TopicDelete,
-    CommentEdit, CommentSearch, CommentEmote, CommentDelete,
+    CommentCreate, CommentEdit, CommentSearch, CommentEmote, CommentDelete,
 )
 
 urlpatterns = [ # pylint: disable=invalid-name
@@ -53,5 +53,6 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^(?P<forum>[\w-]+)/(?P<slug>[\w-]+)/',
         url(r'^$', TopicDetail.as_view(), name='topic'),
+        url(r'^comment/$', CommentCreate.as_view(), name='comment_create'),
     ),
 ]
