@@ -164,6 +164,7 @@ ROOT_URLCONF = 'inkscape.urls'
 INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
+    'stopforumspam',
     'elections',
     'easy_thumbnails',
     'django.contrib.sites',
@@ -322,6 +323,12 @@ CKEDITOR_READONLY = {
     'readOnly': True,
     'disableReadonlyStyling': True,
 }
+
+SFS_ALL_POST_REQUESTS = True
+SFS_SOURCE_ZIP = "https://www.stopforumspam.com/downloads/listed_ip_7.zip"
+SFS_ZIP_FILENAME = "listed_ip_7.txt"
+SFS_CACHE_EXPIRE = 7
+SFS_LOG_EXPIRE = 7
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',

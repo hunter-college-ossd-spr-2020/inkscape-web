@@ -27,6 +27,7 @@ django-registration==3.0
 social-auth-app-django==2.1.0
 python3-vote-core==20170329.0
 django-nocaptcha-recaptcha==0.0.20
+stopforumspam==1.8
 
 # gallery
 gnupg==2.3.1
