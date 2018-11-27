@@ -17,12 +17,12 @@
         </div>
       {% else %}
         <div class="inline image">
-          <a href="{% url "view_resource" object.id %}"><img src="{{ object.rendering_url }}" alt="{% trans "Image" %}" data-icon="{{ object.thumbnail_url }}" data-fullview="{{ object.download.url }}"></a>
+          <a href="{{ object.download_url }}}"><img src="{{ object.rendering_url }}" alt="{% trans "Image" %}" data-icon="{{ object.thumbnail_url }}" data-fullview="{{ object.download.url }}"></a>
         </div>
       {% endif %}
     {% else %}
       <div class="inline file">
-        <a href="{% url "download_resource" object.id object.filename %}"><img src="{{ object.rendering_url }}" alt="{% trans "File Icon" %}"></a>
+        <a href="{{ object.download_url }}"><img src="{{ object.rendering_url }}" alt="{% trans "File Icon" %}"></a>
       </div>
     {% endif %}
   {% endif %}

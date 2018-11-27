@@ -2,7 +2,7 @@
 {% load i18n static forum_comments inkscape comments %}
 
 {% block "header" %}
-   <a href="{{ object.forum.get_absolute_url }}"><img src="{{ object.forum.icon.url }}" title="{{ object.form }}"></a>
+<a href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}">{% endif %}</a>
    <h3>{{ object.subject }}</h3>
 {% endblock %}
 
