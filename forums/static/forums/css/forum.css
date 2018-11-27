@@ -447,11 +447,20 @@ ul {
     background-color: #eee;
 }
 .emoji-bar {
-    padding: 6px 10px 0px;
-    font-size: 18px;
+  font-size: 1em;
+  margin-top: 1em;
+}
+.emoji-bar img.emoji {
+  border-radius: 2em;
+  box-shadow: 0 0 1px 0px #ddd inset;
+  background-color: #EBFCFF;
+  font-size: inherit;
+  margin: 0 0 .3em .3em;
+  padding: .4em;
+  width: 2.6em;
 }
 img.emoji {
-    width: 22px;
+  width: 1.6em;
 }
 span.emoji i {
     display: inline-block;
@@ -562,6 +571,10 @@ span.emoji i {
   padding: 1vw 0;
 }
 
+.comment {
+  margin-bottom: 4em;
+}
+
 .img-circle, 
 .comment-header-group::before,
 .comment-header-group,
@@ -570,14 +583,17 @@ span.emoji i {
 }
 
 .comment-header-group {
-  border-radius: 2em;
+  border-radius: 5em;
+  border-top-right-radius: 1em;
+  border-bottom-right-radius: 1em;
   display: inline;
+  float: left;
   line-height: 23px;
   margin: 0;
-  padding: 0.3em 1vw .3em 0;
+  padding: 0 1vw 0 0;
   position: relative;
+  width: calc(100% - 5em);
   z-index: 5;
-  
 }
 
 .comment-author-address {
@@ -609,22 +625,53 @@ span.emoji i {
   padding: 0.2em .6em;
 }
 
+.comment-author-address img.emoji {
+  border-radius: 2em;
+  box-shadow: 0 0 1px 0px #ddd inset;
+  background-color: #FFEEEB;
+  font-size: inherit;
+  margin-left: .4em;
+  padding: .4em;
+  position: relative;
+  top: -.8em;
+  /* don't mess up vertical position of surrounding text */
+  vertical-align: text-top;
+  width: 2.6em;
+}
+
+.buttons-group {
+  float: right;
+  position: relative;
+  top: -.6em;
+  text-align: center;
+  width: 3em;
+}
+
 .comment-count, 
 .comment-remove,
 .comment-edit,
 .comment-report {
   border-radius: 2em;
-  font-size: 11px;
+  box-shadow: 0 0 1px 0px #ddd inset;
+  display: inline-block;
+  font-size: .8em;
   line-height: 1;
-  margin: 0 0 0 5px;
-  padding: .6em .7em;
+  margin-bottom: .4em;
+  padding: .7em .7em .5em;
   text-align: center;
   transition: all .3s ease 0s;
+}
+.comment-count .glyphicon, 
+.comment-remove .glyphicon,
+.comment-edit .glyphicon,
+.comment-report .glyphicon {
+  top: 0; /* override bootstrap */
 }
 .comment-count {
   background-color: #f0ebff;
   color: #1b006c;
   margin: 0;
+  padding: .7em .6em .7em;
 }
 .comment-count:focus,
 .comment-count:hover {
@@ -640,8 +687,6 @@ span.emoji i {
   background-color: #ebffe1;
   color: #104600;
   font-size: 1.3em;
-  position: relative;
-  top: -.5em;
 }
 .comment-edit:focus,
 .comment-edit:hover {
@@ -673,25 +718,37 @@ span.emoji i {
   padding: 1em 0;
 }
 
-.buttons-group {
-  clear: right;
-  margin-top: .5em;
-}
-
-
-@media (min-width: 700px) {
+@media (min-width: 700px) and (min-width: 40em) {
   .comment {
     display: grid;
     grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
-    margin-bottom: 4em;
   }
+  
+  .buttons-group {
+    top: 0;
+    width: auto; /* override mobile */
+  }
+  
+  .comment-count, 
+  .comment-remove,
+  .comment-edit,
+  .comment-report {
+    float: right;
+    margin: 0 0 0 .4em;
+  } 
+  
+  .comment-edit {
+    position: relative;
+    top: -.5em;
+  }
+  
   .comment-text {
     grid-column-start: 3;
     grid-column-end: span 5;
     grid-row-start: 2;
     grid-row-end: span 4;
-    padding: 1em 2.4vw;
+    padding: 1.6em 2.4vw .6em;
   }
   .comment-attachments {
     grid-column-start: 3;
@@ -708,6 +765,7 @@ span.emoji i {
     grid-column-end: span 3;
     grid-row-start: 1;
     grid-row-end: span 3;
+    width: auto; /* override mobile */
   }
   
   .comment-header-group::before {
@@ -717,7 +775,7 @@ span.emoji i {
     height: 1.8em;
     left: 60px; /* half the image width */
     position: absolute;
-    top: .3em;
+    top: 0;
     width: calc(100% - 60px);
     z-index: -1;
   }
@@ -729,6 +787,7 @@ span.emoji i {
   
   .comment-time {
     background-color: transparent;
+    float: right !important;
   }
 
   .buttons-group {
@@ -766,7 +825,9 @@ span.emoji i {
     grid-column-end: span 2;
     grid-row-start: 4;
     grid-row-end: span 1;
-    align-self: center;
+    align-self: start;
+    justify-self: end;
+    text-align: right;
   }
 
   /* Attachments dropdown */
@@ -779,4 +840,3 @@ span.emoji i {
     align-self: center;
   }
 }
-
