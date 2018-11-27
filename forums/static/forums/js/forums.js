@@ -202,9 +202,14 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
             $.post(post_url, {
                 csrfmiddlewaretoken: Cookies.get('csrftoken'),
                 flag: $(this).data('chr'),
-            }, function() {
-                var bar_span = $('<span class="emoji">'+span.data('chr')+'</span>');
-                pot.append(bar_span);
+            }, function(data) {
+                var bar_span = $('#emote-'+data.id);
+                if(bar_span.length) {
+                    bar_span.text(span.data('chr'));
+                } else {
+                    bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
+                    pot.append(bar_span);
+                }
                 clean_emoji(-1, bar_span);
             });
         });

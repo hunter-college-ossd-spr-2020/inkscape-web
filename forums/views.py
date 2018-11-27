@@ -25,10 +25,9 @@ Forum views, show topics, comments and link to apps.
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
 
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
@@ -37,7 +36,9 @@ from haystack.views import SearchView as SearchBase
 from django_comments.models import CommentFlag
 
 from .forms import NewTopicForm, EditCommentForm
-from .mixins import UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
+from .mixins import (
+    CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
+)
 from .models import Comment, Forum, ForumTopic, ModerationLog
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
@@ -172,7 +173,7 @@ class TopicSearch(SearchBase):
         super().__init__(*args, **kwargs)
 
 
-class CommentEmote(UserRequired, UpdateView):
+class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     """Update an Emote on a comment using a comment flag"""
     model = CommentFlag
     fields = ('flag',)
@@ -183,7 +184,12 @@ class CommentEmote(UserRequired, UpdateView):
         url = self.request.POST.get('next', self.request.GET.get('next', None))
         if url:
             HttpResponseRedirect(url)
-        return HttpResponse('')
+        return JsonResponse({
+            'id': self.object.pk,
+            'flag': self.object.flag,
+            'comment': self.object.comment_id,
+            'user': self.object.user_id,
+        })
 
     def get_object(self, queryset=None):
         return self.get_queryset().get_or_create(user=self.request.user,

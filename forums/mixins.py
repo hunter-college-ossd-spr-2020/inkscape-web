@@ -29,6 +29,7 @@ from django.utils import translation
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator, decorator_from_middleware
+from django.views.decorators.csrf import csrf_exempt
 
 from .middleware import RecentUsersMiddleware
 from .models import Forum, ForumTopic, Comment
@@ -128,3 +129,10 @@ class ForumMixin(object):
         data = super().get_context_data(**kwargs)
         data['forums'] = self.get_forum_list()
         return data
+
+class CsrfExempt(object):
+    """Exempt a form from cross-scripting protections"""
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        """Wrap the csrf_exempt decorator"""
+        return super().dispatch(request, *args, **kwargs)

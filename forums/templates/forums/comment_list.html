@@ -43,7 +43,7 @@
       {% endif %}
       
       <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
-          {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji">{{ flag.flag }}</span>{% endif %}{% endfor %}
+          {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" id="emote-{{ flag.pk }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
       </small>
       
       <!-- Start attachment dropdown -->
