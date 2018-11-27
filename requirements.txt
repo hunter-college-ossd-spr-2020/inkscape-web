@@ -37,5 +37,6 @@ pylint==1.9.2
 pylint-django==0.11.1
 
 # Live only
-psycopg2-binary==2.7.5
-uwsgi==2.0.17
+#psycopg2-binary==2.7.5
+#uwsgi==2.0.17
+#xapian-haystack=2.1.1
