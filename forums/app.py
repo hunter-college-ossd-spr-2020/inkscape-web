@@ -134,6 +134,7 @@ class ForumsConfig(AppConfig):
 
     def update_topic(self, topic, instance):
         """Updates other meta data for quick access from the topic"""
-        topic.last_username = instance.user.username
-        topic.has_attachments = bool(topic.has_attachments or instance.attachments.count())
-        topic.save()
+        if topic is not None:
+            topic.last_username = instance.user.username
+            topic.has_attachments = bool(topic.has_attachments or instance.attachments.count())
+            topic.save()
