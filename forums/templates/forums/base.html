@@ -64,7 +64,7 @@
               </a>
               <li>
               {% else %}
-              <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}">
+              <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}">
                 <img src="{{ visitor.photo_url|default:default_photo }}"/>
               </a>
               {% endif %}

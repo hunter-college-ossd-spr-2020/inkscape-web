@@ -18,20 +18,24 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-I can't believe I had to re-write this after copying over it.
+Forum forms, over-riding the django_comment forms.
 """
+
+import re
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
 from django.forms import ModelForm, CharField, ValidationError
-from djangocms_text_ckeditor.widgets import TextEditorWidget
 
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
 from django_comments.models import Comment
 
+from .widgets import TextEditorWidget
 from .fields import ResourceList
 from .models import ForumTopic
+
+emoji = re.compile(r'([\u263a-\U0001f645])')
 
 class AttachmentMixin(object):
     """
@@ -41,6 +45,11 @@ class AttachmentMixin(object):
         help_text=_("A comma seperated list of resource ids to attach as files."))
     inlines = ResourceList(required=False,\
         help_text=_("A comma seperated list of resource ids to show inline."))
+
+    def clean_comment(self):
+        """Pick out all emojis"""
+        comment = self.cleaned_data['comment']
+        return emoji.sub(r'<span class="emoji">\1</span>', comment)
 
     def save_attachments(self, comment):
         """Save attachments to the given comment"""

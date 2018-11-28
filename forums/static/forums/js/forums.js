@@ -129,6 +129,22 @@ $(document).ready(function() {
   // Hide input boxes (inface entire input groups)
   $('.group-id_attachments').hide();
   $('.group-id_inlines').hide();
+
+  var users = new Array();
+  var users_str = localStorage.getItem("known_users");
+  if (users_str) {
+      users = JSON.parse(users_str);
+  }
+  // Gather any usernames
+  $('*[data-user]').each(function() {
+      var username = $(this).data('user');
+      if (users.indexOf(username) < 0 && username != "") {
+          users.push(username);
+      }
+  });
+  localStorage.setItem("known_users", JSON.stringify(users));
+  $(document).data('users', users);
+  console.log(users);
 });
 
 // Writes the state of the attachments into the inputs.
@@ -216,11 +232,15 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
     }
 }
 
+function get_emoji_code(emoji) {
+    return emoji.codePointAt(0).toString(16);
+}
+
 function clean_emoji(index, elem) {
     var static_dir = $('body').data('static');
     var emoji = $(elem).text();
     if(emoji) {
-        var code = emoji.codePointAt(0).toString(16);
+        var code = get_emoji_code(emoji);
         var sibling = $('.code-' + code, $(elem).parent());
 
         $(elem).empty();

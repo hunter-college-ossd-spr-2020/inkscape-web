@@ -15,7 +15,7 @@
       <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ comment_counter }}</a>
       
       <span class="comment-header-group">
-        <address class="comment-author-address"><a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+          <address class="comment-author-address" data-user="{{ comment.user.username }}"><a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
         <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
       </span>
       

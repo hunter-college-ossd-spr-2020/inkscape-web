@@ -42,7 +42,7 @@
           {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}
         </td>
         <td class="text-center"><span class="label label-default counter">{{ topic.post_count }}</span></td>
-        <td class="text-center">{{ topic.last_username }}</td>
+        <td class="text-center" {% if topic.last_username %}data-user="{{ topic.last_username }}"{% endif %}>{{ topic.last_username|default:'-' }}</td>
         <td class="text-right">{{ topic.last_posted|timetag }}</td>
       </tr>
     {% empty %}
