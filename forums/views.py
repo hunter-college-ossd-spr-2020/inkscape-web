@@ -22,9 +22,12 @@
 Forum views, show topics, comments and link to apps.
 """
 
-from django.views.generic import ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
+)
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import Permission
 from django.shortcuts import get_object_or_404
 
 from haystack.forms import SearchForm
@@ -33,11 +36,13 @@ from haystack.views import SearchView as SearchBase
 
 from django_comments.models import CommentFlag
 
+from .base_views import FieldUpdateView
 from .forms import NewTopicForm, EditCommentForm, AddCommentForm
 from .mixins import (
     CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
 )
 from .models import Comment, Forum, ForumTopic, ModerationLog
+from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
     """A list of all available forums"""
@@ -109,18 +114,50 @@ class CommentEdit(OwnerRequired, UpdateView):
     def log_details(self):
         return {'diff': 'TBD'}
 
-class CommentDelete(ModeratorRequired, DeleteView):
+class CommentModPublic(ModeratorRequired, FieldUpdateView):
+    """
+    Toggle the public flag of a comment, this can also hide.
+    """
     model = Comment
-    title = _('Delete Comment')
-    template_name = "forums/moderator_form.html"
+    field = 'is_public'
+    value = '!'
 
-    def get_success_url(self):
-        self.record_action()
-        return self.object.get_topic().get_absolute_url()
+    def field_changed(self, obj, is_public): # pylint: disable=arguments-differ
+        """Enable the user for posting if they are approved"""
+        if obj.user and is_public:
+            comments = Comment.objects.filter(user_id=obj.user.pk, is_public=True, is_removed=False)
+            if comments.count() >= 2:
+                self.add_permissions(obj.user)
+        return super().field_changed(obj, is_public=is_public)
 
-    def log_details(self):
-        """Return the full text of the comment"""
-        return {'text': self.get_object().comment}
+    @staticmethod
+    def add_permissions(user):
+        """Add permission to post to the forums"""
+        permissions = Permission.objects.filter(content_type__model='forumtopic')
+        comment = permissions.get(codename='can_post_comment')
+        user.user_permissions.add(comment)
+        topic = permissions.get(codename='can_post_topic')
+        user.user_permissions.add(topic)
+
+
+class CommentModRemove(ModeratorRequired, FieldUpdateView):
+    """
+    Toggle the removal of comments, this can also un-remove.
+    """
+    model = Comment
+    field = 'is_removed'
+    value = '!'
+
+class CommentModList(ModeratorRequired, ForumMixin, ListView):
+    """
+    List all comnments which are not yet published
+    """
+    template_name = "forums/forumcomment_list.html"
+
+    def get_queryset(self):
+        return Comment.objects\
+            .filter(is_public=False, is_removed=False)\
+            .prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
 
 class TopicMixin(object):
     template_name = "forums/moderator_form.html"

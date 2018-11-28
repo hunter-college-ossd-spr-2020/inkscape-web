@@ -28,19 +28,22 @@ from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicSearch, TopicCreate,
     TopicMove, TopicEdit, TopicDelete,
-    CommentCreate, CommentEdit, CommentSearch, CommentEmote, CommentDelete,
+    CommentCreate, CommentEdit, CommentSearch, CommentEmote,
+    CommentModList, CommentModPublic, CommentModRemove,
 )
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url(r'^log/$', ModerationList.as_view(), name="log"),
+    url(r'^check/$', CommentModList.as_view(), name="check"),
     url(r'^search/$', TopicSearch(), name='search'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
         url(r'^edit/$', CommentEdit.as_view(), name='comment_edit'),
-        url(r'^del/$', CommentDelete.as_view(), name='comment_delete'),
+        url(r'^rem/$', CommentModRemove.as_view(), name='comment_remove'),
+        url(r'^pub/$', CommentModPublic.as_view(), name='comment_public'),
     ),
     url_tree(
         r'^(?P<slug>[\w-]+)/',

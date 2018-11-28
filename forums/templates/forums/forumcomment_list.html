@@ -1,0 +1,18 @@
+{% extends "forums/base.html" %}
+{% load i18n static %}
+
+{% block "header" %}
+  <h3><span class="glyphicon glyphicon-briefcase"></span> {% trans "Comment Purgitory" %}</h3>
+{% endblock %}
+
+{% block "tools" %}
+    <a class="btn btn-default" href="{% url "forums:list" %}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+    {{ block.super }}
+{% endblock %}
+
+{% block "content" %}
+  {% with object_list as comment_list %}
+    {% include "forums/comment_list.html" %}
+  {% endwith %}
+{% endblock %}
+

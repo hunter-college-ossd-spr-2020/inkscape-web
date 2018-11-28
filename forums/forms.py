@@ -129,6 +129,7 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         comment = self.get_comment_object()
         comment.user = self.user
         comment.ip_address = self.ip_address
+        comment.is_public = self.user.has_perm('forums.can_post_comment')
         comment.save()
 
         self.save_attachments(comment)
@@ -163,7 +164,6 @@ class EditCommentForm(AttachmentMixin, ModelForm):
             self.instance.save(update_fields=('comment',))
             self.save_attachments(self.instance)
         return self.instance
-
 
 
 class NewTopicForm(AttachmentMixin, CommentForm):
@@ -211,6 +211,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         comment = self.get_comment_object()
         comment.user = self.user
         comment.ip_address = self.ip_address
+        comment.is_public = self.user.has_perm('forums.can_post_topic')
         comment.save()
 
         self.save_attachments(comment)
