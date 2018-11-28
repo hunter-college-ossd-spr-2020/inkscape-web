@@ -2,7 +2,7 @@
 
 <div>
   
-  <ol class="panel-body">
+  <ol class="panel-body comment-list">
     <!-- Start forum thread comment loop -->
     {% for comment in comment_list %}
     {% if not comment.moderation.is_deleted %}

@@ -50,7 +50,7 @@
 
 {% block "content" %}
   {% if object.object_pk %}
-    <div class="comment changes" data-pk="topic-{{ object.pk }}">
+    <div class="forum-comment-first changes" data-pk="topic-{{ object.pk }}">
       {% with object.object_template as template %}
         {% with object.object as object %}
           {% include template %}

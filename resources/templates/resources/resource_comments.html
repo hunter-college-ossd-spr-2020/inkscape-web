@@ -26,24 +26,20 @@
     </div>
   </div>
 
-  <div class="panel-body">
-    <ul class="comment">
-      <li class="left clearfix">
-        <span class="comment-img pull-left">
-        <img src="{% if object.user.photo %}{{ object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ object.user }}" class="img-circle" /> </span>
-        <div class="comment-body clearfix">
-          <div class="header">
-            <strong class="primary-font"><a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a></strong>
+  <section class="panel-body forum-comment-first-text">
+    <span class="comment-img pull-left">
+      <img src="{% if object.user.photo %}{{ object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ object.user }}" class="img-circle" /> </span>
+    <div class="comment-body clearfix">
+      <div class="header">
+        <strong class="primary-font"><a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a></strong>
 
-            <small class="pull-right text-muted"><a href="{{ object.get_absolute_url }}"><span class="glyphicon glyphicon-picture"></span></a></small>
+        <a href="{{ object.get_absolute_url }}" class="pull-right text-muted comment-first-link"><span class="glyphicon glyphicon-picture"></span></a>
 
-            <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ object.created|timetag }}</small>
-          </div>
-          <p>
-            {{ object.desc|truncatewords:60|urlize|linebreaks }}
-          </p>
-        </div>
-      </li>
-    </ul>
-  </div>
+        <small class="pull-right text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ object.created|timetag }}</small>
+      </div>
+      <p>
+        {{ object.desc|truncatewords:60|urlize|linebreaks }}
+      </p>
+    </div>
+  </section>
 
