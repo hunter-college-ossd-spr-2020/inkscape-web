@@ -25,10 +25,11 @@ from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.contrib import messages
+from django.contrib.auth.models import Permission
 from django.http import HttpResponseRedirect, Http404
 
 from .models import User, Team
-from .forms import UserForm, AgreeToClaForm, Permission, TeamAdminForm
+from .forms import UserForm, AgreeToClaForm, TeamAdminForm
 from .mixins import LoginRequiredMixin, NeverCacheMixin, UserMixin, NextUrlMixin
 
 class AgreeToCla(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
