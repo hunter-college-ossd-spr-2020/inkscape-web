@@ -69,6 +69,8 @@ class RegisForm(RegistrationForm):
         username = self.cleaned_data['username']
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
+        if '@' in username:
+            raise ValidationError(_("Username must not be an email address!"))
         return username
 
     class Meta(RegistrationForm.Meta):
@@ -127,6 +129,8 @@ class UserForm(ModelForm):
         username = self.cleaned_data['username']
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
+        elif '@' in username:
+            raise ValidationError(_("Username must not be an email address!"))
         user = User.objects.filter(username=username)
         if user and user[0] != self.instance:
             raise ValidationError(_("Username already taken"))
