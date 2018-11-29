@@ -17,3 +17,4 @@ logs
 .coverage
 .autotest.conf
 .vscode
+.project
