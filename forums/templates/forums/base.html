@@ -26,15 +26,24 @@
     {% block "container" %}
     <div class="container">
       <div class="forum-box">
+        
+        {% block "header" %}
+        <header class="forums-header">
+          <div class="forums-branding"><a class="forums-logo" href="/forums/"><img src="{% static "forums/images/logo.svg" %}"> <span class="forums-name">Inkscape Forum</span> <span class="forums-tagline">Talk Freely</span></a></div>
+          {% block "search-block" %}
+          <form action="{% url "forums:search" %}" class="pull-right forums-search">
+            <div class="input-append">
+              {% block "search" %}{% endblock %}
+              <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"> <button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+          </form>
+          {% endblock %}
+
+        </header>
+        {% endblock %}
+        
         {% block "side" %}
         <aside class="sm-side">
-          <div class="forum-head">
-            <a class="forums-logo"><img src="{% static "forums/images/logo.svg" %}"></a>
-            <div class="forums-name">
-              <span>Talk Freely</span>
-              <h5>Inkscape Forum</h5>
-            </div>
-          </div>
 
           {% for group, items in forums.groups.items %}
           <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
@@ -79,14 +88,7 @@
         {% endblock %}
         <aside class="lg-side">
           <div class="forum-head">
-            {% block "header" %}
-            <form action="{% url "forums:search" %}" class="pull-right position">
-              <div class="input-append">
-                {% block "search" %}{% endblock %}
-                <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"> <button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
-              </div>
-            </form>
-            {% endblock %}
+            
           </div>
           <div class="forum-body">
             <div class="forum-option">
