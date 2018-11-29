@@ -48,9 +48,14 @@ FORUM_PREFETCH = ['flags', 'attachments', 'attachments__resource', 'user', 'user
 class ForumCommentListNode(CommentListNode):
     """Tweaks for forum comment listing"""
     def get_queryset(self, context):
-        qset = super().get_queryset(context)
-        qset = qset.prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
-        return qset
+        ctype, object_pk = self.get_target_ctype_pk(context)
+        if not object_pk:
+            return self.comment_model.objects.none()
+
+        # We show all is_public=False so moderators can see them
+        qset = self.comment_model.objects.filter(object_pk=object_pk, content_type=ctype)
+        qset = qset.filter(is_removed=False)
+        return qset.prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
 
 @register.tag
 def get_forum_comment_list(parser, token):
