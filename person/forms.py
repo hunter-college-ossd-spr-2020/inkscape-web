@@ -67,6 +67,8 @@ class RegisForm(RegistrationForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        if len(username) > 60:
+            raise ValidationError(_("Username too long"))
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
         if '@' in username:
@@ -127,6 +129,8 @@ class UserForm(ModelForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        if len(username) > 60:
+            raise ValidationError(_("Username too long"))
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
         elif '@' in username:
