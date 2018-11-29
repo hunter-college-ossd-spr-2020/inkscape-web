@@ -39,6 +39,7 @@ def defer(base, *args):
 FORUM_DEFER = ['user_email', 'user_name', 'user_url', 'ip_address'] + \
     list(defer('user', 'password', 'email', 'bio', 'ircnick', 'ircpass', 'dauser', 'ocuser',
                'tbruser', 'gpg_key', 'last_seen', 'visits', 'website'))
+FORUM_PREFETCH = ['flags', 'attachments', 'attachments__resource', 'user', 'user__forum_flags']
 
 #
 # === Comment List === #
@@ -48,8 +49,7 @@ class ForumCommentListNode(CommentListNode):
     """Tweaks for forum comment listing"""
     def get_queryset(self, context):
         qset = super().get_queryset(context)
-        qset = qset.prefetch_related('flags', 'attachments', 'attachments__resource',
-                                     'user', 'user__forum_flags').defer(*FORUM_DEFER)
+        qset = qset.prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
         return qset
 
 @register.tag
