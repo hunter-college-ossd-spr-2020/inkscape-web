@@ -241,6 +241,10 @@ class ForumTopic(Model):
     class Meta:
         get_latest_by = 'last_posted'
         ordering = ('-sticky', '-last_posted',)
+        permissions = (
+            ("can_post_comment", "User can post comments to the forums."),
+            ("can_post_topic", "User can make new forum topics."),
+        )
 
     def __str__(self):
         return self.subject

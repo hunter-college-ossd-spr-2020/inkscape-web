@@ -128,6 +128,7 @@ class ForumMixin(object):
         """Add standard context data elements"""
         data = super().get_context_data(**kwargs)
         data['forums'] = self.get_forum_list()
+        data['purgitory'] = Comment.objects.filter(is_public=False, is_removed=False)
         return data
 
 class CsrfExempt(object):

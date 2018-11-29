@@ -15,22 +15,25 @@
       <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ comment_counter }}</a>
       
       <span class="comment-header-group">
-        <address class="comment-author-address"><a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+          <address class="comment-author-address" data-user="{{ comment.user.username }}"><a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
         <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
       </span>
       
       <div class="buttons-group">
-        {% if request.user.is_authenticated %}
+        {% if comment.user_id == request.user.pk %}
+        <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+        {% elif request.user.is_moderator %}
+        <a class="text-muted comment-remove" href="{% url "forums:comment_remove" comment.pk %}?next={{ request.path }}" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>
+        {% if not comment.is_public %}
+          <a class="text-muted comment-edit" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}" title="Approve (make public)"><span class="glyphicon glyphicon-ok"></span></a>
+        {% else %}
+          <a class="text-muted comment-remove" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}" title="Send to moderation"><span class="glyphicon glyphicon-tag"></span></a>
+        {% endif %}
+        <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-flash"></span></a>
+        {% elif request.user.is_authenticated %}
         <a class="btn btn-sm comment-report" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
         {% endif %}
-        
-        {% if request.user.is_moderator %}
-        <a class="text-muted comment-remove" href="{% url "forums:comment_delete" comment.pk %}" title="Delete"><span class="glyphicon glyphicon-remove"></span></a>
-        {% endif %}
       
-        {% if comment.user_id == request.user.pk or request.user.is_moderator %}
-        <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-{% if comment.user_id == request.user.pk %}edit{% else %}flash{% endif %}"></span></a>
-        {% endif %}
       </div>
 
       {% if request.user.is_authenticated %}
