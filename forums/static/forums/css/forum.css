@@ -623,6 +623,11 @@ h3 small.label {
   width: calc(100% - 5em);
   z-index: 5;
 }
+.not-public .img-circle,
+.comment-header-group.not-public::before {
+  background-color: #ffebeb;
+  color: #640000;
+}
 
 .comment-author-address {
   display: inline;
@@ -631,6 +636,10 @@ h3 small.label {
   margin-bottom: 0;
   /* bring back offset because of negative margin on image */ 
   padding-left: 2.4vw;
+}
+.not-visible .img-circle {
+  max-width: 50px;
+  padding: 0;
 }
 
 .img-circle {

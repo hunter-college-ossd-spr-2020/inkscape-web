@@ -1,0 +1,39 @@
+{% load i18n static %}
+
+            {# Start attachment dropdown #}
+            {% if comment.attachments.count %}
+              <div class="dropdown pull-right check-dropdown">
+                <a href="#" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Attachments" %}" id="attachments-{{ comment.pk }}"><span class="glyphicon glyphicon-paperclip"></span> {% trans "Attachments" %}</a>
+                <ul class="dropdown-menu" aria-labelledby="attachments-{{ comment.pk }}">
+                  {% for attachment in comment.attachments.all %}
+                    {% if not attachment.inline or any %}
+                      {% if attachment.resource.is_removed %}
+                        <li class="dropdown-item disabled">
+                          <a href="#"><span class="glyphicon glyphicon-ban-circle"></span> {{ attachment.resource.filename }}</a>
+                        </li>
+                      {% else %}
+                        <li class="dropdown-item">
+                          {% if attachment.resource.is_video %}
+                            <a href="{{ attachment.resource.link }}">
+                          {% elif attachment.resource.published %}
+                            <a href="{{ attachment.resource.get_pk_url }}">
+                          {% else %}
+                            <a href="{{ attachment.resource.download.url }}">
+                          {% endif %}
+                          {% if attachment.resource.mime.is_image %}
+                            <span class="glyphicon glyphicon-picture text-muted"></span>
+                          {% elif attachment.resource.is_video %}
+                            <span class="glyphicon glyphicon-facetime-video text-muted"></span>
+                          {% else %}
+                            <span class="glyphicon glyphicon-file text-muted"></span>
+                          {% endif %}
+                          {{ attachment.resource.filename|default:attachment.resource.name }}
+                          </a>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            {# End attachment dropdown #}
