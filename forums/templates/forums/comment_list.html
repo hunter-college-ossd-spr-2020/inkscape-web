@@ -15,7 +15,7 @@
           {% if comment.is_public %}
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}">
-                  <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+                  <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length < 4 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
             </span>
       
@@ -41,7 +41,7 @@
             {% endif %}
       
             <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
-              {% for flag in comment.flags.all %}{% if flag.flag|length == 1 %}<span class="emoji" id="emote-{{ flag.pk }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
+              {% for flag in comment.flags.all %}{% if flag.flag|length < 4 %}<span class="emoji" id="emote-{{ flag.pk }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
             </small>
       
             {% include "forums/resource_dropdown.html" %}

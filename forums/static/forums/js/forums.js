@@ -144,7 +144,6 @@ $(document).ready(function() {
   });
   localStorage.setItem("known_users", JSON.stringify(users));
   $(document).data('users', users);
-  console.log(users);
 });
 
 // Writes the state of the attachments into the inputs.
@@ -232,8 +231,14 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
     }
 }
 
+/* Turn an emoji into a code string */
 function get_emoji_code(emoji) {
-    return emoji.codePointAt(0).toString(16);
+    var ret = '';
+    for(var x = 0; x < emoji.length; x += 2) {
+        if(ret) ret += '-';
+        ret += emoji.codePointAt(x).toString(16);
+    }
+    return ret;
 }
 
 function clean_emoji(index, elem) {
