@@ -58,6 +58,10 @@ def linked_users_only(qs, *rels):
 
 class PersonManager(UserManager):
     """Overwrite the creation functions because we customise is_staff"""
+    def get_queryset(self):
+        """Defer the gpg_key field, as it's not required the vast mojority of the time"""
+        return super().get_queryset().defer('gpg_key')
+
     def _create_user(self, username, email, password, **extra_fields):
         add_is_staff = extra_fields.pop('is_staff', False)
         user = super()._create_user(username, email, password, **extra_fields)

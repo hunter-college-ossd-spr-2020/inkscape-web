@@ -78,8 +78,8 @@
         <span class="input-group-btn">
           <a class="btn btn-default btn-sm disabled"><span class="glyphicon glyphicon-lock"></span> {% trans "Locked" %}</a>
         </span>
-      {% elif user.is_authenticated %}
-        {% if user.email %}
+      {% elif request.user.is_authenticated %}
+        {% if request.user.email %}
           <form action="{% url "forums:comment_create" object.forum.slug object.slug %}" method="POST" class="block">
             <div class="row">
               {% csrf_token %}
