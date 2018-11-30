@@ -69,11 +69,20 @@
                   <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }}</a></address> 
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
             </span>
-            {% if request.user.is_moderator %}
+            {% if request.user.is_moderator or comment.user == request.user %}
               <div class="buttons-group">
-                <a class="text-muted comment-edit" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}" title="Approve (make public)"><span class="glyphicon glyphicon-ok"></span></a>
+                {% if request.user.is_moderator %}
+                  <a class="text-muted comment-edit" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}" title="{% trans "Approve (make public)" %}"><span class="glyphicon glyphicon-ok"></span></a>
+                {% endif %}
               </div>
-              <section class="comment-text">{{ comment.comment|safe|urlize }}</section>
+              <section class="comment-text">
+                {{ comment.comment|safe|urlize }}
+                {% if not request.user.is_moderator %}
+                  <div class="alert alert-warning" role="alert">
+                    <strong>{% trans "Not Public!" %}</strong> {% trans "Your comment is held for moderator approval" %}
+                  </div>
+                {% endif %}
+              </section>
               {% with 1 as any %}
                 {% include "forums/resource_dropdown.html" %}
               {% endwith %}

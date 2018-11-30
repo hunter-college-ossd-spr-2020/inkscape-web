@@ -47,7 +47,16 @@ class AttachmentMixin(object):
         help_text=_("A comma seperated list of resource ids to show inline."))
 
     def clean_comment(self):
-        """Pick out all emojis"""
+        """Pick out all emojis and protect against multi-posting"""
+        if not self.user.has_perm('forums.can_post_comment'):
+            unmoderated = Comment.objects.filter(
+                user=self.user,
+                is_public=False,
+                is_removed=False)
+            if unmoderated.count() >= 2:
+                raise ValidationError(
+                    _("You can not post more than 2 comments awaiting moderation"))
+
         comment = self.cleaned_data['comment']
         return emoji.sub(r'<span class="emoji">\1</span>', comment)
 
@@ -208,8 +217,9 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         att = bool(self.cleaned_data['attachments'])
         inl = bool(self.cleaned_data['inlines'])
 
+        can_post = self.user.has_perm('forums.can_post_topic')
         self.target_object = self.target_object.topics.create(
-            subject=subject, last_posted=now(),
+            subject=subject, last_posted=now(), locked=(not can_post),
             last_username=self.user.username,
             has_attachments=(att or inl))
 
@@ -220,7 +230,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         comment = self.get_comment_object()
         comment.user = self.user
         comment.ip_address = self.ip_address
-        comment.is_public = self.user.has_perm('forums.can_post_topic')
+        comment.is_public = can_post
         comment.save()
 
         self.save_attachments(comment)

@@ -128,11 +128,20 @@ class CommentModPublic(ModeratorRequired, FieldUpdateView):
             comments = Comment.objects.filter(user_id=obj.user.pk, is_public=True, is_removed=False)
             if comments.count() >= 2:
                 self.add_permissions(obj.user)
+        self.sync_topic(obj, obj.get_topic())
         return super().field_changed(obj, is_public=is_public)
+
+    @staticmethod
+    def sync_topic(comment, topic):
+        """Makes sure comment and topic status are in-sync"""
+        if topic and comment == topic.comments.first():
+            topic.locked = not comment.is_public
+            topic.save()
 
     @staticmethod
     def add_permissions(user):
         """Add permission to post to the forums"""
+        return
         permissions = Permission.objects.filter(content_type__model='forumtopic')
         comment = permissions.get(codename='can_post_comment')
         user.user_permissions.add(comment)
