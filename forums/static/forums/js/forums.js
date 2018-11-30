@@ -86,7 +86,7 @@ $(document).ready(function() {
           }, {'inline': 1});
       }
       $('#attachment-draw').toggle();
-      $(this).hide();
+      $(this).remove();
   });
   // Click on the "Add Existing Upload" option
   $('#resource_add').click(function() {
