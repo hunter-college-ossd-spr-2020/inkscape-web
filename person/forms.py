@@ -67,8 +67,12 @@ class RegisForm(RegistrationForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        if len(username) > 60:
+            raise ValidationError(_("Username too long"))
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
+        if '@' in username:
+            raise ValidationError(_("Username must not be an email address!"))
         return username
 
     class Meta(RegistrationForm.Meta):
@@ -125,8 +129,12 @@ class UserForm(ModelForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        if len(username) > 60:
+            raise ValidationError(_("Username too long"))
         if '/' in username:
             raise ValidationError(_("Username must not include a forward slash '/'."))
+        elif '@' in username:
+            raise ValidationError(_("Username must not be an email address!"))
         user = User.objects.filter(username=username)
         if user and user[0] != self.instance:
             raise ValidationError(_("Username already taken"))
