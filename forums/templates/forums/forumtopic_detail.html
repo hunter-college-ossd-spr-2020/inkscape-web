@@ -3,7 +3,7 @@
 
 {% block "forumheader" %}
 <div class="forum-sub-header">
-  <a href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}Harcoded subforum name!{# object.subforum? #}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
+    <a href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}{{ object.forum }}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
 </div>
 {% endblock %}
 
@@ -23,23 +23,20 @@
     </div>
   {% endif %}
   {% if request.user.is_authenticated %}
-      {% with object|subscription:request.user as subscription %}
+    {% with object|subscription:request.user as subscription %}
+      <div class="btn-group">
         {% if not subscription %}
-          {% url "alert.subscribe" "forums.forum_topic_alert" object.pk as sub_url %}
+          <a class="btn btn-sm btn-danger" href="{% url "alert.subscribe" "forums.forum_topic_alert" object.pk %}?next={{ request.path }}&post=1">
+            <span class="glyphicon glyphicon-heart"></span> {% trans "Subscribe" %}
+          </a>
         {% else %}
-          {% url "alert.unsubscribe" "forums.forum_topic_alert" object.pk as sub_url %}
+          <a class="btn btn-sm btn-default" href="{% url "alert.unsubscribe" "forums.forum_topic_alert" object.pk %}?next={{ request.path }}&post=1">
+            <span class="glyphicon glyphicon-heart-empty"></span> {% trans "Unsubscribe" %}
+          </a>
         {% endif %}
-        <form class="btn-group" method="POST" action="{{ sub_url }}">
-          {% csrf_token %}
-          <input type="hidden" name="next" value="{{ request.path }}"/>
-          {% if not subscription %}
-            <button class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-heart"></span> {% trans "Subscribe" %}</button>
-          {% else %}
-            <button class="btn btn-sm btn-default"><span class="glyphicon glyphicon-heart-empty"></span> {% trans "Unsubscribe" %}</button>
-          {% endif %}
-          <a href="{% url "alert.settings" %}?tab=forums.forum_topic_alert" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
-        </form>
-      {% endwith %}
+        <a href="{% url "alert.settings" %}?tab=forums.forum_topic_alert" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
+      </div>
+    {% endwith %}
   {% endif %}
 
   {% if object.locked %}
