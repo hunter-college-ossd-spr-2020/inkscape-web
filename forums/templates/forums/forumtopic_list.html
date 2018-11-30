@@ -1,15 +1,12 @@
 {% extends "forums/base.html" %}
 {% load i18n static inkscape %}
 
-{% block "header" %}
-  <img id="forum-logo" src="{{ forum.icon.url }}">
-  <h3>{{ forum }}</h3>
-  {{ block.super }}
-  {% if forum.desc %}
-    <hr/>
-    <div>{{ forum.desc }}</div>
-  {% endif %}
-{% endblock %}
+{% block "forumheader" %}
+  <div class="forum-sub-header">
+    <a href="{{ forum.get_absolute_url }}">{% if forum.icon %}<img src="{{ forum.icon.url }}" title="{{ forum }}"> {% endif %}{{ forum }}</a>
+    <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ forum.desc }}</span>
+  </div>
+ {% endblock %}
 
 {% block "tools" %}
   <div class="btn-group">
