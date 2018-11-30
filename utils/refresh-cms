@@ -49,3 +49,7 @@ gunzip -c /tmp/cont.json.gz | $DIR/pythonenv/bin/python $DIR/utils/migrate-backu
 echo "Loading new cms data..."
 
 ./utils/manage loaddata live_content
+
+echo "Generating a new menu"
+
+./utils/manage generate_menu
