@@ -85,7 +85,7 @@
           <ul class="nav nav-pills nav-stacked labels-info">
             <li><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
             {% if request.user.is_moderator %}
-            <li><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-danger pull-right">{{ purgitory.count }}</span></a></li>
+            <li><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if purgitory.count %}danger{% else %}default{% endif %} pull-right">{{ purgitory.count }}</span></a></li>
             {% endif %}
           </ul>
         </aside>
