@@ -32,11 +32,12 @@
           <div class="forums-branding"><a class="forums-logo" href="/forums/"><img src="{% static "forums/images/logo.svg" %}"> <span class="forums-name">Inkscape Forum</span> <span class="forums-tagline">Talk Freely</span></a></div>
           {% block "search-block" %}
           <form action="{% url "forums:search" %}" class="pull-right forums-search">
-            <div class="input-append">
+            <div class="pull-right input-append">
               {% block "search" %}{% endblock %}
               <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"> <button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
             </div>
           </form>
+          {% block "forumheader" %}{% endblock %}
           {% endblock %}
 
         </header>
