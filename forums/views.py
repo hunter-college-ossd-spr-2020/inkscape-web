@@ -141,7 +141,6 @@ class CommentModPublic(ModeratorRequired, FieldUpdateView):
     @staticmethod
     def add_permissions(user):
         """Add permission to post to the forums"""
-        return
         permissions = Permission.objects.filter(content_type__model='forumtopic')
         comment = permissions.get(codename='can_post_comment')
         user.user_permissions.add(comment)
