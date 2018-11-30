@@ -1,9 +1,10 @@
 {% extends "forums/base.html" %}
 {% load i18n static forum_comments inkscape comments %}
 
-{% block "header" %}
-<a href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}">{% endif %}</a>
-   <h3>{{ object.subject }}</h3>
+{% block "forumheader" %}
+<div class="forum-sub-header">
+  <a href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}Harcoded subforum name!{# object.subforum? #}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
+</div>
 {% endblock %}
 
 {% block "side" %}{% endblock %}
