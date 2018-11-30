@@ -22,7 +22,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from cms.toolbar_pool import toolbar_pool
 from cms.toolbar_base import CMSToolbar
-from cms.toolbar.items import TemplateItem, ButtonList
+from cms.toolbar.items import TemplateItem
+
+from .cms_toolbar_objects import ObjectsToolbar
+
+toolbar_pool.register(ObjectsToolbar)
 
 @toolbar_pool.register
 class LiveToolbar(CMSToolbar):

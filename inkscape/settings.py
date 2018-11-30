@@ -134,7 +134,6 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cmsplugin_diff.middleware.EditCommentMiddleware',
-    'cmsplugin_objects.middleware.ObjectToolbarMiddleware',
     'person.middleware.SetLastVisitMiddleware',
 )
 
