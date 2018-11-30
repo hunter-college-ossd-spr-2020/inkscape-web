@@ -62,6 +62,7 @@ echo ""
 $MANAGE loaddata licenses
 $MANAGE loaddata categories
 $MANAGE loaddata quota
+$MANAGE loaddata forums
 
 ./utils/refresh-cms #staging.
 
