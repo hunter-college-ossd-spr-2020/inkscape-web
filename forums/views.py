@@ -30,10 +30,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Permission
 from django.shortcuts import get_object_or_404
 
-from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet
-from haystack.views import SearchView as SearchBase
-
 from django_comments.models import CommentFlag
 
 from .base_views import FieldUpdateView
@@ -220,27 +216,6 @@ class TopicCreate(UserRequired, FormView):
 
     def form_valid(self, form):
         return HttpResponseRedirect(form.save().get_absolute_url())
-
-class CommentSearch(SearchBase):
-    """Restrict the search to the selected language only"""
-    template = "forums/comment_search.html"
-    results_per_page = 10
-    form_class = SearchForm
-
-    def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet(using='forums').models(Comment)
-        super().__init__(*args, **kwargs)
-
-class TopicSearch(SearchBase):
-    """Restrict the search to the selected language only"""
-    template = "forums/topic_search.html"
-    results_per_page = 10
-    form_class = SearchForm
-
-    def __init__(self, *args, **kwargs):
-        kwargs['searchqueryset'] = SearchQuerySet(using='forums').models(ForumTopic)
-        super().__init__(*args, **kwargs)
-
 
 class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     """Update an Emote on a comment using a comment flag"""

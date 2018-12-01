@@ -47,12 +47,17 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
         'PATH': os.path.join(PROJECT_PATH, 'data', 'woosh_search'),
+        'EXCLUDED_INDEXES': ['forums.search_indexes.TopicIndex',
+                             'forums.search_indexes.CommentIndex'],
     },
     'forums': {
         # Forums want to have very up-to-date indexes, but Whoosh
         # is VERY slow because it reindexes the whole database.
         #'ENGINE': 'xapian_backend.XapianEngine',
-        #'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
+        'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
+        'EXCLUDED_INDEXES': ['cmsplugin_news.search_indexes.NewsIndex',
+                             'resources.search_indexes.ResourcesIndex',
+                             'cmsplugin_search.search_indexes.PageIndex'],
     },
 }
 

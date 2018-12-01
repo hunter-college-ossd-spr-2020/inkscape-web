@@ -50,19 +50,22 @@ class ForumsConfig(AppConfig):
     def ready(self):
         from .models import Forum, ForumTopic
         from django_comments.models import Comment
+        from django.contrib.contenttypes.models import ContentType
 
         post_save.connect(self.save_comment, sender=Comment, weak=False)
         post_create(Forum, self.new_forum)
 
+        topic_ct = ContentType.objects.get_for_model(ForumTopic).pk
+        topic_qset = ForumTopic.objects.select_related('forum')
+
         def get_topic(self):
             """Get a topic for a comment"""
-            obj = self.content_object
-            if isinstance(obj, ForumTopic):
-                return obj
+            if self.content_type_id == topic_ct:
+                return topic_qset.get(pk=self.object_pk)
             try:
-                return ForumTopic.objects.get(
+                return topic_qset.get(
                     object_pk=self.object_pk,
-                    forum__content_type=self.content_type)
+                    forum__content_type_id=self.content_type_id)
             except ForumTopic.DoesNotExist:
                 pass
             return None
