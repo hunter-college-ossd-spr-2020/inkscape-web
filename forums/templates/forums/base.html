@@ -41,12 +41,13 @@
           
           {% block "user-menu" %}
           <ul class="user-menu">
-            {# TODO if anonymous #}
-            <li class="user-register"><a href="{# TODO register link #}"><span class="glyphicon glyphicon-record"></span> {% trans "Register" %}</a></li>
-            <li class="user-login"><a href="{# TODO login link #}"><span class="glyphicon glyphicon-log-in"></span> {% trans "Log in" %}</a></li>
-            {# TODO if authenticated #}
-            <li class="user-account"><a href="{# TODO account link #}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
-            <li class="user-logout"><a href="{# TODO logout link #}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+            {% if not request.user.is_authenticated %}
+            <li class="user-register"><a href="{% url "auth_register" %}"><span class="glyphicon glyphicon-record"></span> {% trans "Register" %}</a></li>
+            <li class="user-login"><a href="{% url "auth_login" %}"><span class="glyphicon glyphicon-log-in"></span> {% trans "Log in" %}</a></li>
+            {% else %}
+            <li class="user-account"><a href="{{ request.user.get_absolute_url }}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
+            <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+            {% endif %}
           </ul>
           {% endblock %}
           
