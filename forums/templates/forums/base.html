@@ -57,6 +57,7 @@
         {% endblock "header" %}
         
         <div class="forum-content">
+          {% block "supercontent" %}
           <div class="forum-head">
             {% block "page-header" %}
             <div class="forum-option">
@@ -90,10 +91,10 @@
             {% block "content" %}
             {% endblock %}
           </div>
+          {% endblock %}
         </div>
         {# end .forum-content #}
         
-        {% block "side" %}
         <aside class="sm-side forum-sidebar">
 
           {% block "aside" %}{% endblock %}
@@ -142,7 +143,6 @@
             {% endif %}
           </ul>
         </aside>
-        {% endblock %}
         
       </div>
     </div>
