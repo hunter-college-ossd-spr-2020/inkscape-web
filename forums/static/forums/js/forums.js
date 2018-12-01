@@ -296,3 +296,19 @@ function have_you_seen_this(elem) {
             }
     });
 }
+
+
+function record_selected_text() {
+    var text = '';
+    if (typeof window.getSelection != "undefined") {
+        text = window.getSelection().toString()
+    } else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
+        text = document.selection.createRange().text;
+    }
+    if(text) {
+        localStorage.setItem("quoteBox", window.getSelection().toString());
+    }
+}
+
+$(document).on('mouseup', record_selected_text);
+$(document).on('onkeyup', record_selected_text);
