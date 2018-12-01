@@ -29,16 +29,18 @@
   color: #fff;
   display: grid;
   grid-template-areas: "branding" "search" "breadcrumb";
-  min-height: 80px;
-  padding: 10px;
   table-layout: fixed;
   width: 100%;
+}
+
+.forums-header a {
+  color: #fff;
 }
 
 @media (min-width: 700px) and (min-width: 40em) {
   .forums-header {
     grid-template-columns: 1fr 1fr;
-    grid-template-areas: "branding   search" "breadcrumb breadcrumb";
+    grid-template-areas: "branding   search" "branding   usermenu" "breadcrumb breadcrumb";
   }
 }
 
@@ -48,6 +50,10 @@
 
 .forums-search {
   grid-area: search;
+}
+
+.user-menu {
+  grid-area: usermenu;
 }
 
 .forums-logo {
@@ -116,6 +122,32 @@
   color: #fff;
   height: 40px;
   padding: 0 20px;
+}
+
+.user-menu {
+  padding: 10px;
+  text-align: right;
+}
+
+.user-menu li {
+  display: inline-block;
+  margin: 0 0 0 1em;
+}
+
+.user-menu .glyphicon {
+  transform: scale(1) translateZ(0) translateX(0);
+  transition: transform .3s ease 0s;
+}
+
+.user-menu a:focus,
+.user-menu a:hover {
+  color: orange;
+  outline: none;
+}
+
+.user-menu a:focus .glyphicon,
+.user-menu a:hover .glyphicon {
+  transform: scale(1.6) translateZ(0) translateY(-0.6em) rotateZ(30deg);
 }
 
 .forum-sub-header {
