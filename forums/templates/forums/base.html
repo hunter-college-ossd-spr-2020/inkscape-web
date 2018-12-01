@@ -22,7 +22,7 @@
 
     {{ form.media }}
   </head>
-  <body data-static="{% static '' %}">
+  <body data-static="{% static '' %}" id="forum-page-{% url_name %}">
     {% block "container" %}
     <div class="container">
       <div class="forum-box">
