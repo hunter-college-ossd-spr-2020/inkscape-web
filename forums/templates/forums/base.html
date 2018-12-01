@@ -55,8 +55,45 @@
         </header>
         {% endblock "header" %}
         
+        <div class="forum-content">
+          <div class="forum-head">
+            {% block "page-header" %}
+            <div class="forum-option">
+              {% block "tools" %}
+                {% if is_paginated %}
+                  {% with request.GET|querydict_pop:"page" as get %}
+                  <ul class="unstyled forum-pagination">
+                    <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
+                    <li>
+                      {% if page_obj.has_previous %}
+                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                      {% else %}
+                        <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                      {% endif %}
+                    </li>
+                    <li>
+                      {% if page_obj.has_next %}
+                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                      {% else %}
+                        <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                      {% endif %}
+                    </li>
+                  </ul>
+                  {% endwith %}
+                {% endif %}
+              {% endblock %}
+            </div>
+            {% endblock %}
+          </div>
+          <div class="forum-body">
+            {% block "content" %}
+            {% endblock %}
+          </div>
+        </div>
+        {# end .forum-content #}
+        
         {% block "side" %}
-        <aside class="sm-side">
+        <aside class="sm-side forum-sidebar">
 
           {% block "aside" %}{% endblock %}
           {% for group, items in forums.groups.items %}
@@ -105,41 +142,7 @@
           </ul>
         </aside>
         {% endblock %}
-        <aside class="lg-side">
-          <div class="forum-head">
-            {% block "page-header" %}
-            <div class="forum-option">
-              {% block "tools" %}
-                {% if is_paginated %}
-                  {% with request.GET|querydict_pop:"page" as get %}
-                  <ul class="unstyled forum-pagination">
-                    <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
-                    <li>
-                      {% if page_obj.has_previous %}
-                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
-                      {% else %}
-                        <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
-                      {% endif %}
-                    </li>
-                    <li>
-                      {% if page_obj.has_next %}
-                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
-                      {% else %}
-                        <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
-                      {% endif %}
-                    </li>
-                  </ul>
-                  {% endwith %}
-                {% endif %}
-              {% endblock %}
-            </div>
-            {% endblock %}
-          </div>
-          <div class="forum-body">
-            {% block "content" %}
-            {% endblock %}
-          </div>
-        </aside>
+
       </div>
     </div>
     {% endblock %}
