@@ -1,0 +1,38 @@
+{% load i18n static inkscape highlight search_tools %}
+
+  <table class="table table-forum">
+    <tbody>
+    {% for comment in comment_list %}
+      {% with comment.get_topic as topic %}
+      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
+        {% if topic %}
+          <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}"/></td>
+          <th colspan="2">{{ topic }}</th>
+        {% else %}
+          <td><span class="glyphicon glyphicon-comment"></span></td>
+          <td colspan="2">{% trans "Not a forum post" %}</td>
+        {% endif %}
+      </tr>
+      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="comment-{{ topic.pk }}">
+        <td class="forum-small-cells avatar"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}"/></td>
+        <td class="view-message">
+          <a href="{% if topic %}{{ topic.get_absolute_url }}#c{{ comment.pk }}{% else %}{{ comment.get_absolute_url }}{% endif %}">
+              {% if query %}
+                {% highlight comment.comment with query max_length 200 %}
+              {% else %}
+                {{ comment.comment|striptags|truncatechars:50 }}
+              {% endif %}
+          </a>
+        </td>
+        <td class="view-message text-right">{{ comment.submit_date|timetag }}</td>
+      </tr>
+      <tr class="sep"><td colspan="3"></td></tr>
+      {% endwith %}
+    {% empty %}
+      <tr>
+        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="topic-item">{% trans "No comments" %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>

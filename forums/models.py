@@ -226,6 +226,8 @@ class ForumTopic(Model):
     message_id = CharField(max_length=255, db_index=True, null=True, blank=True)
 
     post_count = PositiveIntegerField(_('Number of Posts'), default=0)
+    first_posted = DateTimeField(_('First Posted'), db_index=True,
+                                 auto_now_add=True, null=True, blank=True)
     last_posted = DateTimeField(_('Last Posted'), db_index=True, null=True, blank=True)
     has_attachments = BooleanField(default=False)
     last_username = CharField(max_length=128, null=True, blank=True)

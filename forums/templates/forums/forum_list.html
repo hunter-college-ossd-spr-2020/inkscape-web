@@ -1,14 +1,18 @@
 {% extends "forums/base.html" %}
 {% load i18n static %}
 
-{% block "content" %}
+{% block "supercontent" %}
+    <div class="jumbotron">
   {% if request.user.is_authenticated %}
     <h2>Recent Topics</h2>
 
-    <h2>New Comments</h2>
+    {% include "forums/topic_table.html" with topic_list=recent_topics show_forum=1 %}
+
+    <h2>Recent Comments</h2>
+
+    {% include "forums/comment_table.html" with comment_list=recent_comments %}
 
   {% else %}
-    <div class="jumbotron">
       <img src="{% static "forums/images/welcome.svg" %}" class="pull-left" style="padding-right: 15px; margin-left: -10px;"/>
       <h1 class="changes" data-pk="forums">{% trans "Welcome" %}</h1>
 
@@ -20,6 +24,6 @@
         <a class="btn btn-danger btn-lg" href="/community/coc/" role="button">{% trans "Code of Conduct" %}</a>
         <a class="btn btn-primary btn-lg" href="{% url 'auth_login' %}?next={{ request.path }}" role="button">{% trans "Login Now" %}</a>
       </p>
-    </div>
   {% endif %}
+    </div>
 {% endblock %}

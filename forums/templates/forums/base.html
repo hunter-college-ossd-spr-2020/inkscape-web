@@ -94,6 +94,7 @@
         </aside>
         {% endblock %}
         <aside class="lg-side">
+          {% block "supercontent" %}
           <div class="forum-head">
             {% block "page-header" %}
             <div class="forum-option">
@@ -127,6 +128,7 @@
             {% block "content" %}
             {% endblock %}
           </div>
+          {% endblock %}
         </aside>
       </div>
     </div>

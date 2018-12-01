@@ -44,6 +44,18 @@ class ForumList(UserVisit, ForumMixin, TemplateView):
     """A list of all available forums"""
     template_name = 'forums/forum_list.html'
 
+    def get_context_data(self, **kwargs):
+        """Pick up some extra content for the front page"""
+        data = super().get_context_data(**kwargs)
+        data['recent_topics'] = ForumTopic.objects\
+                .filter(locked=False)\
+                .select_related('forum')\
+                .order_by('-first_posted')[:3]
+        data['recent_comments'] = Comment.objects\
+                .filter(is_public=True, is_removed=False)\
+                .order_by('-submit_date')[:3]
+        return data
+
 class ModerationList(ListView):
     """A list of all moderation actions logged"""
     model = ModerationLog
