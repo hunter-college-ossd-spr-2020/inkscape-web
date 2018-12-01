@@ -10,5 +10,5 @@
 {% endblock %}
 
 {% block "content" %}
-  {% include "forums/topic_table.html" with topic_list=page.object_list|haystacker %}
+  {% include "forums/topic_table.html" with topic_list=page.object_list|haystacker show_forum=1 %}
 {% endblock %}

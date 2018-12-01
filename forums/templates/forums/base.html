@@ -41,12 +41,13 @@
           
           {% block "user-menu" %}
           <ul class="user-menu">
-            {# TODO if anonymous #}
-            <li class="user-register"><a href="{# TODO register link #}"><span class="glyphicon glyphicon-record"></span> {% trans "Register" %}</a></li>
-            <li class="user-login"><a href="{# TODO login link #}"><span class="glyphicon glyphicon-log-in"></span> {% trans "Log in" %}</a></li>
-            {# TODO if authenticated #}
-            <li class="user-account"><a href="{# TODO account link #}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
-            <li class="user-logout"><a href="{# TODO logout link #}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+            {% if not request.user.is_authenticated %}
+            <li class="user-register"><a href="{% url "auth_register" %}"><span class="glyphicon glyphicon-record"></span> {% trans "Register" %}</a></li>
+            <li class="user-login"><a href="{% url "auth_login" %}"><span class="glyphicon glyphicon-log-in"></span> {% trans "Log in" %}</a></li>
+            {% else %}
+            <li class="user-account"><a href="{{ request.user.get_absolute_url }}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
+            <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+            {% endif %}
           </ul>
           {% endblock %}
           
@@ -142,7 +143,47 @@
           </ul>
         </aside>
         {% endblock %}
+<<<<<<< HEAD
 
+=======
+        <aside class="lg-side">
+          {% block "supercontent" %}
+          <div class="forum-head">
+            {% block "page-header" %}
+            <div class="forum-option">
+              {% block "tools" %}
+                {% if is_paginated %}
+                  {% with request.GET|querydict_pop:"page" as get %}
+                  <ul class="unstyled forum-pagination">
+                    <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
+                    <li>
+                      {% if page_obj.has_previous %}
+                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                      {% else %}
+                        <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                      {% endif %}
+                    </li>
+                    <li>
+                      {% if page_obj.has_next %}
+                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                      {% else %}
+                        <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                      {% endif %}
+                    </li>
+                  </ul>
+                  {% endwith %}
+                {% endif %}
+              {% endblock %}
+            </div>
+            {% endblock %}
+          </div>
+          <div class="forum-body">
+            {% block "content" %}
+            {% endblock %}
+          </div>
+          {% endblock %}
+        </aside>
+>>>>>>> d4b7b688419641c1a253700a23ace87f0727c5ca
       </div>
     </div>
     {% endblock %}
