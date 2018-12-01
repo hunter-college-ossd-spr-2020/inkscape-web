@@ -26,6 +26,7 @@ from django.template.defaultfilters import date, timesince
 from django.templatetags.tz import localtime
 from django.utils import timezone
 from django.db.models import Model
+from django.urls import resolve
 
 register = template.Library() # pylint: disable=invalid-name
 
@@ -51,6 +52,10 @@ def kwarg_remove(qdict, item):
     qdict = qdict.copy()
     qdict.pop(item, None)
     return qdict
+
+@register.simple_tag(takes_context=True)
+def url_name(context):
+    return resolve(context['request'].path_info).url_name
 
 @register.filter("placeholder")
 def add_placeholder(form, text=None):
