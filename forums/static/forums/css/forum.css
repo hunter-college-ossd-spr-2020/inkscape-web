@@ -1068,3 +1068,10 @@ h3 small.label {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
+table tr.odd {
+  background-color: #f9f9f9;
+}
+table tr.even {
+  background-color: #eeeeee;
+}

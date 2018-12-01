@@ -26,6 +26,7 @@ from haystack.indexes import (
 )
 
 from .models import ForumTopic, Comment
+from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
 class TopicIndex(SearchIndex, Indexable):
     """
@@ -33,16 +34,13 @@ class TopicIndex(SearchIndex, Indexable):
     """
     text = CharField(document=True, use_template=True)
     last_posted = DateTimeField(stored=True, model_attr='last_posted')
+    subject = CharField(stored=True, model_attr='subject', indexed=True)
 
     def get_model(self):
         return ForumTopic
 
     def get_updated_field(self):
         return 'last_posted'
-
-    def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
-        return self.get_model().objects.filter()
 
 class CommentIndex(SearchIndex, Indexable):
     """
@@ -57,6 +55,9 @@ class CommentIndex(SearchIndex, Indexable):
 
     def get_updated_field(self):
         return 'submit_date'
+
+    def read_queryset(self, using=None):
+        return self.get_model().objects.prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
 
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""

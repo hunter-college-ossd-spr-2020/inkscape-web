@@ -114,7 +114,6 @@ def static_url(parser, token):
     """Return the url of a file field, or it's default static url"""
     return UrlStaticNode.handle_token(parser, token)
 
-
 @register.filter("timetag", is_safe=True)
 def timetag_filter(value, arg=None):
     """Formats a date as a time since if less than 1 day old or as a date otherwise

@@ -26,17 +26,19 @@ from inkscape.url_utils import url_tree
 
 from .views import (
     ModerationList, ForumList,
-    TopicList, TopicDetail, TopicSearch, TopicCreate,
-    TopicMove, TopicEdit, TopicDelete,
-    CommentCreate, CommentEdit, CommentSearch, CommentEmote,
+    TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
+    CommentCreate, CommentEdit, CommentEmote,
     CommentModList, CommentModPublic, CommentModRemove,
 )
+
+from .search_views import CommentSearch, TopicSearch, TopicSubjectSearch
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url(r'^log/$', ModerationList.as_view(), name="log"),
     url(r'^check/$', CommentModList.as_view(), name="check"),
-    url(r'^search/$', TopicSearch(), name='search'),
+    url(r'^search/$', TopicSubjectSearch(), name='search'),
+    url(r'^search/topics/$', TopicSearch(), name='search.topics'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url_tree(
         r'^c(?P<pk>\d+)/',

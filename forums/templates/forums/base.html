@@ -58,6 +58,7 @@
         {% block "side" %}
         <aside class="sm-side">
 
+          {% block "aside" %}{% endblock %}
           {% for group, items in forums.groups.items %}
           <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
             <li>
@@ -106,9 +107,7 @@
         {% endblock %}
         <aside class="lg-side">
           <div class="forum-head">
-            
-          </div>
-          <div class="forum-body">
+            {% block "page-header" %}
             <div class="forum-option">
               {% block "tools" %}
                 {% if is_paginated %}
@@ -134,6 +133,9 @@
                 {% endif %}
               {% endblock %}
             </div>
+            {% endblock %}
+          </div>
+          <div class="forum-body">
             {% block "content" %}
             {% endblock %}
           </div>

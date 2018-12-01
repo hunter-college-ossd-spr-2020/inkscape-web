@@ -1,30 +1,35 @@
-{% extends "forums/base.html" %}
+{% extends "forums/base_search.html" %}
 {% load i18n static inkscape highlight %}
 
-{% block "header" %}
-  <h3><span class="glyphicon glyphicon-search"></span> {% blocktrans %}Search all Comments for ‘{{ query }}’{% endblocktrans %}</h3>
-{% endblock %}
-
-{% block "tools" %}
-  <div class="btn-group">
-    <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
-  </div>
-  <div class="btn-group">
-    <a class="btn btn-sm btn-default" href="{% url "forums:search" %}?q={{ query }}"><span class="glyphicon glyphicon-search"></span> {% blocktrans %}Search Threads for ‘{{ query }}’{% endblocktrans %}</a>
-  </div>
-
-  {% with page as page_obj and 1 as is_paginated %}{{ block.super }}{% endwith %}
-{% endblock %}
+{% block "searchtitle" %}{% blocktrans %}Search all Comment Texts for ‘{{ query }}’{% endblocktrans %}{% endblock %}
 
 {% block "content" %}
-  <table class="table table-forum table-hover" data-pk="forum-{{ forum.pk }}">
+  <table class="table table-forum">
     <tbody>
     {% for comment in page.object_list %}
-      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="topic-{{ topic.pk }}">
-        <td class="subscribed forum-small-cells avatar"><img src="{% if comment.object.user.photo %}{{ comment.object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}"/></td>
-        <td class="view-message"><a href="{{ comment.get_absolute_url }}">{% highlight comment.text with query max_length 120 %}</a></td>
+      {% with comment.object.get_topic as topic %}
+      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
+        {% if topic %}
+          <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}"/></td>
+          <th colspan="2">{{ topic }}</th>
+        {% else %}
+          <td><span class="glyphicon glyphicon-comment"></span></td>
+          <td colspan="2">{% trans "Not a forum post" %}</td>
+        {% endif %}
+      </tr>
+      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="comment-{{ topic.pk }}">
+        <td class="forum-small-cells avatar"><img src="{% if comment.object.user.photo %}{{ comment.object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}"/></td>
+        <td class="view-message">
+          {% if topic %}
+          <a href="{{ topic.get_absolute_url }}#c{{ comment.object.pk }}">{% highlight comment.text with query max_length 200 %}</a>
+          {% else %}
+          <a href="{{ comment.object.get_absolute_url }}">{% highlight comment.text with query max_length 200 %}</a>
+          {% endif %}
+        </td>
         <td class="view-message text-right">{{ comment.submit_date|timetag }}</td>
       </tr>
+      <tr class="sep"><td colspan="3"></td></tr>
+      {% endwith %}
     {% empty %}
       <tr>
           <td style="text-align: center;"><h1>{% trans "No topics yet" %}</h1></td>
