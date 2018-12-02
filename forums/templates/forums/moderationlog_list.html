@@ -1,13 +1,11 @@
 {% extends "forums/base.html" %}
 {% load i18n static inkscape %}
 
-{% block "header" %}
-  <h3><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</h3>
-{% endblock %}
-
 {% block "tools" %}
-    <a class="btn btn-default" href="{% url "forums:list" %}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-    {{ block.super }}
+  <div class="alert alert-danger">
+    <span class="glyphicon glyphicon-briefcase"></span> {% trans "This moderation log lists the actions taken by moderatiors on this website. Please contact the moderation team or systems administrator if you are having a problem with the forum moderation." %}
+  </div>
+  {{ block.super }}
 {% endblock %}
 
 {% block "content" %}
@@ -33,7 +31,7 @@
             {% endif %}
           {% endif %}
         </td>
-        <td class="view-message text-right">{{ log.performed|timetag }}</td>
+        <td class="view-message text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ log.performed|timetag }}</td>
       </tr>
     {% empty %}
       <tr>

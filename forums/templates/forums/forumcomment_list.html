@@ -1,12 +1,10 @@
 {% extends "forums/base.html" %}
 {% load i18n static %}
 
-{% block "header" %}
-  <h3><span class="glyphicon glyphicon-briefcase"></span> {% trans "Comment Purgitory" %}</h3>
-{% endblock %}
-
 {% block "tools" %}
-    <a class="btn btn-default" href="{% url "forums:list" %}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+  <div class="alert alert-danger">
+    <span class="glyphicon glyphicon-ok-sign"></span> {% trans "Comments are here because the people who have commented or created topics do not yet have permissiont to post. If you approve two comments from the same user, they will be allowed to post without moderator approval." %}
+  </div>
     {{ block.super }}
 {% endblock %}
 

@@ -139,7 +139,7 @@
             {% if request.user.is_moderator %}
               {% with purgitory.count as pcount %}
               <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
-              <li class="{% url_name equal="ban.list" %}"><a href="{% url "forums:ban.list" %}"><span class="glyphicon glyphicon-user"></span> {% trans "User Ban List" %}</a></li>
+              <li class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}"><span class="glyphicon glyphicon-user"></span> {% trans "User Ban List" %}</a></li>
               {% endwith %}
             {% endif %}
           </ul>
