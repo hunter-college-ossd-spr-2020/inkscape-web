@@ -61,19 +61,24 @@ class ModerationList(ListView):
     """A list of all moderation actions logged"""
     model = ModerationLog
     paginate_by = 20
+    ordering = ('-performed',)
 
 class TopicList(UserVisit, ForumMixin, ListView):
     """A list of all topics in a forum"""
+    model = ForumTopic
     paginate_by = 20
 
     def get_queryset(self):
-        self.forum = Forum.objects.get(slug=self.kwargs['slug'])
-        return self.forum.topics.all()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['forum'] = self.forum
-        return context
+        qset = super().get_queryset()
+        if 'slug' in self.kwargs:
+            forum = Forum.objects.get(slug=self.kwargs['slug'])
+            qset = qset.filter(forum_id=forum.pk)
+            self.set_context_datum('forum', forum)
+        if 'username' in self.kwargs:
+            user = get_user_model().objects.get(username=self.kwargs['username'])
+            qset = qset.filter(user_id=user.pk)
+            self.set_context_datum('user', user)
+        return qset
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
@@ -81,6 +86,19 @@ class TopicDetail(UserVisit, DetailView):
         return ForumTopic.objects\
             .filter(forum__slug=self.kwargs['forum'])\
             .select_related('forum', 'forum__group')
+
+class CommentList(UserVisit, ForumMixin, ListView):
+    """List comments, all of them or for a specific user"""
+    model = Comment
+    paginate_by = 20
+
+    def get_queryset(self):
+        qset = super().get_queryset()
+        if 'username' in self.kwargs:
+            user = get_user_model().objects.get(username=self.kwargs['username'])
+            qset = qset.filter(user_id=user.pk)
+            self.set_context_datum('user', user)
+        return qset.order_by('-submit_date')
 
 class CommentCreate(UserRequired, FormView):
     """
@@ -264,6 +282,7 @@ class UserBanList(ListView):
 
 class UserBan(ModeratorRequired, FlagCreateView):
     """Toggle banning a user"""
+    slug_url_kwarg = 'username'
     slug_field = 'username'
     model = get_user_model()
     field = 'forum_flags'
@@ -271,8 +290,8 @@ class UserBan(ModeratorRequired, FlagCreateView):
 
     def get_object(self):
         """Accept slug or GET"""
-        if self.kwargs['slug'] == 'someone':
-            self.kwargs['slug'] = self.request.GET.get('username', None)
+        if self.kwargs['username'] == 'someone':
+            self.kwargs['username'] = self.request.GET.get('username', None)
         return super().get_object()
 
     def get_data(self):

@@ -127,7 +127,7 @@ class Forum(Model):
 
     def get_absolute_url(self):
         """Return a link to this forum"""
-        return reverse('forums:detail', kwargs={'slug': self.slug})
+        return reverse('forums:topic_list', kwargs={'slug': self.slug})
 
     def save(self, **kwargs):
         """Save and add a slug if not yet created"""

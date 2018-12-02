@@ -23,26 +23,33 @@ Forum views accessable from the website.
 
 from django.conf.urls import url
 from inkscape.url_utils import url_tree
+from person import user_urls
 
 from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
-    CommentCreate, CommentEdit, CommentEmote,
+    CommentList, CommentCreate, CommentEdit, CommentEmote,
     CommentModList, CommentModPublic, CommentModRemove,
     UserBanList, UserBan
 )
 
 from .search_views import CommentSearch, TopicSearch, TopicSubjectSearch
 
+user_urls.urlpatterns += [
+    url(r'^comments/$', CommentList.as_view(), name="comment_list"),
+    url(r'^topics/$', TopicList.as_view(), name="topic_list"),
+    url(r'^ban/$', UserBan.as_view(), name='ban_user'),
+]
+
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url(r'^log/$', ModerationList.as_view(), name="log"),
+    url(r'^ban/$', UserBanList.as_view(), name='ban_list'),
     url(r'^check/$', CommentModList.as_view(), name="check"),
     url(r'^search/$', TopicSubjectSearch(), name='search'),
     url(r'^search/topics/$', TopicSearch(), name='search.topics'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
-    url(r'^ban/$', UserBanList.as_view(), name='ban.list'),
-    url(r'^ban/(?P<slug>[^\/]+)/$', UserBan.as_view(), name='ban.user'),
+    url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
@@ -52,7 +59,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     ),
     url_tree(
         r'^(?P<slug>[\w-]+)/',
-        url(r'^$', TopicList.as_view(), name='detail'),
+        url(r'^$', TopicList.as_view(), name='topic_list'),
         url(r'^new/$', TopicCreate.as_view(), name='create'),
         url(r'^move/$', TopicMove.as_view(), name='topic_move'),
         url(r'^edit/$', TopicEdit.as_view(), name='topic_edit'),

@@ -126,6 +126,14 @@ class OwnerRequired(ModeratorLogged, UserRequired):
 
 class ForumMixin(object):
     """Provide standard outputs for forum listings"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.context_data = {}
+
+    def set_context_datum(self, name, value):
+        """Set an extra value for context"""
+        self.context_data[name] = value
+
     def get_forum_list(self):
         """Return a standard list of forums"""
         qset = Forum.objects.all()
@@ -137,6 +145,7 @@ class ForumMixin(object):
     def get_context_data(self, **kwargs):
         """Add standard context data elements"""
         data = super().get_context_data(**kwargs)
+        data.update(self.context_data)
         data['forums'] = self.get_forum_list()
         data['purgitory'] = Comment.objects.filter(is_public=False, is_removed=False)
         return data
