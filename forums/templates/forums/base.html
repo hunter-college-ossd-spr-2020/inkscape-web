@@ -96,8 +96,22 @@
         {# end .forum-content #}
         
         <aside class="sm-side forum-sidebar">
-
           {% block "aside" %}{% endblock %}
+
+          {% if request.user.is_authenticated %}
+            <ul class="nav nav-pills nav-stacked labels-info">
+              <li>
+                <h4>{% trans "My Forum" %}</h4>
+              </li>
+              <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "comment_list" %}{% endif %}">
+                <a href="{% url "comment_list" request.user.username %}"><span class="glyphicon glyphicon-comment"></span> {% trans "My Comments" %}</a>
+              </li>
+              <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "topic_list" %}{% endif %}">
+                <a href="{% url "topic_list" request.user.username %}"><span class="glyphicon glyphicon-book"></span> {% trans "My Topics" %}</a>
+              </li>
+            </ul>
+          {% endif %}
+
           {% for group, items in forums.groups.items %}
           <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
             <li>

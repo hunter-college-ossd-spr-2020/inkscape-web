@@ -68,6 +68,11 @@ class TopicList(UserVisit, ForumMixin, ListView):
     model = ForumTopic
     paginate_by = 20
 
+    def get_ordering(self):
+        if 'slug' in self.kwargs:
+            return ('-sticky', '-last_posted',)
+        return ('-last_posted',)
+
     def get_queryset(self):
         qset = super().get_queryset()
         if 'slug' in self.kwargs:
@@ -76,8 +81,8 @@ class TopicList(UserVisit, ForumMixin, ListView):
             self.set_context_datum('forum', forum)
         if 'username' in self.kwargs:
             user = get_user_model().objects.get(username=self.kwargs['username'])
-            qset = qset.filter(user_id=user.pk)
-            self.set_context_datum('user', user)
+            qset = qset.filter(first_username=self.kwargs['username'])
+            self.set_context_datum('forum_user', user)
         return qset
 
 class TopicDetail(UserVisit, DetailView):
@@ -89,6 +94,7 @@ class TopicDetail(UserVisit, DetailView):
 
 class CommentList(UserVisit, ForumMixin, ListView):
     """List comments, all of them or for a specific user"""
+    template_name = 'forums/comment_list.html'
     model = Comment
     paginate_by = 20
 
@@ -97,7 +103,7 @@ class CommentList(UserVisit, ForumMixin, ListView):
         if 'username' in self.kwargs:
             user = get_user_model().objects.get(username=self.kwargs['username'])
             qset = qset.filter(user_id=user.pk)
-            self.set_context_datum('user', user)
+            self.set_context_datum('forum_user', user)
         return qset.order_by('-submit_date')
 
 class CommentCreate(UserRequired, FormView):
@@ -187,7 +193,7 @@ class CommentModList(ModeratorRequired, ForumMixin, ListView):
     """
     List all comnments which are not yet published
     """
-    template_name = "forums/forumcomment_list.html"
+    template_name = "forums/moderator_list.html"
 
     def get_queryset(self):
         return Comment.objects\

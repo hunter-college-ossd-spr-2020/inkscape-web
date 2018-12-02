@@ -224,6 +224,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         can_post = self.user.has_perm('forums.can_post_topic')
         self.target_object = self.target_object.topics.create(
             subject=subject, last_posted=now(), locked=(not can_post),
+            first_username=self.user.username,
             last_username=self.user.username,
             has_attachments=(att or inl))
 

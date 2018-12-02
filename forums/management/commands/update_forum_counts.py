@@ -34,6 +34,10 @@ class Command(BaseCommand):
             forum.post_count = forum.comments.count()
             forum.save(update_fields=['post_count'])
         for topic in ForumTopic.objects.all():
+            if topic.first_username is None:
+                comment = topic.comments.first()
+                if comment:
+                    topic.first_username = comment.user.username
             try:
                 topic.post_count = topic.comments.count()
             except topic.forum.model_class().DoesNotExist:
@@ -42,4 +46,4 @@ class Command(BaseCommand):
                 topic.delete()
                 continue
 
-            topic.save(update_fields=['post_count'])
+            topic.save(update_fields=['post_count', 'first_username'])

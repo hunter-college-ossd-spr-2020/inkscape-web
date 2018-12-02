@@ -229,8 +229,9 @@ class ForumTopic(Model):
     first_posted = DateTimeField(_('First Posted'), db_index=True,
                                  auto_now_add=True, null=True, blank=True)
     last_posted = DateTimeField(_('Last Posted'), db_index=True, null=True, blank=True)
-    has_attachments = BooleanField(default=False)
+    first_username = CharField(max_length=128, null=True, blank=True)
     last_username = CharField(max_length=128, null=True, blank=True)
+    has_attachments = BooleanField(default=False)
 
     sticky = IntegerField(_('Sticky Priority'), default=0,\
         help_text=_('If set, will stick this post to the top of the topics '

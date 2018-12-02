@@ -57,7 +57,7 @@
 
   {% get_forum_comment_list for object.comment_subject as comment_list %}
   <div class="panel-body haveseen" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
-  {% include "forums/comment_list.html" %}
+  {% include "forums/comment_thread.html" %}
   </div>
   
   {% if object.locked %}

@@ -2,8 +2,8 @@
   <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}">
     <tbody>
     {% for topic in topic_list %}
-    <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
-        <td class="icon forum-small-cells">
+      <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}">
+        <td class="icon forum-small-cells" title="{{ topic.first_username }}">
           {% if show_forum %}
           <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}" title="{{ topic.forum }}"/></td>
           {% else %}
