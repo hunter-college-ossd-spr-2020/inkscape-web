@@ -52,9 +52,9 @@ class UserRequired(object):
 
 class ModeratorLogged(object):
     """Log each action that a moderator does"""
-    def log_details(self):
+    def log_details(self, **data):
         """Return important information about the changes"""
-        return {}
+        return data
 
     def record_action(self):
         """Record the action taken here as a moderation action"""
@@ -66,7 +66,7 @@ class ModeratorLogged(object):
             elif isinstance(obj, ForumTopic):
                 self.record_topic_action(obj)
 
-    def record_comment_action(self, comment):
+    def record_comment_action(self, comment, **data):
         """Record the action taken against a comment"""
         self.moderation_action = \
             self.request.user.forum_moderation_actions.create(
@@ -74,9 +74,9 @@ class ModeratorLogged(object):
                 user=comment.user,
                 topic=comment.get_topic(),
                 comment=comment,
-                detail=json.dumps(self.log_details()))
+                detail=json.dumps(self.log_details(**data)))
 
-    def record_topic_action(self, topic):
+    def record_topic_action(self, topic, **data):
         """Record the action taken against a forum topic"""
         comment = topic.comments.first()
         self.moderation_action = \
@@ -85,7 +85,17 @@ class ModeratorLogged(object):
                 user=comment.user,
                 topic=topic,
                 comment=comment,
-                detail=json.dumps(self.log_details()))
+                detail=json.dumps(self.log_details(**data)))
+
+    def record_user_account(self, user, **data):
+        """Record the action taken against a user"""
+        self.moderation_action = \
+            self.request.user.forum_moderation_actions.create(
+                action=type(self).__name__,
+                user=user,
+                topic=None,
+                comment=None,
+                detail=json.dumps(self.log_details(**data)))
 
     def form_valid(self, form):
         """Record when the form is valid"""

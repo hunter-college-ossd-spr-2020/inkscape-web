@@ -30,6 +30,60 @@ FLIP_VALUE = "!"
 INCREMENT = "+1"
 DECREMENT = "-1"
 
+class FlagCreateView(SingleObjectMixin, View):
+    """
+    Toggle a flag object such as a UserFlag
+    """
+    @property
+    def field(self):
+        """Property for get_field"""
+        raise NotImplementedError("You must provide a filter")
+
+    @property
+    def filters(self):
+        """Property for get_filters"""
+        raise NotImplementedError("You must provide a filter")
+
+    def get_data(self):
+        """Any extra fields that is saved on the flag"""
+        return {}
+
+    def get_filters(self):
+        """Return the flag queryset filters"""
+        return self.filters
+
+    def get_field(self):
+        """Return the ForeignKey lookup field for the flag"""
+        return self.field
+
+    def get(self, request, *args, **kwargs):
+        """Toggle the flag"""
+        filters = self.get_filters()
+        data = self.get_data()
+        obj = self.get_object()
+
+        flags = getattr(obj, self.get_field())
+        count, cascade = flags.filter(**filters).delete()
+        if not count:
+            # User was never banned, so ban them now
+            data.update(filters)
+            flags.create(**data)
+            self.flag_added(obj, **data)
+        else:
+            self.flag_removed(obj, **data)
+
+        if 'next' in request.GET:
+            return HttpResponseRedirect(request.GET['next'])
+        return JsonResponse(data)
+
+    def flag_added(self, obj, **data):
+        """Called after a successful creation of the flag"""
+        pass
+
+    def flag_removed(self, obj, **data):
+        """Called after a successful deletion of the flag"""
+        pass
+
 class FieldUpdateView(SingleObjectMixin, View):
     """
     Take an object and change the value on one of the fields

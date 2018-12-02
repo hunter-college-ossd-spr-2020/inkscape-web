@@ -57,6 +57,10 @@ class AttachmentMixin(object):
                 raise ValidationError(
                     _("You can not post more than 2 comments awaiting moderation"))
 
+        if self.user.forum_flags.banned().count():
+            raise ValidationError(
+                _("You have been banned from posting to this forum!"))
+
         comment = self.cleaned_data['comment']
         return emoji.sub(r'<span class="emoji">\1</span>', comment)
 

@@ -25,6 +25,7 @@ Forum views, show topics, comments and link to apps.
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
+from django.contrib.auth import get_user_model
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Permission
@@ -32,12 +33,12 @@ from django.shortcuts import get_object_or_404
 
 from django_comments.models import CommentFlag
 
-from .base_views import FieldUpdateView
+from .base_views import FlagCreateView, FieldUpdateView
 from .forms import NewTopicForm, EditCommentForm, AddCommentForm
 from .mixins import (
     CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
 )
-from .models import Comment, Forum, ForumTopic, ModerationLog
+from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
 from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
@@ -250,3 +251,35 @@ class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     def get_object(self, queryset=None):
         return self.get_queryset().get_or_create(user=self.request.user,
                                                  comment_id=self.kwargs['pk'])[0]
+
+class UserBanList(ListView):
+    model = UserFlag
+    template_name = 'forums/user_ban_list.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        qset = super().get_queryset()
+        qset = qset.banned().select_related('user').order_by('-created')
+        return qset
+
+class UserBan(ModeratorRequired, FlagCreateView):
+    """Toggle banning a user"""
+    slug_field = 'username'
+    model = get_user_model()
+    field = 'forum_flags'
+    filters = {'flag': UserFlag.FLAG_BANNED}
+
+    def get_object(self):
+        """Accept slug or GET"""
+        if self.kwargs['slug'] == 'someone':
+            self.kwargs['slug'] = self.request.GET.get('username', None)
+        return super().get_object()
+
+    def get_data(self):
+        return {'title': self.request.GET.get('reason', 'Banned!')}
+
+    def flag_added(self, obj, **data):
+        self.record_user_account(obj, banned=True, **data)
+
+    def flag_removed(self, obj, **data):
+        self.record_user_account(obj, banned=False, **data)

@@ -29,6 +29,7 @@ from .views import (
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
     CommentCreate, CommentEdit, CommentEmote,
     CommentModList, CommentModPublic, CommentModRemove,
+    UserBanList, UserBan
 )
 
 from .search_views import CommentSearch, TopicSearch, TopicSubjectSearch
@@ -40,6 +41,8 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^search/$', TopicSubjectSearch(), name='search'),
     url(r'^search/topics/$', TopicSearch(), name='search.topics'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
+    url(r'^ban/$', UserBanList.as_view(), name='ban.list'),
+    url(r'^ban/(?P<slug>[^\/]+)/$', UserBan.as_view(), name='ban.user'),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),

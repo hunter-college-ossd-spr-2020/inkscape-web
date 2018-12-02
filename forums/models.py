@@ -360,17 +360,30 @@ class ModerationLog(Model):
         except ValueError:
             return {}
 
+class UserFlagQuerySet(QuerySet):
+    """
+    Give access to special flags, such as banned users.
+    """
+    def banned(self):
+        """Filter to only banned user_flags"""
+        return self.filter(flag=UserFlag.FLAG_BANNED)
+
 class UserFlag(Model):
     """
     Record a flag on a user. Much like the comment flag functionality in
     django_comments app, this is a flexible way to tag users with all sorts of
     important social symbols and flags.
     """
+    FLAG_BANNED = "\U0001f6ab" # User is banned from posting comments
+
     user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                       related_name="forum_flags", on_delete=CASCADE)
     # Translators: 'flag' is a noun here.
     flag = CharField(_('flag'), max_length=5, db_index=True)
     title = CharField(_('title'), max_length=32, null=True, blank=True)
+    created = DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    objects = UserFlagQuerySet.as_manager()
 
     class Meta:
         unique_together = [('user', 'flag')]

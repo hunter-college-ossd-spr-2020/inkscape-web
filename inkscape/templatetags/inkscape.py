@@ -54,8 +54,12 @@ def kwarg_remove(qdict, item):
     return qdict
 
 @register.simple_tag(takes_context=True)
-def url_name(context):
-    return resolve(context['request'].path_info).url_name
+def url_name(context, equal=None, ok="active", nok=""):
+    """Return the url_name for this page"""
+    name = resolve(context['request'].path_info).url_name
+    if equal:
+        return ok if name == equal else nok
+    return name
 
 @register.filter("placeholder")
 def add_placeholder(form, text=None):
