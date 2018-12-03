@@ -25,6 +25,7 @@ import json
 
 from django.db.models import Q
 from django.utils import translation
+from django.contrib.auth import get_user_model
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -33,6 +34,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .middleware import RecentUsersMiddleware
 from .models import Forum, ForumTopic, Comment
+
+class TopicMixin(object):
+    """Simple topic mixin, with default moderator form"""
+    template_name = "forums/moderator_form.html"
+    model = ForumTopic
 
 class UserVisit(object):
     """Record that a user visited this page"""
@@ -52,50 +58,36 @@ class UserRequired(object):
 
 class ModeratorLogged(object):
     """Log each action that a moderator does"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.moderation_action = None
+
     def log_details(self, **data):
         """Return important information about the changes"""
         return data
 
-    def record_action(self):
+    def record_action(self, **data):
         """Record the action taken here as a moderation action"""
-        owner = getattr(self, 'owner', False)
-        if not hasattr(self, 'moderation_action') and not owner:
-            obj = self.get_object()
+        if self.moderation_action is None:
+            obj = data.pop('instance', None)
+            if obj is None:
+                obj = self.get_object()
             if isinstance(obj, Comment):
-                self.record_comment_action(obj)
+                self.record_comment_action(obj.user, obj.get_topic(), obj, **data)
             elif isinstance(obj, ForumTopic):
-                self.record_topic_action(obj)
+                comment = obj.comments.first()
+                self.record_topic_action(comment.user, obj, comment, **data)
+            elif isinstance(obj, get_user_model()):
+                self.record_user_account(obj, None, None, **data)
 
-    def record_comment_action(self, comment, **data):
+    def _record_action(self, user, topic, comment, **data):
         """Record the action taken against a comment"""
-        self.moderation_action = \
-            self.request.user.forum_moderation_actions.create(
-                action=type(self).__name__,
-                user=comment.user,
-                topic=comment.get_topic(),
-                comment=comment,
-                detail=json.dumps(self.log_details(**data)))
-
-    def record_topic_action(self, topic, **data):
-        """Record the action taken against a forum topic"""
-        comment = topic.comments.first()
-        self.moderation_action = \
-            self.request.user.forum_moderation_actions.create(
-                action=type(self).__name__,
-                user=comment.user,
-                topic=topic,
-                comment=comment,
-                detail=json.dumps(self.log_details(**data)))
-
-    def record_user_account(self, user, **data):
-        """Record the action taken against a user"""
-        self.moderation_action = \
-            self.request.user.forum_moderation_actions.create(
-                action=type(self).__name__,
-                user=user,
-                topic=None,
-                comment=None,
-                detail=json.dumps(self.log_details(**data)))
+        if user != self.request.user:
+            self.moderation_action = \
+                self.request.user.forum_moderation_actions.create(
+                    action=type(self).__name__,
+                    user=user, topic=topic, comment=comment,
+                    detail=json.dumps(self.log_details(**data)))
 
     def form_valid(self, form):
         """Record when the form is valid"""
@@ -120,9 +112,7 @@ class OwnerRequired(ModeratorLogged, UserRequired):
     """Restrict to the owner of an object or the moderator"""
     def is_allowed(self, user):
         """Make sure only owners can do or see this view, or is a moderator"""
-        obj = self.get_object()
-        self.owner = obj.user == user
-        return self.owner or user.is_moderator()
+        return (self.get_object().user == user) or user.is_moderator()
 
 class ForumMixin(object):
     """Provide standard outputs for forum listings"""

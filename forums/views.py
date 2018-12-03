@@ -36,9 +36,9 @@ from django_comments.models import CommentFlag
 from .base_views import FlagCreateView, FieldUpdateView
 from .forms import NewTopicForm, EditCommentForm, AddCommentForm
 from .mixins import (
-    CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
+    CsrfExempt, UserVisit, ForumMixin, TopicMixin,
+    UserRequired, OwnerRequired, ModeratorRequired,
 )
-from .alert import ForumTopicAlert
 from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
 from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
@@ -147,16 +147,11 @@ class CommentCreate(UserRequired, FormView):
         return HttpResponseRedirect(url)
 
 class CommentEdit(OwnerRequired, UpdateView):
-    """
-    Edit comment in place.
-    """
+    """Edit comment in place."""
     model = Comment
     title = _('Edit Comment')
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
-
-    def log_details(self):
-        return {'diff': 'TBD'}
 
 class CommentModPublic(ModeratorRequired, FieldUpdateView):
     """
@@ -211,33 +206,28 @@ class CommentModList(ModeratorRequired, ForumMixin, ListView):
             .filter(is_public=False, is_removed=False)\
             .prefetch_related(*FORUM_PREFETCH).defer(*FORUM_DEFER)
 
-class TopicMixin(object):
-    template_name = "forums/moderator_form.html"
-    model = ForumTopic
 
 class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
+    """Allow a moderator to move a topic between forums"""
     title = _('Move Topic')
     fields = ('forum',)
 
-    def log_details(self):
+    def log_details(self, **data):
         """Return the old and new forums"""
-        obj = self.get_object()
-        return {'from_forum': obj.forum.slug}
+        return {'from_forum': self.get_object().forum.slug}
 
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
+    """Allow a topic to be edited by a moderator (or owner)"""
     title = _('Edit Topic')
     fields = ('subject', 'sticky', 'locked')
 
 class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
+    """Allow a topic to be deleted by a moderator"""
     title = _('Delete Topic')
 
     def get_success_url(self):
-        self.record_action()
+        self.record_action(subject=self.object.subject)
         return self.object.forum.get_absolute_url()
-
-    def log_details(self):
-        obj = self.get_object()
-        return {'subject': obj.subject}
 
 class TopicCreate(UserRequired, FormView):
     """
@@ -288,6 +278,7 @@ class CommentEmote(CsrfExempt, UserRequired, UpdateView):
                                                  comment_id=self.kwargs['pk'])[0]
 
 class UserBanList(ListView):
+    """Generate a list of banned users"""
     model = UserFlag
     template_name = 'forums/user_ban_list.html'
     paginate_by = 10
@@ -315,7 +306,7 @@ class UserBan(ModeratorRequired, FlagCreateView):
         return {'title': self.request.GET.get('reason', 'Banned!')}
 
     def flag_added(self, obj, **data):
-        self.record_user_account(obj, banned=True, **data)
+        self.record_account(instance=obj, banned=True, **data)
 
     def flag_removed(self, obj, **data):
-        self.record_user_account(obj, banned=False, **data)
+        self.record_account(instance=obj, banned=False, **data)

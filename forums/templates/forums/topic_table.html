@@ -26,7 +26,7 @@
         </td>
         <td class="text-center"><span class="label label-default counter">{{ topic.post_count }}</span></td>
         <td class="text-center" {% if topic.last_username %}data-user="{{ topic.last_username }}"{% endif %}>{{ topic.last_username|default:'-' }}</td>
-        <td class="text-right">{{ topic.last_posted|timetag }}</td>
+        <td class="text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ topic.last_posted|timetag }}</td>
       </tr>
     {% empty %}
       <tr>
