@@ -55,7 +55,6 @@ urlpatterns += i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cog/', include('cog.urls', namespace='cog')),
     url(r'^doc/', include('docs.urls')),
-    url(r'^projects/', include('projects.urls', namespace='projects')),
     url(r'^forums/', include('forums.urls', namespace='forums')),
     url(r'^releases?/', include('releases.urls', namespace='releases')),
     url(r'^alerts/', include('alerts.urls')),

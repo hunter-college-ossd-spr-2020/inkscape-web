@@ -199,7 +199,6 @@ INSTALLED_APPS = (
     'docs',
     'resources',
     'moderation',
-    'projects',
     'releases',
     'forums',
     'django_comments',
@@ -223,7 +222,6 @@ TRANSLATED_APPS = (
     'moderation',
     'person',
     'elections',
-    'projects',
     'releases',
     'resources',
 )
