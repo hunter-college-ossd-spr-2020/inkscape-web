@@ -28,7 +28,7 @@ from person import user_urls
 from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
-    CommentList, CommentCreate, CommentEdit, CommentEmote,
+    CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
     UserBanList, UserBan
 )
@@ -50,6 +50,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^search/topics/$', TopicSearch(), name='search.topics'),
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
+    url(r'^subscriptions/$', Subscriptions.as_view(), name="topic_subs"),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),

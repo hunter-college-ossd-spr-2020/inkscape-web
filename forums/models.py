@@ -24,9 +24,9 @@ shouldn't be much functionality contained within this app.
 
 import json
 
-from collections import OrderedDict
 from unidecode import unidecode
 
+from django.apps import apps
 from django.db.models.functions import Cast
 from django.db.models import (
     Model, QuerySet, CASCADE, SET_NULL,
@@ -48,24 +48,9 @@ from django.utils.text import slugify
 from django_comments.models import Comment
 from resources.models import Resource
 
-from django.apps import apps
-app = apps.get_app_config('forums')
+from .querysets import ForumQuerySet, TopicQuerySet, UserFlagQuerySet
 
-class SelectRelatedQuerySet(QuerySet):
-    """Automatically select related ForeignKeys to queryset"""
-    def __init__(self, *args, **kw):
-        super(SelectRelatedQuerySet, self).__init__(*args, **kw)
-        #self.query.select_related = True
-
-    def groups(self):
-        """Batch each forum into groups by their name"""
-        ret = OrderedDict()
-        for item in self:
-            if item.group.name not in ret:
-                ret[item.group.name] = []
-            ret[item.group.name].append(item)
-        return ret
-
+APP = apps.get_app_config('forums')
 
 class ForumGroup(Model):
     name = CharField(max_length=128, unique=True)
@@ -75,16 +60,6 @@ class ForumGroup(Model):
 
     def __str__(self):
         return self.name
-
-class ForumQuerySet(SelectRelatedQuerySet):
-    @property
-    def parent(self):
-        page = reverse('pages-details-by-slug', kwargs={'slug': 'community'})
-        return (page, _('Community'))
-
-    def get_absolute_url(self):
-        return reverse('forums:list')
-
 
 class Forum(Model):
     """A collection of topics for discussion"""
@@ -102,7 +77,7 @@ class Forum(Model):
     content_type = ForeignKey(ContentType, verbose_name=_('Fixed Content From'),\
         help_text=_("When fixed content is set, new topics can not be created. Instead, "
                     "commented items are automatically posted as topics."), null=True, blank=True)
-    sync = CharField(max_length=64, choices=app.sync_choices, verbose_name=_('Sync From'),\
+    sync = CharField(max_length=64, choices=APP.sync_choices, verbose_name=_('Sync From'),\
          help_text=_("When sync source is set, new topics and messages can not be created. "
                      "Instead, sync messages are collated into topics and replies by scripts."),
                      null=True, blank=True)
@@ -239,7 +214,7 @@ class ForumTopic(Model):
                     'will appear together, sorted by date.'))
     locked = BooleanField(default=False, help_text=_('Topic is locked by moderator.'))
 
-    objects = SelectRelatedQuerySet.as_manager()
+    objects = TopicQuerySet.as_manager()
 
     class Meta:
         get_latest_by = 'last_posted'
@@ -361,13 +336,6 @@ class ModerationLog(Model):
         except ValueError:
             return {}
 
-class UserFlagQuerySet(QuerySet):
-    """
-    Give access to special flags, such as banned users.
-    """
-    def banned(self):
-        """Filter to only banned user_flags"""
-        return self.filter(flag=UserFlag.FLAG_BANNED)
 
 class UserFlag(Model):
     """

@@ -38,6 +38,7 @@ from .forms import NewTopicForm, EditCommentForm, AddCommentForm
 from .mixins import (
     CsrfExempt, UserVisit, UserRequired, OwnerRequired, ModeratorRequired, ForumMixin
 )
+from .alert import ForumTopicAlert
 from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
 from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
@@ -74,7 +75,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
         return ('-last_posted',)
 
     def get_queryset(self):
-        qset = super().get_queryset()
+        qset = super().get_queryset().select_related('forum')
         if 'slug' in self.kwargs:
             forum = Forum.objects.get(slug=self.kwargs['slug'])
             qset = qset.filter(forum_id=forum.pk)
@@ -83,7 +84,17 @@ class TopicList(UserVisit, ForumMixin, ListView):
             user = get_user_model().objects.get(username=self.kwargs['username'])
             qset = qset.filter(first_username=self.kwargs['username'])
             self.set_context_datum('forum_user', user)
+        if self.request.user.is_authenticated():
+            qset.set_user(self.request.user)
         return qset
+
+
+class Subscriptions(UserRequired, TopicList):
+    """A list of subscribed threads"""
+    def get_queryset(self):
+        qset = super().get_queryset()
+        qset.set_user(self.request.user)
+        return qset.subscribed_only()
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""

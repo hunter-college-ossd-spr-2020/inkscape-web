@@ -23,6 +23,7 @@ Subscriptions and alerts for forums
 from django.utils.translation import ugettext_lazy as _
 
 from alerts.base import EditedAlert
+from alerts.models import AlertSubscription
 
 from .models import ForumTopic
 
@@ -43,3 +44,10 @@ class ForumTopicAlert(EditedAlert):
     subscribe_all = False
     subscribe_any = True
     subscribe_own = False
+
+    @classmethod
+    def subscriptions_for(cls, user):
+        """Return a list of subscriptions for this user"""
+        if user is not None and user.is_authenticated():
+            return user.alert_subscriptions.filter(alert__slug=cls.slug)
+        return AlertSubscription.objects.none()
