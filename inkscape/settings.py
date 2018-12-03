@@ -75,6 +75,12 @@ PROJECT_PATH = os.path.abspath(os.path.join(CODE_PATH, ".."))
 #
 from inkscape import *
 
+if 'forums' not in HAYSTACK_CONNECTIONS:
+    sys.stderr.write("Missing HayStack configuration for forums!\n Please update"
+                     " local_settings.py HAYSTACK_CONNECTIONS with the configuration"
+                     " from the template file local_settings.py.template\n\n")
+    sys.exit(-10)
+
 sys.path.insert(0, os.path.join(PROJECT_PATH, 'libs'))
 
 HOST_ROOT = SITE_ADDRESS
