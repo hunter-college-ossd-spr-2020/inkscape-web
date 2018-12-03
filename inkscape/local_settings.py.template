@@ -53,6 +53,8 @@ HAYSTACK_CONNECTIONS = {
     'forums': {
         # Forums want to have very up-to-date indexes, but Whoosh
         # is VERY slow because it reindexes the whole database.
+        # only ENABLE the ENGINE line if you have installed Xapain using
+        # the script in utils, otherwise leave commented out.
         #'ENGINE': 'xapian_backend.XapianEngine',
         'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
         'EXCLUDED_INDEXES': ['cmsplugin_news.search_indexes.NewsIndex',
