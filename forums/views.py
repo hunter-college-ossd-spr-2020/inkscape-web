@@ -153,6 +153,11 @@ class CommentEdit(OwnerRequired, UpdateView):
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 class CommentModPublic(ModeratorRequired, FieldUpdateView):
     """
     Toggle the public flag of a comment, this can also hide.
@@ -306,7 +311,7 @@ class UserBan(ModeratorRequired, FlagCreateView):
         return {'title': self.request.GET.get('reason', 'Banned!')}
 
     def flag_added(self, obj, **data):
-        self.record_account(instance=obj, banned=True, **data)
+        self.record_action(instance=obj, banned=True, **data)
 
     def flag_removed(self, obj, **data):
-        self.record_account(instance=obj, banned=False, **data)
+        self.record_action(instance=obj, banned=False, **data)

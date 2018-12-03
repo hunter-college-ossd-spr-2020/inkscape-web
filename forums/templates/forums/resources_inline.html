@@ -1,0 +1,27 @@
+{% load i18n static svg %}
+
+{% for attachment in attachment_list %}
+  {% if attachment.inline %}
+    {% with attachment.resource as object %}
+      {% if object.is_video %}
+        <div class="inline video">
+          {% if object.video.type == "youtube" %}
+            <iframe src="https://www.youtube.com/embed/{{ object.video.id }}" frameborder="0" allowfullscreen id="videoPlayer"></iframe>
+          {% elif object.video.type == "vimeo" %}
+            <iframe id="videoPlayer" src="https://player.vimeo.com/video/{{ object.video.id }}" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+          {% endif %}
+        </div>
+      {% elif object.download and object.is_available %}
+        {% if object.mime.is_image %}
+          <div class="inline image">
+              <a href="{{ object.download_url }}"><img src="{{ object.thumbnail_url }}" alt="{{ object }}" data-icon="{{ object.thumbnail_url }}" data-fullview="{{ object.download.url }}"></a>
+          </div>
+        {% else %}
+          <div class="inline file">
+            <a href="{{ object.download_url }}"><img src="{{ object.icon_url }}" alt="{{ object }}"></a>
+          </div>
+        {% endif %}
+      {% endif %}
+    {% endwith %}
+  {% endif %}
+{% endfor %}

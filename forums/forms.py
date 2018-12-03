@@ -167,7 +167,8 @@ class EditCommentForm(AttachmentMixin, ModelForm):
         model = Comment
         fields = ('comment', 'attachments', 'inlines')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
         kwargs.setdefault('initial', {}).update(self.initial_attachments(kwargs['instance']))
         super().__init__(*args, **kwargs)
         self.fields['comment'].widget = TextEditorWidget(configuration='CKEDITOR_FORUM')

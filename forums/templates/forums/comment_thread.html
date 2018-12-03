@@ -53,13 +53,7 @@
       
             {# Start comment attachments #}
             <section class="comment-attachments inline-attachments">
-              {% for attachment in comment.attachments.all %}
-                {% if attachment.inline %}
-                  {% with attachment.resource as object %}
-                    {% include "forums/resource_inline.html" %}
-                  {% endwith %}
-                {% endif %}
-              {% endfor %}
+              {% include "forums/resources_inline.html" with attachment_list=comment.attachments.all %}
             </section>
             {# End comment attachments #}
           {% else %}
