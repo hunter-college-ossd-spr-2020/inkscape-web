@@ -34,7 +34,9 @@ from django.shortcuts import get_object_or_404
 from django_comments.models import CommentFlag
 
 from .base_views import FlagCreateView, FieldUpdateView
-from .forms import NewTopicForm, EditCommentForm, AddCommentForm
+from .forms import (
+    NewTopicForm, EditCommentForm, AddCommentForm, SplitTopic, MergeTopics
+)
 from .mixins import (
     CsrfExempt, UserVisit, ForumMixin, TopicMixin,
     UserRequired, OwnerRequired, ModeratorRequired,
@@ -259,6 +261,23 @@ class TopicCreate(UserRequired, FormView):
 
     def form_valid(self, form):
         return HttpResponseRedirect(form.save().get_absolute_url())
+
+class TopicMerge(ModeratorRequired, FormView):
+    """Allow moderators to merge two topics together"""
+    template_name = "forums/moderator_form.html"
+    form_class = MergeTopics
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['from_topic'] = ForumTopic.objects.get(slug=self.kwargs['slug'])
+        return kwargs
+
+    def form_valid(self, form):
+        return HttpResponseRedirect(form.save().get_absolute_url())
+
+class TopicSplit(TopicMerge):
+    """Allow moderators to split a topic in half"""
+    form_class = SplitTopic
 
 class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     """Update an Emote on a comment using a comment flag"""

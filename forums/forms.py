@@ -23,10 +23,15 @@ Forum forms, over-riding the django_comment forms.
 
 import re
 
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
+from django.template.defaultfilters import striptags
 
-from django.forms import ModelForm, CharField, ValidationError
+from django.forms import (
+    Form, ModelForm, CharField, ValidationError,
+    ModelChoiceField, ModelMultipleChoiceField, CheckboxSelectMultiple
+)
 
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
 from django_comments.models import Comment
@@ -250,3 +255,76 @@ class NewTopicForm(AttachmentMixin, CommentForm):
 
         self.save_attachments(comment)
         return self.target_object
+
+class CommentsChoiceField(ModelMultipleChoiceField):
+    """Custom display for comments list selection"""
+    widget = CheckboxSelectMultiple()
+    def label_from_instance(self, obj):
+        return "#{}: {}".format(obj.id, striptags(obj.comment))
+
+class SplitTopic(Form):
+    new_name = CharField(help_text=_('The new name for the split topic.'))
+    comments = CommentsChoiceField(queryset=Comment.objects.none())
+
+    def __init__(self, from_topic, **kwargs):
+        super().__init__(**kwargs)
+        self.from_topic = from_topic
+        self.fields['comments'].queryset = from_topic.comments
+
+    @property
+    def title(self):
+        """Return a personalised menu for the form"""
+        return mark_safe(_('Split topic: <strong>%s</strong>') % str(self.from_topic))
+
+    def clean_comments(self):
+        comments = self.cleaned_data['comments']
+        if len(comments) == self.from_topic.comments.count():
+            raise ValidationError(_("You can not select every comment to split!"))
+        return comments
+
+    def save(self):
+        comments = self.cleaned_data['comments']
+        new_name = self.cleaned_data['new_name']
+
+        forum = self.from_topic.forum
+        new_topic = forum.topics.create(subject=new_name)
+
+        for comment in comments:
+            comment.object_pk = new_topic.pk
+            comment.content_type = ForumTopic.content_type()
+            comment.save(update_fields=('object_pk', 'content_type'))
+
+        self.from_topic.refresh_meta_data()
+        new_topic.refresh_meta_data()
+        return new_topic
+
+class MergeTopics(Form):
+    with_topic = ModelChoiceField(queryset=ForumTopic.objects.all())
+
+    def __init__(self, from_topic, **kwargs):
+        super().__init__(**kwargs)
+        self.from_topic = from_topic
+
+    @property
+    def title(self):
+        """Return a personalised menu for the form"""
+        return mark_safe(_('Merge topic: <strong>%s</strong>') % str(self.from_topic))
+
+    def clean_with_topic(self):
+        """Make sure topics aren't the same topic"""
+        with_topic = self.cleaned_data['with_topic']
+        if with_topic == self.from_topic:
+            raise ValidationError(_('Merged topics must be different.'))
+        return with_topic
+
+    def save(self):
+        """Merge the topics, delete the from_topic once complete"""
+        with_topic = self.cleaned_data['with_topic']
+        with_comment = with_topic.comments.first()
+        comments = self.from_topic.comments
+        comments.update(
+            object_pk=with_comment.object_pk,
+            content_type=with_comment.content_type,
+        )
+        self.from_topic.delete()
+        return with_topic

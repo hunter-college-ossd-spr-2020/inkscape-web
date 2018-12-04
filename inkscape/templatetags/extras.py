@@ -25,6 +25,7 @@ from datetime import datetime
 from django.utils.translation import ungettext_lazy as _un, ugettext_lazy as _
 from django.utils.timezone import is_aware, utc
 from django.template import Library
+from django.forms import widgets
 
 from cms.models.pagemodel import Page
 
@@ -103,6 +104,9 @@ def add_tabindex(bound_field, number):
 @register.filter("formfield")
 def add_form_control(bound_field):
     """Add a form-control attribute to any form field"""
+    if isinstance(bound_field.field.widget, widgets.CheckboxSelectMultiple):
+        return bound_field
+
     cls = ['form-control']
     if bound_field.errors:
         cls.append("form-control-danger")

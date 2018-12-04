@@ -286,6 +286,20 @@ class ForumTopic(Model):
             return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
         return "error"
 
+    def refresh_meta_data(self):
+        """Refresh all the meta-data fields"""
+        first = self.comments.first()
+        last = self.comments.last()
+        if first and last:
+            self.post_count = self.comments.count()
+            self.first_posted = first.submit_date
+            self.last_posted = last.submit_date
+            self.first_username = first.user.username
+            self.last_username = last.user.username
+
+        self.has_attachments = self.comments.filter(attachments__isnull=False).count()
+        self.save()
+
     def save(self, **kw):
         """Save this topic and generate a slug if needed"""
         self.subject = self.subject[:120]

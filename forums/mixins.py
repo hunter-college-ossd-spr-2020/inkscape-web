@@ -77,7 +77,8 @@ class ModeratorLogged(object):
                 self._record_action(obj.user, obj.get_topic(), obj, **data)
             elif isinstance(obj, ForumTopic):
                 comment = obj.comments.first()
-                self._record_action(comment.user, obj, comment, **data)
+                if comment:
+                    self._record_action(comment.user, obj, comment, **data)
             elif isinstance(obj, get_user_model()):
                 self._record_action(obj, None, None, **data)
 
