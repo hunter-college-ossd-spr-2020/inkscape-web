@@ -39,9 +39,11 @@
 {% endblock %}
 
 {% block "form-buttons" %}
+  <span class="btn-group pull-left" title="{% trans "Add new attachments to comment" %}">
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
+  </span>
   <span class="btn-group pull-right">
     <button class="btn btn-primary btn-sm"type="submit"> {% if object %}{% trans "Save Edit" %}{% else %}{% trans "Post" %}{% endif %}</button>
-    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
   </span>
   <span class="btn-group pull-left">
     {% if object.user_id == request.user.pk %}

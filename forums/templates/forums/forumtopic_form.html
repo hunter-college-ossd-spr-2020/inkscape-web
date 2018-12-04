@@ -20,13 +20,15 @@
 {% endblock %}
 
 {% block "form-buttons" %}
+<span class="btn-group pull-left" title="{% trans "Add attachments to topic" %}">
+    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
+  </span>
   <span class="btn-group pull-right">
     {% if perms.forums.can_post_topic %}
       <button class="btn btn-primary btn-sm" type="submit"> {% trans "Submit Topic" %}</button>
     {% else %}
       <button class="btn btn-warning btn-sm" type="submit"> {% trans "Submit for Moderation" %}</button>
     {% endif %}
-    <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
   </span>
   <span class="btn-group pull-left">
     <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read the <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
