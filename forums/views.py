@@ -39,7 +39,7 @@ from .forms import (
 )
 from .mixins import (
     CsrfExempt, UserVisit, ForumMixin, TopicMixin,
-    UserRequired, OwnerRequired, ModeratorRequired,
+    UserRequired, OwnerRequired, ModeratorRequired, ProgressiveContext
 )
 from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
 from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
@@ -79,11 +79,11 @@ class TopicList(UserVisit, ForumMixin, ListView):
     def get_queryset(self):
         qset = super().get_queryset().select_related('forum')
         if 'slug' in self.kwargs:
-            forum = Forum.objects.get(slug=self.kwargs['slug'])
+            forum = get_object_or_404(Forum, slug=self.kwargs['slug'])
             qset = qset.filter(forum_id=forum.pk)
             self.set_context_datum('forum', forum)
         if 'username' in self.kwargs:
-            user = get_user_model().objects.get(username=self.kwargs['username'])
+            user = get_object_or_404(get_user_model(), username=self.kwargs['username'])
             qset = qset.filter(first_username=self.kwargs['username'])
             self.set_context_datum('forum_user', user)
         if self.request.user.is_authenticated():
@@ -124,9 +124,9 @@ class CommentCreate(UserRequired, FormView):
     Create a new comment.
     """
     model = Comment
-    title = _('New Comment')
     form_class = AddCommentForm
     template_name = "forums/comment_form.html"
+    context_title = _('New Comment')
 
     def get_parent(self):
         """Return the parent, i.e. the topic object"""
@@ -151,9 +151,9 @@ class CommentCreate(UserRequired, FormView):
 class CommentEdit(OwnerRequired, UpdateView):
     """Edit comment in place."""
     model = Comment
-    title = _('Edit Comment')
     form_class = EditCommentForm
     template_name = "forums/comment_form.html"
+    context_title = _('Edit Comment')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -216,7 +216,7 @@ class CommentModList(ModeratorRequired, ForumMixin, ListView):
 
 class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
     """Allow a moderator to move a topic between forums"""
-    title = _('Move Topic')
+    context_title = _('Move Topic')
     fields = ('forum',)
 
     def log_details(self, **data):
@@ -225,12 +225,12 @@ class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
 
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
     """Allow a topic to be edited by a moderator (or owner)"""
-    title = _('Edit Topic')
+    context_title = _('Edit Topic')
     fields = ('subject', 'sticky', 'locked')
 
 class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     """Allow a topic to be deleted by a moderator"""
-    title = _('Delete Topic')
+    context_title = _('Delete Topic')
 
     def get_success_url(self):
         self.record_action(subject=self.object.subject)
@@ -240,7 +240,7 @@ class TopicCreate(UserRequired, FormView):
     """
     Add a topic manually to the forum creating topics and comments.
     """
-    title = _("Create a new Forum Topic")
+    context_title = _("Create a new Forum Topic")
     template_name = "forums/forumtopic_form.html"
     form_class = NewTopicForm
 
@@ -262,14 +262,15 @@ class TopicCreate(UserRequired, FormView):
     def form_valid(self, form):
         return HttpResponseRedirect(form.save().get_absolute_url())
 
-class TopicMerge(ModeratorRequired, FormView):
+class TopicMerge(ModeratorRequired, ProgressiveContext, FormView):
     """Allow moderators to merge two topics together"""
     template_name = "forums/moderator_form.html"
     form_class = MergeTopics
+    context_title = _('Merge Topic')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['from_topic'] = ForumTopic.objects.get(slug=self.kwargs['slug'])
+        kwargs['from_topic'] = get_object_or_404(ForumTopic, slug=self.kwargs['slug'])
         return kwargs
 
     def form_valid(self, form):
@@ -278,6 +279,7 @@ class TopicMerge(ModeratorRequired, FormView):
 class TopicSplit(TopicMerge):
     """Allow moderators to split a topic in half"""
     form_class = SplitTopic
+    context_title = _('Split Topic')
 
 class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     """Update an Emote on a comment using a comment flag"""

@@ -36,7 +36,30 @@ from .middleware import RecentUsersMiddleware
 from .models import Forum, ForumTopic, Comment
 from .alert import ForumTopicAlert
 
-class TopicMixin(object):
+class ProgressiveContext(object):
+    """
+    Allow ways of adding data to the template context data
+    without having to over-load the get_context_data method
+    every time.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.context_data = {}
+        for name in ('title',):
+            if hasattr(self, 'context_' + name):
+                self.context_data[name] = getattr(self, 'context_' + name)
+
+    def set_context_datum(self, name, value):
+        """Set an extra value for context"""
+        self.context_data[name] = value
+
+    def get_context_data(self, **kwargs):
+        """Add standard context data elements"""
+        data = super().get_context_data(**kwargs)
+        data.update(self.context_data)
+        return data
+
+class TopicMixin(ProgressiveContext):
     """Simple topic mixin, with default moderator form"""
     template_name = "forums/moderator_form.html"
     model = ForumTopic
@@ -116,16 +139,9 @@ class OwnerRequired(ModeratorLogged, UserRequired):
         """Make sure only owners can do or see this view, or is a moderator"""
         return (self.get_object().user == user) or user.is_moderator()
 
-class ForumMixin(object):
+
+class ForumMixin(ProgressiveContext):
     """Provide standard outputs for forum listings"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.context_data = {}
-
-    def set_context_datum(self, name, value):
-        """Set an extra value for context"""
-        self.context_data[name] = value
-
     def get_forum_list(self):
         """Return a standard list of forums"""
         qset = Forum.objects.all()
@@ -137,7 +153,6 @@ class ForumMixin(object):
     def get_context_data(self, **kwargs):
         """Add standard context data elements"""
         data = super().get_context_data(**kwargs)
-        data.update(self.context_data)
         data['forums'] = self.get_forum_list()
         data['purgitory'] = Comment.objects.filter(is_public=False, is_removed=False)
         data['newsub'] = ForumTopicAlert.messages_for(self.request.user)

@@ -23,7 +23,6 @@ Forum forms, over-riding the django_comment forms.
 
 import re
 
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.template.defaultfilters import striptags
@@ -271,11 +270,6 @@ class SplitTopic(Form):
         self.from_topic = from_topic
         self.fields['comments'].queryset = from_topic.comments
 
-    @property
-    def title(self):
-        """Return a personalised menu for the form"""
-        return mark_safe(_('Split topic: <strong>%s</strong>') % str(self.from_topic))
-
     def clean_comments(self):
         comments = self.cleaned_data['comments']
         if len(comments) == self.from_topic.comments.count():
@@ -304,11 +298,6 @@ class MergeTopics(Form):
     def __init__(self, from_topic, **kwargs):
         super().__init__(**kwargs)
         self.from_topic = from_topic
-
-    @property
-    def title(self):
-        """Return a personalised menu for the form"""
-        return mark_safe(_('Merge topic: <strong>%s</strong>') % str(self.from_topic))
 
     def clean_with_topic(self):
         """Make sure topics aren't the same topic"""
