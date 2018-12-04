@@ -110,7 +110,7 @@
                 <a href="{% url "topic_list" request.user.username %}"><span class="glyphicon glyphicon-book"></span> {% trans "My Topics" %}</a>
               </li>
               <li class="forum-item {% url_name "topic_subs" %}">
-                <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %}</a>
+                  <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %} {% with newsub.count as count %}{% if count %}<span class="label label-primary pull-right counter">{{ count }}</span>{% endif %}{% endwith %}</a>
               </li>
             </ul>
           {% endif %}

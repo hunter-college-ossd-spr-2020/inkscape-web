@@ -34,6 +34,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .middleware import RecentUsersMiddleware
 from .models import Forum, ForumTopic, Comment
+from .alert import ForumTopicAlert
 
 class TopicMixin(object):
     """Simple topic mixin, with default moderator form"""
@@ -138,6 +139,7 @@ class ForumMixin(object):
         data.update(self.context_data)
         data['forums'] = self.get_forum_list()
         data['purgitory'] = Comment.objects.filter(is_public=False, is_removed=False)
+        data['newsub'] = ForumTopicAlert.messages_for(self.request.user)
         return data
 
 class CsrfExempt(object):
