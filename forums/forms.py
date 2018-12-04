@@ -34,6 +34,7 @@ from django_comments.models import Comment
 from .widgets import TextEditorWidget
 from .fields import ResourceList
 from .models import ForumTopic
+from .alert import ForumTopicAlert
 
 emoji = re.compile(r'([\u263a-\U0001f645])')
 
@@ -155,6 +156,9 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         comment.save()
 
         self.save_attachments(comment)
+
+        # Always subscribe when creating a new topic, made after comment.save
+        ForumTopicAlert.subscribe(self.user, comment.get_topic())
         return comment
 
 
@@ -223,12 +227,14 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         inl = bool(self.cleaned_data['inlines'])
 
         can_post = self.user.has_perm('forums.can_post_topic')
-        self.target_object = self.target_object.topics.create(
+        topic = self.target_object.topics.create(
             subject=subject, last_posted=now(), locked=(not can_post),
             first_username=self.user.username,
             last_username=self.user.username,
             has_attachments=(att or inl))
 
+        # The comment's target is the topic object
+        self.target_object = topic
         self.cleaned_data['name'] = self.user.username
         self.cleaned_data['email'] = self.user.email
         self.cleaned_data['url'] = ''
@@ -238,6 +244,9 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         comment.ip_address = self.ip_address
         comment.is_public = can_post
         comment.save()
+
+        # Always subscribe when creating a new topic, made after comment.save
+        ForumTopicAlert.subscribe(self.user, topic)
 
         self.save_attachments(comment)
         return self.target_object

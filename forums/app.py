@@ -109,6 +109,12 @@ class ForumsConfig(AppConfig):
         elif instance.user:
             self.update_topic(instance.get_topic(), instance)
 
+        # The alert is focused on topics, not comments
+        from .alert import ForumTopicAlert
+        alert = ForumTopicAlert.get_alert_type()
+        action = 'new' if created else 'edit'
+        alert.call(instance=instance.get_topic(), comment=instance, action=action)
+
     def create_comment(self, instance, **kw):
         """Called when a new comment has been saved"""
         from .models import Forum, ForumTopic

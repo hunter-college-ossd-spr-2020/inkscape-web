@@ -22,7 +22,7 @@ Specialised querysets
 """
 from collections import OrderedDict
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Model
 
 class ForumQuerySet(QuerySet):
     """Query to help forums be grouped together"""
@@ -77,7 +77,8 @@ class TopicQuerySet(QuerySet):
         if not self._subs_done:
             subs = list(self.subscriptions().values_list('target', flat=True))
             for obj in self._result_cache:
-                obj.is_subscribed = obj.pk in subs
+                if isinstance(obj, Model):
+                    obj.is_subscribed = obj.pk in subs
             self._subs_done = True
 
 class UserFlagQuerySet(QuerySet):
