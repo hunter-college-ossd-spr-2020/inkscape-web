@@ -36,7 +36,7 @@
             <span class="glyphicon glyphicon-heart-empty"></span> {% trans "Unsubscribe" %}
           </a>
         {% endif %}
-        <a href="{% url "alert.settings" %}?tab=forums.forum_topic_alert" class="btn btn-sm btn-default" title="{% trans "Subscription Settings" %}"><span class="glyphicon glyphicon-wrench"></span></a>
+        <a href="{% url "alert.settings" "forums.forum_topic_alert" %}?next={{ request.path }}" class="btn btn-sm btn-default" title="{% trans "Subscription Settings" %}"><span class="glyphicon glyphicon-wrench"></span></a>
       </div>
     {% endwith %}
   {% endif %}
