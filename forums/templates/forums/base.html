@@ -47,6 +47,9 @@
             {% else %}
             <li class="user-account"><a href="{{ request.user.get_absolute_url }}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
             <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+              {% if request.user.is_staff %}
+                <li class="user-logout"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
+              {% endif %}
             {% endif %}
           </ul>
           {% endblock %}
