@@ -42,9 +42,10 @@ class RateLimitFilter(object): # pylint: disable=too-few-public-methods
                 min_date = datetime.now() - timedelta(seconds=rate)
                 max_keys = getattr(settings, 'ERROR_RATE_KEY_LIMIT', 100)
                 duplicate = (key in self._errors and self._errors[key] >= min_date)
-                self._errors = dict(filter(lambda x: x[1] >= min_date,
-                                           sorted(self._errors.items(),
-                                                  key=lambda x: x[1]))[0-max_keys:])
+                self._errors = dict(list(
+                    filter(lambda x: x[1] >= min_date,
+                           sorted(self._errors.items(), key=lambda x: x[1]))
+                    )[0-max_keys:])
                 if not duplicate:
                     self._errors[key] = datetime.now()
 
