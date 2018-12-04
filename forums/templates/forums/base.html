@@ -99,8 +99,7 @@
         {# end .forum-content #}
         
         <aside class="sm-side forum-sidebar">
-          {% block "aside" %}{% endblock %}
-
+          {% block "aside" %}
           {% if request.user.is_authenticated %}
             <ul class="nav nav-pills nav-stacked labels-info">
               <li>
@@ -163,6 +162,7 @@
               {% endwith %}
             {% endif %}
           </ul>
+          {% endblock %}
         </aside>
         
       </div>
