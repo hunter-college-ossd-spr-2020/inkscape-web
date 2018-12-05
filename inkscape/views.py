@@ -59,7 +59,6 @@ class ContactUs(FormView):
     title = _('Contact Inkscape Website Administrators')
     template_name = 'feedback.html'
     form_class = FeedbackForm
-    success_url = reverse_lazy('contact.ok')
 
     def get_initial(self):
         ret = {'subject': self.request.GET.get('subject', "Website Feedback")}
@@ -84,6 +83,9 @@ class ContactUs(FormView):
         if '<' not in email:
             return 'Anonymous User <%s>' % email
         return email
+
+    def get_success_url(self):
+        return reverse_lazy('contact.ok') + '?next=' + self.request.GET.get('next', '/')
 
 class Robots(TemplateView):
     template_name = 'robots.txt'

@@ -11,6 +11,12 @@
 {% endblock %}
 
 {% block "form-buttons" %}
+  {% if request.GET.next %}
+  <a href="{{ request.GET.next }}" class="btn btn-default">{% trans "Cancel" %}</a>
+  {% endif %}
   <button id="moreInfo" class="btn btn-primary" type="submit" name="save" value="1">{% trans "Send Comment or Question" %}</button>
 {% endblock %}
 
+{% block "dialog-buttons" %}
+  <a href="{{ request.GET.next }}" class="btn btn-primary">{% trans "Continue" %}</a>
+{% endblock %}
