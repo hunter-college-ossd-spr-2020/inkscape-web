@@ -71,14 +71,14 @@
                     <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
                     <li>
                       {% if page_obj.has_previous %}
-                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
                       {% else %}
                         <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
                       {% endif %}
                     </li>
                     <li>
                       {% if page_obj.has_next %}
-                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ getvars }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
                       {% else %}
                         <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
                       {% endif %}
