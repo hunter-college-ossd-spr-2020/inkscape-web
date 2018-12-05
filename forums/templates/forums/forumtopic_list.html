@@ -25,6 +25,7 @@
       {% endif %}
     {% endif %}
     <a href="#" id="seenall" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Mark all as Read" %}</a>
+    <a href="?{% if request.GET.count == "1" %}" class="active {% else %}count=1" class="{% endif %}btn btn-sm btn-default"><span class="glyphicon glyphicon-bell"></span> {% trans "Unanswered" %}</a>
   </div>
 
   {{ block.super }}

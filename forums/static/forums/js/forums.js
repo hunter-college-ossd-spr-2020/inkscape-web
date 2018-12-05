@@ -288,7 +288,8 @@ function have_you_seen_this(elem) {
     $('.counter', elem).each(function() {
         var delta = this_count - last_count;
         if(delta == 0 || this_count == 0) {
-            $(this).hide();
+            //$(this).hide();
+            $(this).addClass('label-muted');
         } else if(delta > 0) {
             $(this).text(delta);
             $(this).removeClass('label-default');

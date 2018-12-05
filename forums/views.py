@@ -78,6 +78,11 @@ class TopicList(UserVisit, ForumMixin, ListView):
 
     def get_queryset(self):
         qset = super().get_queryset().select_related('forum')
+        if 'count' in self.request.GET:
+            try:
+                qset = qset.filter(post_count=int(self.request.GET['count']))
+            except ValueError:
+                pass
         if 'slug' in self.kwargs:
             forum = get_object_or_404(Forum, slug=self.kwargs['slug'])
             qset = qset.filter(forum_id=forum.pk)
