@@ -1,16 +1,16 @@
 {% load i18n static inkscape highlight search_tools %}
 
-  <table class="table table-forum">
+  <table class="table table-forum table-comment">
     <tbody>
     {% for comment in comment_list %}
       {% with comment.get_topic as topic %}
       <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
         {% if topic %}
-          <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}"/></td>
+          <th class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}"/></th>
           <th colspan="3">{{ topic }}</th>
         {% else %}
-          <td><span class="glyphicon glyphicon-comment"></span></td>
-          <td colspan="3">{% trans "Not a forum post" %}</td>
+          <th><span class="glyphicon glyphicon-comment"></span></th>
+          <th colspan="3">{% trans "Not a forum post" %}</th>
         {% endif %}
       </tr>
       <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="comment-{{ topic.pk }}">

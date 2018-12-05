@@ -1116,3 +1116,26 @@ h3 small.label {
 .footer {
   text-align: center;
 }
+/* This table removed the table border, but replaces it inside the cells */
+table.table-comment {
+  border: 0px;
+}
+table.table-comment tr td:first-child,
+table.table-comment tr th:first-child {
+  border-left: 1px solid #d3d3d3;
+}
+table.table-comment tr td:last-child,
+table.table-comment tr th:last-child {
+  border-right: 1px solid #d3d3d3;
+}
+table.table-comment tr.sep td:first-child,
+table.table-comment tr.sep td:last-child {
+  border-left: 0px;
+  border-right: 0px;
+}
+table.table-comment th {
+  background-color: #f5f5f5;
+}
+table.table-comment th img {
+  width: 32px;
+}
