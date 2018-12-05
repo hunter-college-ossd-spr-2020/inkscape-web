@@ -1113,3 +1113,6 @@ h3 small.label {
 .label-muted {
   opacity: 0.5;
 }
+.footer {
+  text-align: center;
+}
