@@ -83,7 +83,7 @@
     "name": "Extensions",
     "slug": "extensions",
     "desc": "A place to come and talk about writing extensions.",
-    "icon": "forum/icon/ext.png",
+    "icon": "forum/icon/ext.svg",
     "lang": null,
     "content_type": null,
     "sync": null,
