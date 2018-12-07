@@ -1,0 +1,19 @@
+{% extends "forums/modal.html" %}
+{% load i18n static extras inkscape %}
+
+{% block "dialog-title" %}
+  <a href="{% url "forums:list" %}" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </a>
+  {{ block.super }}
+{% endblock %}
+
+{% block "dialog-body" %}
+<table class="table table-striped">
+  {% for item in list %}
+    <tr>
+      <td><a href="{{ item.url }}">{{ item.label }}</a></td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}
