@@ -150,7 +150,7 @@ class CommentCreate(UserRequired, FormView):
     def form_valid(self, form):
         obj = form.save()
         topic = self.get_parent()
-        url = topic.get_absolute_url() + '#c' + str(obj.pk)
+        url = "{0}?c={1}#c={1}".format(topic.get_absolute_url(), obj.pk)
         return HttpResponseRedirect(url)
 
 class CommentEdit(OwnerRequired, UpdateView):
