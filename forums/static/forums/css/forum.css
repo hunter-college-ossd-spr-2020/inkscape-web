@@ -1139,3 +1139,9 @@ table.table-comment th {
 table.table-comment th img {
   width: 32px;
 }
+/* To match the style shown in the editor */
+blockquote {
+  font-style: italic;
+  font-family: Georgia, Times, "Times New Roman", serif;
+  font-size: smaller;
+}
