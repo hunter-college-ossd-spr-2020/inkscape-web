@@ -31,6 +31,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator, decorator_from_middleware
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache, cache_control
 
 from .middleware import RecentUsersMiddleware
 from .models import Forum, ForumTopic, Comment
@@ -66,6 +67,7 @@ class TopicMixin(ProgressiveContext):
 
 class UserVisit(object):
     """Record that a user visited this page"""
+    @cache_control(max_age=1)
     @decorator_from_middleware(RecentUsersMiddleware)
     def dispatch(self, request, *args, **kwargs):
         """Empty dispatch for running middleware decorator"""
@@ -164,3 +166,11 @@ class CsrfExempt(object):
     def dispatch(self, request, *args, **kwargs):
         """Wrap the csrf_exempt decorator"""
         return super().dispatch(request, *args, **kwargs)
+
+class NeverCacheMixin(object):
+    """
+    Never cache this page.
+    """
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(NeverCacheMixin, self).dispatch(*args, **kwargs)

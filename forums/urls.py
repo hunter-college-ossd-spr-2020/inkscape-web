@@ -21,7 +21,7 @@
 Forum views accessable from the website.
 """
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from inkscape.url_utils import url_tree
 from person import user_urls
 
@@ -52,6 +52,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url(r'^subscriptions/$', Subscriptions.as_view(), name="topic_subs"),
+    url(r'^phpbb/', include('forums.plugins.phpbb.urls', namespace='phpbb')),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),

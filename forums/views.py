@@ -38,7 +38,7 @@ from .forms import (
     NewTopicForm, EditCommentForm, AddCommentForm, SplitTopic, MergeTopics
 )
 from .mixins import (
-    CsrfExempt, UserVisit, ForumMixin, TopicMixin,
+    CsrfExempt, UserVisit, ForumMixin, TopicMixin, NeverCacheMixin,
     UserRequired, OwnerRequired, ModeratorRequired, ProgressiveContext
 )
 from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
