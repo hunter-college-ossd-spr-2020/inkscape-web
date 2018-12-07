@@ -110,9 +110,17 @@ def get_generator(gen, fname):
 
 class ResourceBase(object):
     """A base class for resource methods, turns pages into json"""
-    def __init__(self, cache_dir=None, cache_age=None):
-        self.cache_age = cache_age or DEFAULT_CACHE_AGE
-        self.cache_dir = cache_dir or DEFAULT_CACHE_DIR
+    def __init__(self, resource_id, parent=None, **data):
+        if parent is not None:
+            data['cache_age'] = parent.cache_age
+            data['cache_dir'] = parent.cache_dir
+
+        self.cache_age = data.pop('cache_age', DEFAULT_CACHE_AGE)
+        self.cache_dir = data.pop('cache_dir', DEFAULT_CACHE_DIR)
+
+        self.parent = parent
+        self.resource_id = resource_id
+        self.data = data
 
         if not os.path.isdir(self.cache_dir):
             os.makedirs(self.cache_dir)
@@ -206,106 +214,27 @@ class ResourceBase(object):
             next_url = anchor[0].get('href') if anchor else None
             yield (prev_url, page)
 
-class BeeBeeSite(ResourceBase):
-    """A downloader of phpBB site content."""
-    key = 'forums'
-
-    def __init__(self, forum_url, cache_dir=None, cache_age=None):
-        super().__init__(cache_dir=cache_dir, cache_age=cache_age)
-        self.forum_url = forum_url
-
-    @property
-    def forums(self):
-        """Generate BeeBeeForum objects from the forum_url."""
-        for (fid, data) in self.get().items():
-            yield BeeBeeForum(self, fid, data)
-
-    def method(self):
-        """Download the sub-forums"""
-        names = OrderedDict()
-        for href in self.get_html(self.forum_url)[1].find_all("a", "forumtitle"):
-            parent = href.parent.parent.parent.parent.parent.parent.\
-                                 find_all('li', 'header')[0].find_all('a')[0]
-            url = parent.get("href")
-            parent_id = re.compile(r"f=(\d+?)&").findall(url)[0]
-            names[parent_id] = {
-                'link': parent.get("href"),
-                'name': parent.text,
-                'parent': None,
-                'desc': None,
-            }
-
-            url = href.get("href")
-            desc = str(href.parent.contents[4]).strip()
-            forum_id = re.compile(r"f=(\d+?)&").findall(url)[0]
-            names[forum_id] = {'link': url, 'name': href.text, 'parent': parent_id, 'desc': desc}
-        return names
+    def __iter__(self):
+        """Generate child objects from the resource_id."""
+        for (resource_id, data) in self.get().items():
+            yield self.child_class(resource_id=resource_id, parent=self, **data)
 
 
-class BeeBeeForum(ResourceBase):
-    """A single phpBB forum on a phpBB site."""
-    key = property(lambda self: 'forum/' + self.forum_id)
-
-    def __init__(self, site, fid, data):
-        super().__init__(cache_dir=site.cache_dir, cache_age=site.cache_age)
-        self.site = site
-        self.forum_id = fid
-        self.data = data
-
-    def __repr__(self):
-        return str([self.forum_id, self.data])
-
-    @property
-    def threads(self):
-        """Generate BeeBeeThreads from the given forum data"""
-        for topic in self.get():
-            yield BeeBeeThread(self, **topic)
-
-    def method(self):
-        """Go through the topic pages of a forum and then gather all the topics
-           via the step of gathering all the pages in the subforum """
-        url = self.data['link']
-        reffer = self.site.forum_url
-        for (_, page) in self.get_pages(url, reffer=reffer):
-            for anchor in page.find_all("a", "topictitle"):
-                user = list(anchor.parent.find_all('div', 'responsive-hide')[0].children)
-                views = anchor.parent.parent.parent.parent.find_all('dd', 'views')[0]
-                link = anchor.get('href')
-                tid = TOPIC_ID.findall(link)[0]
-                yield {
-                    'tid': tid,
-                    'link': link,
-                    'title': anchor.text,
-                    'author': user[1].text,
-                    'created': user[2][2:30].strip(),
-                    'views': list(views.children)[0],
-                }
+class BeeBeePost(ResourceBase):
+    """A single post in a comment thread"""
+    pass
 
 
 class BeeBeeThread(ResourceBase):
     """A single phpBB thread on a phphBB site."""
     key = property(lambda self: 'thread/' + self.thread_id)
-    reffer = property(lambda self: self.forum.site.forum_url)
-
-    def __init__(self, forum, tid, title, **data):
-        super().__init__(cache_dir=forum.cache_dir, cache_age=forum.cache_age)
-        self.forum = forum
-        self.thread_id = tid
-        self.title = title
-        self.data = data
-
-    def __repr__(self):
-        return str([self.thread_id, self.title, self.data])
-
-    @property
-    def posts(self):
-        """Generate a list of post objects"""
-        for post in self.get():
-            if post and 'id' in post:
-                yield BeeBeePost(self, post)
+    forum = property(lambda self: self.parent)
+    reffer = property(lambda self: self.forum.site.site_url)
+    child_class = BeeBeePost
 
     def method(self):
         """From a single page with post, extract the posts structured """
+        names = OrderedDict()
         for page_url, page in self.get_pages(self.data['link'], reffer=self.reffer):
             for post in page.find_all("div", "postbody"):
                 try:
@@ -320,26 +249,26 @@ class BeeBeeThread(ResourceBase):
                 self.replace_links(page_url, content.find_all('a', 'postlink-local'))
                 self.replace_links(page_url, content.find_all('a', 'postlink'))
 
-                ret = {
-                    "id": post.find("h3").find("a").get("href").strip("#"),
+                comment_id = post.find("h3").find("a").get("href").strip("#")
+                names[comment_id] = {
                     "date": text.split(author)[-1].strip(),
                     "content": str(content)[21:-6], # Cut out content div
                     "author": author,
                 }
 
-                files = post.find_all('dl', 'file')
-                if files:
-                    ret["files"] = list(self.get_files(files, page_url))
+                #files = post.find_all('dl', 'file')
+                #if files:
+                #    ret["files"] = list(self.get_files(files, page_url))
 
-                links = content.find_all('a', 'postlink')
-                if links:
-                    ret["links"] = [l.get('href') for l in links]
+                #links = content.find_all('a', 'postlink')
+                #if links:
+                #    ret["links"] = [l.get('href') for l in links]
 
-                images = content.find_all('img', 'postimage')
-                if images:
-                    ret["images"] = list(self.get_images(images, page_url))
+                #images = content.find_all('img', 'postimage')
+                #if images:
+                #    ret["images"] = list(self.get_images(images, page_url))
 
-                yield ret
+        return names
 
     @staticmethod
     def replace_emoji(smilies):
@@ -418,11 +347,58 @@ class BeeBeeThread(ResourceBase):
         """Downloads a file and saves it for later"""
         return self.get_http(url, reffer, key=filename, binary=True)
 
-class BeeBeePost(object):
-    def __init__(self, thread, data):
-        self.thread = thread
-        self.post_id = data.pop('id')
-        self.data = data
 
-    def __repr__(self):
-        return str([self.post_id, self.data])
+class BeeBeeForum(ResourceBase):
+    """A single phpBB forum on a phpBB site."""
+    key = property(lambda self: 'forum/' + self.forum_id)
+    site = property(lambda self: self.parent)
+    child_class = BeeBeeThread
+
+    def method(self):
+        """Go through the topic pages of a forum and then gather all the topics
+           via the step of gathering all the pages in the subforum """
+        names = OrderedDict()
+        url = self.data['link']
+        reffer = self.site.site_url
+        for (_, page) in self.get_pages(url, reffer=reffer):
+            for anchor in page.find_all("a", "topictitle"):
+                user = list(anchor.parent.find_all('div', 'responsive-hide')[0].children)
+                views = anchor.parent.parent.parent.parent.find_all('dd', 'views')[0]
+                link = anchor.get('href')
+                tid = TOPIC_ID.findall(link)[0]
+                names[tid] = {
+                    'link': link,
+                    'name': anchor.text,
+                    'author': user[1].text,
+                    'created': user[2][2:30].strip(),
+                    'views': list(views.children)[0],
+                }
+        return names
+
+
+class BeeBeeSite(ResourceBase):
+    """A downloader of phpBB site content."""
+    key = 'forums'
+    child_class = BeeBeeForum
+    site_url = property(lambda self: self.resource_id)
+
+    def method(self):
+        """Download the sub-forums"""
+        names = OrderedDict()
+        for href in self.get_html(self.site_url)[1].find_all("a", "forumtitle"):
+            parent = href.parent.parent.parent.parent.parent.parent.\
+                                 find_all('li', 'header')[0].find_all('a')[0]
+            url = parent.get("href")
+            parent_id = re.compile(r"f=(\d+?)&").findall(url)[0]
+            names[parent_id] = {
+                'link': parent.get("href"),
+                'name': parent.text,
+                'group': None,
+                'desc': None,
+            }
+
+            url = href.get("href")
+            desc = str(href.parent.contents[4]).strip()
+            forum_id = re.compile(r"f=(\d+?)&").findall(url)[0]
+            names[forum_id] = {'link': url, 'name': href.text, 'group': parent_id, 'desc': desc}
+        return names
