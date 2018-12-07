@@ -1,5 +1,5 @@
 {% extends 'person/base.html' %}
-{% load i18n humanize extras static moderator %}
+{% load i18n humanize extras static moderator memberships %}
 
 {% block title %}{% trans "User Profile" %} | {{ object.name }}{% endblock %} 
 
@@ -14,7 +14,7 @@
         <a href="{% flag_url object %}" title="{% trans "Flag User to Moderators" %}"><img src="{% static "images/social/flag.svg" %}"/></a>
         <script>popUpLink('{% trans "Are you sure you want to report this user?" %}', '{% trans "Cancel" %}', '{% trans "Report" %}', "{{ object.get_absolute_url }}", "{% trans "What is wrong with this user account?" %}");</script>
       {% endif %}
-      {% if object.from_friends.i_added %}
+      {% if object.from_friends|i_added:request.user %}
         <a href="{% url "user_unfriend" object.username %}"><img src="{% static "images/social/is_friend.svg" %}" title="{% trans "You have added this user as a friend. Click here to remove." %}"/></a>
       {% else %}
         <a href="{% url "user_friend" object.username %}"><img src="{% static "images/social/make_friend.svg" %}" title="{% trans "Make friends with this user" %}"/></a>
@@ -71,7 +71,7 @@
     <li><a href="{% url "resources" username=object.username category='pastebin' %}">{% trans "PasteBin" %}</a></li>
     {% if object != request.user %}
       <hr/>
-      {% if object.viewer_is_subscribed %}
+      {% if request.user|is_subscribed:object %}
         <li><a href="{% url "alert.unsubscribe" "resources.resource_alert" object.pk %}">{% trans "Unsubscribe from Gallery" %}</a></li>
       {% else %}
         <li><a href="{% url "alert.subscribe" "resources.resource_alert" object.pk %}">{% trans "Subscribe to Gallery" %}</a></li>

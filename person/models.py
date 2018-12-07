@@ -24,13 +24,13 @@ import os
 from datetime import timedelta
 
 from django.conf import settings
+from django.db.models.signals import post_save
 from django.db.models import (
     F, Q, QuerySet, Max, Model, Manager, TextField, CharField, URLField,
     DateTimeField, BooleanField, IntegerField, ForeignKey, SlugField,
     ImageField,
 )
 from django.utils.timezone import now
-from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 
 from django.utils import timezone
@@ -39,13 +39,14 @@ from django.utils.translation import ugettext_lazy as _, get_language
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.sessions.models import Session
+from django.contrib.auth import SESSION_KEY
 
 from django.contrib.auth.models import Group, AbstractUser, UserManager, Permission
 from inkscape.fields import ResizedImageField, AutoOneToOneField
 
-null = dict(null=True, blank=True)
+null = dict(null=True, blank=True) # pylint: disable=invalid-name
 
-def linked_users_only(qs, *rels):
+def linked_users_only(qset, *rels):
     """
     Limits a query to only include enough user information to link to the user.
     """
@@ -54,13 +55,13 @@ def linked_users_only(qs, *rels):
         #for field in ('first_name', 'last_name', 'username'):
         for field in ('photo', 'bio', 'gpg_key', 'last_seen', 'website'):
             only.append(rel + '__' + field)
-    return qs.select_related(*rels).defer(*only)
+    return qset.select_related(*rels).defer(*only)
 
 class PersonManager(UserManager):
     """Overwrite the creation functions because we customise is_staff"""
     def get_queryset(self):
         """Defer the gpg_key field, as it's not required the vast mojority of the time"""
-        return super().get_queryset().defer('gpg_key')
+        return super(PersonManager, self).get_queryset().defer('gpg_key')
 
     def _create_user(self, username, email, password, **extra_fields):
         add_is_staff = extra_fields.pop('is_staff', False)
@@ -70,50 +71,40 @@ class PersonManager(UserManager):
         return user
 
 class User(AbstractUser):
-    bio   = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
-    photo = ResizedImageField(_('Photograph (square)'), null=True, blank=True,
-              upload_to='photos', max_width=190, max_height=190)
+    """
+    Take over the django auth user and provide a list of new fields as a user account.
+    """
+    bio = TextField(_('Bio'), validators=[MaxLengthValidator(4096)], **null)
+    photo = ResizedImageField(_('Photograph (square)'), upload_to='photos',
+                              max_width=190, max_height=190, **null)
     language = CharField(_('Default Language'), max_length=8, choices=settings.LANGUAGES, **null)
 
     ircnick = CharField(_('IRC Nickname'), max_length=20, **null)
     ircpass = CharField(_('Freenode Password (optional)'), max_length=128, **null)
 
-    dauser  = CharField(_('deviantArt User'), max_length=64, **null)
-    ocuser  = CharField(_('Openclipart User'), max_length=64, **null)
+    dauser = CharField(_('deviantArt User'), max_length=64, **null)
+    ocuser = CharField(_('Openclipart User'), max_length=64, **null)
     tbruser = CharField(_('Tumblr User'), max_length=64, **null)
     website = URLField(_('Website or Blog'), **null)
-    gpg_key = TextField(_('GPG Public Key'),
+    gpg_key = TextField(_('GPG Public Key'), validators=[MaxLengthValidator(262144)],\
         help_text=_('<strong>Signing and Checksums for Uploads</strong><br/> '
                     'Either fill in a valid GPG key, so you can sign your uploads, '
                     'or just enter any text to activate the upload validation feature '
                     'which verifies your uploads by comparing checksums.<br/>'
                     '<strong>Usage in file upload/editing form:</strong><br/>'
                     'If you have submitted a GPG key, you can upload a *.sig file, '
-                    'and your upload can be verified. You can also submit these checksum file types:<br/>'
-                    '*.md5, *.sha1, *.sha224, *.sha256, *.sha384 or *.sha512'),
-        validators=[MaxLengthValidator(262144)], **null)
+                    'and your upload can be verified. You can also submit these '
+                    'checksum file types:<br/>'
+                    '*.md5, *.sha1, *.sha224, *.sha256, *.sha384 or *.sha512'), **null)
 
     last_seen = DateTimeField(**null)
-    visits    = IntegerField(default=0)
+    visits = IntegerField(default=0)
 
     # Replaces is_staff from the parent abstractuser
-    is_admin = BooleanField(_('staff status'), default=False, db_column='is_staff',
-      help_text=_('Designates whether the user can log into this admin site.'))
+    is_admin = BooleanField(_('staff status'), default=False, db_column='is_staff',\
+        help_text=_('Designates whether the user can log into this admin site.'))
 
     objects = PersonManager()
-
-    @property
-    def is_staff(self):
-       return self.is_admin or self.has_perm('person.is_staff')
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def name(self):
-        if self.first_name or self.last_name:
-            return self.get_full_name()
-        return self.username
 
     class Meta:
         permissions = [
@@ -123,17 +114,43 @@ class User(AbstractUser):
         ]
         db_table = 'auth_user'
 
+    def __str__(self):
+        return self.name
+
+    @property
+    def is_staff(self):
+        """
+        Returns true if the user is a staff member (can access admin)
+        takes over from the django is_staff field which we replace with
+        a permission to allow groups of people to be staff.
+        """
+        return self.is_admin or self.has_perm('person.is_staff')
+
+    def is_moderator(self):
+        """Returns true if the user is a moderator"""
+        return self.has_perm("moderation.can_moderate")
+
+    @property
+    def name(self):
+        """Return either the full name of the user or the username"""
+        if self.first_name or self.last_name:
+            return self.get_full_name()
+        return self.username
+
     def get_ircnick(self):
+        """Return the irc nickname or the username (default)"""
         if not self.ircnick:
             return self.username
         return self.ircnick
 
     def photo_url(self):
+        """Return the photo url if it exist"""
         if self.photo:
             return self.photo.url
         return None
 
     def photo_preview(self):
+        """Returns a photo preview or a default svg file"""
         if self.photo:
             return '<img src="%s" style="max-width: 200px; max-height: 250px;"/>' % self.photo.url
         # Return an embedded svg, it's easier than dealing with static files.
@@ -145,6 +162,7 @@ class User(AbstractUser):
     photo_preview.allow_tags = True
 
     def quota(self):
+        """Returns the amount of quota (disk space) this use has in total (not remaining)"""
         from resources.models import Quota
         groups = Q(group__in=self.groups.all()) | Q(group__isnull=True)
         quotas = Quota.objects.filter(groups)
@@ -153,60 +171,55 @@ class User(AbstractUser):
         return 0
 
     def get_absolute_url(self):
+        """Return the url to the user's profile page"""
         if not self.username:
             return '/'
         return reverse('view_profile', kwargs={'username':self.username})
 
-    def is_moderator(self):
-        return self.has_perm("moderation.can_moderate")
-
     def visited_by(self, by_user):
+        """Adds one to the user's visitor count"""
         if by_user != self:
             self.visits += 1
             self.save(update_fields=['visits'])
 
     @property
     def teams(self):
+        """Returns a queryset of teams this user is a member of"""
         return Team.objects.filter(group__in=self.groups.all())
 
-    def viewer_is_subscribed(self):
-        from cms.utils.permissions import get_current_user as get_user
-        user = get_user()
+    def viewer_is_subscribed(self, user):
+        """Returns true if the calling user is subscribed to this user's resources."""
         if user.is_authenticated():
             return bool(self.resources.subscriptions().get(user=user.pk))
         return False
 
 
 @receiver(post_save, sender=User)
-def is_active_check(sender, instance, **kwargs):
+def is_active_check(sender, instance, **_):
     """Delete every session when active is False"""
-    from django.contrib.auth import SESSION_KEY
     if not instance.is_active:
         for session in Session.objects.all():
             # There is google-oauth sessions which aren't cleared here
             try:
                 if int(session.get_decoded().get(SESSION_KEY, -1)) == instance.pk:
                     session.delete()
-            except Exception:
+            except sender.DoesNotExist:
                 pass
 
-
-
 def group_breadcrumb_name(self):
+    """Return the name of the group for breadcrumbs"""
     try:
         return str(self.team)
-    except:
+    except UnicodeDecodeError:
         return str(self)
 Group.breadcrumb_name = group_breadcrumb_name
 
 
 class TwilightSparkle(Manager):
-    def i_added(self):
-        from cms.utils.permissions import get_current_user as get_user
-        user = get_user()
-        if user.is_authenticated():
-            return bool(self.get(from_user=user.pk))
-        return False
+    """The queryset manager for frienships"""
+    def i_added(self, user):
+        """Return true if I have added this friend before"""
+        return user.is_authenticated() and bool(self.get(from_user=user.pk))
 
     def mutual(self):
         """Returns a mutual set of friends"""
@@ -214,19 +227,21 @@ class TwilightSparkle(Manager):
                 .filter(from_user__from_friends__from_user=F('user'))
 
 class Friendship(Model):
+    """A single instance of friendship"""
     from_user = ForeignKey(User, related_name='friends')
-    user      = ForeignKey(User, related_name='from_friends')
+    user = ForeignKey(User, related_name='from_friends')
 
-    objects   = TwilightSparkle()
+    objects = TwilightSparkle()
 
     def __str__(self):
-        return u"%s loves %s" % (str(self.from_user), str(self.user))
+        return u"%s is friends with %s" % (str(self.from_user), str(self.user))
 
 class TeamChatRoom(Model):
-    admin    = ForeignKey(User, **null)
-    channel  = CharField(_('IRC Chatroom Name'), max_length=64)
+    """An ChatRoom for a team"""
+    team = ForeignKey('Team', related_name='ircrooms')
+    admin = ForeignKey(User, **null)
+    channel = CharField(_('Chatroom Name'), max_length=64)
     language = CharField(max_length=5, default='en', choices=settings.LANGUAGES)
-    team     = ForeignKey('Team', related_name='ircrooms')
 
     class Meta:
         unique_together = (('language', 'team'),)
@@ -236,8 +251,10 @@ class TeamChatRoom(Model):
 
     @property
     def log_path(self):
+        """Return the path to the IRC logs"""
         if hasattr(settings, 'IRC_LOGS'):
             return os.path.join(settings.IRC_LOGS, self.channel)
+        return None
 
     def logs(self):
         """Returns a list of logs for this chatroom"""
@@ -245,10 +262,10 @@ class TeamChatRoom(Model):
         if path is not None:
             url = path.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
             if os.path.isdir(path):
-                for fn in sorted(os.listdir(path)):
+                for filename in sorted(os.listdir(path)):
                     yield {
-                        'url': os.path.join(url, fn),
-                        'name': fn.replace('.txt', ''),
+                        'url': os.path.join(url, filename),
+                        'name': filename.replace('.txt', ''),
                     }
 
 
@@ -279,20 +296,32 @@ class TeamMembership(Model):
     title = CharField(_('Role Title'), max_length=128, **null)
     style = CharField(_('Role Style'), max_length=64, **null)
 
-    is_watcher = property(lambda self: not self.requested and not self.joined and not self.is_expired)
-    is_requester = property(lambda self: bool(self.requested) and not self.joined and not self.is_expired)
-    is_member = property(lambda self: self.joined and not self.is_expired)
+    @property
+    def is_watcher(self):
+        """Return true if this user is watching this team"""
+        return not self.requested and not self.joined and not self.is_expired
+
+    @property
+    def is_requester(self):
+        """Return true if this user is requesting membership to team"""
+        return bool(self.requested) and not self.joined and not self.is_expired
+
+    @property
+    def is_member(self):
+        """Return true if this user is a member of this team"""
+        return self.joined and not self.is_expired
 
     @property
     def is_expired(self):
+        """Return true if this user is expired"""
         return not (self.expired is None or self.expired > timezone.now())
 
     class Meta:
         unique_together = ('team', 'user')
 
-    def save(self, **kw):
+    def save(self, **kwargs): # pylint: disable=arguments-differ
         """Control the group of users (which grants permissions)"""
-        super(TeamMembership, self).save(**kw)
+        super(TeamMembership, self).save(**kwargs)
         if self.id:
             self.update_group()
 
@@ -308,22 +337,18 @@ class TeamMembership(Model):
             user_group.remove(self.user)
 
 
-class TeamQuerySet(QuerySet):
-    def breadcrumb_name(self):
-        return _('Inkscape Community Teams')
-
-    def get_absolute_url(self):
-        return reverse('teams')
-
-
 class Team(Model):
+    """
+    A team is a shadow object for a group, it doesn't record a list of users that
+    is done by django.auth.Group, but it does control everything else about memberships.
+    """
     ENROLES = (
-      ('O', _('Open')),
-      ('P', _('Peer Approval')),
-      ('T', _('Admin Approval')),
-      ('C', _('Closed')),
-      ('S', _('Secret')),
-      ('E', _('Elected')),
+        ('O', _('Open')),
+        ('P', _('Peer Approval')),
+        ('T', _('Admin Approval')),
+        ('C', _('Closed')),
+        ('S', _('Secret')),
+        ('E', _('Elected')),
     )
     ICON = os.path.join(settings.STATIC_URL, 'images', 'team.svg')
 
@@ -336,90 +361,97 @@ class Team(Model):
     icon = ImageField(_('Display Icon'), upload_to='teams', default=ICON)
 
     order = IntegerField(default=0)
-    intro = TextField(_('Introduction'), validators=[MaxLengthValidator(1024)],
+    intro = TextField(_('Introduction'), validators=[MaxLengthValidator(1024)],\
         help_text=_("Text inside the team introduction."), **null)
-    desc = TextField(_('Full Description'), validators=[MaxLengthValidator(10240)],
+    desc = TextField(_('Full Description'), validators=[MaxLengthValidator(10240)],\
         help_text=_("HTML description on the teams front page."), **null)
-    charter = TextField(_('Charter'), validators=[MaxLengthValidator(30240)],
+    charter = TextField(_('Charter'), validators=[MaxLengthValidator(30240)],\
         help_text=_("HTML page with rules for team members."), **null)
-    side_bar = TextField(_('Side Bar'), validators=[MaxLengthValidator(10240)],
+    side_bar = TextField(_('Side Bar'), validators=[MaxLengthValidator(10240)],\
         help_text=_("Extra sie bar for buttons and useful links."), **null)
 
-    mailman = CharField(_('Email List'), max_length=32, null=True, blank=True,
+    mailman = CharField(_('Email List'), max_length=32, null=True, blank=True,\
         help_text='The name of the pre-configured mailing list for this team')
     enrole = CharField(_('Enrollment'), max_length=1, default='O', choices=ENROLES)
 
-    auto_expire = IntegerField(default=0,
+    auto_expire = IntegerField(default=0,\
         help_text=_('Number of days that members are allowed to be a member.'))
 
-    localized_fields = ('name', 'intro', 'desc',  'charter', 'side_bar')
-    objects = TeamQuerySet.as_manager()
+    localized_fields = ('name', 'intro', 'desc', 'charter', 'side_bar')
 
     class Meta:
         ordering = ('order',)
 
     @property
     def channels(self):
+        """Return a list of all irc channels"""
         return self.ircrooms.filter(language__in=[get_language(), 'en'])\
                 .values('language', 'channel')
 
     @property
     def parent(self):
+        """Returns the parent object, in this case a full list of teams"""
         return type(self).objects.all()
 
     @property
     def team(self):
+        """Return self as the team, used in mixology"""
         return self
 
     @property
     def peers(self):
+        """Return a list (not queryset) or members who can approve others"""
         if self.enrole == 'P':
             return [member.user for member in self.members] + [self.admin]
         return [self.admin]
 
     def get_absolute_url(self):
+        """Return link to team page"""
         return reverse('team', kwargs={'team': self.slug})
 
-    def save(self, **kwargs):
+    def save(self, **kwargs): # pylint: disable=arguments-differ
         if not self.name:
             self.name = self.group.name
         if not self.slug:
             self.slug = slugify(self.name)
         return super(Team, self).save(**kwargs)
 
-    def get_members(self, joined=True, expired=False, requested=None, **kw):
+    def get_members(self, joined=True, expired=False, requested=None):
         """
         Returns a QuerySet containing the given memberships as they related to
         this team. See convience functions below.
 
         Default is to return all joined (real) members of a team.
         """
-        q = Q()
+        qset = Q()
         if expired is True:
-            q &= Q(expired__lt=timezone.now())
+            qset &= Q(expired__lt=timezone.now())
         elif expired is False:
-            q &= (Q(expired__isnull=True) | Q(expired__gt=timezone.now()))
+            qset &= (Q(expired__isnull=True) | Q(expired__gt=timezone.now()))
         if requested is not None:
-            q &= Q(requested__isnull=not requested)
+            qset &= Q(requested__isnull=not requested)
         if joined is not None:
-            q &= Q(joined__isnull=not joined)
-        return self.memberships.filter(q)
+            qset &= Q(joined__isnull=not joined)
+        return self.memberships.filter(qset)
 
-    requests = property(lambda self: self.get_members(joined=False, requested=True).order_by('-requested'))
-    watchers = property(lambda self: self.get_members(joined=False, requested=False))
-    members = property(lambda self: self.get_members(joined=True, expired=False).order_by('joined'))
+    requests = property(lambda self: self.get_members(False, False, True).order_by('-requested'))
+    watchers = property(lambda self: self.get_members(False, False, False))
+    members = property(lambda self: self.get_members(True).order_by('joined'))
 
-    old_requests = property(lambda self: self.get_members(joined=False, expired=True, requested=True).order_by('-expired'))
-    old_watchers = property(lambda self: self.get_members(joined=False, expired=True, requested=False))
-    old_members = property(lambda self: self.get_members(joined=True, expired=True).order_by('-expired'))
+    old_requests = property(lambda self: self.get_members(False, True, True).order_by('-expired'))
+    old_watchers = property(lambda self: self.get_members(False, True, False))
+    old_members = property(lambda self: self.get_members(True, True).order_by('-expired'))
 
     def has_member(self, user):
+        """Returns true if the user is a member of the team"""
         return self.members.filter(user_id=user.id).count() == 1
 
     def has_requester(self, user):
+        """Returns true if the user is requesting to join the team"""
         return self.requests.filter(user_id=user.id).count() == 1
 
     def has_watcher(self, user):
+        """Returns true if the user is watching this team"""
         return self.watchers.filter(user_id=user.id).count() == 1
 
     def update_membership(self, user, **kw):
@@ -427,18 +459,23 @@ class Team(Model):
         obj, created = self.memberships.update_or_create(user=user, defaults=kw)
         return obj, created
 
-    def expire_if_needed(self, dtm):
+    def expire_if_needed(self, before_date=None):
         """Expire any members who have expired from this team"""
+        if before_date is None:
+            before_date = now()
         delta = timedelta(days=self.auto_expire)
         for membership in self.members:
-            if membership.joined + delta < now():
+            if membership.joined + delta < before_date:
                 self.update_membership(membership.user, expired=now(), removed_by=None)
                 yield membership.user
 
-    def warn_if_needed(self, dtm, days):
+    def warn_if_needed(self, before_date=None, days=5):
+        """Warn a user they are about to be expired from the team"""
+        if before_date is None:
+            before_date = now()
         delta = timedelta(days=self.auto_expire - days)
         for membership in self.members:
-            if (membership.joined + delta).date == now().date:
+            if (membership.joined + delta).date == before_date.date:
                 # XXX Send warning email
                 yield membership.user
 
@@ -446,8 +483,8 @@ class Team(Model):
         return self.name
 
 
-# Patch in the url so we get a better front end view from the admin.
 def get_team_url(self):
+    """Patch in the url so we get a better front end view from the admin."""
     try:
         return self.team.get_absolute_url()
     except Team.DoesNotExist:

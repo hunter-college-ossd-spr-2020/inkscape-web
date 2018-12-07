@@ -25,15 +25,26 @@ from django.template import Library
 
 from person.models import User, Team
 
-register = Library()
+register = Library() # pylint: disable=invalid-name
 
+@register.filter()
+def is_subscribed(this_user, that_user):
+    """Returns true if that_user is subscribed to this_user"""
+    if this_user.is_authenticated():
+        return this_user.viewer_is_subscribed(that_user)
+    return False
+
+@register.filter()
+def i_added(friendships, this_user):
+    """Pass the currently logged in user to i_added"""
+    return friendships.i_added(this_user)
 
 @register.filter("membership")
 def membership(obj, other):
+    """Returns a queryset of membership for a given team"""
     if isinstance(obj, User) and isinstance(other, Team):
         return membership(other, obj)
-    qs = obj.memberships.filter(user_id=other.pk)
-    if qs.count() == 1:
-        return qs.get()
+    qset = obj.memberships.filter(user_id=other.pk)
+    if qset.count() == 1:
+        return qset.get()
     return {}
-
