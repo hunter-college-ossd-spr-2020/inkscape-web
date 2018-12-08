@@ -219,7 +219,10 @@ class TwilightSparkle(Manager):
     """The queryset manager for frienships"""
     def i_added(self, user):
         """Return true if I have added this friend before"""
-        return user.is_authenticated() and bool(self.get(from_user=user.pk))
+        try:
+            return user.is_authenticated() and bool(self.get(from_user=user.pk))
+        except Friendship.DoesNotExist:
+            return False
 
     def mutual(self):
         """Returns a mutual set of friends"""
