@@ -42,6 +42,8 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth import SESSION_KEY
 
 from django.contrib.auth.models import Group, AbstractUser, UserManager, Permission
+from alerts.models import AlertSubscription
+
 from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True) # pylint: disable=invalid-name
@@ -190,7 +192,10 @@ class User(AbstractUser):
     def viewer_is_subscribed(self, user):
         """Returns true if the calling user is subscribed to this user's resources."""
         if user.is_authenticated():
-            return bool(self.resources.subscriptions().get(user=user.pk))
+            try:
+                return bool(self.resources.subscriptions().get(user=user.pk))
+            except AlertSubscription.DoesNotExist:
+                return False
         return False
 
 
