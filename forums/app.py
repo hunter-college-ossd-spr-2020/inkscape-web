@@ -23,10 +23,10 @@ Watches for comments so they can be registered.
 import logging
 from importlib import import_module
 
+from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_save
 
-from django.conf import settings
 
 
 def post_create(model, func):
@@ -51,16 +51,21 @@ class ForumsConfig(AppConfig):
         from .models import Forum, ForumTopic
         from django_comments.models import Comment
         from django.contrib.contenttypes.models import ContentType
+        from django.utils.functional import cached_property
 
         post_save.connect(self.save_comment, sender=Comment, weak=False)
         post_create(Forum, self.new_forum)
 
-        topic_ct = ContentType.objects.get_for_model(ForumTopic).pk
         topic_qset = ForumTopic.objects.select_related('forum')
+
+        @cached_property
+        def get_topic_contenttype():
+            """Return the content type for ForumTopic"""
+            return ContentType.objects.get_for_model(ForumTopic).pk
 
         def get_topic(self):
             """Get a topic for a comment"""
-            if self.content_type_id == topic_ct:
+            if self.content_type_id == get_topic_contenttype():
                 return topic_qset.get(pk=self.object_pk)
             try:
                 return topic_qset.get(
@@ -96,8 +101,8 @@ class ForumsConfig(AppConfig):
         done = []
         if instance.content_type:
             # Look for all existing comments that might exist for this object
-            cms = Comment.objects.filter(content_type=instance.content_type)
-            for comment in cms.order_by('-submit_date'):
+            comments = Comment.objects.filter(content_type=instance.content_type)
+            for comment in comments.order_by('-submit_date'):
                 if comment.object_pk not in done:
                     self.create_comment(comment)
                     done.append(comment.object_pk)
