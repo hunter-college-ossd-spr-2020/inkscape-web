@@ -70,7 +70,6 @@ function checkLink() {
             return $(this).text().endsWith('((C))');
           }).prop('selected', true);
 
-          console.log(data.items[0]);
           data.items[0].snippet.tags.forEach(function(tag, index) {
               $('#id_tags').tagsinput('add', tag);
           });
@@ -102,6 +101,18 @@ function setupUpload() {
           return false;
       }
   });
+
+  // This is to fix a specific UX problem where users
+  // attempt to use the rendering file slot for the actual
+  // file slot and have it refused by the form.
+  $('.uploader #id_download').on('change', function() {
+      var file = this.files[0];
+      var icon = get_mime_icon(file.type);
+      if(icon != 'image' || is_svg(file.type)) {
+          $('.uploader label[for="id_rendering"]').show();
+      }
+  });
+  $('.uploader label[for="id_rendering"]').hide();
 
   $('.uploader input[type=file]').each(function() {
     var input = $(this);
@@ -203,7 +214,6 @@ function setupUpload() {
     $('option', target).each(function() {
         // Record all filters into one list for counter test
         var filter = $(this).attr('data-filter');
-        console.log("Found filter: " + filter);
         if(filter != undefined) {
             filters = filters.concat(JSON.parse(filter));
         }
@@ -273,6 +283,10 @@ function addEventHandler(obj, evt, handler) {
   }
 };
 
+function is_svg(mimeid) {
+    var mime = mimeid.split("/");
+    return mime[1] == 'svg+xml';
+}
 function get_mime_icon(mimeid) {
   if(!mimeid){ mimeid = "text/plain"; }
   var mime = mimeid.split("/");
