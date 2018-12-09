@@ -35,4 +35,10 @@ class MenuRootAdmin(ModelAdmin):
     inlines = (MenuItemsInline,)
 
 site.register(MenuRoot, MenuRootAdmin)
-site.register(MenuItem)
+
+class MenuItemAdmin(ModelAdmin):
+    list_display = ('name', 'url', 'parent', 'root')
+    search_fields = ('name', 'url')
+    list_filter = ('root',)
+
+site.register(MenuItem, MenuItemAdmin)
