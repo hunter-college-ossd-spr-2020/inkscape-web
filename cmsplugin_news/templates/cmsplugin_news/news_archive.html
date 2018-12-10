@@ -4,6 +4,14 @@
 {% block "newscontent" %}
 <a style="float: right; padding: 5px;" href="{% url "news:rss" %}"><img src="{% static "images/rss.png" %}" alt="{% trans "RSS Feed" %}"/></a>
 <a style="float: right; padding: 5px;" href="{{ alert.subscribe_url }}"><img src="{% static "images/email.png" %}" alt="{% trans "Get Email Notifications" %}"/></a>
+
+  <div class="pagination">
+    <span class="current page">{% trans "News" %}</span>
+    {% for date in date_list %}
+      <a href="{% url "news:archive_year" year=date|date:'Y'  %}" class="page">{{ date|date:"Y" }}</a>
+    {% endfor %}
+  </div>
+
   <h1>{% block title %}{% trans "Latest News" %}{% endblock %}</h1>
   {% for object in latest %}
     {% include "cmsplugin_news/list_item.html" %}

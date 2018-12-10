@@ -1523,10 +1523,14 @@ div.pagination span {
   margin: 2px;
 }
 ul.pagination li.active span,
-div.pagination span.current {
+div.pagination span.current,
+div.pagination a.current {
   background-color: #3A95C4;
   border: 1px solid #3A95C4;
   color: white;
+}
+div.pagination a.current {
+  background-color: #2875A4;
 }
 div.pagination .disabled {
   color: #aaa;
@@ -1535,6 +1539,9 @@ ul.pagination li a:hover,
 div.pagination a:hover {
   background-color: #ddd;
   text-decoration: none;
+}
+div.pagination a.current:hover {
+  background-color: #3A95C4;
 }
 
 /* Ellipses */

@@ -2,6 +2,15 @@
 {% load i18n %}
 
 {% block "newscontent" %}
+  <div class="pagination">
+    <a class="current page" href="{% url "news:archive_index" %}">{% trans "News" %}</a>
+    <a class="current page" href="{% url "news:archive_year" month.year %}">{{ month.year }}</a>
+    <span class="current page">{{ month|date:'F' }}</span>
+    {% for date in date_list %}
+      <a href="{% url "news:archive_day" year=month.year month=month|date:'m' day=date|date:'d' %}" class="page">{{ date|date:"d" }}</a>
+    {% endfor %}
+  </div>
+
   <h1>{% block title %}{% blocktrans with month|date:'F Y' as month %}News for {{ month }}{% endblocktrans %}{% endblock %}</h1>
 
   {% for object in object_list %}

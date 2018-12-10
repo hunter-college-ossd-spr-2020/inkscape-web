@@ -2,24 +2,18 @@
 {% load i18n %}
 
 {% block "newscontent" %}
-  <h1>{% block title %}{% blocktrans with year.year as year %}News for {{ year }}{% endblocktrans %}{% endblock %}</h1>
-  <div id="left-column">
-    {% for object in object_list %}
-      {% include "cmsplugin_news/list_item.html" %}
-    {% empty %}
-      <h2>{% trans "No news for this year." %}</h2>
+  <div class="pagination">
+    <a class="current page" href="{% url "news:archive_index" %}">{% trans "News" %}</a>
+    <span class="current page">{{ year.year }}</span>
+    {% for date in date_list %}
+      <a href="{% url "news:archive_month" year=year.year month=date|date:'m'  %}" class="page">{{ date|date:"F" }}</a>
     {% endfor %}
   </div>
-  <div id="right-sidebar">
-    <div id="sidecategory">
-      <h2>{% trans 'Months' %}</h2>
-      <ul>
-      {% for date in date_list %}
-        <li><a href="{% url "news:archive_month" year=year.year month=date|date:'m'  %}"><label>{{ date|date:"F" }}</label></a></li>
-      {% empty %}
-        <li>{% trans "No news for this year." %}</li>
-      {% endfor %}
-      </ul>
-    </div>
-  </div>
+
+  <h1>{% block title %}{% blocktrans with year.year as year %}News for {{ year }}{% endblocktrans %}{% endblock %}</h1>
+  {% for object in object_list %}
+    {% include "cmsplugin_news/list_item.html" %}
+  {% empty %}
+    <h2>{% trans "No news for this year." %}</h2>
+  {% endfor %}
 {% endblock %}
