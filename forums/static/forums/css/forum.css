@@ -1172,10 +1172,12 @@ blockquote {
   z-index:999;
   opacity:1;
   float:left;
-  text-align:center;
+  text-align:right;
   margin-top:-43px;
   margin-left:10px;
   margin-bottom:0px;
+  max-width:140px;
+  line-height:1;
 }
 .forum-name:hover{
   color:orange;
@@ -1188,7 +1190,7 @@ blockquote {
   border-radius:50% 50% 0 0;  
   vertical-align:bottom;
   margin-right:4px;
-  margin-bottom:-9px;
+  margin-bottom:-19px;
   padding:4px 4px 0 4px;
 }
 .forum-comment-first .pull-left{
@@ -1229,7 +1231,14 @@ blockquote {
   margin:0;
   padding:0;
 }
-
+@media (min-width: 500px){
+  .forum-name{
+    max-width:500px;;
+  }
+  .forum-name img{
+    margin-bottom:-14px;
+  }
+}
 @media (min-width: 700px) and (min-width: 40em) {
   
   .forums-search {
