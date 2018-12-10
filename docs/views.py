@@ -25,7 +25,7 @@ import re
 import os
 import codecs
 
-from django.utils.translation import get_language_from_path
+from django.utils.translation import get_language_from_path, get_language_from_request
 
 from django.http import Http404
 from django.shortcuts import render
@@ -84,6 +84,8 @@ def page(request, uri):
         raise Http404
 
     language = get_language_from_path(request.path)
+    if language in (None, ''):
+        language = get_language_from_request(request)
     path = get_localized_path(path, language)
 
     with codecs.open(path, "r", "utf-8") as fhl:
