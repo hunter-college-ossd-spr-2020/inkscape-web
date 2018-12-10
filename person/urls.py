@@ -25,13 +25,13 @@ from django_registration.backends.activation.views import ActivationView as AV, 
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from django.contrib.auth.views import (
-    LoginView, LogoutView,
+    LogoutView,
     PasswordResetView as Reset, PasswordResetConfirmView as Confirm,
     PasswordResetCompleteView as Complete, PasswordResetDoneView as ResetDone,
 )
 from inkscape.url_utils import url_tree
 
-from .views import EditProfile, TeamList, MyProfile, AgreeToCla, Welcome
+from .views import LoginView, EditProfile, TeamList, MyProfile, AgreeToCla, Welcome
 from .forms import RegisForm, PasswordForm
 
 AC = TemplateView.as_view(template_name='django_registration/activation_complete.html')

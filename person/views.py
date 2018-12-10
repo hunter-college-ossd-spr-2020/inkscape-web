@@ -20,17 +20,26 @@
 #
 """Customise the user authentication model"""
 
+
 from django.views.generic import UpdateView, DetailView, ListView, RedirectView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from django.utils.timezone import now
 from django.contrib import messages
 from django.contrib.auth.models import Permission
+from django.contrib.auth.views import LoginView as BaseLoginView
 from django.http import HttpResponseRedirect, Http404
+from django.urls import translate_url
 
 from .models import User, Team
 from .forms import UserForm, AgreeToClaForm, TeamAdminForm
 from .mixins import LoginRequiredMixin, NeverCacheMixin, UserMixin, NextUrlMixin
+
+class LoginView(BaseLoginView):
+    def get_success_url(self):
+        url = super().get_success_url()
+        lang = self.request.user.language or get_language()
+        return translate_url(url, lang)
 
 class AgreeToCla(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
     template_name = 'person/cla-agree.html'
