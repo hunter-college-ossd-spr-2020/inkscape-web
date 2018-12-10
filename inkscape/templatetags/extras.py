@@ -89,6 +89,31 @@ def add_placeholder(bound_field, text=None):
     bound_field.field.widget.attrs.update({"placeholder": text})
     return bound_field
 
+@register.simple_tag()
+def app_info(request, obj, lst, form):
+    """Generate detail about the app generating the response"""
+    if hasattr(request, 'resolver_match'):
+        cls = request.resolver_match.func.__module__.split('.')[0]
+        if hasattr(request.resolver_match.func, '__name__'):
+            view = request.resolver_match.func.__name__
+        else:
+            view = type(request.resolver_match.func).__name__
+        if form is not None:
+            form = type(form).__name__
+            model = getattr(getattr(form, '_meta', None), 'model', None)
+            if model is not None:
+                model = model.__name__
+                return "{}.{} (form: {} for {})".format(cls, view, model, form)
+            return "{}.{} (form: {})".format(cls, view, form)
+        if obj is not None:
+            model = type(obj).__name__
+            return "{}.{} ({} item {})".format(cls, view, model, obj)
+        if lst is not None:
+            model = getattr(lst, 'model', type(None)).__name__
+            return "{}.{} ({} list)".format(cls, view, model)
+        return "{}.{}".format(cls, view)
+    return 'Unknown App'
+
 @register.filter("autofocus")
 def add_autofocus(bound_field):
     """Add an autofocus attribute to any form field object"""
