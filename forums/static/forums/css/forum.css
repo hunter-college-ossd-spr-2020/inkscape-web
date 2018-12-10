@@ -1167,17 +1167,19 @@ blockquote {
 }
 /*JTX*/
 .forum-name{
+  position:absolute;
   font-weight:normal;
   font-size:15px;
   z-index:999;
   opacity:1;
   float:left;
-  text-align:right;
+  text-align:left;
   margin-top:-43px;
   margin-left:10px;
   margin-bottom:0px;
-  max-width:140px;
-  line-height:1;
+  max-width:130px;
+  padding-left:50px;
+  line-height:0.9;
 }
 .forum-name:hover{
   color:orange;
@@ -1188,10 +1190,13 @@ blockquote {
   width:42px;
   height:42px;
   border-radius:50% 50% 0 0;  
-  vertical-align:bottom;
+  vertical-align:top;
   margin-right:4px;
-  margin-bottom:-19px;
+  margin-left:-50px;
+  margin-bottom:-17px;
   padding:4px 4px 0 4px;
+  display:block;
+  float:left;
 }
 .forum-comment-first .pull-left{
   width:100px;
@@ -1233,10 +1238,11 @@ blockquote {
 }
 @media (min-width: 500px){
   .forum-name{
-    max-width:500px;;
+    max-width:500px;
+    padding-top:15px;
   }
   .forum-name img{
-    margin-bottom:-14px;
+    margin-top:-15px;
   }
 }
 @media (min-width: 700px) and (min-width: 40em) {
@@ -1252,6 +1258,7 @@ blockquote {
     font-size:22px;
   }
   .forum-name{
+    right:0px;
     font-weight:normal;
     z-index:999;
     float:right;
@@ -1282,9 +1289,6 @@ blockquote {
   .forums-search {
     transform:scale(1);
     transform-origin:right bottom ;
-  }
-  .forum-name{
-    right:250px;
   }
   .forum-sidebar {
     grid-column: 1 / span 1;
