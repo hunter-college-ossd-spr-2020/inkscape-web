@@ -160,7 +160,7 @@
 }
 
 .forum-sub-header {
-  border-top: 1px solid #333;
+  border-top: 1px dotted #666;
   grid-area: breadcrumb;
 }
 
@@ -1132,7 +1132,7 @@ h3 small.label {
 }
 .footer {
   text-align: center;
-  background-color:#000;
+  background-color:#1a1a1a;
   margin:0;
   padding:10px;
   color:#999;
