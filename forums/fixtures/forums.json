@@ -279,4 +279,279 @@
     }
   }
   ]
-  
+
+},
+{
+  "model": "forums.forumgroup",
+  "pk": 2,
+  "fields": {
+    "name": "Resources"
+  }
+},
+{
+  "model": "forums.forumgroup",
+  "pk": 3,
+  "fields": {
+    "name": "Specialist Communities"
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 1,
+  "fields": {
+    "group": 2,
+    "sort": 30,
+    "name": "Gallery Archive",
+    "slug": "gallery",
+    "desc": "Artworks submitted to the Inkscape website are posted to the Archive so you can track the comments made on your gallery items.",
+    "icon": "forum/icon/art_gallery.svg",
+    "lang": null,
+    "content_type": [
+      "resources",
+      "resource"
+    ],
+    "sync": null,
+    "post_count": 1214,
+    "last_posted": "2018-11-13T15:37:35Z"
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 2,
+  "fields": {
+    "group": 1,
+    "sort": 100,
+    "name": "Vector Caf\u00e9",
+    "slug": "cafe",
+    "desc": "General talk about art, an open forum for new topics not involving uploaded artworks but any general topic of conversion.",
+    "icon": "forum/icon/art_general.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 25,
+    "last_posted": "2018-11-24T01:09:40.097Z"
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 3,
+  "fields": {
+    "group": 2,
+    "sort": 20,
+    "name": "Tutorials",
+    "slug": "tutorials",
+    "desc": "Talk about tutorials, and actual tutorial links.",
+    "icon": "forum/icon/school.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 4,
+    "last_posted": "2016-06-22T02:30:05Z"
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 4,
+  "fields": {
+    "group": 2,
+    "sort": 10,
+    "name": "Extensions",
+    "slug": "extensions",
+    "desc": "A place to come and talk about writing extensions.",
+    "icon": "forum/icon/ext.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 6,
+  "fields": {
+    "group": 2,
+    "sort": 5,
+    "name": "Issues and Bugs",
+    "slug": "bugs",
+    "desc": "Talk about issues with Inkscape and ways around the bugs. Or just have a moan about things you wished Inkscape could do.",
+    "icon": "forum/icon/bugs.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 7,
+  "fields": {
+    "group": 1,
+    "sort": 7,
+    "name": "Beginners' Questions",
+    "slug": "questions",
+    "desc": "If you have a basic question to ask, ask it here.",
+    "icon": "forum/icon/basic_q.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 4,
+    "last_posted": "2018-11-23T15:45:34.843Z"
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 8,
+  "fields": {
+    "group": 1,
+    "sort": 5,
+    "name": "Beyond the Basics",
+    "slug": "beyond",
+    "desc": "Next level questions, when you've got a head scratcher or need to know how to do something advanced.",
+    "icon": "forum/icon/basic_b.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 9,
+  "fields": {
+    "group": 1,
+    "sort": 0,
+    "name": "Competitions",
+    "slug": "competitions",
+    "desc": "Know of any cool competitions that involve Inkscape or should involve Inkscape. Talk about them here.",
+    "icon": "forum/icon/compet.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 10,
+  "fields": {
+    "group": 3,
+    "sort": 20,
+    "name": "Graphing Bar",
+    "slug": "graphs",
+    "desc": "Scientific graphing, editing the output from matplotlib or need to adjust your thesis diagrams. Talk about your work here",
+    "icon": "forum/icon/graph.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 11,
+  "fields": {
+    "group": 3,
+    "sort": 15,
+    "name": "Cutting Workshop",
+    "slug": "cnc",
+    "desc": "There are many uses of Inkscape to cut, shop, slice designs directly into physical existence.",
+    "icon": "forum/icon/laser.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 12,
+  "fields": {
+    "group": 3,
+    "sort": 12,
+    "name": "SVG Internet",
+    "slug": "svg",
+    "desc": "Talk about SVG, SVG 2.0, XML, Embedding it into HTML pages or using CSS and Javascript with Inkscape SVG.",
+    "icon": "forum/icon/www.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 13,
+  "fields": {
+    "group": 3,
+    "sort": 10,
+    "name": "Animation Mill",
+    "slug": "animation",
+    "desc": "It's quite hard to make animations in Inkscape, but we know there are people that succeed. Talk about your triumphs here.",
+    "icon": "forum/icon/ani.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 14,
+  "fields": {
+    "group": 3,
+    "sort": 5,
+    "name": "Ponyscape",
+    "slug": "ponyscape",
+    "desc": "Everypony can draw with Inkscape, and many pony fans do. Talk about your latest resources, svg downloads and collaborations here.",
+    "icon": "forum/icon/pony.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 15,
+  "fields": {
+    "group": 3,
+    "sort": 35,
+    "name": "Artist & Designer Studio",
+    "slug": "artists",
+    "desc": "",
+    "icon": "forum/icon/art_gallery.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+},
+{
+  "model": "forums.forum",
+  "pk": 16,
+  "fields": {
+    "group": 3,
+    "sort": 15,
+    "name": "Educators' Classroom",
+    "slug": "education",
+    "desc": "",
+    "icon": "forum/icon/educators.svg",
+    "lang": null,
+    "content_type": null,
+    "sync": null,
+    "post_count": 0,
+    "last_posted": null
+  }
+}
+]
+>>>>>>> 64d6429ac86f5fc2699745f653a4652b6d240b8e
