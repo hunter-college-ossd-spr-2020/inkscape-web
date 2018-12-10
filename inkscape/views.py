@@ -53,7 +53,8 @@ class RedirectEnglish(RedirectView):
     """Redirect any page to the given url usually prefixed /en/"""
     def get_redirect_url(self, url): # pylint: disable=arguments-differ
         """Redirect to the correct page in English"""
-        return '/' + url
+        qset = '?' + self.request.GET.urlencode() if self.request.GET else ''
+        return '/' + url + qset
 
 class ContactUs(FormView):
     title = _('Contact Inkscape Website Administrators')
