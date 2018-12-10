@@ -17,8 +17,15 @@ else
     git reset --hard origin/live
 fi
 
+
 # data/revision.log relative path, pretty printing human readable / unix time
 git log --format="------------------%n%nAUTHOR:%aN%nTIME:%at%nEMAIL:%aE%n%h : %s%n%aD%n" > ../../translators.log
+
 cd ../../../
-./utils/manage compilemessages
+
+# We want to fix the issues in django pot files
+./pythonenv/bin/python ./utils/fix-po-files
+
+echo "Compiling all message files, please wait..."
+./utils/manage compilemessages &> /tmp/msg-compile.log
 

@@ -31,6 +31,9 @@ stopforumspam==1.8
 # gallery
 gnupg==2.3.1
 
+# Fixing pot files
+polib==1.1.0
+
 # Test only
 django-extratest>=1.6
 pylint==1.9.2
