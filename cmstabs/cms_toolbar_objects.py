@@ -21,7 +21,7 @@ Provide django cms with object editing toolbar.
 from django.db.models import QuerySet, Model
 
 from django.core.urlresolvers import NoReverseMatch, reverse
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _, get_language_from_path
 from django.contrib.contenttypes.models import ContentType
 
 from cms.toolbar.toolbar import CMSToolbar
@@ -100,7 +100,8 @@ class ObjectsToolbar(SubToolbar):
         if self.menu_item(menu, _('New %(otype)s'), 'add', then, model=model):
             br = menu.add_break()
 
-        if get_language() not in ('en', None):
+        lang = get_language_from_path(self.request.path)
+        if lang not in ('en', None):
             then = getattr(obj, 'get_absolute_url', lambda: 'REFRESH_PAGE')()
             if self.menu_item(menu, _('Translate %(otype)s'), 'translate', then, obj):
                 br = menu.add_break()

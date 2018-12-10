@@ -29,9 +29,9 @@ from django.core.urlresolvers import reverse
 
 from django.utils import dateformat
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import never_cache
 
-from cms.utils import get_language_from_request
+from django.utils.translation import get_language_from_path
 
 from .models import News
 from .alert import NewNewsAlert
@@ -45,7 +45,7 @@ class PublishedNewsMixin(object):
     month_format = '%m'
 
     def get_language(self):
-        return get_language_from_request(self.request)
+        return get_language_from_path(self.request.path)
 
     def get_queryset(self):
         return News.published.with_language(self.get_language(),

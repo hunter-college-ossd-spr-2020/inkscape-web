@@ -21,7 +21,7 @@
 
 from django.http import Http404
 from django.utils.text import slugify
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language_from_path, ugettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.views.generic import DetailView
 from django.shortcuts import get_object_or_404
@@ -35,7 +35,7 @@ class DownloadRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kw):
         project = self.request.GET.get('project', None)
-        language = get_language()
+        language = get_language_from_path(self.request.path)
         (family, version, bits) = self.get_os()
         key = slugify('download-%s-%s-%s' % (language, family, str(version)))
         if project is not None:

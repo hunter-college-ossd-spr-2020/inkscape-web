@@ -1,7 +1,7 @@
 #
 # Copyright 2015, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -61,5 +61,3 @@ class LicenseAgreement(CMSToolbar):
         context = {'request': self.request}
         item = TemplateItem(template, context, self.toolbar.RIGHT)
         self.toolbar.add_item(item)
-
-
