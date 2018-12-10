@@ -90,6 +90,9 @@
         {% endfor %}
         </ul>
       {% endif %}
+      <a href="https://repology.org/metapackage/{{ object.project.slug }}/versions">
+        <img src="https://repology.org/badge/tiny-repos/{{ object.project.slug }}.svg" alt="Packaging status">
+      </a>
     </div>
   </div>
 {% endblock %}
