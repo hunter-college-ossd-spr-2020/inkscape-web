@@ -361,7 +361,15 @@ class DownloadResource(ViewResource):
         if func is None:
             if item.mime().is_text():
                 return super(DownloadResource, self).get(request, *args, **kwargs)
+            item.fullview += 1
+            item.save(update_fields=('fullview',))
             return redirect(item.download.url)
+
+        # Otherwise the user intends to download the file and we record it as
+        # such before passing the download path to nginx for delivery using a
+        # content despatch to force the browser into saving-as.
+        item.downed += 1
+        item.save(update_fields=('downed',))
 
         if func not in ['download', item.filename()]:
             messages.warning(request, _('Can not find file \'%s\', please retry download.') % func)
