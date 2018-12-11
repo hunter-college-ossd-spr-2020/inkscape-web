@@ -20,9 +20,11 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#set -e
+set -e
 
 TARGET="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
+
+cd $TARGET
 
 FORCE=0
 DOC_TARGET="data/media/doc"
@@ -42,8 +44,9 @@ git status -uno | grep "Your branch"
 
 if [[ $? == 0 || $FORCE == 1 ]]; then
   echo "New revisions found, updating!"
-  git reset --hard origin/master
+  #git reset --hard origin/master
   git log -1 --date=local --format="%cd (%h)" > $DOC_TARGET/revision
 else
   echo "Docs alrady up to date!"
 fi
+

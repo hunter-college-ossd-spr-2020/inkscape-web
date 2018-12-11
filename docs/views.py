@@ -78,15 +78,20 @@ def get_localized_path(path, language):
 
     return path
 
-def page(request, uri):
-    (path, uri) = get_path(uri)
+def page(request, url, lang=None):
+    """
+    Try and find the document page.
+    """
+    (path, uri) = get_path(url)
     if os.path.isdir(path) or path[-5:] != '.html':
         raise Http404
 
-    language = get_language_from_path(request.path)
-    if language in (None, ''):
-        language = get_language_from_request(request)
-    path = get_localized_path(path, language)
+    if not lang:
+        lang = get_language_from_path(request.path)
+        if lang in (None, ''):
+            lang = get_language_from_request(request)
+
+    path = get_localized_path(path, lang)
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
@@ -101,6 +106,8 @@ def page(request, uri):
               'doc', *uri.split('/')[:-1]))\
             .replace('|src|', 'src="http')
     context = {
+        'path': path,
+        'lang': lang,
         'title': title,
         'content': content,
     }

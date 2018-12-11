@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load static sekizai_tags %}
+{% load static sekizai_tags i18n %}
 
 {% block content %}
   {% addtoblock "css" %}
@@ -11,4 +11,11 @@
 
   {{ content|safe }}
 
+{% endblock %}
+
+{% block finalfooter %}
+  <p id="final-footer">
+    <a href="unknown_url" title="{% trans "Documents Team" %}">Documents Team</a>
+    <a>{% trans "Language" %}: '{{ lang }}'</a>
+  </p>
 {% endblock %}
