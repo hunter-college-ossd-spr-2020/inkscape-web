@@ -4,7 +4,7 @@
 {% block "forumheader" %}
   <div class="forum-sub-header">
     {% if forum %}
-      <a href="{{ forum.get_absolute_url }}">{% if forum.icon %}<img src="{{ forum.icon.url }}" title="{{ forum }}"> {% endif %}{{ forum }}</a>
+      <a href="{{ forum.get_absolute_url }}">{% if forum.icon %}<img src="{{ forum.icon.url }}" title="{{ forum }}"> {% endif %}<span>{{ forum }}</span></a>
     {% else %}
       <a href="{% url "forums:list" %}"><img src="{% static "forums/images/logo.svg" %}"> {% trans "Whole Forum" %}</a>
     {% endif %}

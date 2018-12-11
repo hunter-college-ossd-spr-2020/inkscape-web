@@ -1167,17 +1167,16 @@ blockquote {
 }
 /*JTX*/
 .forum-name{
-  position:absolute;
   font-weight:normal;
+  display:block !important;
   font-size:15px;
   z-index:999;
   opacity:1;
-  float:left;
   text-align:left;
   margin-top:-43px;
   margin-left:10px;
   margin-bottom:0px;
-  max-width:130px;
+  max-width:110px;
   padding-left:50px;
   line-height:0.9;
 }
@@ -1190,10 +1189,8 @@ blockquote {
   width:42px;
   height:42px;
   border-radius:50% 50% 0 0;  
-  vertical-align:top;
   margin-right:4px;
   margin-left:-50px;
-  margin-bottom:-17px;
   padding:4px 4px 0 4px;
   display:block;
   float:left;
@@ -1236,7 +1233,7 @@ blockquote {
   margin:0;
   padding:0;
 }
-@media (min-width: 500px){
+@media (min-width: 380px){
   .forum-name{
     max-width:500px;
     padding-top:15px;
