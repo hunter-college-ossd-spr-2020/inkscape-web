@@ -1175,10 +1175,18 @@ blockquote {
   text-align:left;
   margin-top:-43px;
   margin-left:10px;
-  margin-bottom:0px;
-  max-width:110px;
+  margin-bottom:10px;
+  max-width:145px;
   padding-left:50px;
   line-height:0.9;
+  line-height: 43px;
+  text-align: center;
+}
+.forum-name span{
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0.94;
+  text-align:left;
 }
 .forum-name:hover{
   color:orange;
@@ -1236,10 +1244,8 @@ blockquote {
 @media (min-width: 380px){
   .forum-name{
     max-width:500px;
-    padding-top:15px;
-  }
-  .forum-name img{
-    margin-top:-15px;
+    text-align:left;
+    padding-top:0px;
   }
 }
 @media (min-width: 700px) and (min-width: 40em) {
