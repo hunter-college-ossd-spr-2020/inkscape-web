@@ -98,8 +98,9 @@
         </div>
         {# end .forum-content #}
         
+        {% block "aside" %}
         <aside class="sm-side forum-sidebar">
-          {% block "aside" %}
+          
           {% if request.user.is_authenticated %}
             <ul class="nav nav-pills nav-stacked labels-info">
               <li>
@@ -162,14 +163,17 @@
               {% endwith %}
             {% endif %}
           </ul>
-          {% endblock %}
+          
         </aside>
+        {% endblock %}
         
-      </div>
-    </div>
+        <div class="forum-footer text-muted">
+          <p>Forums developed by Martin, Jabier, Mihaela. <a href="{% url "contact" %}?next={{ request.path }}">Contact Us</a> if you have a problem using the forum.</p>
+        </div>
+        
+      </div>{# end .forum-box #}
+    </div>{# end .container #}
     {% endblock %}
-    <div class="footer text-muted">
-      <h6>Forums developed by Martin, Jabier, Mihaela. <a href="{% url "contact" %}?next={{ request.path }}">Contact Us</a> if you have a problem using the forum.</h6>
-    </div>
+    
   </body>
 </html>

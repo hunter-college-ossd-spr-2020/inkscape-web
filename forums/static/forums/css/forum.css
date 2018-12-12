@@ -25,16 +25,18 @@
   grid-template-areas: "header"  "content" "sidebar"  "footer";
 }
 
-.forums-header {
+.forums-header, .forum-footer {
   background: #4d4d4d;
   background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
   border-bottom: 1px solid #262626;
+}
+
+.forums-header {
   border-collapse: collapse;
   border-spacing: 0;
   color: #fff;
   display: grid;
-  grid-column: 1 / span 1;
-  grid-row: 1 / span 1;
+  grid-area: header;
   grid-template-areas: "branding" "search" "usermenu" "breadcrumb";
   table-layout: fixed;
   width: 100%;
@@ -102,7 +104,7 @@
 }
 
 .forums-search {
-  padding: 10px;
+  padding: 1vw;
 }
 
 .forums-search .sr-input {
@@ -125,7 +127,7 @@
 }
 
 .user-menu {
-  padding: 10px;
+  padding: 1vw;
   text-align: right;
 }
 
@@ -163,7 +165,7 @@
 
 .forum-sub-header img {
   max-height: 40px;
-  padding: 5px 4px 8px 10px;
+  padding: 5px 4px 8px 1vw;
   transform: scale(1) translateZ(0) translateX(0);
   transition: transform .3s ease 0s;
 }
@@ -182,7 +184,7 @@
   color: #428bca;
   cursor: help;
   display: block;
-  padding: 0 10px 0.4em;
+  padding: 0 1vw 0.4em;
   transition: color .3s ease .4s;
 }
 
@@ -197,8 +199,7 @@
 }
 
 .forum-sidebar {
-  grid-column: 1 / span 1;
-  grid-row: 3 / span 1;
+  grid-area: sidebar;
   background: none repeat scroll 0 0 #e5e8ef;
   border-radius: 4px 0 0 4px;
 }
@@ -206,30 +207,37 @@
 .forum-content {
   background: none repeat scroll 0 0 #fff;
   border-radius: 0 4px 4px 0;
-  grid-column: 1 / span 1;
-  grid-row: 2 / span 1;
+  grid-area: content;
+}
+
+.forum-footer {
+  grid-area: footer;
+}
+
+.forum-footer {
+  text-align: center;
 }
 
 @media (min-width: 700px) and (min-width: 40em) {
   .forum-box {
     grid-template-areas: "header header"  "sidebar content"  "footer footer";
-    grid-template-columns: fit-content(25%) 1fr;
+    grid-template-columns: fit-content(22em) 1fr;
   }
   .forums-header {
-    grid-column: 1 / span 2;
-    grid-row: 1 / span 1;
+    grid-area: header;
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "branding   search" "branding   usermenu" "breadcrumb breadcrumb";
   }
   .forum-content {
-    grid-column: 2 / span 1;
-    grid-row: 2 / span 1;
-    padding: 10px 0 10px 20px;
+    grid-area: content;
+    padding: 1vw 0;
   }
   .forum-sidebar {
-    grid-column: 1 / span 1;
-    grid-row: 2 / span 1;
-    width: 100%;
+    grid-area: sidebar;
+    margin-right: 3vw;
+  }
+  .forum-footer {
+    padding: 1vw 0;
   }
 }
 
@@ -849,12 +857,17 @@ h3 small.label {
 }
 
 .img-circle {
+  border-radius: 50%;
   display: inline;
   float: left;
-  max-width: 80px;
+  height: 80px;
+  max-height: 30vw;
+  max-width: 30vw;
+  object-fit: cover;
   padding: 10px;
   transition: padding .3s ease 0s;
   vertical-align: top;
+  width: 80px;
 }
 
 .comment-author:focus .img-circle,
@@ -984,6 +997,7 @@ h3 small.label {
 @media (min-width: 700px) and (min-width: 40em) {
   .comment {
     display: grid;
+    /* .comment-count | .comment-header-group SPANS 3 | .buttons-group SPANS 3 */
     grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
@@ -1031,21 +1045,24 @@ h3 small.label {
     z-index: 1;
     /* less than .comment-text */
   }
+  /* gives the top background line that goes behind the circle image */
   .comment-header-group::before {
     border-radius: 2em;
     content: "";
     display: block;
     height: 1.8em;
-    left: 60px;
     /* half the image width */
+    left: 60px;
     position: absolute;
     top: 0;
+    /* subtract half the image width */
     width: calc(100% - 60px);
     z-index: -1;
   }
   .img-circle {
-    max-width: 120px;
+    height: 120px;
     padding: 20px;
+    width: 120px;
   }
   .comment-time {
     background-color: transparent;
@@ -1109,39 +1126,4 @@ h3 small.label {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
-}
-.label-muted {
-  opacity: 0.5;
-}
-.footer {
-  text-align: center;
-}
-/* This table removed the table border, but replaces it inside the cells */
-table.table-comment {
-  border: 0px;
-}
-table.table-comment tr td:first-child,
-table.table-comment tr th:first-child {
-  border-left: 1px solid #d3d3d3;
-}
-table.table-comment tr td:last-child,
-table.table-comment tr th:last-child {
-  border-right: 1px solid #d3d3d3;
-}
-table.table-comment tr.sep td:first-child,
-table.table-comment tr.sep td:last-child {
-  border-left: 0px;
-  border-right: 0px;
-}
-table.table-comment th {
-  background-color: #f5f5f5;
-}
-table.table-comment th img {
-  width: 32px;
-}
-/* To match the style shown in the editor */
-blockquote {
-  font-style: italic;
-  font-family: Georgia, Times, "Times New Roman", serif;
-  font-size: smaller;
 }
