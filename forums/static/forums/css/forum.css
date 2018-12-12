@@ -30,17 +30,13 @@
   padding: 1vw 0;
 }
 
-.forum-box {
-  display: grid;
-  grid-template-areas: "header"  "content" "sidebar"  "footer";
+.container {
+  padding: 0;
 }
 
 .forums-header {
   border-collapse: collapse;
   border-spacing: 0;
-  display: grid;
-  grid-area: header;
-  grid-template-areas: "branding" "search" "usermenu" "breadcrumb";
   table-layout: fixed;
   width: 100%;
 }
@@ -60,6 +56,7 @@
 .forum-sub-header {
   border-top: 1px solid #444;
   grid-area: breadcrumb;
+  padding: 0;
 }
 
 .forum-sub-header a {
@@ -73,12 +70,11 @@
 
 .forum-sidebar {
   grid-area: sidebar;
-  border-radius: 4px 0 0 4px;
 }
 
 .forum-content {
-  border-radius: 0 4px 4px 0;
   grid-area: content;
+  padding: 1vw;
 }
 
 .forum-footer {
@@ -185,7 +181,7 @@
 .forums-logo {
   display: block;
   height: 100px;
-  padding: 10px;
+  padding: 1vw;
   vertical-align: top;
 }
 
@@ -1032,11 +1028,14 @@ h3 small.label {
  *   6. Wider screen layout -----------------------------------------
  */
 @media (min-width: 700px) and (min-width: 40em) {
+  /* -------------------- main layout ------------------------ */
   .forum-box {
+    display: grid;
     grid-template-areas: "header header"  "sidebar content"  "footer footer";
     grid-template-columns: fit-content(22em) 1fr;
   }
   .forums-header {
+    display: grid;
     grid-area: header;
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "branding   search" "branding   usermenu" "breadcrumb breadcrumb";
@@ -1052,6 +1051,21 @@ h3 small.label {
   .forum-footer {
     padding: 1vw 0;
   }
+  /* -------------------- header layout ---------------------- */
+  .forums-branding {
+    grid-area: branding;
+  }
+  .forums-search {
+    grid-area: search;
+  }
+  .user-menu {
+    grid-area: usermenu;
+  }
+  .forum-sub-header {
+    border-top: 1px solid #444;
+    grid-area: breadcrumb;
+  }
+  /* -------------------- comment layout --------------------- */
   .comment {
     display: grid;
     /* .comment-count | .comment-header-group SPANS 3 | .buttons-group SPANS 3 */
