@@ -23,6 +23,7 @@ Watches for comments so they can be registered.
 import logging
 from importlib import import_module
 
+from django.utils.functional import cached_property
 from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_save
@@ -47,25 +48,26 @@ class ForumsConfig(AppConfig):
     # plugin is a dictionary of initialised plugin objects.
     plugin = {}
 
+    @cached_property
+    def get_topic_contenttype(self):
+        """Return the content type for ForumTopic"""
+        from .models import ForumTopic
+        from django.contrib.contenttypes.models import ContentType
+        return ContentType.objects.get_for_model(ForumTopic).pk
+
     def ready(self):
         from .models import Forum, ForumTopic
         from django_comments.models import Comment
-        from django.contrib.contenttypes.models import ContentType
-        from django.utils.functional import cached_property
 
         post_save.connect(self.save_comment, sender=Comment, weak=False)
         post_create(Forum, self.new_forum)
 
         topic_qset = ForumTopic.objects.select_related('forum')
-
-        @cached_property
-        def get_topic_contenttype():
-            """Return the content type for ForumTopic"""
-            return ContentType.objects.get_for_model(ForumTopic).pk
+        app = self
 
         def get_topic(self):
             """Get a topic for a comment"""
-            if self.content_type_id == get_topic_contenttype():
+            if self.content_type_id == app.get_topic_contenttype:
                 return topic_qset.get(pk=self.object_pk)
             try:
                 return topic_qset.get(
