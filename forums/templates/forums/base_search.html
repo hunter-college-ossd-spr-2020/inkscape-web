@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block "aside" %}
+ <aside class="sm-side forum-sidebar">
   <ul class="nav nav-pills nav-stacked labels-info">
     <li>
       <h4>{% trans "Searches" %}</h4>
@@ -27,6 +28,7 @@
       <a href="{% url "forums:search.topics" %}?q={{ query }}"><span class="glyphicon glyphicon-tags"></span> {% trans "Topic Threads" %}</a>
     </li>
   </ul>
+ </aside>
 {% endblock %}
 
 {% block "tools" %}
