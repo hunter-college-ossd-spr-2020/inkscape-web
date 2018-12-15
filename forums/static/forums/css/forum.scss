@@ -1,4 +1,5 @@
 /* License:  */
+
 /*------------------------------------------------------------------ 
 [Table of contents]
 1. Imports and font-face
@@ -17,18 +18,28 @@
     7.3 @media (min-width: 1400px) and (min-width: 90em)
 8. Sections specific
     8.1 Forums list (.forums-list)
--------------------------------------------------------------------*/
+-------------------------------------------------------------------*/ 
+
+
 /*
  *   1. imports and font-face ---------------------------------------
  */
+
 @import url(../../css/libertine.css);
 @font-face {
-  font-family: "EuphoriaScript";
+  font-family: 'EuphoriaScript';
   src: url("../../fonts/euphoriascript-regular.ttf") format("truetype");
 }
+  
 /*
  *   2. Mobile page layouts -----------------------------------------
  */
+
+$gutters: 1vw;
+$borders: 1px solid #444;
+
+
+// override bootstrap
 .panel-body {
   padding: 1vw 0;
 }
@@ -44,16 +55,16 @@
   width: 100%;
 }
 
-.forums-branding {
+.forums-branding{
   grid-area: branding;
-  border-bottom: 1px solid #444;
-  height: 90px;
+  border-bottom: $borders;
+  height:90px;
 }
 
 .forums-search {
   grid-area: search;
-  transform: scale(0.8);
-  margin-right: -20px;
+  transform:scale(0.8);
+  margin-right:-20px;
 }
 
 .user-menu {
@@ -61,32 +72,34 @@
 }
 
 .forum-sub-header {
-  border-top: 1px solid #444;
+  border-top: $borders;
   grid-area: breadcrumb;
   padding: 0;
-  margin: 0 10px;
-}
-.forum-sub-header a {
-  display: inline-block;
-}
-.forum-sub-header img {
-  max-height: 40px;
-  padding: 5px 4px 8px 1vw;
-}
-
-.forum-sidebar {
-  grid-area: sidebar;
+  margin:0 10px;
+  
+  a {
+    display: inline-block;
+  }
+  
+  img {
+    max-height: 40px;
+    padding: 5px 4px 8px $gutters; 
+  }
 }
 
 .forum-sidebar {
   grid-area: sidebar;
-  margin-top: 1px;
+}
+
+.forum-sidebar {
+    grid-area: sidebar;
+    margin-top:1px;
 }
 
 .forum-data {
-  border-radius: 4px;
-  margin: 0 10px;
-  overflow: hidden;
+    border-radius:4px;
+    margin:0 10px;
+    overflow:hidden;
 }
 
 .forum-content {
@@ -139,7 +152,7 @@
   max-width: 30vw;
   object-fit: cover;
   padding: 10px;
-  transition: padding 0.3s ease 0s;
+  transition: padding .3s ease 0s;
   vertical-align: top;
   width: 80px;
 }
@@ -152,14 +165,14 @@
 .comment-time {
   border-radius: 2em;
   margin-bottom: 1em;
-  padding: 0.2em 0.6em 0.1em;
+  padding: .2em .6em .1em;
 }
 
 .comment-author-address img.emoji {
-  margin-left: 0.4em;
-  padding: 0.4em;
+  margin-left: .4em;
+  padding: .4em;
   position: relative;
-  top: -0.8em;
+  top: -.8em;
   /* don't mess up vertical position of surrounding text */
   vertical-align: text-top;
   width: 2.6em;
@@ -168,7 +181,7 @@
 .buttons-group {
   float: right;
   position: relative;
-  top: -0.6em;
+  top: -.6em;
   text-align: center;
   width: 3em;
 }
@@ -178,51 +191,64 @@
   padding: 1em 0;
 }
 
+
+
 /*
  *   3. Header styles -------------------------------------------    
  */
-body {
-  background-color: #555;
-  width: 100%;
+
+
+body{
+  background-color:#555;
+  width:100%;
 }
 
-.forum-app {
-  position: relative;
+.forum-app{
+    position:relative;
 }
 
 .forum-box {
-  display: grid;
-  grid-template-areas: "header header" "data data" "footer footer";
-  grid-template-columns: fit-content(22em) 1fr;
-}
+    display: grid;
+    grid-template-areas: 
+      "header header" 
+      "data data" 
+      "footer footer";
+    grid-template-columns: fit-content(22em) 1fr;
+  }
+  
+  .forums-header {
+    display: grid;
+    grid-area: header;
+    grid-template-columns: 1fr  fit-content(10em);;
+    grid-template-areas:
+      "branding   branding"
+      "usermenu  search"
+      "breadcrumb breadcrumb";
+  }
 
-.forums-header {
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr fit-content(10em);
-  grid-template-areas: "branding   branding" "usermenu  search" "breadcrumb breadcrumb";
-}
-
-.forum-data {
-  display: grid;
-  grid-area: data;
-  grid-template-areas: "content" "sidebar";
-  border-radius: 4px;
-  margin: 0 10px;
-  overflow: hidden;
-}
+  .forum-data {
+    display: grid;
+    grid-area: data;
+    grid-template-areas: 
+      "content"
+      "sidebar";
+    border-radius:4px;
+    margin:0 10px;
+    overflow:hidden;
+  }
 
 .forums-header {
   color: #fff;
-}
-.forums-header a {
-  color: #fff;
+  
+  a {
+    color: #fff;
+  }
 }
 
 .forums-logo {
   display: block;
   height: 85px;
-  padding: 1vw;
+  padding: $gutters;
   vertical-align: top;
 }
 
@@ -264,6 +290,7 @@ body {
   font-family: EuphoriaScript;
 }
 
+
 .forums-search .sr-input {
   border: medium none;
   border-radius: 4px 0 0 4px;
@@ -272,7 +299,7 @@ body {
   float: left;
   height: 40px;
   padding: 0 10px;
-  max-width: 70%;
+  max-width:70%;
 }
 
 .forums-search .sr-btn {
@@ -285,46 +312,50 @@ body {
 }
 
 .user-menu {
-  padding: 1vw;
+  padding: $gutters;
   text-align: right;
-  line-height: 20px;
-}
-.user-menu li {
-  display: inline-block;
-  margin: 0 0 0 1em;
-  line-height: 5px;
-}
-.user-menu .glyphicon {
-  margin-right: 0.1em;
-}
-.user-menu a:focus,
-.user-menu a:hover {
-  color: orange;
-  outline: none;
-  text-decoration: none;
+  line-height:20px;
+  
+  li {
+    display: inline-block;
+    margin: 0 0 0 1em;
+    line-height:5px;
+  }
+  
+  .glyphicon {
+    margin-right: .1em;
+  }
+  
+  a:focus,
+  a:hover {
+    color: orange;
+    outline: none;
+    text-decoration:none;
+  }
 }
 
 .forum-sub-header {
-  line-height: 30px;
-}
-.forum-sub-header a {
-  color: #fff;
-  text-decoration: none;
-}
-.forum-sub-header a:hover {
-  color: orange;
-}
-.forum-sub-header img {
-  background-color: #fff !important;
-  color: #ffffff !important;
-  width: 35px;
-  height: 35px;
-  border-radius: 0 0 50% 50%;
-  margin-right: 4px;
-  margin-left: 0;
-  padding: 0 4px 2px 4px;
-  display: block;
-  float: left;
+  line-height:30px;
+  a {
+    color: #fff;
+    text-decoration:none;
+    &:hover {
+      color:orange;
+    }
+  }
+  
+  img {
+    background-color:#fff !important;
+    color:#ffffff !important;
+    width:35px;
+    height:35px;
+    border-radius:0 0 50% 50%;  
+    margin-right:4px;
+    margin-left:0;
+    padding:0 4px 2px 4px;
+    display:block;
+    float:left;
+  }
 }
 
 .forum-name {
@@ -336,13 +367,13 @@ body {
   color: #44B3FF;
   cursor: help;
   display: block;
-  padding: 0 1vw 0.4em;
-  transition: color 0.3s ease 0.4s;
-  line-height: 1em;
-  padding: 5px 10px;
-}
-.forum-description:hover {
-  color: orange;
+  padding: 0 $gutters .4em;
+  transition: color .3s ease .4s;
+  line-height:1em;
+  padding:5px 10px;
+  &:hover {
+    color: orange;
+  }
 }
 
 .forum-thread-title {
@@ -351,9 +382,11 @@ body {
   font-weight: bold;
 }
 
+
 /**
  *   4. Forum styles ------------------------------------------------
  */
+
 .forum-item.old {
   font-weight: normal;
 }
@@ -380,13 +413,13 @@ body {
 
 .forum-footer {
   text-align: center;
-  color: #bbb;
-  padding: 10px;
+  color:#bbb;
+  padding:10px;
 }
 
 .forum-footer a {
-  color: #44B3FF;
-  text-decoration: none;
+  color:#44B3FF;
+  text-decoration:none;
 }
 
 a.forum-dropdown {
@@ -552,7 +585,7 @@ ul.forum-pagination li {
   opacity: 0.3;
 }
 
-.forum-option .chk-all input[type=checkbox] {
+.forum-option .chk-all input[type="checkbox"] {
   margin-top: 0;
 }
 
@@ -591,12 +624,12 @@ ul.forum-pagination li {
 }
 
 .modal-header h4.modal-title {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 300;
 }
 
 .modal-body label {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 400;
 }
 
@@ -696,25 +729,22 @@ ul.forum-pagination li {
   .files .btn span {
     display: none;
   }
-
   .files .preview * {
     width: 40px;
   }
-
   .files .name * {
     display: inline-block;
     width: 80px;
     word-wrap: break-word;
   }
-
   .files .progress {
     width: 20px;
   }
-
   .files .delete {
     width: 60px;
   }
 }
+
 ul {
   list-style-type: none;
   padding: 0px;
@@ -726,6 +756,7 @@ ul {
 }
 
 /* -------------------- 4.2 comment views --------------------- */
+
 .comment {
   list-style: none;
   margin: 0;
@@ -810,8 +841,8 @@ ul {
   box-shadow: 0 0 1px 0px #ddd inset;
   background-color: #EBFCFF;
   font-size: inherit;
-  margin: 0 0 0.3em 0.3em;
-  padding: 0.4em;
+  margin: 0 0 .3em .3em;
+  padding: .4em;
   width: 2.6em;
 }
 
@@ -840,6 +871,7 @@ h3 small.label {
 }
 
 /* -------------------- 4.3 Attachments --------------------- */
+
 .inline-attachments {
   padding-top: 0px;
   margin-bottom: 15px;
@@ -864,6 +896,7 @@ h3 small.label {
 }
 
 /* -------------------- 4.4 Users online palette --------------------- */
+
 #users-online {
   padding: 8px;
 }
@@ -935,6 +968,8 @@ h3 small.label {
 }
 
 /* -------------------- 4.5 Forum topic --------------------- */
+
+
 .forum-comment-first-text {
   background-color: #f5f5f5;
   border-radius: 1em;
@@ -947,7 +982,7 @@ h3 small.label {
 }
 
 .comment-img {
-  margin: 0 1em 0.6em 0;
+  margin: 0 1em .6em 0;
 }
 
 .comment-img .img-circle {
@@ -983,18 +1018,18 @@ h3 small.label {
   border-radius: 2em;
   box-shadow: 0 0 1px 0 #ddd inset;
   display: inline-block;
-  font-size: 0.8em;
+  font-size: .8em;
   line-height: 1;
-  margin-bottom: 0.4em;
-  padding: 0.7em 0.7em 0.5em;
+  margin-bottom: .4em;
+  padding: .7em .7em .5em;
   text-align: center;
-  transition: all 0.3s ease 0s;
+  transition: all .3s ease 0s;
 }
 
 .comment-first-link {
   background-color: #fff;
-  margin: 0 0 0.5em 0.5em;
-  padding: 0.7em;
+  margin: 0 0 .5em .5em;
+  padding: .7em;
   position: relative;
   right: -1em;
   top: -1em;
@@ -1004,15 +1039,14 @@ h3 small.label {
 .comment-remove .glyphicon,
 .comment-edit .glyphicon,
 .comment-report .glyphicon {
-  top: 0;
-  /* override bootstrap */
+  top: 0; /* override bootstrap */
 }
 
 .comment-count {
   background-color: #f0ebff;
   color: #1b006c;
   margin: 0;
-  padding: 0.7em 0.6em 0.7em;
+  padding: .7em .6em .7em;
 }
 
 .comment-count:focus,
@@ -1061,134 +1095,140 @@ h3 small.label {
   padding: 0;
 }
 
+
+
 /*
  *   5. Bootstrap form styles additions and overrides ---------------
  */
+
 .btn-sm,
 .btn-group-sm > .btn {
   border-radius: 2em;
 }
 
-.jumbotron {
-  /*overide bootstrap*/
-  padding: 20px;
+.jumbotron{ /*overide bootstrap*/
+  padding:20px;  
 }
-
 .input-group-btn > .btn {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
+
 /*
  *   6. Wider screen layout -----------------------------------------
  */
+
+$image-unit: 120px;
+$image-unit-half: $image-unit / 2;
+
 /*
  *   7. Media Queries -----------------------------------------
  */
+
 /* -------------------- 7.1 --------------------- */
-@media (min-width: 350px) {
-  .user-menu {
-    line-height: 30px;
-  }
+@media (min-width: 350px){
+    .user-menu {
+      line-height:30px;
+    }
 }
+
 /* -------------------- 7.2 --------------------- */
 @media (min-width: 700px) and (min-width: 40em) {
+  
   /* -------------------- main layout ------------------------ */
+  
   .forum-data {
-    grid-template-areas: "sidebar content";
+    grid-template-areas: 
+      "sidebar content";
     grid-template-columns: fit-content(22em) 1fr;
   }
-
-  .forums-branding {
+  .forums-branding{
     grid-area: branding;
     border-bottom: none;
-    height: 70px;
+    height:70px;
   }
-
   .forums-header {
     grid-template-columns: 1fr fit-content(22em) fit-content(22em);
-    grid-template-areas: "branding  usermenu search" "breadcrumb breadcrumb breadcrumb";
+    grid-template-areas:
+      "branding  usermenu search"
+      "breadcrumb breadcrumb breadcrumb";
   }
-
   .forum-content {
     grid-area: content;
-    padding: 1vw 10px;
+    padding: $gutters 10px;
   }
-
+  
   .forum-sidebar {
     grid-area: sidebar;
     margin-right: 1px;
-    min-width: 270px;
-    margin-top: 0;
+    min-width:270px;
+    margin-top:0;
   }
-
+  
   .forum-footer {
-    padding: 1vw 0;
+    padding: $gutters 0;
   }
-
+  
   /* -------------------- header layout ---------------------- */
+ 
   .forums-branding {
     grid-area: branding;
-    min-height: 100px;
+    min-height:100px;
   }
-
+  
   .forums-search {
     grid-area: search;
-    padding-top: 10px;
+    padding-top:10px;
   }
-
+  
   .user-menu {
     grid-area: usermenu;
-    padding-top: 17px;
+    padding-top:17px;
   }
 
   .forum-sub-header {
     border-top: 1px solid #444;
     grid-area: breadcrumb;
-    margin: 0px 15px;
+    margin:0px 15px;
+    img {
+      margin-left:0;
+    }
   }
-  .forum-sub-header img {
-    margin-left: 0;
-  }
-
+ 
   /* -------------------- comment layout --------------------- */
   .comment {
     display: grid;
     /* .comment-count | .comment-header-group SPANS 3 | .buttons-group SPANS 3 */
-    grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
+    grid-template-columns: min-content $image-unit 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
-
   .buttons-group {
     top: 0;
     width: auto;
     /* override mobile */
   }
-
   .comment-count,
-.comment-remove,
-.comment-edit,
-.comment-report {
+  .comment-remove,
+  .comment-edit,
+  .comment-report {
     float: right;
-    margin: 0 0 0 0.4em;
+    margin: 0 0 0 .4em;
   }
-
   .comment-edit {
     position: relative;
-    top: -0.5em;
+    top: -.5em;
   }
-
   .comment-text {
     grid-column-start: 3;
     grid-column-end: span 5;
     grid-row-start: 2;
     grid-row-end: span 4;
-    padding: 1.6em 2.4vw 0.6em;
+    padding: 1.6em 2.4vw .6em;
     z-index: 5;
     /* more than .comment-header-group */
   }
-
   .comment-attachments {
     grid-column-start: 3;
     grid-column-end: span 5;
@@ -1197,7 +1237,6 @@ h3 small.label {
     margin: 0;
     padding: 0 2.4vw;
   }
-
   .comment-header-group {
     background: none;
     grid-column-start: 2;
@@ -1209,7 +1248,7 @@ h3 small.label {
     z-index: 1;
     /* less than .comment-text */
   }
-
+  
   /* gives the top background line that goes behind the circle image */
   .comment-header-group::before {
     border-radius: 2em;
@@ -1217,25 +1256,22 @@ h3 small.label {
     display: block;
     height: 1.8em;
     /* half the image width */
-    left: 60px;
+    left: $image-unit / 2;
     position: absolute;
     top: 0;
     /* subtract half the image width */
     width: calc(100% - 60px);
     z-index: -1;
   }
-
   .img-circle {
-    height: 120px;
+    height: $image-unit;
     padding: 20px;
-    width: 120px;
+    width: $image-unit;
   }
-
   .comment-time {
     background-color: transparent;
     float: right !important;
   }
-
   .buttons-group {
     grid-column-start: 5;
     grid-column-end: span 3;
@@ -1243,7 +1279,6 @@ h3 small.label {
     grid-row-end: span 1;
     margin-top: 0;
   }
-
   .comment-count {
     grid-column-start: 1;
     grid-column-end: span 1;
@@ -1251,21 +1286,18 @@ h3 small.label {
     grid-row-end: span 1;
     justify-self: start;
   }
-
   .comment-footer {
     grid-column-start: 1;
     grid-column-end: span 2;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
-
   .emoji-selector {
     grid-column-start: 1;
     grid-column-end: span 1;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
-
   .emoji-bar {
     grid-column-start: 1;
     grid-column-end: span 2;
@@ -1275,7 +1307,6 @@ h3 small.label {
     justify-self: end;
     text-align: right;
   }
-
   /* Attachments dropdown */
   .check-dropdown {
     grid-column-start: 1;
@@ -1289,25 +1320,30 @@ h3 small.label {
 /* -------------------- 7.3 --------------------- */
 @media (min-width: 1400px) and (min-width: 90em) {
   .forums-app {
-    width: 75vw;
-    margin: 0 auto;
-    min-width: 1400px;
+    width:75vw;
+    margin:0 auto;
+    min-width:1400px;
   }
 }
+
 /*
  *   8. Sections specific ---------------------------------------
  */
+
+ 
 /* ------- 8.1 Forums list (.forums-list) --------- */
-.forums-list2 .user-menu {
-  padding: 5px 25px;
-}
-.forums-list2 .forums-search {
-  padding: 15px 15px 5px 15px;
-}
-.forums-list2 .forums-logo {
-  padding: 10px;
+
+.forums-list2 {
+  .user-menu{
+   padding:5px 25px;
+  }
+  .forums-search{
+    padding:15px 15px 5px 15px;
+  }
+  .forums-logo{
+    padding:10px;
+  }
 }
 
 /* ------- 8.2  --------- */
 
-/*# sourceMappingURL=forum.css.map */

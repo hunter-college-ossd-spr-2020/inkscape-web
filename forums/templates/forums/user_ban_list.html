@@ -1,6 +1,8 @@
 {% extends "forums/base.html" %}
 {% load i18n static inkscape %}
-
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-userban-list">
+{% endblock "wrapper" %}
 {% block "tools" %}
 <form method="GET" action="{% url "ban_user" "someone" %}">
   <input type="hidden" name="next" value="{{ request.path }}">
