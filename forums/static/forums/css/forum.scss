@@ -18,6 +18,7 @@
     7.3 @media (min-width: 1400px) and (min-width: 90em)
 8. Sections specific
     8.1 Forums list (.forums-list)
+    8.2 Forum topic list (.forums-topic-list)
 -------------------------------------------------------------------*/ 
 
 
@@ -1333,17 +1334,10 @@ $image-unit-half: $image-unit / 2;
  
 /* ------- 8.1 Forums list (.forums-list) --------- */
 
-.forums-list2 {
-  .user-menu{
-   padding:5px 25px;
-  }
-  .forums-search{
-    padding:15px 15px 5px 15px;
-  }
-  .forums-logo{
-    padding:10px;
-  }
+.forums-list {
 }
 
-/* ------- 8.2  --------- */
+/* ------- 8.2  Forum topic list (.forums-topic-list) --------- */
 
+.forums-topic-list {
+}
