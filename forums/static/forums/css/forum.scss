@@ -21,7 +21,6 @@
     8.2 Forum topic list (.forums-topic-list)
 -------------------------------------------------------------------*/ 
 
-
 /*
  *   1. Imports, font-face, color definitions  ----------------------
  */
@@ -127,19 +126,20 @@ $borders: 1px solid $border-color;
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
-  width: 100%;
 }
 
 .forums-branding{
   grid-area: branding;
   border-bottom: $borders;
-  height:90px;
+  padding-bottom: $gutters*2;
 }
 
 .forums-search {
   grid-area: search;
-  transform:scale(0.8);
-  margin-right:-16px;
+  .input-append{
+    line-height:4.8;
+    text-align:right;
+  }
 }
 
 .user-menu {
@@ -173,7 +173,6 @@ $borders: 1px solid $border-color;
 
 .forum-data {
     border-radius:$container-border-radius;
-    margin:0 10px;
     overflow:hidden;
 }
 
@@ -278,8 +277,9 @@ body{
   width:100%;
 }
 
-.forum-app {
-    position:relative;
+.forums-app {
+  position:relative;
+  padding: 10px $gutters*3;
 }
 
 .forum-box {
@@ -294,7 +294,7 @@ body{
   .forums-header {
     display: grid;
     grid-area: header;
-    grid-template-columns: 1fr  fit-content(10em);;
+    grid-template-columns: 1fr  fit-content(8em);
     grid-template-areas:
       "branding   branding"
       "usermenu  search"
@@ -308,7 +308,6 @@ body{
       "content"
       "sidebar";
     border-radius:$container-border-radius;
-    margin:0 10px;
     overflow:hidden;
   }
 
@@ -322,7 +321,6 @@ body{
 
 .forums-logo {
   display: block;
-  height: 85px;
   padding: $gutters;
   vertical-align: top;
 }
@@ -369,10 +367,12 @@ body{
   border-radius: $container-border-radius 0 0 $container-border-radius;
   box-shadow: none;
   color: $search-input;
-  float: left;
-  height: 40px;
-  padding: 0 10px;
-  max-width:70%;
+  height: 39px;
+  max-width:66%;
+  vertical-align:middle;
+  display:inline;
+  padding: 0 20px;
+  line-height:1;
 }
 
 .forums-search .sr-btn {
@@ -380,17 +380,21 @@ body{
   border: medium none;
   border-radius: 0 $container-border-radius $container-border-radius 0;
   color: $search-button;
-  height: 40px;
+  height: 39px;
+  display:inline;
+  vertical-align:middle;
   padding: 0 20px;
+  line-height:1;
 }
 
 .user-menu {
-  padding: $gutters;
+  padding: 0;
+  margin-top:14px;
   text-align: right;
   li {
     display: inline-block;
     line-height: 1;
-    margin: 0 0 0 1em;
+    margin-left: $gutters;
   }
   
   .glyphicon {
@@ -492,7 +496,7 @@ body{
 .forum-footer {
   text-align: center;
   color: $footer;
-  padding: $gutters;
+  padding: $gutters*2;
 }
 
 .forum-footer a {
@@ -1199,8 +1203,8 @@ $image-unit-half: $image-unit / 2;
 
 /* -------------------- 7.1 (Override 320-360 size specific)---- */
 @media (min-width: 360px){
-  .user-menu {
-    line-height:30px;
+  .user-menu{
+    margin-top:25px;
   }
   .forum-sub-header {
     margin:0 $gutters 0 ($gutters*2);
@@ -1223,10 +1227,11 @@ $image-unit-half: $image-unit / 2;
     height:70px;
   }
   .forums-header {
-    grid-template-columns: 1fr fit-content(22em) fit-content(22em);
+    grid-template-columns: 1fr fit-content(22em);
     grid-template-areas:
-      "branding  usermenu search"
-      "breadcrumb breadcrumb breadcrumb";
+      "branding  search"
+      "branding  usermenu"
+      "breadcrumb breadcrumb";
   }
   .forum-content {
     border-radius: $container-border-radius;
@@ -1255,12 +1260,12 @@ $image-unit-half: $image-unit / 2;
   
   .forums-search {
     grid-area: search;
-    padding-top:10px;
+    margin-top:0px;
   }
   
   .user-menu {
     grid-area: usermenu;
-    padding-top:17px;
+    margin-top:0px;
   }
 
   .forum-sub-header {
