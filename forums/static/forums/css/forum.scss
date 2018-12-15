@@ -360,7 +360,7 @@ body{
 }
 
 .forum-name {
-  font-size: 1em;
+  font-size: 1.1em;
   font-weight: normal;
 }
 
@@ -379,8 +379,8 @@ body{
 
 .forum-thread-title {
   color: orange;
-  font-size: 1.3em;
-  font-weight: bold;
+  font-size: 1.1em;
+  font-weight: normal;
 }
 
 
@@ -1115,7 +1115,9 @@ h3 small.label {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
-
+.forum-sub-header .glyphicon{
+    color:#999;
+}
 
 /*
  *   6. Wider screen layout -----------------------------------------
