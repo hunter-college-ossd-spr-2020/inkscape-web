@@ -371,6 +371,10 @@ body {
   font-weight: bold;
 }
 
+.forum-topic-actions {
+  margin-top: 10px;
+}
+
 .forum-sidebar {
   background: none repeat scroll 0 0 #e5e8ef;
 }
