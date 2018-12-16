@@ -42,7 +42,11 @@
 
 $black:                #000;
 $grey-extra-dark:      scale-color($black, $lightness: 20%);    // #333
+<<<<<<< HEAD
 $grey-dark:            scale-color($black, $lightness: 25%); // #404040
+=======
+$grey-dark:            scale-color($black, $lightness: 25%);    // #???
+>>>>>>> Tiny changes to SASS
 $grey:                 scale-color($black, $lightness: 60%);    // #999
 $grey-light:           scale-color($black, $lightness: 80%);    // #ccc
 $grey-extra-light:     scale-color($black, $lightness: 93.33%); // #eee
@@ -68,8 +72,11 @@ $bubbles-badge:        #ffeeeb;
 $bg:                     $grey-extra-dark;
 
 $border-color:           $grey-dark;
+<<<<<<< HEAD
 
 $highlight-y:            $yellow;
+=======
+>>>>>>> Tiny changes to SASS
 
 $header-text:            $white;
 $search-input:           $grey-dark;
@@ -136,10 +143,15 @@ $borders: 1px solid $border-color;
 
 .forums-search {
   grid-area: search;
+<<<<<<< HEAD
   .input-append{
     line-height:4.8;
     text-align:right;
   }
+=======
+  transform:scale(0.8);
+  margin-right:-16px;
+>>>>>>> Tiny changes to SASS
 }
 
 .user-menu {
@@ -394,7 +406,11 @@ body{
   li {
     display: inline-block;
     line-height: 1;
+<<<<<<< HEAD
     margin-left: $gutters;
+=======
+    margin: 0 0 0 1em;
+>>>>>>> Tiny changes to SASS
   }
   
   .glyphicon {
@@ -1203,8 +1219,13 @@ $image-unit-half: $image-unit / 2;
 
 /* -------------------- 7.1 (Override 320-360 size specific)---- */
 @media (min-width: 360px){
+<<<<<<< HEAD
   .user-menu{
     margin-top:25px;
+=======
+  .user-menu {
+    line-height:30px;
+>>>>>>> Tiny changes to SASS
   }
   .forum-sub-header {
     margin:0 $gutters 0 ($gutters*2);
