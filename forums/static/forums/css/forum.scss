@@ -2,7 +2,7 @@
 
 /*------------------------------------------------------------------ 
 [Table of contents]
-1. Imports and font-face
+1. Imports, font-face, color definitions
 2. Mobile page layouts
 3. Header styles
 4. Forum styles
@@ -23,21 +23,68 @@
 
 
 /*
- *   1. imports and font-face ---------------------------------------
+ *   1. Imports, font-face, color definitions  ----------------------
  */
 
 @import url(../../css/libertine.css);
+
 @font-face {
   font-family: 'EuphoriaScript';
   src: url("../../fonts/euphoriascript-regular.ttf") format("truetype");
 }
-  
+
+/* -------------------- Colors ----------------------------------- */
+/* -- Create color palette with descriptive names ---------------- */
+/* -- Create functional names for each element in "CMS" design --- */
+/* -- Define functional names with descriptive names! ------------ */
+/* -- Always use only functional names in code ------------------- */
+
+/* -------------------- Color palette Original ------------------- */
+
+$black:                #000;
+$grey-extra-dark:      scale-color($black, $lightness: 20%);    // #333
+$grey-dark:            scale-color($black, $lightness: 40%);    // #666
+$grey:                 scale-color($black, $lightness: 60%);    // #999
+$grey-light:           scale-color($black, $lightness: 80%);    // #ccc
+$grey-extra-light:     scale-color($black, $lightness: 93.33%); // #eee
+$white:                #fff;
+
+$blue:                 #0072b9;
+$red:                  #c00;
+$orange:               #ff7e28;
+$yellow:               #fd0;
+
+$bootstr-blue:         #44b3ff;
+
+$twitterBlue:          #1da1f2;
+
+/* ----------------- Functional Color scheme --------------------- */
+
+$bg:                     $grey-extra-dark;
+
+$border-color:           $grey-extra-dark;
+
+$header-text:            $white;
+$search-input:           $grey-dark;
+$search-button:          $white;
+$user-menu:              $orange;
+$subheader-hover:        $orange;
+$subheader-img:          $white;
+$forum-description:      $bootstr-blue;
+$forum-description-hover:$orange;
+$thread-title:           $orange;
+
+
+$footer-link:            $bootstr-blue;
+
+
+
 /*
  *   2. Mobile page layouts -----------------------------------------
  */
 
 $gutters: 1vw;
-$borders: 1px solid #444;
+$borders: 1px solid $border-color;
 
 
 // override bootstrap
@@ -76,7 +123,7 @@ $borders: 1px solid #444;
   border-top: $borders;
   grid-area: breadcrumb;
   padding: 0;
-  margin:0 10px;
+  margin:0 $gutters;
   
   a {
     display: inline-block;
@@ -200,11 +247,11 @@ $borders: 1px solid #444;
 
 
 body{
-  background-color:#555;
+  background-color: $bg;
   width:100%;
 }
 
-.forum-app{
+.forum-app {
     position:relative;
 }
 
@@ -239,10 +286,10 @@ body{
   }
 
 .forums-header {
-  color: #fff;
+  color: $header-text;
   
   a {
-    color: #fff;
+    color: $header-text;
   }
 }
 
@@ -281,11 +328,9 @@ body{
   font-size: 22px;
   font-weight: 300;
   line-height: 1.3;
-  color: #fff;
 }
 
 .forums-tagline {
-  color: #fff;
   font-size: 22px;
   font-weight: normal;
   font-family: EuphoriaScript;
@@ -296,7 +341,7 @@ body{
   border: medium none;
   border-radius: 4px 0 0 4px;
   box-shadow: none;
-  color: #8a8a8a;
+  color: $search-input;
   float: left;
   height: 40px;
   padding: 0 10px;
@@ -307,7 +352,7 @@ body{
   background: none repeat scroll 0 0 #ff7e28;
   border: medium none;
   border-radius: 0 4px 4px 0;
-  color: #fff;
+  color: $search-button;
   height: 40px;
   padding: 0 20px;
 }
@@ -315,12 +360,11 @@ body{
 .user-menu {
   padding: $gutters;
   text-align: right;
-  line-height:20px;
   
   li {
     display: inline-block;
+    line-height: 2;
     margin: 0 0 0 1em;
-    line-height:5px;
   }
   
   .glyphicon {
@@ -329,25 +373,26 @@ body{
   
   a:focus,
   a:hover {
-    color: orange;
+    color: $user-menu;
     outline: none;
     text-decoration:none;
   }
 }
 
 .forum-sub-header {
-  line-height:30px;
+  line-height: 2;
+  
   a {
-    color: #fff;
     text-decoration:none;
+    
+    &:focus,
     &:hover {
-      color:orange;
+      color: $subheader-hover;
     }
   }
   
   img {
-    background-color:#fff !important;
-    color:#ffffff !important;
+    background-color: $subheader-img;
     width:35px;
     height:35px;
     border-radius:0 0 50% 50%;  
@@ -365,20 +410,22 @@ body{
 }
 
 .forum-description {
-  color: #44B3FF;
+  color: $forum-description;
   cursor: help;
   display: block;
   padding: 0 $gutters .4em;
   transition: color .3s ease .4s;
   line-height:1em;
   padding:5px 10px;
+  
+  &:focus,
   &:hover {
-    color: orange;
+    color: $forum-description-hover;
   }
 }
 
 .forum-thread-title {
-  color: orange;
+  color: $thread-title;
   font-size: 1.1em;
   font-weight: normal;
 }
@@ -419,11 +466,11 @@ body{
 .forum-footer {
   text-align: center;
   color:#bbb;
-  padding:10px;
+  padding: $gutters;
 }
 
 .forum-footer a {
-  color:#44B3FF;
+  color: $footer-link;
   text-decoration:none;
 }
 
@@ -1135,11 +1182,11 @@ $image-unit-half: $image-unit / 2;
  */
 
 /* -------------------- 7.1 --------------------- */
-@media (min-width: 350px){
-    .user-menu {
-      line-height:30px;
-    }
-}
+//@media (min-width: 350px){
+//  .user-menu {
+//    line-height:30px;
+//  }
+//}
 
 /* -------------------- 7.2 --------------------- */
 @media (min-width: 700px) and (min-width: 40em) {
@@ -1164,7 +1211,7 @@ $image-unit-half: $image-unit / 2;
   }
   .forum-content {
     grid-area: content;
-    padding: $gutters 10px;
+    padding: $gutters;
   }
   
   .forum-sidebar {
@@ -1198,7 +1245,8 @@ $image-unit-half: $image-unit / 2;
   .forum-sub-header {
     border-top: 1px solid #444;
     grid-area: breadcrumb;
-    margin:0px 15px;
+    margin: 0 $gutters;
+    
     img {
       margin-left:0;
     }
