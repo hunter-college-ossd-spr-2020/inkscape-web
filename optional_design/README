@@ -1,0 +1,10 @@
+How to
+======
+
+Creating an optional design can be done in two ways, one, if you are committing to the repository then you can add items to the sub-directories here in `optional_design/static` and `optional_design/templates`.
+
+These folders should contain a sub-directory with the name of your alernate design. So if your new design is called 'apples', you should make a directory `optional_design/static/apples` and the directory `optional_design/templates/apples`, then populate those directories with replacement html, css and other files.
+
+Any file that you miss, will use the site's default style or template instead. You may end up with a mix-and-match design if you don't plan out your results carefully.
+
+Finally, test your design. Much of django's templating engine will cause server errors if you don't use the right tags or mis-spell a url name. Testing with a working local version is the cleanest way of making sure you don't bork your design on live.

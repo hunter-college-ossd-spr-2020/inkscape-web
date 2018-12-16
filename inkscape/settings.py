@@ -104,6 +104,7 @@ TEMPLATES = [{
     'DIRS': [DESIGN_ROOT],
     'OPTIONS': {
         'loaders': [
+            'optional_design.template_loaders.OptionalDesign',
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         ],
@@ -126,6 +127,7 @@ TEMPLATES = [{
 
 MIDDLEWARE_CLASSES = (
     'cog.middleware.UserOnErrorMiddleware',
+    'optional_design.middleware.OptionalDesignMiddleware',
     #'inkscape.middleware.AutoBreadcrumbMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -169,6 +171,7 @@ ROOT_URLCONF = 'inkscape.urls'
 INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
+    'optional_design',
     'stopforumspam',
     'elections',
     'easy_thumbnails',
