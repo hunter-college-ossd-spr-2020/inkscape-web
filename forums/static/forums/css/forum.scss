@@ -13,7 +13,7 @@
     4.5  Forum topic
 5. Bootstrap form styles additions and overrides
 7. Media Queries
-    7.1 @media (min-width: 350px)
+    7.1 @media (min-width: 360px)
     7.2 @media (min-width: 700px) and (min-width: 40em)
     7.3 @media (min-width: 1400px) and (min-width: 90em)
 8. Sections specific
@@ -43,7 +43,7 @@
 
 $black:                #000;
 $grey-extra-dark:      scale-color($black, $lightness: 20%);    // #333
-$grey-dark:            scale-color($black, $lightness: 40%);    // #666
+$grey-dark:            scale-color($black, $lightness: 25%);    // #???
 $grey:                 scale-color($black, $lightness: 60%);    // #999
 $grey-light:           scale-color($black, $lightness: 80%);    // #ccc
 $grey-extra-light:     scale-color($black, $lightness: 93.33%); // #eee
@@ -62,7 +62,7 @@ $twitterBlue:          #1da1f2;
 
 $bg:                     $grey-extra-dark;
 
-$border-color:           $grey-extra-dark;
+$border-color:           $grey-dark;
 
 $header-text:            $white;
 $search-input:           $grey-dark;
@@ -112,7 +112,7 @@ $borders: 1px solid $border-color;
 .forums-search {
   grid-area: search;
   transform:scale(0.8);
-  margin-right:-20px;
+  margin-right:-16px;
 }
 
 .user-menu {
@@ -123,7 +123,7 @@ $borders: 1px solid $border-color;
   border-top: $borders;
   grid-area: breadcrumb;
   padding: 0;
-  margin:0 $gutters;
+  margin:0 $gutters 0 ($gutters*4);
   
   a {
     display: inline-block;
@@ -360,10 +360,9 @@ body{
 .user-menu {
   padding: $gutters;
   text-align: right;
-  
   li {
     display: inline-block;
-    line-height: 2;
+    line-height: 1;
     margin: 0 0 0 1em;
   }
   
@@ -1181,12 +1180,15 @@ $image-unit-half: $image-unit / 2;
  *   7. Media Queries -----------------------------------------
  */
 
-/* -------------------- 7.1 --------------------- */
-//@media (min-width: 350px){
-//  .user-menu {
-//    line-height:30px;
-//  }
-//}
+/* -------------------- 7.1 (Override 320-360 size specific)---- */
+@media (min-width: 360px){
+  .user-menu {
+    line-height:30px;
+  }
+  .forum-sub-header {
+    margin:0 $gutters 0 ($gutters*2);
+  }
+}
 
 /* -------------------- 7.2 --------------------- */
 @media (min-width: 700px) and (min-width: 40em) {

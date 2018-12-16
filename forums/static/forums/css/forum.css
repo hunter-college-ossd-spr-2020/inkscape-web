@@ -12,7 +12,7 @@
     4.5  Forum topic
 5. Bootstrap form styles additions and overrides
 7. Media Queries
-    7.1 @media (min-width: 350px)
+    7.1 @media (min-width: 360px)
     7.2 @media (min-width: 700px) and (min-width: 40em)
     7.3 @media (min-width: 1400px) and (min-width: 90em)
 8. Sections specific
@@ -24,10 +24,9 @@
  */
 @import url(../../css/libertine.css);
 @font-face {
-  font-family: 'EuphoriaScript';
+  font-family: "EuphoriaScript";
   src: url("../../fonts/euphoriascript-regular.ttf") format("truetype");
 }
-
 /* -------------------- Colors ----------------------------------- */
 /* -- Create color palette with descriptive names ---------------- */
 /* -- Create functional names for each element in "CMS" design --- */
@@ -55,14 +54,14 @@
 
 .forums-branding {
   grid-area: branding;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid #404040;
   height: 90px;
 }
 
 .forums-search {
   grid-area: search;
   transform: scale(0.8);
-  margin-right: -20px;
+  margin-right: -16px;
 }
 
 .user-menu {
@@ -70,16 +69,14 @@
 }
 
 .forum-sub-header {
-  border-top: 1px solid #333333;
+  border-top: 1px solid #404040;
   grid-area: breadcrumb;
   padding: 0;
-  margin: 0 1vw;
+  margin: 0 1vw 0 4vw;
 }
-
 .forum-sub-header a {
   display: inline-block;
 }
-
 .forum-sub-header img {
   max-height: 40px;
   padding: 5px 4px 8px 1vw;
@@ -150,7 +147,7 @@
   max-width: 30vw;
   object-fit: cover;
   padding: 10px;
-  transition: padding .3s ease 0s;
+  transition: padding 0.3s ease 0s;
   vertical-align: top;
   width: 80px;
 }
@@ -163,14 +160,14 @@
 .comment-time {
   border-radius: 2em;
   margin-bottom: 1em;
-  padding: .2em .6em .1em;
+  padding: 0.2em 0.6em 0.1em;
 }
 
 .comment-author-address img.emoji {
-  margin-left: .4em;
-  padding: .4em;
+  margin-left: 0.4em;
+  padding: 0.4em;
   position: relative;
-  top: -.8em;
+  top: -0.8em;
   /* don't mess up vertical position of surrounding text */
   vertical-align: text-top;
   width: 2.6em;
@@ -179,7 +176,7 @@
 .buttons-group {
   float: right;
   position: relative;
-  top: -.6em;
+  top: -0.6em;
   text-align: center;
   width: 3em;
 }
@@ -203,7 +200,7 @@ body {
 
 .forum-box {
   display: grid;
-  grid-template-areas: "header header"  "data data"  "footer footer";
+  grid-template-areas: "header header" "data data" "footer footer";
   grid-template-columns: fit-content(22em) 1fr;
 }
 
@@ -226,7 +223,6 @@ body {
 .forums-header {
   color: #fff;
 }
-
 .forums-header a {
   color: #fff;
 }
@@ -278,7 +274,7 @@ body {
   border: medium none;
   border-radius: 4px 0 0 4px;
   box-shadow: none;
-  color: #666666;
+  color: #404040;
   float: left;
   height: 40px;
   padding: 0 10px;
@@ -298,17 +294,14 @@ body {
   padding: 1vw;
   text-align: right;
 }
-
 .user-menu li {
   display: inline-block;
-  line-height: 2;
+  line-height: 1;
   margin: 0 0 0 1em;
 }
-
 .user-menu .glyphicon {
-  margin-right: .1em;
+  margin-right: 0.1em;
 }
-
 .user-menu a:focus,
 .user-menu a:hover {
   color: #ff7e28;
@@ -319,15 +312,12 @@ body {
 .forum-sub-header {
   line-height: 2;
 }
-
 .forum-sub-header a {
   text-decoration: none;
 }
-
 .forum-sub-header a:focus, .forum-sub-header a:hover {
   color: #ff7e28;
 }
-
 .forum-sub-header img {
   background-color: #fff;
   width: 35px;
@@ -350,11 +340,10 @@ body {
   cursor: help;
   display: block;
   padding: 0 1vw 0.4em;
-  transition: color .3s ease .4s;
+  transition: color 0.3s ease 0.4s;
   line-height: 1em;
   padding: 5px 10px;
 }
-
 .forum-description:focus, .forum-description:hover {
   color: #ff7e28;
 }
@@ -570,7 +559,7 @@ ul.forum-pagination li {
   opacity: 0.3;
 }
 
-.forum-option .chk-all input[type="checkbox"] {
+.forum-option .chk-all input[type=checkbox] {
   margin-top: 0;
 }
 
@@ -609,12 +598,12 @@ ul.forum-pagination li {
 }
 
 .modal-header h4.modal-title {
-  font-family: "Open Sans",sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 300;
 }
 
 .modal-body label {
-  font-family: "Open Sans",sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 400;
 }
 
@@ -714,22 +703,25 @@ ul.forum-pagination li {
   .files .btn span {
     display: none;
   }
+
   .files .preview * {
     width: 40px;
   }
+
   .files .name * {
     display: inline-block;
     width: 80px;
     word-wrap: break-word;
   }
+
   .files .progress {
     width: 20px;
   }
+
   .files .delete {
     width: 60px;
   }
 }
-
 ul {
   list-style-type: none;
   padding: 0px;
@@ -825,8 +817,8 @@ ul {
   box-shadow: 0 0 1px 0px #ddd inset;
   background-color: #EBFCFF;
   font-size: inherit;
-  margin: 0 0 .3em .3em;
-  padding: .4em;
+  margin: 0 0 0.3em 0.3em;
+  padding: 0.4em;
   width: 2.6em;
 }
 
@@ -962,7 +954,7 @@ h3 small.label {
 }
 
 .comment-img {
-  margin: 0 1em .6em 0;
+  margin: 0 1em 0.6em 0;
 }
 
 .comment-img .img-circle {
@@ -998,18 +990,18 @@ h3 small.label {
   border-radius: 2em;
   box-shadow: 0 0 1px 0 #ddd inset;
   display: inline-block;
-  font-size: .8em;
+  font-size: 0.8em;
   line-height: 1;
-  margin-bottom: .4em;
-  padding: .7em .7em .5em;
+  margin-bottom: 0.4em;
+  padding: 0.7em 0.7em 0.5em;
   text-align: center;
-  transition: all .3s ease 0s;
+  transition: all 0.3s ease 0s;
 }
 
 .comment-first-link {
   background-color: #fff;
-  margin: 0 0 .5em .5em;
-  padding: .7em;
+  margin: 0 0 0.5em 0.5em;
+  padding: 0.7em;
   position: relative;
   right: -1em;
   top: -1em;
@@ -1027,7 +1019,7 @@ h3 small.label {
   background-color: #f0ebff;
   color: #1b006c;
   margin: 0;
-  padding: .7em .6em .7em;
+  padding: 0.7em 0.6em 0.7em;
 }
 
 .comment-count:focus,
@@ -1105,7 +1097,16 @@ h3 small.label {
 /*
  *   7. Media Queries -----------------------------------------
  */
-/* -------------------- 7.1 --------------------- */
+/* -------------------- 7.1 (Override 320-360 size specific)---- */
+@media (min-width: 360px) {
+  .user-menu {
+    line-height: 30px;
+  }
+
+  .forum-sub-header {
+    margin: 0 1vw 0 2vw;
+  }
+}
 /* -------------------- 7.2 --------------------- */
 @media (min-width: 700px) and (min-width: 40em) {
   /* -------------------- main layout ------------------------ */
@@ -1113,41 +1114,50 @@ h3 small.label {
     grid-template-areas: "sidebar content";
     grid-template-columns: fit-content(22em) 1fr;
   }
+
   .forums-branding {
     grid-area: branding;
     border-bottom: none;
     height: 70px;
   }
+
   .forums-header {
     grid-template-columns: 1fr fit-content(22em) fit-content(22em);
     grid-template-areas: "branding  usermenu search" "breadcrumb breadcrumb breadcrumb";
   }
+
   .forum-content {
     grid-area: content;
     padding: 1vw;
   }
+
   .forum-sidebar {
     grid-area: sidebar;
     margin-right: 1px;
     min-width: 270px;
     margin-top: 0;
   }
+
   .forum-footer {
     padding: 1vw 0;
   }
+
   /* -------------------- header layout ---------------------- */
   .forums-branding {
     grid-area: branding;
     min-height: 100px;
   }
+
   .forums-search {
     grid-area: search;
     padding-top: 10px;
   }
+
   .user-menu {
     grid-area: usermenu;
     padding-top: 17px;
   }
+
   .forum-sub-header {
     border-top: 1px solid #444;
     grid-area: breadcrumb;
@@ -1156,6 +1166,7 @@ h3 small.label {
   .forum-sub-header img {
     margin-left: 0;
   }
+
   /* -------------------- comment layout --------------------- */
   .comment {
     display: grid;
@@ -1163,31 +1174,36 @@ h3 small.label {
     grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
+
   .buttons-group {
     top: 0;
     width: auto;
     /* override mobile */
   }
+
   .comment-count,
-  .comment-remove,
-  .comment-edit,
-  .comment-report {
+.comment-remove,
+.comment-edit,
+.comment-report {
     float: right;
-    margin: 0 0 0 .4em;
+    margin: 0 0 0 0.4em;
   }
+
   .comment-edit {
     position: relative;
-    top: -.5em;
+    top: -0.5em;
   }
+
   .comment-text {
     grid-column-start: 3;
     grid-column-end: span 5;
     grid-row-start: 2;
     grid-row-end: span 4;
-    padding: 1.6em 2.4vw .6em;
+    padding: 1.6em 2.4vw 0.6em;
     z-index: 5;
     /* more than .comment-header-group */
   }
+
   .comment-attachments {
     grid-column-start: 3;
     grid-column-end: span 5;
@@ -1196,6 +1212,7 @@ h3 small.label {
     margin: 0;
     padding: 0 2.4vw;
   }
+
   .comment-header-group {
     background: none;
     grid-column-start: 2;
@@ -1207,6 +1224,7 @@ h3 small.label {
     z-index: 1;
     /* less than .comment-text */
   }
+
   /* gives the top background line that goes behind the circle image */
   .comment-header-group::before {
     border-radius: 2em;
@@ -1221,15 +1239,18 @@ h3 small.label {
     width: calc(100% - 60px);
     z-index: -1;
   }
+
   .img-circle {
     height: 120px;
     padding: 20px;
     width: 120px;
   }
+
   .comment-time {
     background-color: transparent;
     float: right !important;
   }
+
   .buttons-group {
     grid-column-start: 5;
     grid-column-end: span 3;
@@ -1237,6 +1258,7 @@ h3 small.label {
     grid-row-end: span 1;
     margin-top: 0;
   }
+
   .comment-count {
     grid-column-start: 1;
     grid-column-end: span 1;
@@ -1244,18 +1266,21 @@ h3 small.label {
     grid-row-end: span 1;
     justify-self: start;
   }
+
   .comment-footer {
     grid-column-start: 1;
     grid-column-end: span 2;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
+
   .emoji-selector {
     grid-column-start: 1;
     grid-column-end: span 1;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
+
   .emoji-bar {
     grid-column-start: 1;
     grid-column-end: span 2;
@@ -1265,6 +1290,7 @@ h3 small.label {
     justify-self: end;
     text-align: right;
   }
+
   /* Attachments dropdown */
   .check-dropdown {
     grid-column-start: 1;
@@ -1275,7 +1301,6 @@ h3 small.label {
     align-self: center;
   }
 }
-
 /* -------------------- 7.3 --------------------- */
 @media (min-width: 1400px) and (min-width: 90em) {
   .forums-app {
@@ -1284,9 +1309,10 @@ h3 small.label {
     min-width: 1400px;
   }
 }
-
 /*
  *   8. Sections specific ---------------------------------------
  */
 /* ------- 8.1 Forums list (.forums-list) --------- */
 /* ------- 8.2  Forum topic list (.forums-topic-list) --------- */
+
+/*# sourceMappingURL=forum.css.map */
