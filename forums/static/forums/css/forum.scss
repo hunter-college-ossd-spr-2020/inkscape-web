@@ -43,7 +43,7 @@
 
 $black:                #000;
 $grey-extra-dark:      scale-color($black, $lightness: 20%);    // #333
-$grey-dark:            scale-color($black, $lightness: 25%);    // #???
+$grey-dark:            scale-color($black, $lightness: 25%); // #404040
 $grey:                 scale-color($black, $lightness: 60%);    // #999
 $grey-light:           scale-color($black, $lightness: 80%);    // #ccc
 $grey-extra-light:     scale-color($black, $lightness: 93.33%); // #eee
@@ -58,11 +58,19 @@ $bootstr-blue:         #44b3ff;
 
 $twitterBlue:          #1da1f2;
 
+$bubbles-main:         #ebfcff;
+$bubbles-count:        #f0ebff;
+$bubbles-unpub:        #ffebeb;
+$bubbles-unpub-text:   #640000;
+$bubbles-badge:        #ffeeeb;
+
 /* ----------------- Functional Color scheme --------------------- */
 
 $bg:                     $grey-extra-dark;
 
 $border-color:           $grey-dark;
+
+$highlight-y:            $yellow;
 
 $header-text:            $white;
 $search-input:           $grey-dark;
@@ -74,10 +82,26 @@ $forum-description:      $bootstr-blue;
 $forum-description-hover:$orange;
 $thread-title:           $orange;
 
+$forum-list-heading:     $grey-dark;
 
+$forum-comment-first:    $grey-extra-light;
+
+$forum-comment-theme:    $bubbles-main;
+$forum-comment-count:    $bubbles-count;
+
+$forum-comment-unpub:    $bubbles-unpub;
+$forum-comment-unpub-text:$bubbles-unpub-text;
+
+$forum-author-badge:     $bubbles-badge;
+
+$forum-search-border:    $grey-extra-light;
+
+$footer:                 $grey-light;
 $footer-link:            $bootstr-blue;
 
-
+%bubble-edge {
+  box-shadow: 0 0 1px 0 #ddd inset;
+}
 
 /*
  *   2. Mobile page layouts -----------------------------------------
@@ -85,7 +109,6 @@ $footer-link:            $bootstr-blue;
 
 $gutters: 1vw;
 $borders: 1px solid $border-color;
-
 
 // override bootstrap
 .panel-body {
@@ -464,7 +487,7 @@ body{
 
 .forum-footer {
   text-align: center;
-  color:#bbb;
+  color: $footer;
   padding: $gutters;
 }
 
@@ -483,9 +506,10 @@ a.forum-dropdown {
 }
 
 .forum-body {
-  padding: 2vw 0;
+  padding: $gutters 0;
 }
 
+// Is the code below redundant now? I (@prkos) can't find HTML for this 
 ul.forum-nav {
   display: inline-block;
   margin: 0;
@@ -510,6 +534,7 @@ ul.forum-nav li a {
   padding: 0 20px;
   width: 100%;
 }
+///////////////////////////////////////// end redundant?
 
 .unchanged {
   font-weight: bold;
@@ -520,6 +545,7 @@ ul.forum-nav li a {
   margin: -2px 2px 0px 0px;
 }
 
+/////////////////////////////////////////  redundant?
 ul.forum-nav li a i {
   color: #6a6a6a;
   font-size: 16px;
@@ -529,43 +555,47 @@ ul.forum-nav li a i {
 ul.forum-nav li a span.label {
   margin-top: 13px;
 }
+///////////////////////////////////////// end redundant?
 
-ul.labels-info li h4 {
-  color: #5c5c5e;
-  font-size: 13px;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 5px;
-  text-transform: uppercase;
+// Keep ul in selector because of bootstrap specificity
+ul.labels-info {
+  h4 {
+    color: $forum-list-heading;
+    font-size: 13px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    text-transform: uppercase;
+  }
+  
+  a {
+    border-radius: 0;
+    color: #6a6a6a;
+    
+    &:focus,
+    &:hover {
+      background: none repeat scroll 0 0 #d5d7de;
+      color: #6a6a6a;
+    }
+  }
+  /////////////////////////////////////////  redundant?
+  i {
+    padding-right: 10px;
+  }
+  ///////////////////////////////////////// end redundant?
 }
 
-ul.labels-info li {
-  margin: 0;
-}
-
-ul.labels-info li a {
-  border-radius: 0;
-  color: #6a6a6a;
-}
-
-ul.labels-info li a:hover, ul.labels-info li a:focus {
-  background: none repeat scroll 0 0 #d5d7de;
-  color: #6a6a6a;
-}
-
-ul.labels-info li a i {
-  padding-right: 10px;
-}
-
+/////////////////////////////////////////  redundant?
 .nav.nav-pills.nav-stacked.labels-info p {
   color: #9d9f9e;
   font-size: 11px;
   margin-bottom: 0;
   padding: 0 22px;
 }
+///////////////////////////////////////// end redundant?
 
 .table-forum .search-context td {
-  border-top: 1px solid #efefef;
+  border-top: 1px solid $forum-search-border;
   color: #999;
 }
 
@@ -803,54 +833,32 @@ ul {
 }
 
 .highlighted {
-  background-color: yellow;
+  background-color: $highlight-y;
 }
 
 /* -------------------- 4.2 comment views --------------------- */
 
 .comment {
   list-style: none;
-  margin: 0;
+  margin: 0 0 4em;
   padding: 0;
-  position: relative;
   /* context for header bg */
+  position: relative;
 }
 
-.comment > li {
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 1px dotted #B3A9A9;
-}
-
-.comment > li .comment-body > p {
-  margin: 10px;
-  color: #777777;
-}
-
-.comment .comment-img {
-  min-width: 130px;
-  min-height: 130px;
-}
-
-.comment .comment-img img {
-  max-width: 120px;
-}
-
-.comment .comment-body .header small {
-  padding: 0px 4px;
-}
-
+///////////////////////////////////////// redundant?
 .panel-resource {
   text-align: center;
   display: block;
-  border: 0px;
+  border: 0;
 }
 
 .panel-resource img {
   max-width: 100%;
   max-height: 400px;
-  padding: 1vw 0;
+  padding: $gutters 0;
 }
+///////////////////////////////////////// end redundant?
 
 #id_honeypot {
   display: none;
@@ -889,8 +897,8 @@ ul {
 
 .emoji-bar img.emoji {
   border-radius: 2em;
-  box-shadow: 0 0 1px 0px #ddd inset;
-  background-color: #EBFCFF;
+  @extend %bubble-edge;
+  background-color: $forum-comment-theme;
   font-size: inherit;
   margin: 0 0 .3em .3em;
   padding: .4em;
@@ -946,7 +954,7 @@ h3 small.label {
   max-height: 90px;
 }
 
-/* -------------------- 4.4 Users online palette --------------------- */
+/* -------------------- 4.4 Users online palette ----------------- */
 
 #users-online {
   padding: 8px;
@@ -1022,7 +1030,7 @@ h3 small.label {
 
 
 .forum-comment-first-text {
-  background-color: #f5f5f5;
+  background-color: $forum-comment-first;
   border-radius: 1em;
   margin-bottom: 2em;
   padding: 1em;
@@ -1045,19 +1053,24 @@ h3 small.label {
 .comment-header-group::before,
 .comment-header-group,
 .comment-time {
-  background-color: #ebfcff;
+  background-color: $forum-comment-theme;
 }
 
-.not-public .img-circle,
-.comment-header-group.not-public::before {
-  background-color: #ffebeb;
-  color: #640000;
+.not-public {
+  .img-circle,
+  .comment-header-group::before,
+  .emoji-bar img.emoji {
+    background-color: $forum-comment-unpub;
+  }
+  .comment-text {
+    color: $forum-comment-unpub-text;
+  }
 }
 
 .comment-author-address img.emoji {
+  background-color: $forum-author-badge;
   border-radius: 2em;
-  box-shadow: 0 0 1px 0px #ddd inset;
-  background-color: #FFEEEB;
+  @extend %bubble-edge;
   font-size: inherit;
 }
 
@@ -1067,7 +1080,7 @@ h3 small.label {
 .comment-edit,
 .comment-report {
   border-radius: 2em;
-  box-shadow: 0 0 1px 0 #ddd inset;
+  @extend %bubble-edge;
   display: inline-block;
   font-size: .8em;
   line-height: 1;
@@ -1094,7 +1107,7 @@ h3 small.label {
 }
 
 .comment-count {
-  background-color: #f0ebff;
+  background-color: $forum-comment-count;
   color: #1b006c;
   margin: 0;
   padding: .7em .6em .7em;
@@ -1261,11 +1274,13 @@ $image-unit-half: $image-unit / 2;
     grid-template-columns: min-content $image-unit 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
+  
   .buttons-group {
     top: 0;
     width: auto;
     /* override mobile */
   }
+  
   .comment-count,
   .comment-remove,
   .comment-edit,
