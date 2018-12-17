@@ -1113,12 +1113,14 @@ h3 small.label {
     grid-template-areas: "branding  usermenu search" "breadcrumb breadcrumb breadcrumb";
   }
   .forum-content {
+    border-radius: 4px;
     grid-area: content;
     padding: 1vw;
   }
   .forum-sidebar {
+    border-radius: 4px;
     grid-area: sidebar;
-    margin-right: 1px;
+    margin-right: 1vw;
     min-width: 270px;
     margin-top: 0;
   }

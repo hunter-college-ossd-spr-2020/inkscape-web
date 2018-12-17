@@ -99,6 +99,10 @@ $forum-search-border:    $grey-extra-light;
 $footer:                 $grey-light;
 $footer-link:            $bootstr-blue;
 
+
+
+$container-border-radius:4px;
+
 %bubble-edge {
   box-shadow: 0 0 1px 0 #ddd inset;
 }
@@ -168,7 +172,7 @@ $borders: 1px solid $border-color;
 }
 
 .forum-data {
-    border-radius:4px;
+    border-radius:$container-border-radius;
     margin:0 10px;
     overflow:hidden;
 }
@@ -303,7 +307,7 @@ body{
     grid-template-areas: 
       "content"
       "sidebar";
-    border-radius:4px;
+    border-radius:$container-border-radius;
     margin:0 10px;
     overflow:hidden;
   }
@@ -362,7 +366,7 @@ body{
 
 .forums-search .sr-input {
   border: medium none;
-  border-radius: 4px 0 0 4px;
+  border-radius: $container-border-radius 0 0 $container-border-radius;
   box-shadow: none;
   color: $search-input;
   float: left;
@@ -374,7 +378,7 @@ body{
 .forums-search .sr-btn {
   background: none repeat scroll 0 0 #ff7e28;
   border: medium none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 $container-border-radius $container-border-radius 0;
   color: $search-button;
   height: 40px;
   padding: 0 20px;
@@ -876,7 +880,7 @@ ul {
 }
 
 .emoji-selector .dropdown-menu {
-  padding: 4px;
+  padding: $container-border-radius;
 }
 
 .emoji-selector .dropdown-menu img {
@@ -1225,13 +1229,15 @@ $image-unit-half: $image-unit / 2;
       "breadcrumb breadcrumb breadcrumb";
   }
   .forum-content {
+    border-radius: $container-border-radius;
     grid-area: content;
     padding: $gutters;
   }
   
   .forum-sidebar {
+    border-radius: $container-border-radius;
     grid-area: sidebar;
-    margin-right: 1px;
+    margin-right: $gutters;
     min-width:270px;
     margin-top:0;
   }
