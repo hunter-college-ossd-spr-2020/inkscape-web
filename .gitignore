@@ -3,6 +3,7 @@ local_settings.py
 *.mo
 *.pyc
 *.swp
+*.map
 *~
 .mypy_cache
 .gitignore
@@ -18,4 +19,3 @@ logs
 .autotest.conf
 .vscode
 .project
-.map
