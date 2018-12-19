@@ -1,8 +1,8 @@
-{% load i18n %}{% blocktrans with user=alert.user %}Dear {{ user }},{% endblocktrans %}
+{% load i18n %}{% autoescape off %}{% blocktrans with user=alert.user %}Dear {{ user }},{% endblocktrans %}
 {% if action == 'edit' %}
 {% blocktrans %}A post has been edited on the topic "{{ instance }}":{% endblocktrans %}{% else %}
 {% blocktrans %}A new post on the topic "{{ instance }}":{% endblocktrans %}{% endif %}
 ---
-{% autoescape off %}{{ comment.comment|striptags }}{% endautoescape %}
+{{ comment.comment|striptags }}
 ----
-{% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}
+{% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}{% autoescape off %}
