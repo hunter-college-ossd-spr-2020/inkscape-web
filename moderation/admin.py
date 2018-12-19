@@ -1,7 +1,7 @@
 #
 # Copyright 2016-2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,33 +17,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Moderation administrative interface"""
 
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import *
-
-from ajax_select import make_ajax_field
-from ajax_select.admin import AjaxSelectAdmin
-from django.forms import ModelForm
+from django.contrib.admin import ModelAdmin, TabularInline, site
 
 from .models import FlagObject, FlagVote
 
-class VoteForm(ModelForm):
-    moderator = make_ajax_field(FlagVote, 'moderator', 'user', \
-        help_text=_('Flagger or Moderator'))
-
 class VoteInline(TabularInline):
-    form = VoteForm
+    """Inline votes in a moderation action"""
+    raw_id_fields = ('moderator',)
     model = FlagVote
-    extra = 1 
+    extra = 1
 
-class FlagForm(ModelForm):
-    object_owner = make_ajax_field(FlagObject, 'object_owner', 'user')
-
-class FlagAdmin(AjaxSelectAdmin):
+class FlagAdmin(ModelAdmin):
+    """The original moderation flag object"""
+    raw_id_fields = ('object_owner',)
     list_filter = ('resolution',)
     list_display = ('pk', 'obj', 'object_owner', 'flag_votes', 'censure_votes', 'approve_votes')
     inlines = (VoteInline,)
-    form = FlagForm
 
 site.register(FlagObject, FlagAdmin)
-

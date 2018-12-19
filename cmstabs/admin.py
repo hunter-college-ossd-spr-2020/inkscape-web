@@ -19,39 +19,38 @@
 #
 
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import *
-from django.forms import *
+from django.contrib.admin import ModelAdmin, StackedInline, site
+from django.forms import ModelForm
 
-from .models import *
-
-from ajax_select import make_ajax_field
-from ajax_select.admin import AjaxSelectAdmin
+from .models import Tab, TabCategory, ShieldPlugin
 
 class TabForm(ModelForm):
-    user  = make_ajax_field(Tab, 'user', 'user', help_text=_('Select Author\'s User Account'))
-
+    """Form for the Tab inlined into the shield admin"""
     class Meta:
-        fields = ('order','tab_name','tab_text','tab_cat','name','download','user','license','link','banner_text','banner_foot','btn_text','btn_link','btn_icon')
+        fields = ('order', 'tab_name', 'tab_text', 'tab_cat', 'name', 'download',
+                  'user', 'license', 'link', 'banner_text', 'banner_foot',
+                  'btn_text', 'btn_link', 'btn_icon')
         labels = {
-          'name':     _('Background Image Name'),
-          'download': _('Background Image File'),
-          'user':     _('Background Author'),
-          'license':  _('Background License'),
-          'link':     _('Background Credit Link'),
+            'name':     _('Background Image Name'),
+            'download': _('Background Image File'),
+            'user':     _('Background Author'),
+            'license':  _('Background License'),
+            'link':     _('Background Credit Link'),
         }
 
-site.register(Tab)
-site.register(TabCategory)
-
 class TabInline(StackedInline):
-    form  = TabForm
+    """Inline stack of tabs for a shield"""
+    raw_id_fields = ('user',)
+    form = TabForm
     model = Tab
     extra = 1
 
-class ShieldAdmin(AjaxSelectAdmin):
-    model   = ShieldPlugin
+class ShieldAdmin(ModelAdmin):
+    """Shield plugin admin itself"""
+    model = ShieldPlugin
     inlines = [TabInline]
 
-
+site.register(Tab)
+site.register(TabCategory)
 site.register(ShieldPlugin, ShieldAdmin)
 

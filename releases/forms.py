@@ -1,7 +1,7 @@
 #
-# Copyright 2015-2017, Martin Owens <doctormo@gmail.com>
+# Copyright 2015-2018, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,13 +17,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+# pylint: disable=invalid-name
+#
+"""Forms for releases, usually admin interfaces"""
 
-from django.forms import *
-from ajax_select import make_ajax_field
+from django.utils.translation import ugettext_lazy as _
+from django.forms import (
+    ModelForm, ModelChoiceField, ValidationError, inlineformset_factory
+)
 
 # This dependance is fairly harsh, replace if possible.
 from djangocms_text_ckeditor.widgets import TextEditorWidget
-from django.utils.translation import ugettext_lazy as _
 
 # This is used to add a custom form to resources when editing
 # an Inkscape Release upload.
@@ -35,6 +39,7 @@ from .models import (
 )
 
 class ResourceReleaseForm(ResourceBaseForm):
+    """A resource for this release, a download for it"""
     form_priority = 10
     release = ModelChoiceField(queryset=Release.objects.all())
     platform = ModelChoiceField(queryset=Platform.objects.all())
@@ -61,13 +66,14 @@ class ResourceReleaseForm(ResourceBaseForm):
         if release is None or platform is None:
             raise ValidationError(_("Release and Platform must be specified!"))
 
-        (rp, created) = release.platforms.get_or_create(platform=platform)
-        if rp.resource and rp.resource != self.instance:
-            raise ValidationError(_("Release Platform '%s' already has a package resource assigned.") % str(rp))
-        self.cleaned_data['release_platform'] = rp
+        relp = release.platforms.get_or_create(platform=platform)[0]
+        if relp.resource and relp.resource != self.instance:
+            raise ValidationError(_("Release Platform '%s' already has a "
+                                    "package resource assigned.") % str(relp))
+        self.cleaned_data['release_platform'] = relp
 
-    def save(self, **kw):
-        obj = super(ResourceReleaseForm, self).save(**kw)
+    def save(self, **kwargs):
+        obj = super(ResourceReleaseForm, self).save(**kwargs)
         if obj.pk:
             rp = self.cleaned_data['release_platform']
             rp.resource = obj
@@ -79,7 +85,7 @@ class ResourceReleaseForm(ResourceBaseForm):
     class Meta:
         model = Resource
         fields = ['name', 'desc', 'tags', 'release', 'platform', 'license',
-            'link', 'signature', 'download', 'rendering', 'published']
+                  'link', 'signature', 'download', 'rendering', 'published']
         required = ['name', 'license', 'release', 'platform']
 
 
@@ -96,11 +102,6 @@ class QuerySetMixin(object):
 
 
 class ReleaseForm(QuerySetMixin, ModelForm):
-    manager = make_ajax_field(Release, 'manager', 'user')
-    reviewer = make_ajax_field(Release, 'reviewer', 'user')
-    bug_manager = make_ajax_field(Release, 'bug_manager', 'user')
-    translation_manager = make_ajax_field(Release, 'translation_manager', 'user')
-
     def __init__(self, *args, **kwargs):
         super(ReleaseForm, self).__init__(*args, **kwargs)
         if 'release_notes' in self.fields:
@@ -145,8 +146,6 @@ TranslationInlineFormSet = inlineformset_factory(
 )
 
 class PlatformForm(QuerySetMixin, ModelForm):
-    manager = make_ajax_field(Platform, 'manager', 'user')
-
     class Meta:
         exclude = ('codename',)
 
@@ -189,4 +188,3 @@ class ReleasePlatformTranslationForm(ModelForm):
 ReleasePlatformTranslationInlineFormSet = inlineformset_factory(
     ReleasePlatform, ReleasePlatformTranslation, form=ReleasePlatformTranslationForm, extra=1,
 )
-

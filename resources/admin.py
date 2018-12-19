@@ -1,7 +1,7 @@
 #
-# Copyright 2013, Martin Owens <doctormo@gmail.com>
+# Copyright 2013-2018, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -20,14 +20,9 @@
 
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
-from django.contrib.admin import *
+from django.contrib.admin import ModelAdmin, site
 
-from ajax_select import make_ajax_field
-from ajax_select.admin import AjaxSelectAdmin
-
-from .forms import ModelForm
-from .models import *
+from .models import License, Category, Resource, Vote, TagCategory, Tag, Quota, Gallery
 
 class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'filterable', 'selectable', 'restricted_to_groups', 'item_count', 'order')
@@ -43,22 +38,15 @@ class CategoryAdmin(ModelAdmin):
 site.register(License)
 site.register(Category, CategoryAdmin)
 
-class ResourceForm(ModelForm):
-    user = make_ajax_field(Resource, 'user', 'user', \
-        help_text=_('Select Resource\'s Owner'))
-    checked_by = make_ajax_field(Resource, 'checked_by', 'user', \
-        help_text=_('Resource has been checked by this user'))
-
 class ResourceAdmin(ModelAdmin):
     list_display = ('name', 'user', 'category', 'gallery')
     list_filter = ('published', 'category')
     search_fields = ('name', 'user__username', 'galleries__name')
     readonly_fields = ('slug','liked','viewed','downed','fullview')
-    form = ResourceForm
+    raw_id_fields = ('user', 'checked_by')
 
 
 site.register(Resource, ResourceAdmin)
-site.register(ResourceMirror)
 site.register(Vote)
 site.register(TagCategory)
 
@@ -82,16 +70,12 @@ class QuotaAdmin(ModelAdmin):
 
 site.register(Quota, QuotaAdmin)
 
-class GalleryForm(ModelForm):
-    user  = make_ajax_field(Gallery, 'user', 'user', \
-        help_text=_('Select Group\'s Owner'))
-
 class GalleryAdmin(ModelAdmin):
     readonly_fields = ('items', 'slug',)
     list_display = ('name', 'user', 'group', 'status', 'item_count')
     list_filter = ('group', 'status')
     search_fields = ('name', 'user')
-    form = GalleryForm
+    raw_id_fields = ('user',)
 
     def item_count(self, obj):
         return obj.items.count()

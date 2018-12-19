@@ -1,7 +1,7 @@
 #
-# Copyright 2017, Martin Owens <doctormo@gmail.com>
+# Copyright 2017-2018, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,21 +17,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Administrative interface to elections"""
 
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import ModelAdmin, site
 
-from django.forms import *
-from django.contrib.admin import *
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Permission
+from .models import Election
 
-from ajax_select import make_ajax_form
-from ajax_select.admin import AjaxSelectAdmin, AjaxSelectAdminTabularInline
-
-from .models import *
-
-class ElectionAdmin(AjaxSelectAdmin):
-    form = make_ajax_form(Election, {'called_by': 'user'}, show_help_text=True)
+class ElectionAdmin(ModelAdmin):
+    """Election admin interface"""
+    raw_id_fields = ('called_by',)
     list_display = ('slug', 'called_by', 'called_on', 'status')
     readonly_fields = ('log',)
 

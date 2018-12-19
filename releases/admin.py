@@ -21,8 +21,7 @@
 Administration for releases app
 """
 
-from django.contrib.admin import site, StackedInline
-from ajax_select.admin import AjaxSelectAdmin
+from django.contrib.admin import site, ModelAdmin, StackedInline
 
 from .forms import (
     PlatformForm, ReleaseForm, ReleasePlatformForm,
@@ -51,8 +50,9 @@ class TranslationsInline(StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         return TranslationInlineFormSet
 
-class ReleaseAdmin(AjaxSelectAdmin):
+class ReleaseAdmin(ModelAdmin):
     """Customised releases editing in the administration interface"""
+    raw_id_fields = ('manager', 'reviewer', 'bug_manager', 'translation_manager')
     form = ReleaseForm
     inlines = (PlatformInline, TranslationsInline)
     list_display = ('version', 'is_prerelease', 'project', 'parent',
@@ -68,8 +68,9 @@ class PlatformTranslationsInline(StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         return PlatformTranslationInlineFormSet
 
-class PlatformAdmin(AjaxSelectAdmin):
+class PlatformAdmin(ModelAdmin):
     """Platform editing in the admin interface"""
+    raw_id_fields = ('manager',)
     form = PlatformForm
     list_display = ('__str__', 'codename', 'desc', 'keywords', 'manager')
     inlines = (PlatformTranslationsInline,)
@@ -83,7 +84,7 @@ class ReleasePlatformTranslationsInline(StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         return ReleasePlatformTranslationInlineFormSet
 
-class ReleasePlatformAdmin(AjaxSelectAdmin):
+class ReleasePlatformAdmin(ModelAdmin):
     """Customised release-platform administration editing"""
     form = ReleasePlatformForm
     list_filter = ('release', 'release__status')

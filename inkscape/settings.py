@@ -188,7 +188,6 @@ INSTALLED_APPS = (
     'django.contrib.redirects',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'ajax_select',
     'haystack',
     'treebeard',
     'cmsplugin_diff',
@@ -368,15 +367,6 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 SENDFILE_BACKEND = 'sendfile.backends.development'
 SENDFILE_ROOT = MEDIA_ROOT
 SENDFILE_URL = MEDIA_URL
-
-AJAX_LOOKUP_CHANNELS = {
-    'user'    : {'model':'person.User', 'search_field':'username'},
-    'resource': {'model':'resources.Resource', 'search_field':'name'},
-    'tags'    : ('resources.lookups', 'TagLookup'),
-}
-
-AJAX_SELECT_BOOTSTRAP = False
-AJAX_SELECT_INLINES = 'inline'
 
 TEST_RUNNER = 'inkscape.runner.InkscapeTestSuiteRunner'
 SILENCED_SYSTEM_CHECKS = ["1_6.W002"]

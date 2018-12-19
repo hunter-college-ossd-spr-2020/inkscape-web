@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""Project administrative interface"""
 
-from django.contrib.admin import *
-from ajax_select import make_ajax_form
-from ajax_select.admin import AjaxSelectAdmin
+from django.contrib.admin import ModelAdmin, TabularInline, site,
 
-from .models import *
+from .models import Worker, Deliverable, Project, ProjectType, Criteria, Task
 
 class WorkerInline(TabularInline):
     model = Worker
@@ -32,17 +31,13 @@ class DeliverableInline(TabularInline):
     model = Deliverable
 
 class UpdateInline(StackedInline):
+    raw_id_fields = ('creator',)
     model = Report
     extra = 1
-    readonly_fields = ('creator',)
 
-class ProjectAdmin(AjaxSelectAdmin):
+class ProjectAdmin(ModelAdmin):
     list_display = ('title', 'manager', 'started')
-    form  = make_ajax_form(Project, {
-      'manager': 'user',
-      'reviewer': 'user',
-      'second': 'user' })
-
+    raw_id_fields = ('manager', 'reviewer', 'second')
     fieldsets = (
         (None, {
           'fields': ('title', 'project_type', 'banner', 'logo', 'is_fundable', 'is_approved', 'difficulty')

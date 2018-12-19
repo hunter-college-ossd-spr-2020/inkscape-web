@@ -51,7 +51,6 @@ urlpatterns += i18n_patterns(
     url(r'^search/$', SearchView(), name='search'),
     url(r'^search/json/$', SearchJson(), name='search.json'),
     url(r'^credits/$', Authors.as_view(), name='authors'),
-    url(r'^admin/lookups/', include('ajax_select.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cog/', include('cog.urls', namespace='cog')),
     url(r'^doc/', include('docs.urls')),
