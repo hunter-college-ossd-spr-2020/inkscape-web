@@ -3,6 +3,6 @@
 {% blocktrans %}A post has been edited on the topic "{{ instance }}":{% endblocktrans %}{% else %}
 {% blocktrans %}A new post on the topic "{{ instance }}":{% endblocktrans %}{% endif %}
 ---
-{{ comment.comment|striptags }}
+{% autoescape off %}{{ comment.comment|striptags }}{% endautoescape %}
 ----
 {% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}

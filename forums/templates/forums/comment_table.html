@@ -20,7 +20,9 @@
               {% if query %}
                 {% highlight comment.comment with query max_length 200 %}
               {% else %}
-                {{ comment.comment|striptags|truncatechars:50 }}
+                {% autoescape off %}
+                  {{ comment.comment|striptags|truncatechars:50 }}
+                {% endautoescape %}
               {% endif %}
           </a>
         </td>
