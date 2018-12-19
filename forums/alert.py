@@ -41,7 +41,7 @@ class ForumTopicAlert(BaseAlert):
 
     subject = "{% trans 'Forum activity on:' %} {{ instance }}"
     object_name = "{% trans 'Topic activty' %}"
-    email_subject = "{% trans 'Forum activity on:' %} {{ instance }}"
+    email_subject = "{% trans 'Forum activity on:' %} {% autoescape off %}{{ instance }}{% endautoescape %}"
     default_email = True
 
     subscribe_all = False
