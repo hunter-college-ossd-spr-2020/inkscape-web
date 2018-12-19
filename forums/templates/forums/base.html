@@ -24,17 +24,17 @@
   </head>
   <body data-static="{% static '' %}" id="forum-page-{% url_name %}">
     {% block "container" %}
-    <div class="container">
-      <div class="forum-box">
-        
+    {% block "wrapper" %}
+    <div class="container-flex forums-app">
+    {% endblock "wrapper" %}
         {% block "header" %}
         <header class="forums-header">
           <div class="forums-branding"><a class="forums-logo" href="/forums/"><img src="{% static "forums/images/logo.svg" %}"> <span class="forums-name">Inkscape Forum</span> <span class="forums-tagline">Talk Freely</span></a></div>
           {% block "search-block" %}
           <form action="{% url "forums:search" %}" class="pull-right forums-search">
-            <div class="pull-right input-append">
+            <div class="input-append">
               {% block "search" %}{% endblock %}
-              <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"> <button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
+              <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"><button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
             </div>
           </form>
           {% endblock "search-block" %}
@@ -58,122 +58,119 @@
 
         </header>
         {% endblock "header" %}
-        
-        <div class="forum-content">
-          {% block "supercontent" %}
-          <div class="forum-head">
-            {% block "page-header" %}
-            <div class="forum-option">
-              {% block "tools" %}
-                {% if is_paginated %}
-                  {% with request.GET|querydict_pop:"page" as get %}
-                  <ul class="unstyled forum-pagination">
-                    <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
-                    <li>
-                      {% if page_obj.has_previous %}
-                        <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
-                      {% else %}
-                        <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
-                      {% endif %}
-                    </li>
-                    <li>
-                      {% if page_obj.has_next %}
-                        <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
-                      {% else %}
-                        <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
-                      {% endif %}
-                    </li>
-                  </ul>
-                  {% endwith %}
-                {% endif %}
+        <div class="forum-data">
+            <div class="forum-content">
+              {% block "supercontent" %}
+              <div class="forum-head">
+                {% block "page-header" %}
+                <div class="forum-option">
+                  {% block "tools" %}
+                    {% if is_paginated %}
+                      {% with request.GET|querydict_pop:"page" as get %}
+                      <ul class="unstyled forum-pagination">
+                        <li><span class="count">{{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span></li>
+                        <li>
+                          {% if page_obj.has_previous %}
+                            <a class="np-btn" href="?page={{ page_obj.previous_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                          {% else %}
+                            <a class="np-btn disabled"><span class="glyphicon glyphicon-chevron-left pagination-left"></span></a>
+                          {% endif %}
+                        </li>
+                        <li>
+                          {% if page_obj.has_next %}
+                            <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                          {% else %}
+                            <a class="np-btn disabled" href="#"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
+                          {% endif %}
+                        </li>
+                      </ul>
+                      {% endwith %}
+                    {% endif %}
+                  {% endblock %}
+                </div>
+                {% endblock %}
+              </div>
+              <div class="forum-body">
+                {% block "content" %}
+                {% endblock %}
+              </div>
               {% endblock %}
             </div>
-            {% endblock %}
-          </div>
-          <div class="forum-body">
-            {% block "content" %}
-            {% endblock %}
-          </div>
-          {% endblock %}
-        </div>
-        {# end .forum-content #}
-        
-        {% block "aside" %}
-        <aside class="sm-side forum-sidebar">
-          
-          {% if request.user.is_authenticated %}
-            <ul class="nav nav-pills nav-stacked labels-info">
-              <li>
-                <h4>{% trans "My Forum" %}</h4>
-              </li>
-              <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "comment_list" %}{% endif %}">
-                <a href="{% url "comment_list" request.user.username %}"><span class="glyphicon glyphicon-comment"></span> {% trans "My Comments" %}</a>
-              </li>
-              <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "topic_list" %}{% endif %}">
-                <a href="{% url "topic_list" request.user.username %}"><span class="glyphicon glyphicon-book"></span> {% trans "My Topics" %}</a>
-              </li>
-              <li class="forum-item {% url_name "topic_subs" %}">
-                  <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %} {% with newsub.count as count %}{% if count %}<span class="label label-primary pull-right counter">{{ count }}</span>{% endif %}{% endwith %}</a>
-              </li>
-            </ul>
-          {% endif %}
-
-          {% for group, items in forums.groups.items %}
-          <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
-            <li>
-              <h4>{{ group }}</h4>
-            </li>
-            {% for item in items %}
-            <li class="forum-item new{% if item == forum %} active{% endif %}" data-changed="{{ item.last_posted.isoformat }}" data-count="{{ item.post_count }}" data-pk="forum-{{ item.pk }}">
-              <a href="{{ item.get_absolute_url }}"><img src="{% if item.icon %}{{ item.icon.url }}{% endif %}"> {{ item }} <span class="label label-default pull-right counter">{{ item.post_count }}</span></a>
-            </li>
-            {% endfor %}
-          </ul>
-          {% endfor %}
-
-          {% if visitors %}
-          <ul class="nav nav-pills nav-stacked labels-info" id="users-online">
-            <li>
-              <h4>Online</h4>
-            </li>
-            {% static "forums/images/user.svg" as default_photo %}
-            <li>
-            {% for pk, visitor in visitors.items reversed %}
-              {% if pk == request.user.pk %}
-              <a  class="me" href="{% url 'view_profile' visitor.username %}">
-                <img src="{{ visitor.photo_url|default:default_photo }}"/>
-                <span>{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }}</span>
-              </a>
-              <li>
-              {% else %}
-              <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}">
-                <img src="{{ visitor.photo_url|default:default_photo }}"/>
-              </a>
+            {# end .forum-content #}
+            
+            {% block "aside" %}
+            <aside class="sm-side forum-sidebar">
+              
+              {% if request.user.is_authenticated %}
+                <ul class="nav nav-pills nav-stacked labels-info">
+                  <li>
+                    <h4>{% trans "My Forum" %}</h4>
+                  </li>
+                  <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "comment_list" %}{% endif %}">
+                    <a href="{% url "comment_list" request.user.username %}"><span class="glyphicon glyphicon-comment"></span> {% trans "My Comments" %}</a>
+                  </li>
+                  <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "topic_list" %}{% endif %}">
+                    <a href="{% url "topic_list" request.user.username %}"><span class="glyphicon glyphicon-book"></span> {% trans "My Topics" %}</a>
+                  </li>
+                  <li class="forum-item {% url_name "topic_subs" %}">
+                      <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %} {% with newsub.count as count %}{% if count %}<span class="label label-primary pull-right counter">{{ count }}</span>{% endif %}{% endwith %}</a>
+                  </li>
+                </ul>
               {% endif %}
-            {% endfor %}
-            </li>
-          </ul>
-          {% endif %}
-          <ul class="nav nav-pills nav-stacked labels-info">
-            <li class="{% url_name equal="log" %}"><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
-            {% if request.user.is_moderator %}
-              {% with purgitory.count as pcount %}
-              <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
-              <li class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}"><span class="glyphicon glyphicon-user"></span> {% trans "User Ban List" %}</a></li>
-              {% endwith %}
-            {% endif %}
-          </ul>
-          
-        </aside>
-        {% endblock %}
-        
+
+              {% for group, items in forums.groups.items %}
+              <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
+                <li>
+                  <h4>{{ group }}</h4>
+                </li>
+                {% for item in items %}
+                <li class="forum-item new{% if item == forum %} active{% endif %}" data-changed="{{ item.last_posted.isoformat }}" data-count="{{ item.post_count }}" data-pk="forum-{{ item.pk }}">
+                  <a href="{{ item.get_absolute_url }}"><img src="{% if item.icon %}{{ item.icon.url }}{% endif %}"> {{ item }} <span class="label label-default pull-right counter">{{ item.post_count }}</span></a>
+                </li>
+                {% endfor %}
+              </ul>
+              {% endfor %}
+
+              {% if visitors %}
+              <ul class="nav nav-pills nav-stacked labels-info" id="users-online">
+                <li>
+                  <h4>Online</h4>
+                </li>
+                {% static "forums/images/user.svg" as default_photo %}
+                <li>
+                {% for pk, visitor in visitors.items reversed %}
+                  {% if pk == request.user.pk %}
+                  <a  class="me" href="{% url 'view_profile' visitor.username %}">
+                    <img src="{{ visitor.photo_url|default:default_photo }}"/>
+                    <span>{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }}</span>
+                  </a>
+                  <li>
+                  {% else %}
+                  <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}">
+                    <img src="{{ visitor.photo_url|default:default_photo }}"/>
+                  </a>
+                  {% endif %}
+                {% endfor %}
+                </li>
+              </ul>
+              {% endif %}
+              <ul class="nav nav-pills nav-stacked labels-info">
+                <li class="{% url_name equal="log" %}"><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
+                {% if request.user.is_moderator %}
+                  {% with purgitory.count as pcount %}
+                  <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
+                  <li class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}"><span class="glyphicon glyphicon-user"></span> {% trans "User Ban List" %}</a></li>
+                  {% endwith %}
+                {% endif %}
+              </ul>
+              
+            </aside>
+            {% endblock %}
+        </div>
         <div class="forum-footer text-muted">
           <p>Forums developed by Martin, Jabier, Mihaela. <a href="{% url "contact" %}?next={{ request.path }}">Contact Us</a> if you have a problem using the forum.</p>
         </div>
-        
-      </div>{# end .forum-box #}
     </div>{# end .container #}
     {% endblock %}
-    
   </body>
 </html>

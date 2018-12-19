@@ -1,6 +1,8 @@
 {% extends "forums/base.html" %}
 {% load i18n static %}
-
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-moderator-list">
+{% endblock "wrapper" %}
 {% block "tools" %}
   <div class="alert alert-danger">
     <span class="glyphicon glyphicon-ok-sign"></span> {% trans "Comments are here because the people who have commented or created topics do not yet have permissiont to post. If you approve two comments from the same user, they will be allowed to post without moderator approval." %}

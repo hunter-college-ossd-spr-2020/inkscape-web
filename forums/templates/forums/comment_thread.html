@@ -6,13 +6,14 @@
       {# Start forum thread comment loop #}
       {% for comment in comment_list %}
         {% url 'view_profile' comment.user.username as profile_url %}
+        
+        {% if comment.is_public %}
 
         <li class="comment left clearfix">
           {# Start comment header info #}
           <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
           <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ forloop.counter }}</a>
 
-          {% if comment.is_public %}
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}">
                   <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if flag.flag|length < 4 %}<span class="emoji" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
@@ -56,9 +57,15 @@
               {% include "forums/resources_inline.html" with attachment_list=comment.attachments.all %}
             </section>
             {# End comment attachments #}
+            
           {% else %}
-            {# Comment is not publically visible and needs approving #}
-            <span class="comment-header-group not-public{% if not request.user.is_moderator %} not-visible{% endif %}">
+          {# Comment is not publicly visible and needs approving #}
+          
+          <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}">
+            {# Start comment header info #}
+            <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
+            <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ forloop.counter }}</a>
+            <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}">
                   <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }}</a></address> 
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
@@ -81,9 +88,10 @@
                 {% include "forums/resource_dropdown.html" %}
               {% endwith %}
             {% endif %}
-          {% endif %}
+          
         </li>
-
+        {% endif %}
+        
       {% endfor %}
       {# End forum thread comment loop #}
 

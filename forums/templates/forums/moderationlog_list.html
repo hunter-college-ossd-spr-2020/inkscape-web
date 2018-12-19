@@ -1,6 +1,8 @@
 {% extends "forums/base.html" %}
 {% load i18n static inkscape %}
-
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-moderationlog-list">
+{% endblock "wrapper" %}
 {% block "tools" %}
   <div class="alert alert-danger">
     <span class="glyphicon glyphicon-briefcase"></span> {% trans "This moderation log lists the actions taken by moderatiors on this website. Please contact the moderation team or systems administrator if you are having a problem with the forum moderation." %}

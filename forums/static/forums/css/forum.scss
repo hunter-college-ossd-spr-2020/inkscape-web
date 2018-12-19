@@ -1,4 +1,5 @@
 /* License:  */
+
 /*------------------------------------------------------------------ 
 [Table of contents]
 1. Imports, font-face, color definitions
@@ -18,33 +19,101 @@
 8. Sections specific
     8.1 Forums list (.forums-list)
     8.2 Forum topic list (.forums-topic-list)
--------------------------------------------------------------------*/
+-------------------------------------------------------------------*/ 
+
 /*
  *   1. Imports, font-face, color definitions  ----------------------
  */
+
 @import url(../../css/libertine.css);
+
 @font-face {
-  font-family: "EuphoriaScript";
+  font-family: 'EuphoriaScript';
   src: url("../../fonts/euphoriascript-regular.ttf") format("truetype");
 }
+
 /* -------------------- Colors ----------------------------------- */
 /* -- Create color palette with descriptive names ---------------- */
 /* -- Create functional names for each element in "CMS" design --- */
 /* -- Define functional names with descriptive names! ------------ */
 /* -- Always use only functional names in code ------------------- */
+
 /* -------------------- Color palette Original ------------------- */
+
+$black:                #000;
+$grey-extra-dark:      scale-color($black, $lightness: 20%);    // #333
+$grey-dark:            scale-color($black, $lightness: 25%); // #404040
+$grey:                 scale-color($black, $lightness: 60%);    // #999
+$grey-light:           scale-color($black, $lightness: 80%);    // #ccc
+$grey-extra-light:     scale-color($black, $lightness: 93.33%); // #eee
+$white:                #fff;
+
+$blue:                 #0072b9;
+$red:                  #c00;
+$orange:               #ff7e28;
+$yellow:               #fd0;
+
+$bootstr-blue:         #44b3ff;
+
+$twitterBlue:          #1da1f2;
+
+$bubbles-main:         #ebfcff;
+$bubbles-count:        #f0ebff;
+$bubbles-unpub:        #ffebeb;
+$bubbles-unpub-text:   #640000;
+$bubbles-badge:        #ffeeeb;
+
 /* ----------------- Functional Color scheme --------------------- */
-.comment-first-link,
-.comment-count,
-.comment-remove,
-.comment-edit,
-.comment-report, .comment-author-address img.emoji, .emoji-bar img.emoji {
+
+$bg:                     $grey-extra-dark;
+
+$border-color:           $grey-dark;
+
+$highlight-y:            $yellow;
+
+$header-text:            $white;
+$search-input:           $grey-dark;
+$search-button:          $white;
+$user-menu:              $orange;
+$subheader-hover:        $orange;
+$subheader-img:          $white;
+$forum-description:      $bootstr-blue;
+$forum-description-hover:$orange;
+$thread-title:           $orange;
+
+$forum-list-heading:     $grey-dark;
+
+$forum-comment-first:    $grey-extra-light;
+
+$forum-comment-theme:    $bubbles-main;
+$forum-comment-count:    $bubbles-count;
+
+$forum-comment-unpub:    $bubbles-unpub;
+$forum-comment-unpub-text:$bubbles-unpub-text;
+
+$forum-author-badge:     $bubbles-badge;
+
+$forum-search-border:    $grey-extra-light;
+
+$footer:                 $grey-light;
+$footer-link:            $bootstr-blue;
+
+
+
+$container-border-radius:4px;
+
+%bubble-edge {
   box-shadow: 0 0 1px 0 #ddd inset;
 }
 
 /*
  *   2. Mobile page layouts -----------------------------------------
  */
+
+$gutters: 1vw;
+$borders: 1px solid $border-color;
+
+// override bootstrap
 .panel-body {
   padding: 1vw 0;
 }
@@ -59,18 +128,18 @@
   table-layout: fixed;
 }
 
-.forums-branding {
+.forums-branding{
   grid-area: branding;
-  border-bottom: 1px solid #404040;
-  padding-bottom: 2vw;
+  border-bottom: $borders;
+  padding-bottom: $gutters*2;
 }
 
 .forums-search {
   grid-area: search;
-}
-.forums-search .input-append {
-  line-height: 4.8;
-  text-align: right;
+  .input-append{
+    line-height:4.8;
+    text-align:right;
+  }
 }
 
 .user-menu {
@@ -78,31 +147,33 @@
 }
 
 .forum-sub-header {
-  border-top: 1px solid #404040;
+  border-top: $borders;
   grid-area: breadcrumb;
   padding: 0;
-  margin: 0 1vw 0 4vw;
-}
-.forum-sub-header a {
-  display: inline-block;
-}
-.forum-sub-header img {
-  max-height: 40px;
-  padding: 5px 4px 8px 1vw;
-}
-
-.forum-sidebar {
-  grid-area: sidebar;
+  margin:0 $gutters 0 ($gutters*4);
+  
+  a {
+    display: inline-block;
+  }
+  
+  img {
+    max-height: 40px;
+    padding: 5px 4px 8px $gutters; 
+  }
 }
 
 .forum-sidebar {
   grid-area: sidebar;
-  margin-top: 1px;
+}
+
+.forum-sidebar {
+    grid-area: sidebar;
+    margin-top:1px;
 }
 
 .forum-data {
-  border-radius: 4px;
-  overflow: hidden;
+    border-radius:$container-border-radius;
+    overflow:hidden;
 }
 
 .forum-content {
@@ -155,7 +226,7 @@
   max-width: 30vw;
   object-fit: cover;
   padding: 10px;
-  transition: padding 0.3s ease 0s;
+  transition: padding .3s ease 0s;
   vertical-align: top;
   width: 80px;
 }
@@ -168,14 +239,14 @@
 .comment-time {
   border-radius: 2em;
   margin-bottom: 1em;
-  padding: 0.2em 0.6em 0.1em;
+  padding: .2em .6em .1em;
 }
 
 .comment-author-address img.emoji {
-  margin-left: 0.4em;
-  padding: 0.4em;
+  margin-left: .4em;
+  padding: .4em;
   position: relative;
-  top: -0.8em;
+  top: -.8em;
   /* don't mess up vertical position of surrounding text */
   vertical-align: text-top;
   width: 2.6em;
@@ -184,7 +255,7 @@
 .buttons-group {
   float: right;
   position: relative;
-  top: -0.6em;
+  top: -.6em;
   text-align: center;
   width: 3em;
 }
@@ -194,50 +265,63 @@
   padding: 1em 0;
 }
 
+
+
 /*
  *   3. Header styles -------------------------------------------    
  */
-body {
-  background-color: #333333;
-  width: 100%;
+
+
+body{
+  background-color: $bg;
+  width:100%;
 }
 
 .forums-app {
-  position: relative;
-  padding: 10px 3vw;
+  position:relative;
+  padding: 10px $gutters*3;
 }
 
 .forum-box {
-  display: grid;
-  grid-template-areas: "header header" "data data" "footer footer";
-  grid-template-columns: fit-content(22em) 1fr;
-}
+    display: grid;
+    grid-template-areas: 
+      "header header" 
+      "data data" 
+      "footer footer";
+    grid-template-columns: fit-content(22em) 1fr;
+  }
+  
+  .forums-header {
+    display: grid;
+    grid-area: header;
+    grid-template-columns: 1fr  fit-content(8em);
+    grid-template-areas:
+      "branding   branding"
+      "usermenu  search"
+      "breadcrumb breadcrumb";
+  }
+
+  .forum-data {
+    display: grid;
+    grid-area: data;
+    grid-template-areas: 
+      "content"
+      "sidebar";
+    border-radius:$container-border-radius;
+    overflow:hidden;
+  }
 
 .forums-header {
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr fit-content(8em);
-  grid-template-areas: "branding   branding" "usermenu  search" "breadcrumb breadcrumb";
-}
-
-.forum-data {
-  display: grid;
-  grid-area: data;
-  grid-template-areas: "content" "sidebar";
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.forums-header {
-  color: #fff;
-}
-.forums-header a {
-  color: #fff;
+  color: $header-text;
+  
+  a {
+    color: $header-text;
+  }
 }
 
 .forums-logo {
   display: block;
-  padding: 1vw;
+  padding: $gutters;
   vertical-align: top;
 }
 
@@ -277,70 +361,77 @@ body {
   font-family: EuphoriaScript;
 }
 
+
 .forums-search .sr-input {
   border: medium none;
-  border-radius: 4px 0 0 4px;
+  border-radius: $container-border-radius 0 0 $container-border-radius;
   box-shadow: none;
-  color: #404040;
+  color: $search-input;
   height: 39px;
-  max-width: 66%;
-  vertical-align: middle;
-  display: inline;
+  max-width:66%;
+  vertical-align:middle;
+  display:inline;
   padding: 0 20px;
-  line-height: 1;
+  line-height:1;
 }
 
 .forums-search .sr-btn {
   background: none repeat scroll 0 0 #ff7e28;
   border: medium none;
-  border-radius: 0 4px 4px 0;
-  color: #fff;
+  border-radius: 0 $container-border-radius $container-border-radius 0;
+  color: $search-button;
   height: 39px;
-  display: inline;
-  vertical-align: middle;
+  display:inline;
+  vertical-align:middle;
   padding: 0 20px;
-  line-height: 1;
+  line-height:1;
 }
 
 .user-menu {
   padding: 0;
-  margin-top: 14px;
+  margin-top:14px;
   text-align: right;
-}
-.user-menu li {
-  display: inline-block;
-  line-height: 1;
-  margin-left: 1vw;
-}
-.user-menu .glyphicon {
-  margin-right: 0.1em;
-}
-.user-menu a:focus,
-.user-menu a:hover {
-  color: #ff7e28;
-  outline: none;
-  text-decoration: none;
+  li {
+    display: inline-block;
+    line-height: 1;
+    margin-left: $gutters;
+  }
+  
+  .glyphicon {
+    margin-right: .1em;
+  }
+  
+  a:focus,
+  a:hover {
+    color: $user-menu;
+    outline: none;
+    text-decoration:none;
+  }
 }
 
 .forum-sub-header {
   line-height: 2;
-}
-.forum-sub-header a {
-  text-decoration: none;
-}
-.forum-sub-header a:focus, .forum-sub-header a:hover {
-  color: #ff7e28;
-}
-.forum-sub-header img {
-  background-color: #fff;
-  width: 35px;
-  height: 35px;
-  border-radius: 0 0 50% 50%;
-  margin-right: 4px;
-  margin-left: 0;
-  padding: 0 4px 2px 4px;
-  display: block;
-  float: left;
+  
+  a {
+    text-decoration:none;
+    
+    &:focus,
+    &:hover {
+      color: $subheader-hover;
+    }
+  }
+  
+  img {
+    background-color: $subheader-img;
+    width:35px;
+    height:35px;
+    border-radius:0 0 50% 50%;  
+    margin-right:4px;
+    margin-left:0;
+    padding:0 4px 2px 4px;
+    display:block;
+    float:left;
+  }
 }
 
 .forum-name {
@@ -349,27 +440,31 @@ body {
 }
 
 .forum-description {
-  color: #44b3ff;
+  color: $forum-description;
   cursor: help;
   display: block;
-  padding: 0 1vw 0.4em;
-  transition: color 0.3s ease 0.4s;
-  line-height: 1em;
-  padding: 5px 10px;
-}
-.forum-description:focus, .forum-description:hover {
-  color: #ff7e28;
+  padding: 0 $gutters .4em;
+  transition: color .3s ease .4s;
+  line-height:1em;
+  padding:5px 10px;
+  
+  &:focus,
+  &:hover {
+    color: $forum-description-hover;
+  }
 }
 
 .forum-thread-title {
-  color: #ff7e28;
+  color: $thread-title;
   font-size: 1.1em;
   font-weight: normal;
 }
 
+
 /**
  *   4. Forum styles ------------------------------------------------
  */
+
 .forum-item.old {
   font-weight: normal;
 }
@@ -386,8 +481,8 @@ body {
   font-weight: bold;
 }
 
-.forum-topic-actions {
-  margin-top: 10px;
+.forum-topic-actions{
+  margin-top:10px;
 }
 
 .forum-sidebar {
@@ -400,13 +495,13 @@ body {
 
 .forum-footer {
   text-align: center;
-  color: #cccccc;
-  padding: 2vw;
+  color: $footer;
+  padding: $gutters*2;
 }
 
 .forum-footer a {
-  color: #44b3ff;
-  text-decoration: none;
+  color: $footer-link;
+  text-decoration:none;
 }
 
 a.forum-dropdown {
@@ -419,9 +514,10 @@ a.forum-dropdown {
 }
 
 .forum-body {
-  padding: 1vw 0;
+  padding: $gutters 0;
 }
 
+// Is the code below redundant now? I (@prkos) can't find HTML for this 
 ul.forum-nav {
   display: inline-block;
   margin: 0;
@@ -446,6 +542,7 @@ ul.forum-nav li a {
   padding: 0 20px;
   width: 100%;
 }
+///////////////////////////////////////// end redundant?
 
 .unchanged {
   font-weight: bold;
@@ -456,6 +553,7 @@ ul.forum-nav li a {
   margin: -2px 2px 0px 0px;
 }
 
+/////////////////////////////////////////  redundant?
 ul.forum-nav li a i {
   color: #6a6a6a;
   font-size: 16px;
@@ -465,36 +563,47 @@ ul.forum-nav li a i {
 ul.forum-nav li a span.label {
   margin-top: 13px;
 }
+///////////////////////////////////////// end redundant?
 
-ul.labels-info h4 {
-  color: #404040;
-  font-size: 13px;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 5px;
-  text-transform: uppercase;
-}
-ul.labels-info a {
-  border-radius: 0;
-  color: #6a6a6a;
-}
-ul.labels-info a:focus, ul.labels-info a:hover {
-  background: none repeat scroll 0 0 #d5d7de;
-  color: #6a6a6a;
-}
-ul.labels-info i {
-  padding-right: 10px;
+// Keep ul in selector because of bootstrap specificity
+ul.labels-info {
+  h4 {
+    color: $forum-list-heading;
+    font-size: 13px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    text-transform: uppercase;
+  }
+  
+  a {
+    border-radius: 0;
+    color: #6a6a6a;
+    
+    &:focus,
+    &:hover {
+      background: none repeat scroll 0 0 #d5d7de;
+      color: #6a6a6a;
+    }
+  }
+  /////////////////////////////////////////  redundant?
+  i {
+    padding-right: 10px;
+  }
+  ///////////////////////////////////////// end redundant?
 }
 
+/////////////////////////////////////////  redundant?
 .nav.nav-pills.nav-stacked.labels-info p {
   color: #9d9f9e;
   font-size: 11px;
   margin-bottom: 0;
   padding: 0 22px;
 }
+///////////////////////////////////////// end redundant?
 
 .table-forum .search-context td {
-  border-top: 1px solid #eeeeee;
+  border-top: 1px solid $forum-search-border;
   color: #999;
 }
 
@@ -565,7 +674,7 @@ ul.forum-pagination li {
   opacity: 0.3;
 }
 
-.forum-option .chk-all input[type=checkbox] {
+.forum-option .chk-all input[type="checkbox"] {
   margin-top: 0;
 }
 
@@ -604,12 +713,12 @@ ul.forum-pagination li {
 }
 
 .modal-header h4.modal-title {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 300;
 }
 
 .modal-body label {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans",sans-serif;
   font-weight: 400;
 }
 
@@ -709,25 +818,22 @@ ul.forum-pagination li {
   .files .btn span {
     display: none;
   }
-
   .files .preview * {
     width: 40px;
   }
-
   .files .name * {
     display: inline-block;
     width: 80px;
     word-wrap: break-word;
   }
-
   .files .progress {
     width: 20px;
   }
-
   .files .delete {
     width: 60px;
   }
 }
+
 ul {
   list-style-type: none;
   padding: 0px;
@@ -735,10 +841,11 @@ ul {
 }
 
 .highlighted {
-  background-color: #fd0;
+  background-color: $highlight-y;
 }
 
 /* -------------------- 4.2 comment views --------------------- */
+
 .comment {
   list-style: none;
   margin: 0 0 4em;
@@ -747,6 +854,7 @@ ul {
   position: relative;
 }
 
+///////////////////////////////////////// redundant?
 .panel-resource {
   text-align: center;
   display: block;
@@ -756,8 +864,9 @@ ul {
 .panel-resource img {
   max-width: 100%;
   max-height: 400px;
-  padding: 1vw 0;
+  padding: $gutters 0;
 }
+///////////////////////////////////////// end redundant?
 
 #id_honeypot {
   display: none;
@@ -775,7 +884,7 @@ ul {
 }
 
 .emoji-selector .dropdown-menu {
-  padding: 4px;
+  padding: $container-border-radius;
 }
 
 .emoji-selector .dropdown-menu img {
@@ -796,10 +905,11 @@ ul {
 
 .emoji-bar img.emoji {
   border-radius: 2em;
-  background-color: #ebfcff;
+  @extend %bubble-edge;
+  background-color: $forum-comment-theme;
   font-size: inherit;
-  margin: 0 0 0.3em 0.3em;
-  padding: 0.4em;
+  margin: 0 0 .3em .3em;
+  padding: .4em;
   width: 2.6em;
 }
 
@@ -828,6 +938,7 @@ h3 small.label {
 }
 
 /* -------------------- 4.3 Attachments --------------------- */
+
 .inline-attachments {
   padding-top: 0px;
   margin-bottom: 15px;
@@ -852,6 +963,7 @@ h3 small.label {
 }
 
 /* -------------------- 4.4 Users online palette ----------------- */
+
 #users-online {
   padding: 8px;
 }
@@ -923,8 +1035,10 @@ h3 small.label {
 }
 
 /* -------------------- 4.5 Forum topic --------------------- */
+
+
 .forum-comment-first-text {
-  background-color: #eeeeee;
+  background-color: $forum-comment-first;
   border-radius: 1em;
   margin-bottom: 2em;
   padding: 1em;
@@ -935,7 +1049,7 @@ h3 small.label {
 }
 
 .comment-img {
-  margin: 0 1em 0.6em 0;
+  margin: 0 1em .6em 0;
 }
 
 .comment-img .img-circle {
@@ -947,21 +1061,24 @@ h3 small.label {
 .comment-header-group::before,
 .comment-header-group,
 .comment-time {
-  background-color: #ebfcff;
+  background-color: $forum-comment-theme;
 }
 
-.not-public .img-circle,
-.not-public .comment-header-group::before,
-.not-public .emoji-bar img.emoji {
-  background-color: #ffebeb;
-}
-.not-public .comment-text {
-  color: #640000;
+.not-public {
+  .img-circle,
+  .comment-header-group::before,
+  .emoji-bar img.emoji {
+    background-color: $forum-comment-unpub;
+  }
+  .comment-text {
+    color: $forum-comment-unpub-text;
+  }
 }
 
 .comment-author-address img.emoji {
-  background-color: #ffeeeb;
+  background-color: $forum-author-badge;
   border-radius: 2em;
+  @extend %bubble-edge;
   font-size: inherit;
 }
 
@@ -971,19 +1088,20 @@ h3 small.label {
 .comment-edit,
 .comment-report {
   border-radius: 2em;
+  @extend %bubble-edge;
   display: inline-block;
-  font-size: 0.8em;
+  font-size: .8em;
   line-height: 1;
-  margin-bottom: 0.4em;
-  padding: 0.7em 0.7em 0.5em;
+  margin-bottom: .4em;
+  padding: .7em .7em .5em;
   text-align: center;
-  transition: all 0.3s ease 0s;
+  transition: all .3s ease 0s;
 }
 
 .comment-first-link {
   background-color: #fff;
-  margin: 0 0 0.5em 0.5em;
-  padding: 0.7em;
+  margin: 0 0 .5em .5em;
+  padding: .7em;
   position: relative;
   right: -1em;
   top: -1em;
@@ -993,15 +1111,14 @@ h3 small.label {
 .comment-remove .glyphicon,
 .comment-edit .glyphicon,
 .comment-report .glyphicon {
-  top: 0;
-  /* override bootstrap */
+  top: 0; /* override bootstrap */
 }
 
 .comment-count {
-  background-color: #f0ebff;
+  background-color: $forum-comment-count;
   color: #1b006c;
   margin: 0;
-  padding: 0.7em 0.6em 0.7em;
+  padding: .7em .6em .7em;
 }
 
 .comment-count:focus,
@@ -1050,144 +1167,151 @@ h3 small.label {
   padding: 0;
 }
 
+
+
 /*
  *   5. Bootstrap form styles additions and overrides ---------------
  */
+
 .btn-sm,
 .btn-group-sm > .btn {
   border-radius: 2em;
 }
 
-.jumbotron {
-  /*overide bootstrap*/
-  padding: 20px;
+.jumbotron{ /*overide bootstrap*/
+  padding:20px;  
 }
-
 .input-group-btn > .btn {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
-
-.forum-sub-header .glyphicon {
-  color: #999;
+.forum-sub-header .glyphicon{
+    color:#999;
 }
 
 /*
  *   6. Wider screen layout -----------------------------------------
  */
+
+$image-unit: 120px;
+$image-unit-half: $image-unit / 2;
+
 /*
  *   7. Media Queries -----------------------------------------
  */
-/* -------------------- 7.1 (Override 320-360 size specific)---- */
-@media (min-width: 360px) {
-  .user-menu {
-    margin-top: 25px;
-  }
 
+/* -------------------- 7.1 (Override 320-360 size specific)---- */
+@media (min-width: 360px){
+  .user-menu{
+    margin-top:25px;
+  }
   .forum-sub-header {
-    margin: 0 1vw 0 2vw;
+    margin:0 $gutters 0 ($gutters*2);
   }
 }
+
 /* -------------------- 7.2 --------------------- */
 @media (min-width: 700px) and (min-width: 40em) {
+  
   /* -------------------- main layout ------------------------ */
+  
   .forum-data {
-    grid-template-areas: "sidebar content";
+    grid-template-areas: 
+      "sidebar content";
     grid-template-columns: fit-content(22em) 1fr;
   }
-
-  .forums-branding {
+  .forums-branding{
     grid-area: branding;
     border-bottom: none;
-    height: 70px;
+    height:70px;
   }
-
   .forums-header {
     grid-template-columns: 1fr fit-content(22em);
-    grid-template-areas: "branding  search" "branding  usermenu" "breadcrumb breadcrumb";
+    grid-template-areas:
+      "branding  search"
+      "branding  usermenu"
+      "breadcrumb breadcrumb";
   }
-
   .forum-content {
-    border-radius: 4px;
+    border-radius: $container-border-radius;
     grid-area: content;
-    padding: 1vw;
+    padding: $gutters;
   }
-
+  
   .forum-sidebar {
-    border-radius: 4px;
+    border-radius: $container-border-radius;
     grid-area: sidebar;
-    margin-right: 1vw;
-    min-width: 270px;
-    margin-top: 0;
+    margin-right: $gutters;
+    min-width:270px;
+    margin-top:0;
   }
-
+  
   .forum-footer {
-    padding: 1vw 0;
+    padding: $gutters 0;
   }
-
+  
   /* -------------------- header layout ---------------------- */
+ 
   .forums-branding {
     grid-area: branding;
-    min-height: 100px;
+    min-height:100px;
   }
-
+  
   .forums-search {
     grid-area: search;
-    margin-top: 0px;
+    margin-top:0px;
   }
-
+  
   .user-menu {
     grid-area: usermenu;
-    margin-top: 0px;
+    margin-top:0px;
   }
 
   .forum-sub-header {
     border-top: 1px solid #444;
     grid-area: breadcrumb;
-    margin: 0 1vw;
+    margin: 0 $gutters;
+    
+    img {
+      margin-left:0;
+    }
   }
-  .forum-sub-header img {
-    margin-left: 0;
-  }
-
+ 
   /* -------------------- comment layout --------------------- */
   .comment {
     display: grid;
     /* .comment-count | .comment-header-group SPANS 3 | .buttons-group SPANS 3 */
-    grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
+    grid-template-columns: min-content $image-unit 1fr 1fr max-content max-content max-content;
     grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
-
+  
   .buttons-group {
     top: 0;
     width: auto;
     /* override mobile */
   }
-
+  
   .comment-count,
-.comment-remove,
-.comment-edit,
-.comment-report {
+  .comment-remove,
+  .comment-edit,
+  .comment-report {
     float: right;
-    margin: 0 0 0 0.4em;
+    margin: 0 0 0 .4em;
   }
-
   .comment-edit {
     position: relative;
-    top: -0.5em;
+    top: -.5em;
   }
-
   .comment-text {
     grid-column-start: 3;
     grid-column-end: span 5;
     grid-row-start: 2;
     grid-row-end: span 4;
-    padding: 1.6em 2.4vw 0.6em;
+    padding: 1.6em 2.4vw .6em;
     z-index: 5;
     /* more than .comment-header-group */
   }
-
   .comment-attachments {
     grid-column-start: 3;
     grid-column-end: span 5;
@@ -1196,7 +1320,6 @@ h3 small.label {
     margin: 0;
     padding: 0 2.4vw;
   }
-
   .comment-header-group {
     background: none;
     grid-column-start: 2;
@@ -1208,7 +1331,7 @@ h3 small.label {
     z-index: 1;
     /* less than .comment-text */
   }
-
+  
   /* gives the top background line that goes behind the circle image */
   .comment-header-group::before {
     border-radius: 2em;
@@ -1216,25 +1339,22 @@ h3 small.label {
     display: block;
     height: 1.8em;
     /* half the image width */
-    left: 60px;
+    left: $image-unit / 2;
     position: absolute;
     top: 0;
     /* subtract half the image width */
     width: calc(100% - 60px);
     z-index: -1;
   }
-
   .img-circle {
-    height: 120px;
+    height: $image-unit;
     padding: 20px;
-    width: 120px;
+    width: $image-unit;
   }
-
   .comment-time {
     background-color: transparent;
     float: right !important;
   }
-
   .buttons-group {
     grid-column-start: 5;
     grid-column-end: span 3;
@@ -1242,7 +1362,6 @@ h3 small.label {
     grid-row-end: span 1;
     margin-top: 0;
   }
-
   .comment-count {
     grid-column-start: 1;
     grid-column-end: span 1;
@@ -1250,21 +1369,18 @@ h3 small.label {
     grid-row-end: span 1;
     justify-self: start;
   }
-
   .comment-footer {
     grid-column-start: 1;
     grid-column-end: span 2;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
-
   .emoji-selector {
     grid-column-start: 1;
     grid-column-end: span 1;
     grid-row-start: 3;
     grid-row-end: span 1;
   }
-
   .emoji-bar {
     grid-column-start: 1;
     grid-column-end: span 2;
@@ -1274,7 +1390,6 @@ h3 small.label {
     justify-self: end;
     text-align: right;
   }
-
   /* Attachments dropdown */
   .check-dropdown {
     grid-column-start: 1;
@@ -1288,15 +1403,23 @@ h3 small.label {
 /* -------------------- 7.3 --------------------- */
 @media (min-width: 1400px) and (min-width: 90em) {
   .forums-app {
-    width: 75vw;
-    margin: 0 auto;
-    min-width: 1400px;
+    width:75vw;
+    margin:0 auto;
+    min-width:1400px;
   }
 }
+
 /*
  *   8. Sections specific ---------------------------------------
  */
+
+ 
 /* ------- 8.1 Forums list (.forums-list) --------- */
+
+.forums-list {
+}
+
 /* ------- 8.2  Forum topic list (.forums-topic-list) --------- */
 
-/*# sourceMappingURL=forum.css.map */
+.forums-topic-list {
+}

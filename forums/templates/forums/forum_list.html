@@ -1,6 +1,8 @@
 {% extends "forums/base.html" %}
 {% load i18n static %}
-
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-list">
+{% endblock "wrapper" %}
 {% block "supercontent" %}
     <div class="jumbotron">
   {% if request.user.is_authenticated %}

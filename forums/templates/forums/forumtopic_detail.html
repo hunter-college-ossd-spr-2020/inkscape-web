@@ -1,6 +1,8 @@
 {% extends "forums/base.html" %}
 {% load i18n static forum_comments inkscape comments %}
-
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-topic-detail">
+{% endblock "wrapper" %}
 {% block "forumheader" %}
 <div class="forum-sub-header">
     <a class="forum-name" href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}{{ object.forum }}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
@@ -103,7 +105,7 @@
             </div>
 
             {% include "forums/attachment_draw.html" %}
-            <div class="row">
+            <div class="row forum-topic-actions">
               <span class="btn-group pull-left" title="{% trans "Add attachments" %}">
                 <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
               </span>
