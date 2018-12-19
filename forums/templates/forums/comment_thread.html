@@ -73,6 +73,7 @@
             {% if request.user.is_moderator or comment.user == request.user %}
               <div class="buttons-group">
                 {% if request.user.is_moderator %}
+                  <a class="text-muted comment-remove" href="{% url "forums:comment_remove" comment.pk %}?next={{ request.path }}%3Frem={{ comment.pk }}" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>
                   <a class="text-muted comment-edit" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}%3Fapprove={{ comment.pk }}%23c{{ comment.pk }}" title="{% trans "Approve (make public)" %}"><span class="glyphicon glyphicon-ok"></span></a>
                 {% endif %}
               </div>

@@ -29,6 +29,9 @@
             <a href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}%3Fapprove={{ comment.pk }}%23c{{ comment.pk }}" class="btn btn-sm btn-success" title="{% trans "Approve (make public)" %}">
               <span class="glyphicon glyphicon-ok-sign"></span>
             </a>
+            <a href="{% url "forums:comment_remove" comment.pk %}?next={{ request.path }}%3Frem={{ comment.pk }}" class="btn btn-sm btn-danger" title="{% trans "Remove" %}">
+              <span class="glyphicon glyphicon-remove"></span>
+            </a>
           {% endif %}
         </td>
         <td class="view-message text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</td>
