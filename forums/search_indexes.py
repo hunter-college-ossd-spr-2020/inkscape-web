@@ -33,7 +33,7 @@ class TopicIndex(SearchIndex, Indexable):
     Index of the topics
     """
     text = CharField(document=True, use_template=True)
-    last_posted = DateTimeField(stored=True, model_attr='last_posted')
+    last_posted = DateTimeField(stored=True, model_attr='last_posted', null=True)
     subject = CharField(stored=True, model_attr='subject', indexed=True)
 
     def get_model(self):
@@ -41,10 +41,6 @@ class TopicIndex(SearchIndex, Indexable):
 
     def get_updated_field(self):
         return 'last_posted'
-
-    def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
-        return self.get_model().objects.none()
 
 class CommentIndex(SearchIndex, Indexable):
     """
@@ -65,4 +61,4 @@ class CommentIndex(SearchIndex, Indexable):
 
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
-        return self.get_model().objects.filter(is_removed=False, is_public=True).filter(pk=1906)
+        return self.get_model().objects.filter(is_removed=False, is_public=True)
