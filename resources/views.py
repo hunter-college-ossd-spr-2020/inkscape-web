@@ -173,6 +173,11 @@ class UploadJson(UploadResource):
     """Upload with Json response"""
     form_class = ResourceAddForm
 
+    def form_invalid(self, form):
+        super().form_invalid(form)
+        return JsonResponse(form.errors, status=400,
+                            content_type='application/json; charset=utf-8')
+
     def form_valid(self, form):
         super().form_valid(form)
         return JsonResponse(form.instance.as_json(), safe=False,

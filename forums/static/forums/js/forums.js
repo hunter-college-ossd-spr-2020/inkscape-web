@@ -117,7 +117,12 @@ $(document).ready(function() {
               var datum = JSON.parse(xhr.responseText);
               add_attachment(datum, {'update': 1, 'inline': datum.is_image});
           } else {
-              alert("Error uploading!");
+              var datum = JSON.parse(xhr.responseText);
+              if(datum.download) {
+                  alert("Problem uploading: " + datum.download);
+              } else {
+                  alert("Problem uploading: " + datum);
+              }
           }
       };
       xhr.send(formData);
