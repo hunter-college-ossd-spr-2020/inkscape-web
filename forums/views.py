@@ -180,6 +180,7 @@ class CommentModPublic(ModeratorRequired, FieldUpdateView):
             if comments.count() >= 2:
                 self.add_permissions(obj.user)
         self.sync_topic(obj, obj.get_topic())
+        self.record_action(instance=obj, field=self.field, value=is_public)
         return super().field_changed(obj, is_public=is_public)
 
     @staticmethod
@@ -206,6 +207,10 @@ class CommentModRemove(ModeratorRequired, FieldUpdateView):
     model = Comment
     field = 'is_removed'
     value = '!'
+
+    def field_changed(self, obj, is_removed): # pylint: disable=arguments-differ
+        """Record the removal action in the moderators log"""
+        self.record_action(instance=obj, field=self.field, value=is_removed)
 
 class CommentModList(ModeratorRequired, ForumMixin, ListView):
     """
