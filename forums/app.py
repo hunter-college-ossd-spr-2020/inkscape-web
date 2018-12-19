@@ -113,7 +113,8 @@ class ForumsConfig(AppConfig):
         """Called when any comment is saved"""
         if created:
             self.create_comment(instance, **kw)
-        elif instance.user:
+
+        if instance.user:
             self.update_topic(instance.get_topic(), instance)
 
         # The alert is focused on topics, not comments
@@ -156,4 +157,4 @@ class ForumsConfig(AppConfig):
         if topic is not None:
             topic.last_username = instance.user.username
             topic.has_attachments = bool(topic.has_attachments or instance.attachments.count())
-            topic.save()
+            topic.save(update_fields=['last_username', 'has_attachments'])
