@@ -5,4 +5,4 @@
 ---
 {{ comment.comment|striptags }}
 ----
-{% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}{% autoescape off %}
+{% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}{% endautoescape %}
