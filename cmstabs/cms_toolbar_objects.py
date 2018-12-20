@@ -41,7 +41,8 @@ class ObjectsToolbar(SubToolbar):
     """Adds an Objects menu item for quick admin access to current context"""
     def populate(self):
         if self.request.user.is_authenticated() and self.request.user.is_staff:
-            self.add_menu(self.toolbar.response_context)
+            if hasattr(self.toolbar, 'response_context'):
+                self.add_menu(self.toolbar.response_context)
 
     def add_menu(self, context):
         """Do the population now we have permission"""
