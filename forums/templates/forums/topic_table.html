@@ -7,7 +7,13 @@
           {% if show_forum %}
           <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}" title="{{ topic.forum }}"/></td>
           {% else %}
-          <a {% if request.user.is_authenticated %}href="{% url "alert.subscribe" "forums.forum_topic_alert" topic.pk %}?next={{ request.path }}&post=1"{% endif %}>
+          <a {% if request.user.is_authenticated %}
+               {% if not topic.is_subscribed %}
+                 href="{% url "alert.subscribe" "forums.forum_topic_alert" topic.pk %}?next={{ request.path }}&post=1" title="{% trans "Subscribe" %}"
+               {% else %}
+                 href="{% url "alert.unsubscribe" "forums.forum_topic_alert" topic.pk %}?next={{ request.path }}&post=1" title="{% trans "Unsubscribe" %}"
+               {% endif %}
+            {% endif %}>
             <span class="glyphicon glyphicon-{% if topic.locked %}lock{% elif topic.sticky %}bookmark{% elif topic.is_subscribed %}heart text-danger{% elif request.user.is_authenticated %}heart-empty{% else %}star-empty{% endif %}"></span>
           </a>
           {% endif %}

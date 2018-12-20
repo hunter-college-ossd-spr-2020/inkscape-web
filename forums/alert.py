@@ -21,6 +21,7 @@
 Subscriptions and alerts for forums
 """
 from django.utils.translation import ugettext_lazy as _
+from django import forms
 
 from alerts.base import BaseAlert
 from alerts.models import AlertSubscription, UserAlert
@@ -48,13 +49,20 @@ class ForumTopicAlert(BaseAlert):
     subscribe_any = True
     subscribe_own = False
 
+    def get_custom_fields(self, data, user=None):
+        """Get some subscription settings"""
+        return [('auto', forms.BooleanField(required=False,\
+                 initial=True, label=_("Automatic"),\
+                 help_text=_("Automatically subscribe to any topic I reply to.")))]
+
     @classmethod
-    def subscribe(cls, user, topic):
+    def auto_subscribe(cls, user, topic):
         """Add the user to the topic"""
         alert = cls.get_alert_type()
-        (obj, created, previous) = \
-            alert.subscriptions.get_or_create(user=user, target=topic.pk)
-        return created
+        settings = user.alert_settings.get(alert=alert).get_custom_settings()
+        if settings.get('auto', True):
+            return alert.subscriptions.get_or_create(user=user, target=topic.pk)[1]
+        return False
 
     @classmethod
     def subscriptions_for(cls, user):

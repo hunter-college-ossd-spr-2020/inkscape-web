@@ -162,7 +162,7 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         self.save_attachments(comment)
 
         # Always subscribe when creating a new topic, made after comment.save
-        ForumTopicAlert.subscribe(self.user, comment.get_topic())
+        ForumTopicAlert.auto_subscribe(self.user, comment.get_topic())
         return comment
 
 
@@ -250,7 +250,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         comment.save()
 
         # Always subscribe when creating a new topic, made after comment.save
-        ForumTopicAlert.subscribe(self.user, topic)
+        ForumTopicAlert.auto_subscribe(self.user, topic)
 
         self.save_attachments(comment)
         return self.target_object
