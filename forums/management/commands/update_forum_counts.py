@@ -31,19 +31,6 @@ class Command(BaseCommand):
 
     def handle(self, **_):
         for forum in Forum.objects.all():
-            forum.post_count = forum.comments.count()
-            forum.save(update_fields=['post_count'])
+            forum.refresh_meta_data()
         for topic in ForumTopic.objects.all():
-            if topic.first_username is None:
-                comment = topic.comments.first()
-                if comment:
-                    topic.first_username = comment.user.username
-            try:
-                topic.post_count = topic.comments.count()
-            except topic.forum.model_class().DoesNotExist:
-                # Topic object disapeared.
-                logging.warning("Removing topic for missing object: %s", str(topic))
-                topic.delete()
-                continue
-
-            topic.save(update_fields=['post_count', 'first_username'])
+            topic.refresh_meta_data()

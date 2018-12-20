@@ -126,6 +126,17 @@ class Forum(Model):
             object_pk__in=objects.values_list('str_id'),
         )
 
+    def refresh_meta_data(self, last=None):
+        """Refresh all the meta-data fields"""
+        if last is None:
+            last = self.comments.last()
+            self.post_count = self.comments.count()
+        else:
+            self.post_count += 1
+        if last:
+            self.last_posted = last.submit_date
+        self.save(update_fields=['post_count', 'last_posted'])
+
     @property
     def sync_config(self):
         """Return a configuration for forum sync plugins"""
@@ -286,19 +297,27 @@ class ForumTopic(Model):
             return reverse('forums:topic', kwargs={'forum':self.forum.slug, 'slug':self.slug})
         return "error"
 
-    def refresh_meta_data(self):
+    def refresh_meta_data(self, last=None, first=None):
         """Refresh all the meta-data fields"""
-        first = self.comments.first()
-        last = self.comments.last()
-        if first and last:
+        if first is None:
+            first = self.comments.first()
+        if last is None:
+            last = self.comments.last()
             self.post_count = self.comments.count()
+        else:
+            self.post_count += 1
+
+        if first:
             self.first_posted = first.submit_date
-            self.last_posted = last.submit_date
             self.first_username = first.user.username
+
+        if last:
+            self.last_posted = last.submit_date
             self.last_username = last.user.username
 
         self.has_attachments = self.comments.filter(attachments__isnull=False).count()
-        self.save()
+        self.save(update_fields=['post_count', 'first_posted', 'last_posted',
+                                 'first_username', 'last_username'])
 
     def save(self, **kw):
         """Save this topic and generate a slug if needed"""

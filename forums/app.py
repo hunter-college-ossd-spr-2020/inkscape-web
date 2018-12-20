@@ -28,8 +28,6 @@ from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_save
 
-
-
 def post_create(model, func):
     """Signal wrapper around post_save that calls on create only"""
     def _inner(sender, instance, created=False, **kw):
@@ -115,7 +113,7 @@ class ForumsConfig(AppConfig):
             self.create_comment(instance, **kw)
 
         if instance.user:
-            self.update_topic(instance.get_topic(), instance)
+            instance.get_topic().refresh_meta_data()
 
         # The alert is focused on topics, not comments
         from .alert import ForumTopicAlert
@@ -133,28 +131,11 @@ class ForumsConfig(AppConfig):
 
         for forum in Forum.objects.filter(content_type=instance.content_type):
             try:
-                (topic, _) = ForumTopic.objects.get_or_create(forum_id=forum.pk,
+                (topic, create) = ForumTopic.objects.get_or_create(forum_id=forum.pk,
                                   object_pk=instance.object_pk, defaults=defaults)
             except ForumTopic.MultipleObjectsReturned:
                 continue
 
-            self.update_times(forum, topic, instance)
-
-        obj = instance.content_object
-        if isinstance(instance.content_object, ForumTopic):
-            self.update_times(obj.forum, obj, instance)
-
-    def update_times(self, forum, topic, instance):
-        """Updates the topic and forum last modified stamp"""
-        for obj in (forum, topic):
-            if not obj.last_posted or obj.last_posted < instance.submit_date:
-                obj.post_count += 1
-                obj.last_posted = instance.submit_date
-                obj.save(update_fields=['last_posted', 'post_count'])
-
-    def update_topic(self, topic, instance):
-        """Updates other meta data for quick access from the topic"""
-        if topic is not None:
-            topic.last_username = instance.user.username
-            topic.has_attachments = bool(topic.has_attachments or instance.attachments.count())
-            topic.save(update_fields=['last_username', 'has_attachments'])
+        topic = instance.get_topic()
+        topic.refresh_meta_data(instance)
+        topic.forum.refresh_meta_data(instance)
