@@ -3,7 +3,24 @@
  */
 var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '2622', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438'];
 
+function refresh_render_time() {
+  $(".render-time").each(function() {
+    var time = new Date($(this).attr('title'));
+    var since = timeSince(time);
+    if(since != '0 seconds') {
+      $('i', this).text(since);
+      if(since.indexOf('seconds') == -1) {
+        // Minutes and above
+        $(this).addClass('text-danger');
+      }
+    }
+  });
+}
+window.setInterval(refresh_render_time, 60000);
+
 $(document).ready(function() {
+  refresh_render_time();
+
   /* Each haveseen item is a HTML element that expresses how the user
      has seen this item. Once seen, the date and the counts are recorded
      for use in listings of this item. */
@@ -318,3 +335,19 @@ function record_selected_text() {
 
 $(document).on('mouseup', record_selected_text);
 $(document).on('onkeyup', record_selected_text);
+
+function timeSince(date) {
+  var seconds = Math.floor((new Date() - date) / 1000);
+  var interval = Math.floor(seconds / 31536000);
+
+  if (interval > 1) {return interval + " years";}
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) {return interval + " months";}
+  interval = Math.floor(seconds / 86400);
+  if (interval > 1) {return interval + " days";}
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {return interval + " hours";}
+  interval = Math.floor(seconds / 60);
+  if (interval > 1) {return interval + " minutes";}
+  return Math.floor(seconds) + " seconds";
+}

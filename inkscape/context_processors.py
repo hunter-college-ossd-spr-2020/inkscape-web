@@ -18,48 +18,45 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
 import sys
 import email
+
 import django
-import logging
-
-from os.path import isfile, join
-from collections import OrderedDict
-
 from django.conf import settings
+from django.utils.timezone import now
 
 def tracker_data(request):
+    """Add tracker data for Piwik to template"""
     return {
-      'TRACKER_URL': getattr(settings, 'PIWIK_URL', None),
-      'TRACKER_API_KEY': getattr(settings, 'PIWIK_API_KEY', None),
-      'TRACKER_SIDE_ID': getattr(settings, 'PIWIK_SIDE_ID', 1),
+        'TRACKER_URL': getattr(settings, 'PIWIK_URL', None),
+        'TRACKER_API_KEY': getattr(settings, 'PIWIK_API_KEY', None),
+        'TRACKER_SIDE_ID': getattr(settings, 'PIWIK_SIDE_ID', 1),
     }
 
 PATH = settings.PROJECT_PATH
-INKSCAPE_VERSION = ''
 WEBSITE_VERSION = ''
 WEBSITE_REVISION = ''
 DONATE_NOW = False
 
-VERSION_FILE = join(PATH, 'version')
-if isfile(VERSION_FILE):
-    emai_msg = email.message_from_file(open(VERSION_FILE))
-    WEBSITE_VERSION = emai_msg["version"]
-    INKSCAPE_VERSION = emai_msg["inkscape"]
-    DONATE_NOW = emai_msg.get("donate", None)
+VERSION_FILE = os.path.join(PATH, 'version')
+if os.path.isfile(VERSION_FILE):
+    MSG = email.message_from_file(open(VERSION_FILE))
+    WEBSITE_VERSION = str(MSG["version"])
+    DONATE_NOW = bool(MSG.get("donate", False))
 
-REVISION_FILE = join(PATH, 'data', 'revision')
-if isfile(REVISION_FILE):
+REVISION_FILE = os.path.join(PATH, 'data', 'revision')
+if os.path.isfile(REVISION_FILE):
     with open(REVISION_FILE, 'r') as fhl:
         WEBSITE_REVISION = fhl.read().strip()
 
 def version(request):
+    """Return useful version information to templates"""
     return {
-      'DONATE_NOW': DONATE_NOW,
-      'INKSCAPE_VERSION': INKSCAPE_VERSION,
-      'WEBSITE_REVISION': WEBSITE_REVISION,
-      'WEBSITE_VERSION': WEBSITE_VERSION,
-      'DJANGO_VERSION': django.get_version(),
-      'PYTHON_VERSION': sys.version.split()[0]
+        'RENDER_TIME': now(),
+        'DONATE_NOW': DONATE_NOW,
+        'WEBSITE_REVISION': WEBSITE_REVISION,
+        'WEBSITE_VERSION': WEBSITE_VERSION,
+        'DJANGO_VERSION': django.get_version(),
+        'PYTHON_VERSION': sys.version.split()[0]
     }
-

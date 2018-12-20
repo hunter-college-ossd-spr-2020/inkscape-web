@@ -168,7 +168,7 @@
             {% endblock %}
         </div>
         <div class="forum-footer text-muted">
-          <p>Forums developed by Martin, Jabier, Mihaela. <a href="{% url "contact" %}?next={{ request.path }}">Contact Us</a> if you have a problem using the forum.</p>
+            <p>Forums developed by Martin, Jabier, Mihaela. <a href="{% url "contact" %}?next={{ request.path }}">Contact Us</a> if you have a problem using the forum. <span class="render-time" title="{{ RENDER_TIME.isoformat }}"><span class="glyphicon glyphicon-time"></span> <i></i></p>
         </div>
     </div>{# end .container #}
     {% endblock %}
