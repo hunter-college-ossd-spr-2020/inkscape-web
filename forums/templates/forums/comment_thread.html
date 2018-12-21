@@ -5,14 +5,14 @@
 
       {# Start forum thread comment loop #}
       {% for comment in comment_list %}
+        <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
         {% url 'view_profile' comment.user.username as profile_url %}
         
         {% if comment.is_public %}
 
         <li class="comment left clearfix">
           {# Start comment header info #}
-          <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
-          <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ forloop.counter }}</a>
+          <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
 
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}">
@@ -63,8 +63,7 @@
           
           <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}">
             {# Start comment header info #}
-            <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
-            <a class="pull-left comment-count" title="{% trans "Link" %}" href="{% get_comment_permalink comment %}">#{{ forloop.counter }}</a>
+            <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}">
                   <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }}</a></address> 
