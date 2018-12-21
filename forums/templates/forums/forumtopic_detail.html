@@ -19,8 +19,8 @@
   {% if request.user.is_moderator %}
     <div class="btn-group">
       <a href="#" class="btn btn-sm btn-default disabled">{% trans "Moderator Tools:" %}</a>
-      <a href="{% url "forums:topic_split" object.slug %}" class="btn btn-sm btn-default" title="{% trans "Split out Comments" %}"><span class="glyphicon glyphicon-export"></span></a>
-      <a href="{% url "forums:topic_merge" object.slug %}" class="btn btn-sm btn-default" title="{% trans "Merge into another Topic" %}"><span class="glyphicon glyphicon-import"></span></a>
+      <a href="{% url "forums:topic_split" object.slug %}" class="btn btn-sm btn-default" title="{% trans "Split out Comments" %}"><span class="iw-flow-split"></span></a>
+      <a href="{% url "forums:topic_merge" object.slug %}" class="btn btn-sm btn-default" title="{% trans "Merge into another Topic" %}"><span class="iw-flow-merge"></span></a>
       <a href="{% url "forums:topic_move" object.slug %}" class="btn btn-sm btn-primary" title="{% trans "Move Topic" %}"><span class="glyphicon glyphicon-move"></span></a>
       <a href="{% url "forums:topic_edit" object.slug %}" class="btn btn-sm btn-warning" title="{% trans "Edit Topic" %}"><span class="glyphicon glyphicon-edit"></span></a>
       <a href="{% url "forums:topic_delete" object.slug %}" class="btn btn-sm btn-danger" title="{% trans "Delete Topic" %}"><span class="glyphicon glyphicon-remove-sign"></span></a>

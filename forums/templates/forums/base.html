@@ -7,8 +7,12 @@
 
     <link rel="shortcut icon" href="{% static "forums/images/logo.svg" %}"/>
 
+    {% if rss %}
+      <link rel="alternate" type="application/rss+xml" title="{% trans "RSS Feed" %}" href="{{ rss }}" />
+    {% endif %}
     {% block "css" %}
     <link href="{% static "forums/css/bootstrap.min.css" %}" rel="stylesheet" id="bootstrap-css">
+    <link href="{% static "forums/css/iw.css" %}" rel="stylesheet" id="iw-icons-css">
     <link href="{% static "forums/css/forum.css" %}" rel="stylesheet" id="forum-css">
     {% endblock %}
 
@@ -49,6 +53,9 @@
             <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
               {% if request.user.is_staff %}
                 <li class="user-logout"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
+              {% endif %}
+              {% if rss %}
+                <li class="thread-rss"><a href="{{ rss }}"><span class="iw-rss"></span></a></li>
               {% endif %}
             {% endif %}
           </ul>
@@ -107,10 +114,10 @@
                     <h4>{% trans "My Forum" %}</h4>
                   </li>
                   <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "comment_list" %}{% endif %}">
-                    <a href="{% url "comment_list" request.user.username %}"><span class="glyphicon glyphicon-comment"></span> {% trans "My Comments" %}</a>
+                    <a href="{% url "comment_list" request.user.username %}"><span class="iw-chat"></span> {% trans "My Comments" %}</a>
                   </li>
                   <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "topic_list" %}{% endif %}">
-                    <a href="{% url "topic_list" request.user.username %}"><span class="glyphicon glyphicon-book"></span> {% trans "My Topics" %}</a>
+                    <a href="{% url "topic_list" request.user.username %}"><span class="iw-comment"></span> {% trans "My Topics" %}</a>
                   </li>
                   <li class="forum-item {% url_name "topic_subs" %}">
                       <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %} {% with newsub.count as count %}{% if count %}<span class="label label-primary pull-right counter">{{ count }}</span>{% endif %}{% endwith %}</a>
@@ -158,8 +165,8 @@
                 <li class="{% url_name equal="log" %}"><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
                 {% if request.user.is_moderator %}
                   {% with purgitory.count as pcount %}
-                  <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="glyphicon glyphicon-ok"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
-                  <li class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}"><span class="glyphicon glyphicon-user"></span> {% trans "User Ban List" %}</a></li>
+                  <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="iw-fire"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
+                  <li class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}"><span class="iw-users"></span> {% trans "User Ban List" %}</a></li>
                   {% endwith %}
                 {% endif %}
               </ul>
