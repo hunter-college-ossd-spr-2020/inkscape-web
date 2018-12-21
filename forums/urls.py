@@ -33,12 +33,14 @@ from .views import (
     CommentModList, CommentModPublic, CommentModRemove,
     UserBanList, UserBan
 )
+from .rss import ForumTopicFeed
 
 from .search_views import CommentSearch, TopicSearch, TopicSubjectSearch
 
 user_urls.urlpatterns += [
     url(r'^comments/$', CommentList.as_view(), name="comment_list"),
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
+    url(r'^topics/rss/$', ForumTopicFeed(), name='topic_feed'),
     url(r'^ban/$', UserBan.as_view(), name='ban_user'),
 ]
 
@@ -53,6 +55,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url(r'^subscriptions/$', Subscriptions.as_view(), name="topic_subs"),
     url(r'^phpbb/', include('forums.plugins.phpbb.urls', namespace='phpbb')),
+    url(r'^~(?P<username>[\w-]+)/rss/$', ForumTopicFeed(), name='topic_feed'),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
@@ -63,6 +66,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^(?P<slug>[\w-]+)/',
         url(r'^$', TopicList.as_view(), name='topic_list'),
+        url(r'^rss/$', ForumTopicFeed(), name='topic_feed'),
         url(r'^new/$', TopicCreate.as_view(), name='create'),
         url(r'^move/$', TopicMove.as_view(), name='topic_move'),
         url(r'^edit/$', TopicEdit.as_view(), name='topic_edit'),

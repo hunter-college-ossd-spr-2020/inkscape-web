@@ -30,6 +30,7 @@ from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Permission
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 
 from django_comments.models import CommentFlag
 
@@ -90,6 +91,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
             self.set_context_datum('forum_user', user)
         if self.request.user.is_authenticated():
             qset.set_user(self.request.user)
+        self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))
         return qset
 
 
