@@ -4,5 +4,5 @@
 {% block "searchtitle" %}{% blocktrans %}Search all Comment Texts for ‘{{ query }}’{% endblocktrans %}{% endblock %}
 
 {% block "content" %}
-  {% include "forums/comment_table.html" with comment_list=page.object_list|haystacker %}
+  {% include "forums/comment_table.html" with comment_list=page.object_list|haystacker show_comments=1 %}
 {% endblock %}

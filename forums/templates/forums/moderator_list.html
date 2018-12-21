@@ -12,7 +12,7 @@
 
 {% block "content" %}
   {% with object_list as comment_list %}
-    {% include "forums/comment_table.html" %}
+    {% include "forums/comment_table.html" with show_comments=1 %}
   {% endwith %}
 {% endblock %}
 
