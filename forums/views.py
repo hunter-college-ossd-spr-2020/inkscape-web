@@ -54,10 +54,7 @@ class ForumList(UserVisit, ForumMixin, TemplateView):
         data['recent_topics'] = ForumTopic.objects\
                 .filter(locked=False)\
                 .select_related('forum')\
-                .order_by('-first_posted')[:3]
-        data['recent_comments'] = Comment.objects\
-                .filter(is_public=True, is_removed=False)\
-                .order_by('-submit_date')[:3]
+                .order_by('-first_posted')[:10]
         return data
 
 class ModerationList(ListView):
