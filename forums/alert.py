@@ -80,3 +80,12 @@ class ForumTopicAlert(BaseAlert):
         if new:
             qset = qset.filter(viewed__isnull=True)
         return qset
+
+    def get_filter_subscriber(self, user, setting, kwargs, sub_type):
+        """
+        Filters subscriber messages, removing messages to myself
+        """
+        comment = kwargs.get('comment', None)
+        if comment is not None:
+            return comment.user_id != user.pk
+        return False
