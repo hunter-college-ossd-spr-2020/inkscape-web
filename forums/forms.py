@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+# pylint: disable=too-many-ancestors
+#
 """
 Forum forms, over-riding the django_comment forms.
 """
@@ -28,7 +30,7 @@ from django.utils.timezone import now
 from django.template.defaultfilters import striptags
 
 from django.forms import (
-    Form, ModelForm, CharField, ValidationError,
+    Form, ModelForm, CharField, ValidationError, BooleanField, IntegerField,
     ModelChoiceField, ModelMultipleChoiceField, CheckboxSelectMultiple
 )
 
@@ -40,7 +42,7 @@ from .fields import ResourceList
 from .models import ForumTopic
 from .alert import ForumTopicAlert
 
-emoji = re.compile(r'([\u263a-\U0001f645])')
+EMOJI = re.compile(r'([\u263a-\U0001f645])')
 
 class AttachmentMixin(object):
     """
@@ -67,7 +69,7 @@ class AttachmentMixin(object):
                 _("You have been banned from posting to this forum!"))
 
         comment = self.cleaned_data['comment']
-        return emoji.sub(r'<span class="emoji">\1</span>', comment)
+        return EMOJI.sub(r'<span class="emoji">\1</span>', comment)
 
     def save_attachments(self, comment):
         """Save attachments to the given comment"""
@@ -222,6 +224,15 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         self.user = user
         self.ip_address = ip_address
         super().__init__(*args, **kwargs)
+        if user.is_moderator():
+            self.fields['locked'] = BooleanField(
+                required=False, initial=False, label=_('Topic Locked'),
+                help_text=_("Start this topic locked. Useful for announcements "
+                            "(moderators only)."))
+            self.fields['sticky'] = IntegerField(
+                required=False, initial=0, label=_('Sticky Priority'),
+                help_text=_("Pins the thread to the top of the thread list, "
+                    "the higher the number the nearer the top (moderators only)."))
 
     def save(self, **_):
         """Save the comment under a topic's object"""
@@ -231,11 +242,16 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         inl = bool(self.cleaned_data['inlines'])
 
         can_post = self.user.has_perm('forums.can_post_topic')
+        locked = self.cleaned_data.get('locked', (not can_post))
+        sticky = self.cleaned_data.get('sticky', 0)
+
         topic = self.target_object.topics.create(
-            subject=subject, last_posted=now(), locked=(not can_post),
+            subject=subject, last_posted=now(),
+            locked=locked, sticky=sticky,
             first_username=self.user.username,
             last_username=self.user.username,
             has_attachments=(att or inl))
+
 
         # The comment's target is the topic object
         self.target_object = topic
@@ -262,6 +278,9 @@ class CommentsChoiceField(ModelMultipleChoiceField):
         return "#{}: {}".format(obj.id, striptags(obj.comment))
 
 class SplitTopic(Form):
+    """
+    Controls the splitting of topics into two topic objects.
+    """
     new_name = CharField(help_text=_('The new name for the split topic.'))
     comments = CommentsChoiceField(queryset=Comment.objects.none())
 
@@ -271,12 +290,14 @@ class SplitTopic(Form):
         self.fields['comments'].queryset = from_topic.comments
 
     def clean_comments(self):
+        """Reject a split if all the comments are selected"""
         comments = self.cleaned_data['comments']
         if len(comments) == self.from_topic.comments.count():
             raise ValidationError(_("You can not select every comment to split!"))
         return comments
 
     def save(self):
+        """Do the splitting of the topic and make a new topic"""
         comments = self.cleaned_data['comments']
         new_name = self.cleaned_data['new_name']
 
@@ -293,6 +314,9 @@ class SplitTopic(Form):
         return new_topic
 
 class MergeTopics(Form):
+    """
+    Control merging of topics into one big thread.
+    """
     with_topic = ModelChoiceField(queryset=ForumTopic.objects.all())
 
     def __init__(self, from_topic, **kwargs):
