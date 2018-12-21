@@ -22,11 +22,11 @@
       
             <div class="buttons-group">
               {% if comment.user_id == request.user.pk %}
-                <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+              <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}?next={{ request.path }}%23c{{ comment.pk }}" title="{% trans "Edit" %}"><span class="glyphicon glyphicon-edit"></span></a>
               {% elif request.user.is_moderator %}
                 <a class="text-muted comment-remove" href="{% url "forums:comment_remove" comment.pk %}?next={{ request.path }}%3Frem={{ comment.pk }}" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>
                 <a class="text-muted comment-remove" href="{% url "forums:comment_public" comment.pk %}?next={{ request.path }}%3Fmod={{ comment.pk }}%23c{{ comment.pk }}" title="Send to moderation"><span class="glyphicon glyphicon-tag"></span></a>
-                <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}" title="Edit"><span class="glyphicon glyphicon-flash"></span></a>
+                <a class="text-muted comment-edit" href="{% url "forums:comment_edit" comment.pk %}?next={{ request.path }}%23c{{ comment.pk }}" title="{% trans "Edit" %}"><span class="glyphicon glyphicon-flash"></span></a>
               {% elif request.user.is_authenticated %}
                 <a class="btn btn-sm comment-report" title="{% trans "Report Comment" %}" href="{% flag_url comment %}"><span class="glyphicon glyphicon-flag"></span></a>
               {% endif %}
