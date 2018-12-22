@@ -20,7 +20,7 @@
     8.1 Forums list (.forums-list)
     8.2 Forum topic list (.forums-topic-list)
 -------------------------------------------------------------------*/ 
-
+ 
 /*
  *   1. Imports, font-face, color definitions  ----------------------
  */
@@ -321,7 +321,7 @@ body{
 
 .forums-logo {
   display: block;
-  padding: $gutters;
+  padding: 10px $gutters;
   vertical-align: top;
 }
 

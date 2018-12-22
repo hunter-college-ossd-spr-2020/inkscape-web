@@ -3,7 +3,6 @@ local_settings.py
 *.mo
 *.pyc
 *.swp
-*.map
 *~
 .mypy_cache
 .gitignore
