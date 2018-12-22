@@ -55,7 +55,12 @@ class Error(Model):
     def get_traceback(self):
         """Return the traceback as a structured object"""
         def pkg(item, cls, filename):
-            item['pkg'], item['file'] = filename.split('/', 1)
+            if '/' in filename:
+                item['pkg'], item['file'] = filename.split('/', 1)
+            else:
+                # This happens with xapian haystack backend, no directory
+                item['file'] = filename
+                item['pkg'] = filename.rsplit('.', 1)[0]
             item['class'] = cls
 
         for tbk in json.loads(self.traceback):
