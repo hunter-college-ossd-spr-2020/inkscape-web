@@ -1,18 +1,18 @@
-{% extends "admin/index.html" %}
-{% load i18n inkscape %}
+{% extends "admin/base_site.html" %}
+{% load i18n inkscape static %}
 
-{% block extrastyle %}{{ block.super }}
+-{% block extrastyle %}{{ block.super }}
 <style>
 .dashboard #content {
   width: 990px;
 }
-.table td {
+table td {
   text-align: left;
   white-space: nowrap;
 }
-.table td.name {
+table td.name {
   overflow: hidden;
-  background-color: #eee;
+  background-color: #fafafa;
   text-overflow: ellipsis;
   max-width: 450px;
 }
@@ -33,15 +33,22 @@
 {% block sidebar %}{% endblock %}
 
 {% block content %}
-<div id="content-main">
-  <table class="table">
+<div id="changelist">
+  <table id="results_list">
+    <thead>
     <tr>
-      <th scope="col">Count</th>
-      <th scope="col">Name</th>
-      <th scope="col">Started</th>
-      <th scope="col">Ended</th>
-      <th scope="col">Fixed</th>
+      {% for header in headers %}
+      <th scope="col" class="sortable{% if header.sorted %} sorted {% if header.accending %}accending{% else %}descending{% endif %}{% endif %}">
+         <div class="sortoptions">
+           <a class="sortremove" href="?order=" title="Remove from sorting"></a>
+           <a href="?order={{ header.next }}" class="toggle {% if header.accending %}ascending{% else %}descending{% endif %}" title="Toggle sorting"></a>
+         </div>
+         <div class="text"><a href="?order={{ header.next }}">{{ header.name }}</a></div>
+      </th>
+      {% endfor %}
     </tr>
+    </thead>
+    <tbody>
     {% for error in object_list %}
       <tr>
         <td>{{ error.count }}</td>
@@ -55,6 +62,7 @@
         {% endif %}
       </tr>
     {% endfor %}
+    </tbody>
   </table>
 </div>
 {% endblock %}

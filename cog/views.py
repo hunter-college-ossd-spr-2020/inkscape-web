@@ -127,4 +127,27 @@ class ErrorList(ListView):
         """Load the errors, but also scan_file them"""
         for item in self.scan_file(getattr(settings, 'ERROR_FILE')):
             self.add_item(item)
-        return super().get_queryset()
+        qset = super().get_queryset()
+        for sort in self.get_sorting():
+            if sort['sorted']:
+                qset = qset.order_by(sort['this'])
+        return qset
+
+    def get_sorting(self):
+        order = self.request.GET.get('order', '') or '-ended'
+        for name in ['Count', 'Name', 'Started', 'Ended', 'Fixed']:
+            code = name.lower()
+            acc = order[0] == '-'
+            yield {
+                'name': name,
+                'code': code,
+                'sorted': order.lstrip('-') == code,
+                'accending': acc,
+                'this': order,
+                'next': [code, '-'+code][not acc],
+            }
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['headers'] = self.get_sorting()
+        return data
