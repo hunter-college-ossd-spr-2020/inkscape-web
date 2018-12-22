@@ -66,10 +66,10 @@ class ErrorList(ListView):
     def add_item(item):
         """Count the collected data"""
         obj, created = Error.objects.get_or_create(
-            traceback_id=item['key'], defaults={
+                traceback_id=item['key'][:255], defaults={
                 'traceback': json.dumps(item['traceback']),
                 'urls': json.dumps([item['url']]),
-                'name': item['error'][0],
+                'name': item['error'][0][:255],
                 'description': '\n'.join(item['error']),
                 'started': item['datetime'],
                 'ended': item['datetime'],
