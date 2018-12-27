@@ -152,19 +152,26 @@ $(document).ready(function() {
   $('.group-id_attachments').hide();
   $('.group-id_inlines').hide();
 
-  var users = new Array();
+  var users = new Object(); // Dictionary of users {pk: username}
   var users_str = localStorage.getItem("known_users");
   if (users_str) {
       users = JSON.parse(users_str);
+      if(Array.isArray(users)) { // Not array
+          users = new Object(); // Dictionary
+      }
   }
   // Gather any usernames
   $('*[data-user]').each(function() {
       var username = $(this).data('user');
-      if (users.indexOf(username) < 0 && username != "") {
-          users.push(username);
+      var userid = $(this).data('userid');
+      if (username != "" && userid && !(userid in users)) {
+          users[userid] = username;
       }
   });
   localStorage.setItem("known_users", JSON.stringify(users));
+  // This map turns the dictionary into a list.
+  var usernames = Object.keys(users).map(function(key){return users[key];});
+  $(document).data('usernames', usernames);
   $(document).data('users', users);
 });
 

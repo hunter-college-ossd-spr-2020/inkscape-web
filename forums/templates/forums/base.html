@@ -26,7 +26,7 @@
 
     {{ form.media }}
   </head>
-  <body data-static="{% static '' %}" id="forum-page-{% url_name %}">
+  <body data-static="{% static '' %}" id="forum-page-{% url_name %}"{% if request.user.is_authenticated %} data-user="{{ request.user.username }}" data-userid="{{ request.user.id }}"{% endif %}>
     {% block "container" %}
     {% block "wrapper" %}
     <div class="container-flex forums-app">
@@ -153,7 +153,7 @@
                   </a>
                   <li>
                   {% else %}
-                  <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}">
+                  <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}" data-userid="{{ visitor.id }}">
                     <img src="{{ visitor.photo_url|default:default_photo }}"/>
                   </a>
                   {% endif %}
