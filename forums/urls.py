@@ -31,7 +31,8 @@ from .views import (
     TopicMerge, TopicSplit,
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
-    UserBanList, UserBan
+    UserFlagList, UserModList, UserBanList,
+    UserFlagToggle, UserModToggle, UserBanToggle,
 )
 from .rss import ForumTopicFeed
 
@@ -41,13 +42,20 @@ user_urls.urlpatterns += [
     url(r'^comments/$', CommentList.as_view(), name="comment_list"),
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url(r'^topics/rss/$', ForumTopicFeed(), name='topic_feed'),
-    url(r'^ban/$', UserBan.as_view(), name='ban_user'),
 ]
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url(r'^log/$', ModerationList.as_view(), name="log"),
-    url(r'^ban/$', UserBanList.as_view(), name='ban_list'),
+    url_tree(
+        r'^users/',
+        url(r'^banned/$', UserBanList.as_view(), name='ban_list'),
+        url(r'^mods/$', UserModList.as_view(), name='mod_list'),
+        url(r'^flags/$', UserFlagList.as_view(), name='flag_list'),
+        url(r'^banned/flag/$', UserBanToggle.as_view(), name='ban_user'),
+        url(r'^mods/flag/$', UserModToggle.as_view(), name='mod_user'),
+        url(r'^flags/flag/$', UserFlagToggle.as_view(), name='flag_user'),
+    ),
     url(r'^check/$', CommentModList.as_view(), name="check"),
     url(r'^search/$', TopicSubjectSearch(), name='search'),
     url(r'^search/topics/$', TopicSearch(), name='search.topics'),

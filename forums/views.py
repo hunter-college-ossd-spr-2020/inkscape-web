@@ -39,7 +39,7 @@ from .forms import (
     NewTopicForm, EditCommentForm, AddCommentForm, SplitTopic, MergeTopics
 )
 from .mixins import (
-    CsrfExempt, UserVisit, ForumMixin, TopicMixin, NeverCacheMixin,
+    CsrfExempt, UserVisit, ForumMixin, TopicMixin,
     UserRequired, OwnerRequired, ModeratorRequired, ProgressiveContext
 )
 from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
@@ -312,36 +312,79 @@ class CommentEmote(CsrfExempt, UserRequired, UpdateView):
         return self.get_queryset().get_or_create(user=self.request.user,
                                                  comment_id=self.kwargs['pk'])[0]
 
-class UserBanList(ListView):
-    """Generate a list of banned users"""
+class UserFlagBase(ModeratorRequired, ListView):
+    """List of user flags (all kinds)"""
     model = UserFlag
-    template_name = 'forums/user_ban_list.html'
     paginate_by = 10
 
     def get_queryset(self):
-        qset = super().get_queryset()
-        qset = qset.banned().select_related('user').order_by('-created')
-        return qset
+        return super().get_queryset().select_related('user').order_by('-created')
 
-class UserBan(ModeratorRequired, FlagCreateView):
+class UserFlagList(UserFlagBase):
+    """Generate a list of user custom flags"""
+    def get_queryset(self):
+        return super().get_queryset().custom_flags()
+
+class UserModList(UserFlagBase):
+    """List of moderators"""
+    template_name = 'forums/userflag_mod_list.html'
+
+    def get_queryset(self):
+        return super().get_queryset().moderators()\
+            .prefetch_related('user__forum_moderation_actions')
+
+class UserBanList(UserFlagBase):
+    """List of banned users"""
+    template_name = 'forums/userflag_ban_list.html'
+
+    def get_queryset(self):
+        return super().get_queryset().banned()
+
+class UserFlagToggle(ModeratorRequired, FlagCreateView):
     """Toggle banning a user"""
-    slug_url_kwarg = 'username'
     slug_field = 'username'
     model = get_user_model()
     field = 'forum_flags'
-    filters = {'flag': UserFlag.FLAG_BANNED}
+
+    @property
+    def filters(self):
+        return {'flag': self.get_flag()}
 
     def get_object(self):
         """Accept slug or GET"""
-        if self.kwargs['username'] == 'someone':
-            self.kwargs['username'] = self.request.GET.get('username', None)
+        self.kwargs['slug'] = self.request.GET.get('user', None)
         return super().get_object()
 
     def get_data(self):
-        return {'title': self.request.GET.get('reason', 'Banned!')}
+        return {'title': self.request.GET.get('title', 'Unknown Flag')}
 
     def flag_added(self, obj, **data):
-        self.record_action(instance=obj, banned=True, **data)
+        self.record_action(instance=obj, added=True, **data)
 
     def flag_removed(self, obj, **data):
-        self.record_action(instance=obj, banned=False, **data)
+        self.record_action(instance=obj, added=False, **data)
+
+    def get_flag(self):
+        """Return the flag emoji"""
+        if 'flag' in self.request.GET:
+            return self.request.GET['flag']
+        raise Http404("Can't find flag to toggle.")
+
+class UserModToggle(UserFlagToggle):
+    """Toggle on and off the moderator status of a user"""
+    def get_flag(self):
+        return UserFlag.FLAG_MODERATOR
+
+    def flag_added(self, obj, **data):
+        obj.set_moderator(True)
+        return super().flag_added(obj, **data)
+
+    def flag_removed(self, obj, **data):
+        obj.set_moderator(False)
+        return super().flag_removed(obj, **data)
+
+
+class UserBanToggle(UserFlagToggle):
+    """Toggle the banning of users"""
+    def get_flag(self):
+        return UserFlag.FLAG_BANNED

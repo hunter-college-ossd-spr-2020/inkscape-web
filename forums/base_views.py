@@ -22,7 +22,7 @@
 Basic view extensions
 """
 
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.base import View
 
@@ -58,14 +58,20 @@ class FlagCreateView(SingleObjectMixin, View):
 
     def get(self, request, *args, **kwargs):
         """Toggle the flag"""
-        filters = self.get_filters()
-        data = self.get_data()
-        obj = self.get_object()
+
+        try:
+            filters = self.get_filters()
+            data = self.get_data()
+            obj = self.get_object()
+        except Http404:
+            if 'next' in request.GET:
+                return HttpResponseRedirect(request.GET['next'])
+            raise
 
         flags = getattr(obj, self.get_field())
         count, cascade = flags.filter(**filters).delete()
-        if not count:
-            # User was never banned, so ban them now
+        if not count or request.GET.get('update'):
+            # User was never flagged, so flag them now
             data.update(filters)
             flags.create(**data)
             self.flag_added(obj, **data)

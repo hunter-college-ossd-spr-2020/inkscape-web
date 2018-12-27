@@ -89,3 +89,15 @@ class UserFlagQuerySet(QuerySet):
         """Filter to only banned user_flags"""
         from .models import UserFlag
         return self.filter(flag=UserFlag.FLAG_BANNED)
+
+    def moderators(self):
+        """Filter to only moderator user_flags"""
+        from .models import UserFlag
+        return self.filter(flag=UserFlag.FLAG_MODERATOR)
+
+    def custom_flags(self):
+        """Filter to not mods or bans"""
+        from .models import UserFlag
+        return self.exclude(flag__in=[\
+            UserFlag.FLAG_MODERATOR,
+            UserFlag.FLAG_BANNED])

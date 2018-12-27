@@ -1,0 +1,66 @@
+{% extends "forums/base.html" %}
+{% load i18n static inkscape %}
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-userban-list">
+{% endblock "wrapper" %}
+
+{% block "tools" %}
+<ul class="nav nav-tabs">
+  <li role="presentation" class="{% url_name equal="flag_list" %}"><a href="{% url "forums:flag_list" %}">{% trans "Custom Flags" %}</a>
+  </li>
+    <li role="presentation" class="{% url_name equal="ban_list" %}"><a href="{% url "forums:ban_list" %}">{% trans "Banned User" %}</a>
+  </li>
+  <li role="presentation" class="{% url_name equal="mod_list" %}"><a href="{% url "forums:mod_list" %}">{% trans "Moderators" %}</a>
+  </li>
+</ul>
+
+  {{ block.super }}
+{% endblock %}
+
+{% block "content" %}
+<form method="GET" action="{% url "forums:flag_user" %}">
+  <table class="table table-forum table-hover">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">{% trans "Username" %}</th>
+        <th scope="col">{% trans "Hover Text" %}</th>
+        <th scope="col" class="text-right">{% trans "Created" %}</th>
+        <th scope="col" class="text-right">{% trans "Delete" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for flag in page_obj %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td class="text-left"><span class="emoji">{{ flag.flag }}</span></td>
+        <td class="user-item">
+          <a href="{{ flag.user.get_absolute_url }}">{{ flag.user.username }}</a>
+        </td>
+        <td class="text-left">{{ flag.title }}</td>
+        <td class="text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ flag.created|timetag }}</td>
+        <td class="text-right"><a href="{% url "forums:flag_user" %}?flag={{ flag.flag }}&user={{ flag.user.username }}&next={{ request.path }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="user-item">{% trans "No custom user flags" %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody>
+      <tr class="success text-success"><td colspan="5">
+    <span class="glyphicon glyphicon-info-sign"></span> {% trans "User flags are rewards and decorations or other classifiers which help users stand out and communicate position, knowlege or contributions to the project. Each flag is a single emoji which looks better if it's in the website's emoji pack. Users may have multiple custom flags." %}
+      </td></tr>
+      <tr class="active">
+        <td><input type="text" placeholder="😋" name="flag" size="1" style="width: 30px"></th>
+        <td><input type="text" placeholder="username" name="user"></th>
+        <td><input type="text" placeholder="hover text" name="title"></th>
+        <td></th>
+        <td class="text-right"><button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></th>
+      </tr>
+    </tbody>
+  </table>
+  <input type="hidden" name="next" value="{{ request.path }}"/>
+  <input type="hidden" name="update" value="1"/>
+</form>
+{% endblock %}

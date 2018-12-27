@@ -1,0 +1,55 @@
+{% extends "forums/userflag_list.html" %}
+{% load i18n static inkscape %}
+
+{% block "content" %}
+<form method="GET" action="{% url "forums:ban_user" %}">
+  <table class="table table-forum table-hover">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">{% trans "Username" %}</th>
+        <th scope="col">{% trans "Reason" %}</th>
+        <th scope="col" class="text-right">{% trans "Comments" %}</th>
+        <th scope="col" class="text-left">{% trans "Banned" %}</th>
+        <th scope="col" class="text-right">{% trans "Unban" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for flag in page_obj %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td class="text-left"><span class="emoji">{{ flag.flag }}</span></td>
+        <td class="user-item">
+          <a href="{{ flag.user.get_absolute_url }}">{{ flag.user.username }}</a>
+        </td>
+        <td class="text-left">{{ flag.title }}</td>
+        <td class="text-right"><span class="label label-default counter" title="{% trans "Number of comments" %}">{{ flag.user.comment_comments.count }}</span></td>
+        <td class="text-left text-muted"><span class="glyphicon glyphicon-time"></span> {{ flag.created|timetag }}</td>
+        <td class="text-right"><a href="{% url "forums:ban_user" %}?user={{ flag.user.username }}&next={{ request.path }}" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="user-item">{% trans "No banned users" %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody>
+      <tr class="danger text-danger"><td colspan="6">
+          <span class="glyphicon glyphicon-info-sign"></span> {% trans "Banning users should be the last resort or because of obvious rule breaking. Please see the rules and guidelines if you are unsure and discuss with other moderators about banning or unbanning users." %}
+      </td></tr>
+      <tr class="active">
+        <td>
+            <span class="emoji">🚫</span>
+        </th>
+        <td><input type="text" placeholder="username" name="user"></th>
+        <td><input type="text" placeholder="reason" name="title"></th>
+        <td></th>
+        <td></th>
+        <td class="text-right"><button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-ban-circle"></span></button></th>
+      </tr>
+    </tbody>
+  </table>
+  <input type="hidden" name="next" value="{{ request.path }}"/>
+  <input type="hidden" name="update" value="1"/>
+</form>
+{% endblock %}

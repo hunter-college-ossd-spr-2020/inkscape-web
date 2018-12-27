@@ -377,6 +377,7 @@ class UserFlag(Model):
     important social symbols and flags.
     """
     FLAG_BANNED = "\U0001f6ab" # User is banned from posting comments
+    FLAG_MODERATOR = '\u2696' # User is a moderator on the website
 
     user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
                       related_name="forum_flags", on_delete=CASCADE)

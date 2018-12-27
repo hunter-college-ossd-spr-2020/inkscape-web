@@ -1,0 +1,77 @@
+{% extends "forums/userflag_list.html" %}
+{% load i18n static inkscape %}
+
+{% block "tools" %}{% with sel as "mod" %}{{ block.super }}{% endwith %}{% endblock %}
+
+{% block "content" %}
+<form method="GET" action="{% url "forums:mod_user" %}">
+  {% static "forums/images/user.svg" as default_photo %}
+  <table class="table table-forum table-hover">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">{% trans "Username" %}</th>
+        <th scope="col">{% trans "Moderator Title" %}</th>
+        <th scope="col" class="text-right">{% trans "Mod Actions" %}</th>
+        <th scope="col" class="text-left">{% trans "Last Active" %}</th>
+        <th scope="col">{% trans "Perm" %}</th>
+        <th scope="col" class="text-right">{% trans "Remove" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for flag in page_obj %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td class="text-right">
+          <img src="{{ flag.user.photo_url|default:default_photo }}" style="max-width: 45px; max-height: 45px; margin: -6px;"/>
+        </td>
+        <td class="user-item">
+          <a href="{{ flag.user.get_absolute_url }}">{{ flag.user.username }}</a>
+        </td>
+        <td class="text-left">{{ flag.title }}</td>
+        <td class="text-right"><span class="label label-default counter" title="{% trans "Number of Actions" %}">{{ flag.user.forum_moderation_actions.count }}</span></td>
+        <td class="text-left text-muted">
+          {% if flag.user.forum_moderation_actions.count %}
+            <span class="glyphicon glyphicon-time"></span> {{ flag.user.forum_moderation_actions.last.performed|timetag }}
+          {% else %}
+            {% trans "Never" %}
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% if not flag.user.is_moderator %}
+          <span class="label label-danger" title="{% trans "Missing permissions!" %}"><span class="glyphicon glyphicon-remove"></span></span>
+          {% elif not flag.user.has_moderator %}
+            <span class="label label-default" title="{% trans "Site Admin" %}"><span class="glyphicon glyphicon-briefcase"></span></span>
+          {% else %}
+            <span class="label label-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% endif %}
+        </td>
+        <td class="text-right"><a href="{% url "forums:mod_user" %}?user={{ flag.user.username }}&next={{ request.path }}" class="btn btn-danger"><span class="iw-crown-minus"></span></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="user-item">{% trans "No moderators" %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody>
+      <tr class="active text-primary"><td colspan="7">
+        <span class="glyphicon glyphicon-info-sign"></span> {% trans "Moderators are people who have a special responsibility to help the forum stay on track, clean and respectful to the rules. Adding users will also add the moderator's flag as well as enabeling the moderator's tools for that user." %}
+      </td></tr>
+      <tr class="active">
+        <td>
+            <span class="emoji">⚖</span>
+        </th>
+        <td><input type="text" placeholder="username" name="user"></th>
+        <td><input type="text" placeholder="title" name="title"></th>
+        <td></th>
+        <td></th>
+        <td></th>
+        <td class="text-right"><button type="submit" class="btn btn-success"><span class="iw-crown-plus"></span></button></th>
+      </tr>
+    </tbody>
+  </table>
+  <input type="hidden" name="next" value="{{ request.path }}"/>
+  <input type="hidden" name="update" value="1"/>
+</form>
+{% endblock %}
