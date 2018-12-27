@@ -494,6 +494,9 @@ class ResourceList(CategoryListView):
             data['galleries'] = get_object_or_404(Gallery, slug=data['galleries'])
             data['object'] = data['galleries']
 
+        if not isinstance(data.get('category', None), Category):
+            data.pop('category', None)
+
         if 'category' in data:
             data['tag_categories'] = data['category'].tags.all()
             if not ('galleries' in data and getattr(data['galleries'], 'category', None) \

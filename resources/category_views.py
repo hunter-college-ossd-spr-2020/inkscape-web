@@ -83,6 +83,8 @@ from django.utils.http import urlquote
 from django.shortcuts import redirect
 from django.db.models import Model
 
+from django.core.exceptions import FieldError
+
 from .search_base import get_haystack_query, MR_OD, RMR_OD, SearchIter
 
 def get_url(name, *args, **kwargs):
@@ -206,7 +208,7 @@ class CategoryListView(View, MultipleObjectMixin):
         if order_by:
             try:
                 return qset.order_by(order_by)
-            except ValueError:
+            except (ValueError, FieldError):
                 pass
         return qset
 
