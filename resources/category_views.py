@@ -204,12 +204,10 @@ class CategoryListView(View, MultipleObjectMixin):
         filters.update(clean_dict(dict(self.get_opts)))
         filters.update(kwargs)
         qset = queryset.filter(**clean_dict(filters, {'True':True, 'False':False}))
-        order_by = self.get_value('order', self.order)
-        if order_by:
-            try:
-                return qset.order_by(order_by)
-            except (ValueError, FieldError):
-                pass
+
+        for order in self.get_orders():
+            if order['active']:
+                return qset.order_by(order['order'])
         return qset
 
     def get_url(self, cid=None, value=None, view=None, exclude=None):
@@ -374,8 +372,9 @@ class CategoryListView(View, MultipleObjectMixin):
 
     def get_orders(self):
         """Returns ordering information, column names and '-' prefixes"""
-        order = self.get_value('order', self.orders[0][0])
+        order = self.get_value('order', self.order or self.orders[0][0])
         for (odr, label) in self.orders:
             yield {'id': odr, 'name': label, 'down': (order or '*')[0] == '-',
                    'active': order.strip('-') == odr.strip('-'),
+                   'order': order,
                    'url': self.get_url('order', reverse_order(odr, odr == order))}
