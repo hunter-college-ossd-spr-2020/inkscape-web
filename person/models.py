@@ -132,6 +132,24 @@ class User(AbstractUser):
         """Returns true if the user is a moderator"""
         return self.has_perm("moderation.can_moderate")
 
+    def set_moderator(self, to=False):
+        """Set moderator status"""
+        if to:
+            self.user_permissions.add(self._permission())
+        else:
+            self.user_permissions.remove(self._permission())
+
+    def has_moderator(self):
+        """Returns true only if this user has a moderator priv directly"""
+        return self.user_permissions.filter(
+            content_type__model='flagvote',
+            codename='can_moderate').exists()
+
+    def _permission(self, model='flagvote', codename='can_moderate'):
+        """Get the moderator's permission (or a different permission)"""
+        permissions = Permission.objects.filter(content_type__model=model)
+        return permissions.get(codename=codename)
+
     @property
     def name(self):
         """Return either the full name of the user or the username"""
