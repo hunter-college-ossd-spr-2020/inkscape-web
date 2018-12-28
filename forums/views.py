@@ -91,7 +91,8 @@ class TopicList(UserVisit, ForumMixin, ListView):
             self.set_context_datum('forum_user', user)
         if self.request.user.is_authenticated():
             qset.set_user(self.request.user)
-        self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))
+        if self.kwargs:
+            self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))
         return qset
 
 
