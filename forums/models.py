@@ -219,7 +219,7 @@ class ForumTopic(Model):
     last_username = CharField(max_length=128, null=True, blank=True)
     has_attachments = BooleanField(default=False)
 
-    sticky = IntegerField(_('Sticky Priority'), default=0,\
+    sticky = IntegerField(_('Sticky Priority'), default=0, null=True,\
         help_text=_('If set, will stick this post to the top of the topics '
                     'list. Higher numbers appear nearer the top. Same numbers '
                     'will appear together, sorted by date.'))

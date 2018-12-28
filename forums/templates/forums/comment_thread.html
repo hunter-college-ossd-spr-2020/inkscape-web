@@ -42,7 +42,7 @@
             {% endif %}
       
             <small class="btn-group emoji-bar" id="bar-emote-{{ comment.pk }}">
-              {% for flag in comment.flags.all %}{% if flag.flag|length < 4 %}<span class="emoji" id="emote-{{ flag.pk }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
+                {% for flag in comment.flags.all %}{% if flag.flag|length < 4 %}<span class="emoji" id="emote-{{ flag.pk }}" data-owner="{{ flag.user_id }}">{{ flag.flag }}</span>{% endif %}{% endfor %}
             </small>
       
             {% include "forums/resource_dropdown.html" %}
