@@ -42,6 +42,28 @@ $(document).ready(function() {
     });
   });
 
+  var users = new Object(); // Dictionary of users {pk: username}
+  var users_str = localStorage.getItem("known_users");
+  if (users_str) {
+      users = JSON.parse(users_str);
+      if(Array.isArray(users)) { // Not array
+          users = new Object(); // Dictionary
+      }
+  }
+  // Gather any usernames
+  $('*[data-user]').each(function() {
+      var username = $(this).data('user');
+      var userid = $(this).data('userid');
+      if (username != "" && userid && !(userid in users)) {
+          users[userid] = username;
+      }
+  });
+  localStorage.setItem("known_users", JSON.stringify(users));
+  // This map turns the dictionary into a list.
+  var usernames = Object.keys(users).map(function(key){return users[key];});
+  $(document).data('usernames', usernames);
+  $(document).data('users', users);
+
   $('.emoji-selector').each(function() {
       var selector = $(this);
       var a = $('a', this);
@@ -152,27 +174,11 @@ $(document).ready(function() {
   $('.group-id_attachments').hide();
   $('.group-id_inlines').hide();
 
-  var users = new Object(); // Dictionary of users {pk: username}
-  var users_str = localStorage.getItem("known_users");
-  if (users_str) {
-      users = JSON.parse(users_str);
-      if(Array.isArray(users)) { // Not array
-          users = new Object(); // Dictionary
-      }
-  }
-  // Gather any usernames
-  $('*[data-user]').each(function() {
-      var username = $(this).data('user');
-      var userid = $(this).data('userid');
-      if (username != "" && userid && !(userid in users)) {
-          users[userid] = username;
-      }
-  });
-  localStorage.setItem("known_users", JSON.stringify(users));
-  // This map turns the dictionary into a list.
-  var usernames = Object.keys(users).map(function(key){return users[key];});
-  $(document).data('usernames', usernames);
-  $(document).data('users', users);
+  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="emojitip"]').tooltip(
+      {placement: "bottom", container: "body", animated: "fade"});
+  $('.comment-author span.emoji').tooltip(
+      {placement: "bottom", container: "body", animated: "fade"});
 });
 
 // Writes the state of the attachments into the inputs.
@@ -242,22 +248,25 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
         span.data('chr', chr);
         dropdown.append(span);
         span.click(function() {
-            var span = $(this);
-            $.post(post_url, {
-                csrfmiddlewaretoken: Cookies.get('csrftoken'),
-                flag: $(this).data('chr'),
-            }, function(data) {
-                var bar_span = $('#emote-'+data.id);
-                if(bar_span.length) {
-                    bar_span.text(span.data('chr'));
-                } else {
-                    bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
-                    pot.append(bar_span);
-                }
-                clean_emoji(-1, bar_span);
-            });
+            add_emote_to_comment($(this), post_url);
         });
     }
+}
+
+function add_emote_to_comment(span, post_url) {
+    $.post(post_url, {
+        csrfmiddlewaretoken: Cookies.get('csrftoken'),
+        flag: span.data('chr'),
+    }, function(data) {
+        var bar_span = $('#emote-'+data.id);
+        if(bar_span.length) {
+            bar_span.text(span.data('chr'));
+        } else {
+            bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
+            pot.append(bar_span);
+        }
+        clean_emoji(-1, bar_span);
+    });
 }
 
 /* Turn an emoji into a code string */
@@ -268,6 +277,51 @@ function get_emoji_code(emoji) {
         ret += emoji.codePointAt(x).toString(16);
     }
     return ret;
+}
+
+function emote_title(elem, target) {
+    var myid = $('body').data('userid');
+    var owner = $(elem).data('owner');
+    if(!owner) { return; }
+
+    var count = $(target).data('count'); // int, always-set >= 1
+    var myself = $(target).data('myself'); // boolean, default=false
+    var emoters = $(target).data('emoters'); // Array, default=[]
+    if(!emoters) { emoters = new Array() }
+    
+    var users = $(document).data('users');
+    if(!users) { users = new Object(); }
+
+    if(owner == myid) {
+        myself = 1;
+        $(target).data('myself', myself);
+    } else if(users[owner]) {
+        emoters.push(users[owner]);
+        $(target).data('emoters', emoters);
+    }
+
+    var unknowns = count - emoters.length;
+    var title = '';
+
+    if(myself) {
+        unknowns = unknowns - 1;
+        emoters.unshift('Me');
+    }
+    if(unknowns == 1) {
+        emoters.push('1 other person');
+    } else if(unknowns) {
+        emoters.push(unknowns + ' other people');
+    }
+
+    var last = emoters.pop();
+    var title = emoters.join(', ');
+    if(title) {
+        title = title + ' & ' + last;
+    } else {
+        title = last;
+    }
+    $(target).attr('title', title);
+    $(target).attr('data-toggle', 'emojitip');
 }
 
 function clean_emoji(index, elem) {
@@ -281,17 +335,21 @@ function clean_emoji(index, elem) {
 
         if(sibling.length) {
             // Count number of emojis of the same kind
-            $(elem).remove();
             var count = sibling.data('count') + 1;
             sibling.data('count', count);
             $('i', sibling).text(count).show();
+            emote_title(elem, sibling);
+            $(elem).remove();
         } else {
             // Create a new emoji of the right kind
-            $(elem).data('count', 1);
             $(elem).addClass('code-'+code);
             $(elem).append($('<img src="' + static_dir + 'emoji/48/'
                 + code+'.png" alt="'+emoji+'" class="emoji">'));
-            $(elem).append($('<i class="count" style="display: none;">1</i>'));
+            if($(elem).data('owner')) {
+                $(elem).data('count', 1);
+                $(elem).append($('<i class="count" style="display: none;">1</i>'));
+                emote_title(elem, elem);
+            }
         }
     }
 }
