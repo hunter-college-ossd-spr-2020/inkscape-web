@@ -91,10 +91,10 @@ class DownloadRedirect(RedirectView):
             version = ua.split(' nt ', 1)[-1].split(';', 1)[0]
             return ('Windows', version, bits)
         elif 'mac os x' in ua:
-            version = ua.split('mac os x ')[-1].split(';')[0].replace('_', '.')
+            version = ua.split('mac os x', 1)[-1].split(';')[0].replace('_', '.')
             # Limit to a single decimal version (e.g. 10.9.3 -> 10.9)
             version = version.rsplit('.', version.count('.') - 1)[0].strip()
-            return ('Mac OS X', version, 64)
+            return ('Mac OS X', version or None, 64)
         elif 'linux' in ua:
             bits = ua.split('linux')[-1].split(';')[0]
             bits = 64 if '64' in bits else 32

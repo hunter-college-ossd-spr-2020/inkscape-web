@@ -62,7 +62,7 @@
             {% elif latest and object.parent_id == release.pk %}
 	      <li class="subtle active"><a>
 	    {% else %}
-              <li class="subtle{% if release.hide %} hide{% endif %}">
+              <li class="subtle{% if release.hide or not release.release_date %} hide{% endif %}">
                 <a href="{{ release.get_absolute_url }}{% if latest %}?latest=1{% endif %}">
 	    {% endif %}
 	    <label>{{ release.codename|default:release.version }}</label>
