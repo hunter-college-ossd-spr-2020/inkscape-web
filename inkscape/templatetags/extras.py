@@ -92,7 +92,7 @@ def add_placeholder(bound_field, text=None):
 @register.simple_tag()
 def app_info(request, obj, lst, form):
     """Generate detail about the app generating the response"""
-    if hasattr(request, 'resolver_match'):
+    if hasattr(request, 'resolver_match') and request.resolver_match is not None:
         cls = request.resolver_match.func.__module__.split('.')[0]
         if hasattr(request.resolver_match.func, '__name__'):
             view = request.resolver_match.func.__name__
