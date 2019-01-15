@@ -34,11 +34,6 @@ urlpatterns = [ # pylint: disable=invalid-name
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static('/dl/', document_root=settings.MEDIA_ROOT)
 
-for e in ('403', '404', '500'):
-    view = TemplateView.as_view(template_name='error/{}.html'.format(e))
-    locals()['handler'+e] = view
-    urlpatterns.append(url('^error/%s/$' % e, view))
-
 if settings.ENABLE_DEBUG_TOOLBAR:
     import debug_toolbar
     urlpatterns.append(
