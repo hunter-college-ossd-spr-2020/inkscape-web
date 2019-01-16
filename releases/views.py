@@ -168,6 +168,8 @@ class ReleaseView(DetailView):
         is_before = False
 
         for item in data['releases'][REVS][LIST]:
+            if not item.release_date:
+                item.hide = True
             if is_released or item.is_prerelease:
                 # If the parent is released and the selected is before
                 # tell the html to hide this item (we can use js to enable)
