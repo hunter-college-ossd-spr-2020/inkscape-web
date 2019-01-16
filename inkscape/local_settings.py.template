@@ -105,3 +105,5 @@ EMAIL_PORT           = 587
 EMAIL_USE_TLS        = True
 
 IS_TEST = False
+
+FILE_UPLOAD_PERMISSIONS = 0o644
