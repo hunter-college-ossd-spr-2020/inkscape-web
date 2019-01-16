@@ -47,8 +47,9 @@ class NewsAdmin(ModelAdmin):
 
     actions = ['make_published', 'make_unpublished']
     fieldsets = (
-        (_('Info'), {'fields': ('title', 'slug', 'link')}),
-        (_('Actual Content'), {'fields': ('excerpt', 'content')})
+        (_('Info'), {'fields': ('title', 'slug', 'link',)}),
+        (_('Actual Content'), {'fields': ('excerpt', 'content')}),
+        (_('Visibility'), {'fields': ('pub_date', 'is_published')}),
     )
 
     save_as = True

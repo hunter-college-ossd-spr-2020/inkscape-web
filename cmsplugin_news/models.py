@@ -102,13 +102,13 @@ class News(Model):
     # base fields which __getattr always passes DOWN to the root.
     # All mechanisms to do with translations would then be brought into
     # that generic class.
-    language     = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
-                     help_text=_("Translated version of another news item."))
+    language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS,\
+        db_index=True, help_text=_("Translated version of another news item."))
     translation_of = ForeignKey("self", blank=True, null=True, related_name="translations")
 
     # django uses the first object manager for reverse lookups.
     # Make sure normal manager is first.
-    objects   = Manager()
+    objects = Manager()
     published = PublishedManager()
 
     tr_fields = ['translated', 'title', 'excerpt', 'language', 'content']
@@ -129,6 +129,7 @@ class News(Model):
         return self.title
 
     def select_language(self, lang):
+        """Returns the translation for this news"""
         self._lang = lang.split('-')[0]
         self.trans = self.get_translation(lang) or self
         return self
