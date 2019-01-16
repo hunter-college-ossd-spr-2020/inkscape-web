@@ -44,6 +44,7 @@ if os.path.isfile(VERSION_FILE):
     MSG = email.message_from_file(open(VERSION_FILE))
     WEBSITE_VERSION = str(MSG["version"])
     DONATE_NOW = bool(MSG.get("donate", False))
+    DONATE_MSG = MSG.get("donate", "Support Inkscape")
 
 REVISION_FILE = os.path.join(PATH, 'data', 'revision')
 if os.path.isfile(REVISION_FILE):
@@ -55,6 +56,7 @@ def version(request):
     return {
         'RENDER_TIME': now(),
         'DONATE_NOW': DONATE_NOW,
+        'DONATE_MSG': DONATE_MSG,
         'WEBSITE_REVISION': WEBSITE_REVISION,
         'WEBSITE_VERSION': WEBSITE_VERSION,
         'DJANGO_VERSION': django.get_version(),
