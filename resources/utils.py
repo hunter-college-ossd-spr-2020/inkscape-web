@@ -207,7 +207,7 @@ def hash_verify(sig_type, sig, data):
     import hashlib
     sig.file.open()
     sig.file.seek(0)
-    digest = sig.file.read().split(' ')[0].strip()
+    digest = str(sig.file.read()).split(' ')[0].strip()
     hasher = getattr(hashlib, sig_type, hashlib.sha1)()
     for chunk in data.chunks():
         hasher.update(chunk)
@@ -224,7 +224,7 @@ def gpg_verify(user, sig, data):
             raise IOError("Can't verify on closed file handle.")
 
     import gnupg
-    gpg = gnupg.GPG(gnupghome=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
+    gpg = gnupg.GPG(homedir=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
     gpg.import_keys(str(user.gpg_key))
     result = bool(gpg.verify_file(sig, data.path))
     del gpg

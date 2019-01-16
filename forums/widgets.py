@@ -2,21 +2,18 @@
 #
 # Copied from django cmsplugin text ckeditor
 #
-import json
-from copy import deepcopy
-
-from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import Textarea
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation.trans_real import get_language
 
 class TextEditorWidget(Textarea):
+    """
+    Use the CKEditor to allow editing html.
+    """
     class Media:
         js = (
             'forums/ckeditor/ckeditor.js',
-            #'forums/ckeditor/',
         )
         css = {
             'all': {
