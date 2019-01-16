@@ -47,8 +47,8 @@ class NewsAdmin(ModelAdmin):
 
     actions = ['make_published', 'make_unpublished']
     fieldsets = (
-       (_('Info'), {'fields': ('title', 'slug', 'link')}),
-       (_('Actual Content'), {'fields': ('excerpt', 'content')})
+        (_('Info'), {'fields': ('title', 'slug', 'link')}),
+        (_('Actual Content'), {'fields': ('excerpt', 'content')})
     )
 
     save_as = True
@@ -62,7 +62,7 @@ class NewsAdmin(ModelAdmin):
         info = opts.app_label, opts.model_name,
 
         return [
-          url(r'^(.+)/tr/$', wrap(self.tr_view), name='%s_%s_translate' % info),
+            url(r'^(.+)/tr/$', wrap(self.tr_view), name='%s_%s_translate' % info),
         ] + urls
 
     def get_form(self, request, obj, fields=None):

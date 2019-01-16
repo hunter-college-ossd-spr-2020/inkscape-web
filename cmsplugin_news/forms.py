@@ -36,7 +36,7 @@ class NewsAdminForm(ModelForm):
     class Meta:
         model = News
         exclude = ('creator', 'editor', 'created', 'updated', 'language',
-                   'translation_of', 'pub_date')
+                   'translation_of',)
 
     class Media:
         css = {'all': ('css/admin.news.css',)}
