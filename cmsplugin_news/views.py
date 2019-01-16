@@ -100,7 +100,9 @@ class DetailView(PublishedNewsMixin, DateDetailView):
                         item = obj
                     item.language = translation.get_language()
                 with translation.override(item.language or 'en'):
-                    return HttpResponseRedirect(item.get_absolute_url())
+                    url = item.get_absolute_url()
+                    if url != request.path:
+                        return HttpResponseRedirect(url)
             raise
 
 

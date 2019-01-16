@@ -45,7 +45,7 @@ class PublishedNewsMixin(object):
     month_format = '%m'
 
     def get_language(self):
-        return get_language_from_path(self.request.path)
+        return get_language_from_path(self.request.path) or 'en'
 
     def get_queryset(self):
         return News.published.with_language(self.get_language(),
