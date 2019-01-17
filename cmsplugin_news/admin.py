@@ -38,7 +38,6 @@ class NewsAdmin(ModelAdmin):
     """Admin for news"""
     date_hierarchy = 'pub_date'
     list_display = ('title', 'language', 'translation_of', 'is_published', 'group')
-    list_editable = ('is_published',)
     list_filter = ('is_published', 'language')
     search_fields = ['title', 'excerpt', 'content']
     prepopulated_fields = {'slug': ('title',)}
