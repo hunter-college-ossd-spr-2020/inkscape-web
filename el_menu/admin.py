@@ -27,6 +27,7 @@ from .models import MenuItem, MenuRoot
 
 class MenuItemsInline(TabularInline):
     """Show MenuItems in a stacked tab interface"""
+    raw_id_fields = ('parent',)
     model = MenuItem
     extra = 1
 
@@ -40,5 +41,6 @@ class MenuItemAdmin(ModelAdmin):
     list_display = ('name', 'url', 'parent', 'root')
     search_fields = ('name', 'url')
     list_filter = ('root',)
+    raw_id_fields = ('parent',)
 
 site.register(MenuItem, MenuItemAdmin)
