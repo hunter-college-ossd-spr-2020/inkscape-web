@@ -189,7 +189,7 @@ class ReleaseView(DetailView):
             data['object'] = selected.latest
 
         data['projects'] = Project.objects.all()
-        data['platforms'] = self.object.platforms.for_level('')
+        data['platforms'] = data['object'].platforms.for_level('')
         return data
 
 
