@@ -159,7 +159,10 @@ class Release(Model):
 
     @property
     def latest(self):
-        return self.revisions.order_by('-release_date')[0]
+        qset = self.revisions.filter(platforms__isnull=False)
+        if qset.count() > 0:
+            return qset.order_by('-release_date')[0]
+        return None
 
     def responsible_people(self):
         """Quick list of all responsible people with labels"""
