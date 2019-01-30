@@ -37,12 +37,42 @@ from django.forms import (
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
 from django_comments.models import Comment
 
+from person.models import Team, User
+
 from .widgets import TextEditorWidget
 from .fields import ResourceList
 from .models import ForumTopic
 from .alert import ForumTopicAlert
 
 EMOJI = re.compile(r'([\u263a-\U0001f645])')
+MENTION = re.compile(r'(^|[^>\w~])@(?P<name>[\w-]+)')
+MENTION_FIX = re.compile(r'~@(?P<name>[\w-]+)')
+
+def replace_mention(match):
+    """The ckeditor won't always attack links/mentions correctly."""
+    prefix = match.group()[0]
+    name = match.groupdict()['name']
+    try:
+        group = Team.objects.get(slug=name.lower())
+        return '{}<a href="{}">@{}</a>'.format(
+            prefix, group.get_absolute_url(), name.lower())
+    except Team.DoesNotExist:
+        pass
+    try:
+        user = User.objects.get(username=name)
+        return '{}<a href="{}">@{}</a>'.format(
+            prefix, user.get_absolute_url(), name)
+    except User.DoesNotExist:
+        return '{}@{}'.format(prefix, name)
+
+def fix_mention(match):
+    """A link created by the ckeditor, which is wrong (fix it here)."""
+    name = match.groupdict()['name']
+    try:
+        user = User.objects.get(username=name)
+        return user.get_absolute_url()
+    except User.DoesNotExist:
+        return '' # No link
 
 class AttachmentMixin(object):
     """
@@ -69,6 +99,11 @@ class AttachmentMixin(object):
                 _("You have been banned from posting to this forum!"))
 
         comment = self.cleaned_data['comment']
+
+        # Add any un-matched references to users and groups
+        comment = MENTION.sub(replace_mention, comment)
+        comment = MENTION_FIX.sub(fix_mention, comment)
+
         return EMOJI.sub(r'<span class="emoji">\1</span>', comment)
 
     def save_attachments(self, comment):
