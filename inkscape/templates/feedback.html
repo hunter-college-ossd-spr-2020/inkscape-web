@@ -1,9 +1,9 @@
-{% extends 'alerts/base.html' %}
+{% extends 'modal.html' %}
 {% load i18n %}
 
 {% block "dialog-body" %}
   {% if form %}
-    <p>{% trans "This form allows you to submit a comment or question to the website administrators. They are volunteers who can help you with registration, download issues, moderation issues or spam. Please do not submit questions about Inkscape here. This is not a support forum for Inkscape." %}</p>
+    <p>{% blocktrans %}Please report problems or feedback about the website (including gallery and forum) <strong>only</strong>. For problems with or support for Inkscape, please find links to various support forums <a href="https://inkscape.org/community/">here</a>.{% endblocktrans %}</p>
     <p>{% trans "Please say who you are and also mention a way to contact you, such as an email address, if you need to get a response back." %}</p>
   {% else %}
     <p>{% trans "Thank you for submitting your comment or question. If you are logged in then you may receive a reply to your configured email address." %}</p>
