@@ -263,7 +263,7 @@ function add_emote_to_comment(span, post_url) {
             bar_span.text(span.data('chr'));
         } else {
             bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
-            pot.append(bar_span);
+            span.append(bar_span);
         }
         clean_emoji(-1, bar_span);
     });
