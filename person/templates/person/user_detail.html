@@ -79,6 +79,16 @@
     {% endif %}
   </ul>
 
+  <h2 title="Forum comments and stats"><a href="{% url 'forums:list' %}">{% trans "Forums" %}</h2>
+  <ul>
+    <li><a href="{% url "topic_list" object.username %}"><label>Topics</label> <span>{{ object.forum_topics.count }}</span></a></li>
+    <li><a href="{% url "comment_list" object.username %}"><label>Comments</label> <span>{{ object.comment_comments.count }}</span></a></li>
+    {% if request.user == object %}
+    <li><a href="{% url "forums:topic_subs" %}"><label>Subscriptions</label>  {% with object.forum_subscriptions.count as count %}{% if count %}<span>{{ count }}</span>{% endif %}{% endwith %}</a></li>
+    {% endif %}
+  </ul>
+
+
   {% if object.teams.all %}
     <h2>{% trans "Teams" %}</h2>
     <ul>

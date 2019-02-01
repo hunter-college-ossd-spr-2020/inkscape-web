@@ -207,6 +207,16 @@ class User(AbstractUser):
         """Returns a queryset of teams this user is a member of"""
         return Team.objects.filter(group__in=self.groups.all())
 
+    def forum_subscriptions(self):
+        """Return a list of forum subscriptions"""
+        from forums.alert import ForumTopicAlert
+        return ForumTopicAlert.messages_for(self)
+
+    def forum_topics(self):
+        """Return a list of forum topics created"""
+        from forums.models import ForumTopic
+        return ForumTopic.objects.filter(first_username=self.username)
+
     def viewer_is_subscribed(self, user):
         """Returns true if the calling user is subscribed to this user's resources."""
         if user.is_authenticated():
