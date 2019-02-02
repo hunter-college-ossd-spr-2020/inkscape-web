@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2019 by original authors @ fontello.com</metadata>
+<defs>
+<font id="ink" horiz-adv-x="1000" >
+<font-face font-family="ink" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="feather" unicode="&#xe800;" d="M60-138q-6-20-26-8-18 8-16 34 4 100 50 226-100 154-52 316 10-32 32-78t44-80 32-30q8 4 0 83t-11 166 25 157q22 44 80 94t104 70q-24-46-33-94t-4-78 21-32q12 0 84 120t106 122q46 4 114-29t82-65q12-24 0-79t-40-83q-44-44-146-62t-114-24q-16-10 12-34 54-48 176-20-56-80-136-114t-132-38-54-10q-4-24 49-54t101-14q-30-56-63-84t-54-35-76-11-85-8z" horiz-adv-x="698" />
+
+<glyph glyph-name="pencil" unicode="&#xe801;" d="M718 680q32-32 47-64t15-48l0-16-252-252-290-288-238-52 50 240 290 288 252 252q54 12 126-60z m-494-640l24 24q-2 44-52 94-22 22-45 35t-35 13l-14 2-22-24-18-80q28-16 46-34 24-24 36-48z" horiz-adv-x="780" />
+
+<glyph glyph-name="pencil-alt" unicode="&#xe802;" d="M879 764q32-32 32-79t-33-79l-422-421q-16 60-56 101t-101 56l421 423q32 32 79 32t80-33z m-559-716l-302-145 144 304q32 32 79 32t80-33 32-79-33-79z" horiz-adv-x="928" />
+
+<glyph glyph-name="vector-pencil" unicode="&#xe803;" d="M7 128q-16-16 5-57t58-79 77-59 58-4l223 224q-55 38-107 90-24 23-46 50t-34 42l-11 15z m271 237q-8 23 4 34 11 11 23 41t17 61l4 20q5 31 30 62t53 43l396 178q29 12 34 5t-18-30l-203-202q-42-43-52-53-21 10-46 6t-42-21q-23-22-23-54t23-54q23-23 54-23t55 23q17 17 21 41t-6 45q14 15 52 54l203 203q23 22 30 17t-6-34l-177-397q-12-28-43-52t-63-30l-20-4q-30-5-60-17t-41-23-35-3-45 30l-89 88q-22 22-30 46z" horiz-adv-x="889.2" />
+</font>
+</defs>
+</svg>
