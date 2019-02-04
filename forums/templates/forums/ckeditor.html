@@ -1,7 +1,10 @@
 {% load i18n l10n %}
 
 <script>
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function(event) {
+    if(django.jQuery) {
+        $ = django.jQuery;
+    }
     CKEDITOR.config.language = '{{ language }}';
     CKEDITOR.replace('{{ ckeditor_selector }}',
     {
