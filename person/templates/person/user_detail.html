@@ -6,7 +6,7 @@
 {% block "profile" %}
   <img id="photo" src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/>
 
-  <div class="socialicons">
+  <div class="profilebuttons">
     {% if request.user != object and request.user.is_authenticated %}
       {% if object|is_flagged:request.user %}
         <img src="{% static "images/social/flag.svg" %}" title="{% trans "You have flagged this user." %}"/>
