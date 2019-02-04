@@ -11,6 +11,9 @@
 {% endblock %}
 
 {% block "side" %}
+  {% if request.user.is_staff %}
+  <a href="{% url 'admin:person_teammembership_changelist' %}?team__id__exact={{ object.pk }}" class="btn btn-danger" title="{% trans "Admin interface for team memberships" %}">{% trans "Membership Admin" %}</a>
+  {% endif %}
   {% if object.admin == request.user %}
     <a href="{% url "team.edit" object.slug %}" class="btn btn-danger" title=
       "{% trans "Edit the team's details as the team's administrator." %}">{% trans "Edit Team" %}</a>
@@ -60,10 +63,9 @@
         "{% trans "View the logs for this team's IRC Chatrooms." %} (#{{ object.ircroom }})">{% trans "Chatroom Logs" %}</a-->
     {% endif %}
 
-      <h2 title="{% trans "Your place to upload Inkscape Art!" %}">{% trans "InkSpace" %}</h1>
-      <ul>
-        <li><a href="{% url "resources" team=team.slug %}">{% trans "Team Galleries" %}</a></li>
-      </ul>
+    {% if object.side_bar %}
+      {{ object.side_bar|safe }}
+    {% endif %}
 
       <h2>{% trans "Information" %}</h2>
       <ul>
