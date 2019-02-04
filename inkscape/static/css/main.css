@@ -1460,6 +1460,30 @@ div.tooltip {
   background-image: linear-gradient(to bottom, #d9534f, #d43f3a);
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:focus {
+  color: #fff;
+  background-color: #d9534f;
+  background-image: linear-gradient(to top, #d9534f, #d43f3a);
+  border-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.6);
+}
+.btn-success {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  background-image: linear-gradient(to bottom, #5cb85c, #4cae4c);
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+.btn-success:hover,
+.btn-success:active,
+.btn-success:focus {
+  color: #fff;
+  background-color: #4cae4c;
+  background-image: linear-gradient(to top, #5cb85c, #4cae4c);
+  border-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.6);
+}
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active,
