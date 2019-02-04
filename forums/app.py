@@ -113,7 +113,9 @@ class ForumsConfig(AppConfig):
             self.create_comment(instance, **kw)
 
         if instance.user:
-            instance.get_topic().refresh_meta_data()
+            topic = instance.get_topic()
+            if topic is not None:
+                topic.refresh_meta_data()
 
         # The alert is focused on topics, not comments
         from .alert import ForumTopicAlert
@@ -137,5 +139,6 @@ class ForumsConfig(AppConfig):
                 continue
 
         topic = instance.get_topic()
-        topic.refresh_meta_data(instance)
-        topic.forum.refresh_meta_data(instance)
+        if topic is not None:
+            topic.refresh_meta_data(instance)
+            topic.forum.refresh_meta_data(instance)
