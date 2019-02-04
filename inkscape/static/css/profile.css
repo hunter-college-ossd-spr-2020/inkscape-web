@@ -72,6 +72,10 @@
   vertical-align: middle;
   position: relative;
 }
+#profile h2 {
+  border: 0px;
+  color: white;
+}
 #profile #edit {
   background-color: #D55500;
 }
