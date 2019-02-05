@@ -372,6 +372,13 @@ class TeamMembership(Model):
         else:
             user_group.remove(self.user)
 
+    def get_absolute_url(self, for_user=None):
+        """Return link to membership, either my membership or for an admin"""
+        if for_user == self.user:
+            return reverse('team.membership', kwargs={'team': self.team.slug})
+        return reverse('team.membership', kwargs={'team': self.team.slug, 'pk': self.pk})
+
+
 
 class Team(Model):
     """

@@ -26,7 +26,7 @@ from inkscape.url_utils import url_tree
 
 from .views import (
     TeamDetail, EditTeam, AddMember, RemoveMember, WatchTeam, UnwatchTeam,
-    TeamCharter, ChatWithTeam, ChatLogs,
+    TeamCharter, ChatWithTeam, ChatLogs, MembershipRequestView,
 )
 
 # '\*(?P<team>[^\/]+)/'
@@ -37,6 +37,8 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^watch/$', WatchTeam.as_view(), name='team.watch'),
     url(r'^leave/$', RemoveMember.as_view(), name='team.leave'),
     url(r'^unwatch/$', UnwatchTeam.as_view(), name='team.unwatch'),
+    url(r'^membership/$', MembershipRequestView.as_view(), name='team.membership'),
+    url(r'^membership/(?P<pk>\d+)/$', MembershipRequestView.as_view(), name='team.membership'),
     url(r'^charter/$', TeamCharter.as_view(), name='team.charter'),
     url(r'^elections/', include('elections.urls', namespace='elections')),
 

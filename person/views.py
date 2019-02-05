@@ -31,7 +31,7 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.http import HttpResponseRedirect, Http404
 from django.urls import translate_url
 
-from .models import User, Team
+from .models import User, Team, TeamMembership
 from .forms import UserForm, AgreeToClaForm, TeamAdminForm
 from .mixins import LoginRequiredMixin, NeverCacheMixin, UserMixin, NextUrlMixin
 
@@ -152,11 +152,35 @@ class ChatLogs(TeamDetail):
     title = _("Chatroom Logs")
     template_name = 'person/team_chatlogs.html'
 
+class MembershipRequestView(NeverCacheMixin, LoginRequiredMixin, DetailView):
+    """
+    View a membership request, with the ability to comment on them.
+    """
+    model = TeamMembership
+
+    def is_allowed(self, user):
+        """Can the user access this request view"""
+        obj = self.get_object()
+        return obj.user == user \
+            or obj.team.admin == user \
+            or user.is_superuser
+
+    def get_object(self, queryset=None):
+        """The object is based on the user currently logged in"""
+        if 'pk' not in self.kwargs:
+            team = Team.objects.get(slug=self.kwargs['team'])
+            return team.memberships.get(user=self.request.user)
+        # Primary Key lookup is used for admins to see requests
+        return super().get_object(queryset=queryset)
 
 class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, RedirectView):
+    """
+    Add a user to a team, this membership may not be complete after this action and
+    may need peer or administration approval.
+    """
     slug_url_kwarg = 'team'
-    model          = Team
-    permanent      = False
+    permanent = False
+    model = Team
 
     def get_user(self):
         if 'username' in self.kwargs:
@@ -165,14 +189,16 @@ class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, Redirect
 
     def get_redirect_url(self, **kwargs):
         try:
-            self.action(self.get_object(), self.get_user(), self.request.user)
+            next_url = self.action(self.get_object(), self.get_user(), self.request.user)
         except (Team.DoesNotExist, User.DoesNotExist) as err:
             raise Http404(str(err))
-        next_url = self.get_object().get_absolute_url()
         return self.request.GET.get('next', next_url)
 
     def action(self, team, user, actor=None):
-        if team.enrole == 'O' or \
+        """Action of this joining request"""
+        if not user.email:
+            messages.error(self.request, _("User must have an email address set in their profile to get membership to a team."))
+        elif team.enrole == 'O' or \
           (actor == team.admin and team.enrole in 'PT') or \
           (team.has_member(actor) and team.enrole == 'P'):
             if user == actor or team.has_requester(user):
@@ -185,39 +211,60 @@ class AddMember(NeverCacheMixin, LoginRequiredMixin, SingleObjectMixin, Redirect
                 messages.error(self.request, _("This user has not requested membership."))
 
         elif team.enrole in 'PT' and actor == user:
-            (obj, created) = team.update_membership(user, expired=None, joined=None, requested=now())
+            (obj, created) = team.update_membership(
+                user, expired=None, joined=None, requested=now())
             if created:
-                return messages.info(self.request, _("Membership Request Received."))
+                messages.info(self.request, _("Membership Request Received."))
             elif obj.joined:
-                return messages.info(self.request, _("You are already a member of this team."))
+                messages.info(self.request, _("You are already a member of this team."))
             else:
-                return messages.info(self.request, _("You have already requested a membership to this team."))
+                messages.info(self.request, _("Already requested a membership to this team."))
+            return obj.get_absolute_url(for_user=user)
         else:
-            return messages.error(self.request, _("Can't add user to team. (not allowed)"))
+            messages.error(self.request, _("Can't add user to team. (not allowed)"))
+        return team.get_absolute_url()
 
 class RemoveMember(AddMember):
+    """
+    Remove member request, watching or membership itself.
+    """
     def action(self, team, user, actor=None):
+        """Action which is called by AddMember.get_redirect_url"""
         if actor in [user, team.admin]:
             if team.has_member(user):
                 team.update_membership(user, expired=now(), removed_by=actor)
-                return messages.info(self.request, _("User removed from team."))
+                messages.info(self.request, _("User removed from team."))
             elif team.has_requester(user):
                 team.update_membership(user, expired=now(), removed_by=actor)
-                return messages.info(self.request, _("User removed from membership requests."))
+                messages.info(self.request, _("User removed from membership requests."))
             elif team.has_watcher(user):
                 team.update_membership(user, expired=now(), removed_by=actor)
-                return messages.info(self.request, _("User removed from watching team."))
-        messages.error(self.request, _("Cannot remove user from team. (not allowed)"))
+                messages.info(self.request, _("User removed from watching team."))
+            else:
+                messages.error(self.request, _("Cannot remove user from team. (not allowed)"))
+        else:
+            messages.error(self.request, _("Cannot remove user from team. (not allowed)"))
+        return team.get_absolute_url()
 
 class WatchTeam(AddMember):
+    """
+    Add a membership which is only concerned with watching the team.
+    """
     def action(self, team, user, actor=None):
+        """Action which is called by AddMember.get_redirect_url"""
         if team.enrole == 'S':
-            return messages.error(self.request, _("You can't watch this team."))
-        team.update_membership(user, expired=None, requested=None, joined=None)
-        messages.info(self.request, _("Now watching this team."))
+            messages.error(self.request, _("You can't watch this team."))
+        else:
+            team.update_membership(user, expired=None, requested=None, joined=None)
+            messages.info(self.request, _("Now watching this team."))
+        return team.get_absolute_url()
 
 class UnwatchTeam(AddMember):
+    """
+    Remove a watching membership specifically.
+    """
     def action(self, team, user, actor=None):
+        """Action which is called by AddMember.get_redirect_url"""
         team.update_membership(user, expired=now(), removed_by=actor)
         messages.info(self.request, _("No longer watching this team."))
-
+        return team.get_absolute_url()

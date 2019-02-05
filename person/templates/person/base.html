@@ -13,8 +13,10 @@
   </div>
   <div id="profile">
     {% block "profile" %}{% endblock %}
-    <h1 id="name">{% block "name" %}{{ object.name }}{% endblock %}</h1>
-    <div id="bio">{% block "bio" %}{{ object.intro|linebreaks }}{% endblock %}</div>
+    {% block "fullbio" %}
+      <h1 id="name">{% block "name" %}{{ object.name }}{% endblock %}</h1>
+      <div id="bio">{% block "bio" %}{{ object.intro|linebreaks }}{% endblock %}</div>
+    {% endblock %}
   </div>
 
   {% block "allcontent" %}

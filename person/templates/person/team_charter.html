@@ -14,7 +14,9 @@
 {% if object.charter %}
   {% if object.side_bar %}
     {% block "side" %}
-      {{ object.side_bar|safe }}
+      {% if object.side_bar %}
+        {{ object.side_bar|safe }}
+      {% endif %}
     {% endblock %}
 
     {% block "content" %}

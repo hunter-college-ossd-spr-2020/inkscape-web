@@ -11,9 +11,6 @@
 {% endblock %}
 
 {% block "side" %}
-  {% if request.user.is_staff %}
-  <a href="{% url 'admin:person_teammembership_changelist' %}?team__id__exact={{ object.pk }}" class="btn btn-danger" title="{% trans "Admin interface for team memberships" %}">{% trans "Membership Admin" %}</a>
-  {% endif %}
   {% if object.admin == request.user %}
     <a href="{% url "team.edit" object.slug %}" class="btn btn-danger" title=
       "{% trans "Edit the team's details as the team's administrator." %}">{% trans "Edit Team" %}</a>
@@ -23,17 +20,6 @@
       <a href="{% url "team.charter" object.slug %}" class="btn btn-primary" disabled title=
         "{% trans "View team charter detailing responsibilities and rules." %}">{% trans "Team Charter" %}</a>
     {% endif %}
-    {% if membership.is_member %}
-      <a href="{% url "team.leave" object.slug %}" class="btn btn-default" disabled title=
-        "{% trans "Leave this team." %}">{% trans "Leave Team" %}</a>
-      <script>popUpLink("{% blocktrans %}Are you sure you want to leave {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Leave Team" %}', "{{ object.get_absolute_url }}");</script>
-    {% elif membership.is_watcher %}
-      <a href="{% url "team.unwatch" object.slug %}" class="btn btn-default" title=
-        "{% trans "This means that you will no longer be kept up-to-date about this team's activities." %}">{% trans "Stop Watching Team" %}</a>
-    {% else %}
-      <a href="{% url "team.watch" object.slug %}" class="btn btn-default" title=
-        "{% trans "Watchers are kept up-to-date about what's going on in the team, but can't take part in their work." %}">{% trans "Watch Team" %}</a>
-    {% endif %}
 
     {% if not membership.is_member %}
       {% if object.enrole == 'O' %}
@@ -41,8 +27,8 @@
           "{% trans "Enroll yourself to become a member of this team." %}">{% trans "Join Team" %}</a>
       {% elif object.enrole in 'PT' %}
         {% if membership.is_requester %}
-          <a class="btn" disabled title=
-            "{% trans "Your request for a team membership is pending." %}">{% trans "Request Sent" %}</a>
+        <a class="btn" href="{% url "team.membership" object.slug %}" title=
+            "{% trans "Your request for a team membership is pending." %}">{% trans "My Membership Request" %}</a>
         {% else %}
           <a href="{% url "team.join" object.slug %}" class="btn btn-primary" title=
             "{% trans "Ask for a team membership." %}">{% trans "Request Membership" %}</a>
@@ -54,6 +40,8 @@
         <a class="btn" disabled title=
           "{% trans "This team uses an election to pick it's members." %}">{% trans "Elected Membership" %}</a>
       {% endif %}
+    {% else %}
+        <a class="btn" href="{% url "team.membership" object.slug %}">{% trans "My Membership" %}</a>
     {% endif %}
 
     {% if object.ircrooms.count > 0 %}
@@ -75,23 +63,12 @@
             <span>{{ object.members.count|default:0 }}</span>
           </a>
         </li>
-        <li>
-          <a>
-            <label>{% trans "Watchers" %}</label>
-            <span>{{ object.watchers.all.count|default:0 }}</span>
-          </a>
-        </li>
       </ul>
         {% if request.user in object.peers %}
           <h2>{% trans "Join Requests" %}</h2>
           <ul>
-          {% for member in object.requests %}     
-            {% if member.user.username %}
-              <li><label><a href="{{ member.user.get_absolute_url }}" title="{% trans "Visit profile" %}">{{ member.user }}</a></label>
-              <span><a href="{% url "team.approve" object.slug member.user.username %}">&#10003;</a>
-                    <a href="{% url "team.disapprove" object.slug member.user.username %}" class="no">&#10006;</a></span>
-              </li>
-            {% endif %}
+          {% for membership in object.requests %}   
+            <li><label><a href="{{ membership.get_absolute_url }}">{{ membership.user }}</a></label></li>
           {% empty %}
             <p>None</p>
           {% endfor %}
@@ -135,25 +112,13 @@
       {% for member in object.members.all %}
        {% with user=member.user %}
         <div class="galleryitem">
-          <a class="link" href="{{ user.get_absolute_url }}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
-          <p title="Full User Details"><a href="{{ user.get_absolute_url }}">{{ user }}</a></p>
+          <a class="link" href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ user.get_absolute_url }}{% endif %}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
+          <p title="Full User Details"><a href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ user.get_absolute_url }}{% endif %}">{{ user }}</a></p>
           <div class="minitabs">
             {% if member.title %}
               {% with text=member.title style=member.style %}
                 {% include "ribbon.html" %}
               {% endwith %}
-            {% endif %}
-            {% if user == request.user or object.admin == request.user %}
-              {% if user.username %}
-              <a href="{% url "team.remove" object.slug user.username %}" title="{% trans 'Remove Membership' %}">
-                  <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Remove Membership" %}">
-                </a>
-                {% if user == request.user %}
-                  <script>popUpLink("{% blocktrans %}Are you sure you want to leave {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Leave Team" %}', "{{ object.get_absolute_url }}");</script>
-                {% else %}
-                  <script>popUpLink("{% blocktrans %}Are you sure you want to remove {{ user }} from {{ object }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Remove" %}', "{{ object.get_absolute_url }}");</script>
-                {% endif %}
-              {% endif %}
             {% endif %}
           </div>
         </div>
@@ -167,7 +132,7 @@
     <h2>{% trans "Previous Team Members" %}</h2>
     <ul>
       {% for member in object.old_members %}
-        <li><a href="{{ member.user.get_absolute_url }}">{{ member.user }}</a> ({{ member.joined.year }}{% if member.expired.year != member.joined.year %} - {{ member.expired.year }}{% endif %})</li>
+      <li><a href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ member.user.get_absolute_url }}{% endif %}">{{ member.user }}</a> ({{ member.joined.year }}{% if member.expired.year != member.joined.year %} - {{ member.expired.year }}{% endif %})</li>
       {% endfor %}
     </ul>
   {% endif %}

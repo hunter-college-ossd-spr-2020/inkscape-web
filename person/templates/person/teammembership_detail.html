@@ -1,0 +1,73 @@
+{% extends 'person/base.html' %}
+{% load i18n static comments %}
+
+{% block "css" %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}" media="all" />
+{% endblock %}
+
+{% block title %}Request to join {{ object.team }}{% endblock %}
+
+{% block "profile" %}
+  <a href="{{ object.team.get_absolute_url }}"><img id="photo" src="{{ object.team.icon.url }}"/></a>
+  <a href="{{ object.user.get_absolute_url }}" style="float: right;"><img id="photo" src="{% if object.user.photo %}{{ object.user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"></a>
+{% endblock %}
+{% block "fullbio" %}
+  <div style="text-align: center;">
+    <h1 id="name">{{ object.user }}</h1>
+    {% if object.is_expired %}
+      <h2>Expired Member</h2>
+    {% elif object.is_requester %}
+      <h2>Requesting to join</h2>
+    {% elif object.is_member %}
+      <h2>Active Member</h2>
+    {% elif object.is_watcher %}
+      <h2>Watching Only</h2>
+    {% endif %}
+
+    <br/>
+
+    <div class="approvebuttons">
+      {% if request.user in object.team.peers %}
+        {% if object.is_requester %}
+          <a class="btn btn-success" href="{% url "team.approve" object.team.slug object.user.username %}" title="{% trans "Approve user membership" %}">Approve</a>
+          <script>popUpLink("{% blocktrans %}Are you sure you want to approve {{ object.user }}'s membership to {{ object.team }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Approve" %}', "{{ object.get_absolute_url }}");</script>
+
+          <a class="btn btn-danger" href="{% url "team.disapprove" object.team.slug object.user.username %}" title="{% trans "Disapprove of user's membership" %}">Disaprove</a>
+          <script>popUpLink("{% blocktrans %}Are you sure you want to disapprove of {{ object.user }}'s membership in {{ object.team }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Disapprove" %}', "{{ object.get_absolute_url }}");</script>
+        {% elif object.is_member %}
+        <a class="btn btn-danger" href="{% url "team.remove" object.team.slug object.user.username %}" title="{% trans "Remove user from the team" %}">Remove From Team</a>
+          <script>popUpLink("{% blocktrans %}Are you sure you want to remove {{ object.user }} from {{ object.team }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Remove" %}', "{{ object.team.get_absolute_url }}");</script>
+        {% endif %}
+      {% elif object.is_member %}
+        <a class="btn btn-danger" href="{% url "team.leave" object.team.slug %}">Leave Team</a>
+        <script>popUpLink("{% blocktrans %}Are you sure you want to leave {{ object.team }}?{% endblocktrans %}", '{% trans "Cancel" %}', '{% trans "Leave Team" %}', "{{ object.team.get_absolute_url }}");</script>
+      {% elif object.is_requester and object.user == request.user %}
+        <p>{% blocktrans %}Your request to join this team is in process.{% endblocktrans %}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block "allcontent" %}
+  {% if object.is_requester %}
+    <p id="bio">
+      {% if object.user == request.user %}
+        {% if object.team.enrole_msg %}
+          {{ object.team.enrole_msg|safe }}
+        {% else %}
+          {% trans "Your request will be considered by the team admin and they will comment here about any further requirements to your membership." %}
+        {% endif %}
+      {% elif request.user in object.team.peers %}
+        {% trans "Be sure to follow the policy for the team when communicating with the person who is asking for membership of this team. If unsure, contact the team admin." %}
+      {% endif %}
+    </p>
+  {% endif %}
+  {% with object as comment_subject %}
+    {% get_comment_list for comment_subject as comment_list %}
+    {% include "comments/new_list.html" %}
+    {% trans "Add details to your membership request:" as comment_label %}
+    {% trans "Add" as comment_button %}
+    {% include "comments/new_form.html" with next=object.get_absolute_url %}
+  {% endwith %}
+
+{% endblock %}
