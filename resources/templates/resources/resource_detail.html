@@ -117,7 +117,7 @@
       {% endif %}
 
       {% if object.link and not object.is_video %}
-        <p><a href="{{ object.link }}">{% trans "Link" %}</a></p>
+        <p><a href="{{ object.link }}" rel="nofollow noopener" target="_blank">{% trans "Link" %}</a></p>
       {% endif %}
     </div>
   </div>   
