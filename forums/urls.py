@@ -63,7 +63,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url(r'^subscriptions/$', Subscriptions.as_view(), name="topic_subs"),
     url(r'^phpbb/', include('forums.plugins.phpbb.urls', namespace='phpbb')),
-    url(r'^~(?P<username>[\w-]+)/rss/$', ForumTopicFeed(), name='topic_feed'),
+    url(r'^~(?P<username>[^\/]+)/rss/$', ForumTopicFeed(), name='topic_feed'),
     url_tree(
         r'^c(?P<pk>\d+)/',
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
