@@ -1748,3 +1748,11 @@ li#tab_hackfest p a:hover {
   text-decoration: none;
   background-image: linear-gradient(to bottom, #ff4646, #cc1d1d);
 }
+.team_list img {
+  max-width: 162px;
+  max-height: 70px;
+  border: 2.4px solid #ccc;
+  border-radius: 16px;
+  box-shadow: 0px 0px 5px #ccc;
+  padding: 4px;
+}

@@ -1,7 +1,7 @@
 #
-# Copyright 2014, Martin Owens <doctormo@gmail.com>
+# Copyright 2014-2019, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -17,16 +17,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+These CMS plugins are designed to work with django-cms 3.5 or later.
+"""
 
 from django.utils.translation import ugettext_lazy as _
-from django.shortcuts import get_object_or_404
 from django.contrib.admin import *
 from django.conf import settings
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 
-from .models import *
+from .models import InlinePage, InlinePages, ShieldPlugin, GroupPhotoPlugin, TeamPlugin
 from .admin import TabInline
 
 class InlinePagesPlugin(CMSPluginBase):
@@ -98,3 +100,35 @@ class CMSGroupBioPlugin(CMSPluginBase):
         yield users[randint(0, users.count() - 1)]
 
 plugin_pool.register_plugin(CMSGroupBioPlugin)
+
+class CMSTeamPlugin(CMSPluginBase):
+    """
+    Render the team plugin into the page using the options.
+    """
+    name = _('Team Members Plugin')
+    model = TeamPlugin
+    render_template_template = "cms/plugins/team_{}.html"
+    text_enabled = True
+
+    @property
+    def render_template(self):
+        """Use the template specificed by the plugin instance"""
+        return self.render_template_template.format(self.instance.template)
+
+    def render(self, context, instance, placeholder):
+        self.instance = instance
+        members = instance.team.memberships.filter(
+            joined__isnull=False,
+            expired__isnull=True)
+        if instance.role is not None:
+            members = members.filter(role=instance.role)
+
+        context.update({
+            'instance': instance,
+            'team': instance.team,
+            'members': members,
+            'placeholder': placeholder,
+        })
+        return context
+
+plugin_pool.register_plugin(CMSTeamPlugin)
