@@ -3,6 +3,31 @@
 
 {% block "css" %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static "css/comments.css" %}" media="all" />
+<style>
+#memberdetails {
+  border: 1px grey solid;
+  padding: 5px;
+  margin: 12px;
+  border-radius: 6px;
+}
+#memberdetails li {
+  padding: 2px;
+}
+
+#memberdetails li.role em {
+  color: white;
+  padding: 3px 10px;
+  border-radius: 9px;
+}
+#memberdetails li.winner em {background-color: #e1b000;}
+#memberdetails li.purple em {background-color: #614266;}
+#memberdetails li.blue em {background-color: #2e5a92;}
+#memberdetails li.red em {background-color: #982828;}
+#memberdetails li.green em {background-color: #289842;}
+#memberdetails li.orange em {background-color: #aa7216;}
+#memberdetails li.grey em {background-color: #606060;}
+#memberdetails li.plat em {background-color: #8d8d8d;}
+</style>
 {% endblock %}
 
 {% block title %}Request to join {{ object.team }}{% endblock %}
@@ -62,6 +87,32 @@
       {% endif %}
     </p>
   {% endif %}
+
+  <div id="memberdetails">
+    <ul>
+      {% if object.role %}
+        <li class="role {{ object.role.style }}"><strong>Team Role</strong>: <em>{{ object.role.title }}</em></li>
+      {% elif object.title %}
+        <li class="role {{ object.style }}"><strong>Custom Role</strong>: <em>{{ object.title }}</em></li>
+      {% endif %}
+      {% if object.requested %}
+        <li><strong>Requested to be member</strong>: <em>{{ object.requested }}</em></li>
+      {% endif %}
+      {% if object.joined %}
+        <li><strong>Accepted as member</strong>: <em>{{ object.joined }}</em></li>
+        {% if object.added_by %}
+          <li><strong>Accepted by</strong>: <em>{{ object.added_by }}</em></li>
+        {% endif %}
+      {% endif %}
+      {% if object.expired %}
+      <li><strong>Expired or Removed</strong>: <em>{{ object.expired }}</em></li>
+        {% if object.removed_by %}
+        <li><strong>Removed by</strong>: <em>{{ object.removed_by }}</em></li>
+        {% endif %}
+      {% endif %}
+    </ul>
+  </div>
+
   {% with object as comment_subject %}
     {% get_comment_list for comment_subject as comment_list %}
     {% include "comments/new_list.html" %}

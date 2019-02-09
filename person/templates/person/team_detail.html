@@ -119,6 +119,10 @@
               {% with text=member.title style=member.style %}
                 {% include "ribbon.html" %}
               {% endwith %}
+            {% elif member.role %}
+              {% with text=member.role.title style=member.role.style %}
+                {% include "ribbon.html" %}
+              {% endwith %}
             {% endif %}
           </div>
         </div>
