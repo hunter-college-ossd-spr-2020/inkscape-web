@@ -25,8 +25,8 @@ from django.contrib.admin import ModelAdmin, TabularInline, site
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Permission
 
-from .models import User, Team, TeamChatRoom, TeamMembership
-from .forms import TeamForm
+from .models import User, Team, TeamChatRoom, TeamMembership, MembershipRole
+from .team_forms import TeamForm
 
 class PermissionAdmin(ModelAdmin):
     """Add permission to admin so we can remove old stuff"""
@@ -42,12 +42,16 @@ class ChatRoomInline(TabularInline):
     raw_id_fields = ('admin',)
     fields = ('channel', 'language', 'admin')
 
+class MembershipRoleInline(TabularInline):
+    """Membership roles"""
+    model = MembershipRole
+
 class TeamAdmin(ModelAdmin):
     """Editing a team in the admin interface"""
     form = TeamForm
     raw_id_fields = ('admin',)
     list_display = ('name', 'group', 'admin', 'enrole')
-    inlines = (ChatRoomInline,)
+    inlines = (ChatRoomInline, MembershipRoleInline)
 
 site.register(Team, TeamAdmin)
 
@@ -80,8 +84,8 @@ site.register(User, UserAdmin)
 class MembershipAdmin(ModelAdmin):
     """Editing memberships for teams"""
     raw_id_fields = ('user', 'added_by', 'removed_by')
-    list_filter = ('joined', 'requested', 'expired', 'team')
-    list_display = ('repr', 'requested', 'joined', 'expired', 'title')
+    list_filter = ('joined', 'requested', 'expired', 'team', 'role')
+    list_display = ('repr', 'requested', 'joined', 'expired', 'title', 'role')
 
     @staticmethod
     def repr(obj):

@@ -315,6 +315,25 @@ class TeamChatRoom(Model):
                         'name': filename.replace('.txt', ''),
                     }
 
+class MembershipRole(Model):
+    """
+    Types of memberships which can be preset in a team, these presets allow the role
+    to be easily moved between people. And selected by a user.
+    """
+    code = SlugField("Role URL Code", max_length=12, primary_key=True,\
+        help_text="The simple lowercase 'slug' that is used in urls "
+                  "(unique for whole website).")
+    title = CharField(_("Role Title"), max_length=128)
+    style = CharField(_("Role Style"), max_length=64, choices=ROLE_STYLES, **null)
+    number = IntegerField(_("Maximum number"), default=0,\
+        help_text="If greater than zero, will limit the number of this role to this count.")
+    public = BooleanField(_("Publically Choosable"), default=True,
+        help_text="If set to false, this role can only be selected by team admins.")
+
+    team = ForeignKey("Team", related_name='mtypes')
+
+    def __str__(self):
+        return self.title
 
 class TeamMembership(Model):
     """
@@ -342,6 +361,7 @@ class TeamMembership(Model):
 
     title = CharField(_('Custom Role Title'), max_length=128, **null)
     style = CharField(_('Custom Role Style'), max_length=64, choices=ROLE_STYLES, **null)
+    role = ForeignKey(MembershipRole, related_name="memberships", **null)
 
     @property
     def is_watcher(self):
@@ -427,6 +447,8 @@ class Team(Model):
     mailman = CharField(_('Email List'), max_length=32, null=True, blank=True,\
         help_text='The name of the pre-configured mailing list for this team')
     enrole = CharField(_('Enrollment'), max_length=1, default='O', choices=ENROLES)
+    enrole_msg = TextField(_('Enrolement Message'), null=True, blank=True,\
+        help_text='This message is displayed to users requesting to join the team.')
 
     auto_expire = IntegerField(default=0,\
         help_text=_('Number of days that members are allowed to be a member.'))
