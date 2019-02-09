@@ -112,13 +112,4 @@
       {% endif %}
     </ul>
   </div>
-
-  {% with object as comment_subject %}
-    {% get_comment_list for comment_subject as comment_list %}
-    {% include "comments/new_list.html" %}
-    {% trans "Add details to your membership request:" as comment_label %}
-    {% trans "Add" as comment_button %}
-    {% include "comments/new_form.html" with next=object.get_absolute_url %}
-  {% endwith %}
-
 {% endblock %}
