@@ -235,6 +235,7 @@ TRANSLATED_APPS = (
 )
 
 COMMENTS_APP = 'forums'
+COMMENT_MAX_LENGTH = 20000
 
 MODERATED_MODELS = (
     ('person.user', _('Website User')),
