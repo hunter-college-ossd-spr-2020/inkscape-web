@@ -170,7 +170,10 @@ class MembershipRequestView(NeverCacheMixin, LoginRequiredMixin, DetailView):
         """The object is based on the user currently logged in"""
         if 'pk' not in self.kwargs:
             team = Team.objects.get(slug=self.kwargs['team'])
-            return team.memberships.get(user=self.request.user)
+            try:
+                return team.memberships.get(user=self.request.user)
+            except TeamMembership.DoesNotExist:
+                raise Http404()
         # Primary Key lookup is used for admins to see requests
         return super().get_object(queryset=queryset)
 
