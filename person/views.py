@@ -32,7 +32,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.urls import translate_url
 
 from .models import User, Team, TeamMembership
-from .forms import UserForm, AgreeToClaForm, TeamAdminForm
+from .forms import UserForm, AgreeToClaForm
+from .team_forms import TeamAdminForm
 from .mixins import LoginRequiredMixin, NeverCacheMixin, UserMixin, NextUrlMixin
 
 class LoginView(BaseLoginView):

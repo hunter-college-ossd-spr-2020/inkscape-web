@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""Register users using forms and allow teams and users to edit their data"""
+"""
+Register users using forms and allow teams and users to edit their data
+"""
 
 from django.forms import (
     ModelForm, Form, CharField, PasswordInput, ValidationError
@@ -27,31 +29,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import Permission
 
-from djangocms_text_ckeditor.widgets import TextEditorWidget
 from django_registration.forms import RegistrationForm
 from nocaptcha_recaptcha.fields import NoReCaptchaField
 
-from .models import User, Team
-
-class TeamForm(ModelForm):
-    """Edit a team's basic details"""
-    class Meta:
-        exclude = ('mailman',)
-        model = Team
-
-    def __init__(self, *args, **kw):
-        super(TeamForm, self).__init__(*args, **kw)
-
-        for field in ('desc', 'charter', 'side_bar'):
-            if field in self.fields:
-                self.fields[field].widget = TextEditorWidget()
-
-class TeamAdminForm(TeamForm):
-    """Administration form for showing teams in the admin interface"""
-    class Meta:
-        fields = ('name', 'email', 'icon', 'intro', 'desc',
-                  'charter', 'side_bar', 'enrole', 'auto_expire')
-        model = Team
+from .models import User
 
 class PasswordForm(PasswordResetForm):
     """Password reset request form with Recapture"""
