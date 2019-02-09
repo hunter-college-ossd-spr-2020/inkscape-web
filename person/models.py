@@ -48,6 +48,17 @@ from inkscape.fields import ResizedImageField, AutoOneToOneField
 
 null = dict(null=True, blank=True) # pylint: disable=invalid-name
 
+ROLE_STYLES = (
+    ('plat', 'Platinum'),
+    ('winner', 'Gold'),
+    ('grey', 'Silver'),
+    ('orange', 'Bronze'),
+    ('purple', 'Purple'),
+    ('blue', 'Blue'),
+    ('red', 'Red'),
+    ('green', 'Green'),
+)
+
 def linked_users_only(qset, *rels):
     """
     Limits a query to only include enough user information to link to the user.
@@ -329,8 +340,8 @@ class TeamMembership(Model):
     added_by = ForeignKey(User, related_name='has_added_users', **null)
     removed_by = ForeignKey(User, related_name='has_removed_users', **null)
 
-    title = CharField(_('Role Title'), max_length=128, **null)
-    style = CharField(_('Role Style'), max_length=64, **null)
+    title = CharField(_('Custom Role Title'), max_length=128, **null)
+    style = CharField(_('Custom Role Style'), max_length=64, choices=ROLE_STYLES, **null)
 
     @property
     def is_watcher(self):

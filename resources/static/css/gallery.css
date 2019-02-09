@@ -195,6 +195,21 @@ svg.ribbon path.part_c { fill:#494949; }
 .blue svg.ribbon path.part_a { fill:#2e5a92; }
 .blue svg.ribbon path.part_b { fill:#3a71b8; }
 .blue svg.ribbon path.part_c { fill:#243c5a; }
+.red svg.ribbon path.part_a { fill:#982828; }
+.red svg.ribbon path.part_b { fill:#c23030; }
+.red svg.ribbon path.part_c { fill:#5e2920; }
+.green svg.ribbon path.part_a { fill:#289842; }
+.green svg.ribbon path.part_b { fill:#30c256; }
+.green svg.ribbon path.part_c { fill:#205e23; }
+.orange svg.ribbon path.part_a { fill:#aa7216; }
+.orange svg.ribbon path.part_b { fill:#de9314; }
+.orange svg.ribbon path.part_c { fill:#6b4c13; }
+.grey svg.ribbon path.part_a { fill:#606060; }
+.grey svg.ribbon path.part_b { fill:#797979; }
+.grey svg.ribbon path.part_c { fill:#3f3f3f; }
+.plat svg.ribbon path.part_a { fill:#8d8d8d; }
+.plat svg.ribbon path.part_b { fill:#bcbcbc; }
+.plat svg.ribbon path.part_c { fill:#5d5d5d; }
 .galleryitem .minitabs .blank {
   width: 50px;
   text-align: center;
