@@ -28,7 +28,7 @@ from person import user_urls
 from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
-    TopicMerge, TopicSplit, UserTopicList,
+    TopicMerge, TopicSplit, UserTopicList, UnreadTopicList,
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
     UserFlagList, UserModList, UserBanList,
@@ -56,6 +56,7 @@ urlpatterns = [ # pylint: disable=invalid-name
         url(r'^mods/flag/$', UserModToggle.as_view(), name='mod_user'),
         url(r'^flags/flag/$', UserFlagToggle.as_view(), name='flag_user'),
     ),
+    url(r'^unread/$', UnreadTopicList.as_view(), name="unread"),
     url(r'^check/$', CommentModList.as_view(), name="check"),
     url(r'^search/$', TopicSubjectSearch(), name='search'),
     url(r'^search/topics/$', TopicSearch(), name='search.topics'),

@@ -107,6 +107,11 @@ class Subscriptions(UserRequired, TopicList):
         qset.set_user(self.request.user)
         return qset.subscribed_only()
 
+class UnreadTopicList(TopicList):
+    """An empty forum which javascript asks for the latest topics."""
+    template_name = 'forums/forumtopic_list_unread.html'
+    paginate_by = 200
+
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
     def get_queryset(self):

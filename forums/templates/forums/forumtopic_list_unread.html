@@ -1,0 +1,9 @@
+{% extends "forums/base.html" %}
+{% load i18n static %}
+{% block "forumheader" %}{% endblock %}
+{% block "tools" %}{% endblock %}
+
+{% block "content" %}
+  {% include "forums/topic_table.html" with topic_list=page_obj %}
+  <span id="seenconf" data-mode="DEL"></span>
+{% endblock %}
