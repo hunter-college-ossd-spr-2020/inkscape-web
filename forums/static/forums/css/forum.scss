@@ -13,9 +13,9 @@
     4.5  Forum topic
 5. Bootstrap form styles additions and overrides
 7. Media Queries
-    7.1 @media (min-width: 360px)
-    7.2 @media (min-width: 700px) and (min-width: 40em)
-    7.3 @media (min-width: 1400px) and (min-width: 90em)
+    7.1 @media screen and (min-width: 360px)
+    7.2 @media screen and (min-width: 700px) and (min-width: 40em)
+    7.3 @media screen and (min-width: 1400px) and (min-width: 90em)
 8. Sections specific
     8.1 Forums list (.forums-list)
     8.2 Forum topic list (.forums-topic-list)
@@ -814,7 +814,7 @@ ul.forum-pagination li {
   padding: 2px 15px;
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
   .files .btn span {
     display: none;
   }
@@ -1202,7 +1202,7 @@ $image-unit-half: $image-unit / 2;
  */
 
 /* -------------------- 7.1 (Override 320-360 size specific)---- */
-@media (min-width: 360px){
+@media screen and (min-width: 360px){
   .user-menu{
     margin-top:25px;
   }
@@ -1212,7 +1212,7 @@ $image-unit-half: $image-unit / 2;
 }
 
 /* -------------------- 7.2 --------------------- */
-@media (min-width: 700px) and (min-width: 40em) {
+@media screen and (min-width: 700px) and (min-width: 40em) {
   
   /* -------------------- main layout ------------------------ */
   
@@ -1401,7 +1401,7 @@ $image-unit-half: $image-unit / 2;
   }
 }
 /* -------------------- 7.3 --------------------- */
-@media (min-width: 1400px) and (min-width: 90em) {
+@media screen and (min-width: 1400px) and (min-width: 90em) {
   .forums-app {
     width:75vw;
     margin:0 auto;
