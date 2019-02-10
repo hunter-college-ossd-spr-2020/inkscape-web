@@ -1,0 +1,11 @@
+{% extends "forums/forumtopic_list_user.html" %}
+{% load i18n static %}
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-comment-list">
+{% endblock "wrapper" %}
+{% block "content" %}
+  {% with object_list as comment_list %}
+    {% include "forums/comment_table.html" %}
+  {% endwith %}
+{% endblock %}
+

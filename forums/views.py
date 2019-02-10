@@ -76,6 +76,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
 
     def get_queryset(self):
         qset = super().get_queryset().select_related('forum')
+        self.set_context_datum('topic_list', True)
         if 'count' in self.request.GET:
             try:
                 qset = qset.filter(post_count=int(self.request.GET['count']))
@@ -95,9 +96,12 @@ class TopicList(UserVisit, ForumMixin, ListView):
             self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))
         return qset
 
+class UserTopicList(TopicList):
+    template_name = 'forums/forumtopic_list_user.html'
 
 class Subscriptions(UserRequired, TopicList):
     """A list of subscribed threads"""
+    template_name = 'forums/forumtopic_list_user.html'
     def get_queryset(self):
         qset = super().get_queryset()
         qset.set_user(self.request.user)
@@ -112,9 +116,15 @@ class TopicDetail(UserVisit, DetailView):
 
 class CommentList(UserVisit, ForumMixin, ListView):
     """List comments, all of them or for a specific user"""
-    template_name = 'forums/comment_list.html'
     model = Comment
     paginate_by = 20
+
+    @property
+    def template_name(self):
+        if self.request.user.is_authenticated:
+            if self.request.user.username == self.kwargs['username']:
+                return 'forums/comment_list_user.html'
+        return 'forums/comment_list.html'
 
     def get_queryset(self):
         qset = super().get_queryset()
@@ -123,6 +133,7 @@ class CommentList(UserVisit, ForumMixin, ListView):
             qset = qset.filter(user_id=user.pk)
             self.set_context_datum('forum_user', user)
         return qset.order_by('-submit_date')
+
 
 class CommentCreate(UserRequired, FormView):
     """

@@ -13,9 +13,7 @@
 {% endblock %}
 
 {% block "tools" %}
-  <div class="btn-group">
-    <a data-original-title="Refresh" data-placement="top" href="" class="btn btn-sm"><span class="glyphicon glyphicon-refresh"><span></a>
-  </div>
+  {% if topic_list %}
   <div class="btn-group">
     {% if forum %}
       {% if not request.user.is_authenticated %}
@@ -29,6 +27,7 @@
     <a href="#" id="seenall" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Mark all as Read" %}</a>
     <a href="?{% if request.GET.count == "1" %}" class="active {% else %}count=1" class="{% endif %}btn btn-sm btn-default"><span class="glyphicon glyphicon-bell"></span> {% trans "Unanswered" %}</a>
   </div>
+  {% endif %}
 
   {{ block.super }}
 {% endblock %}

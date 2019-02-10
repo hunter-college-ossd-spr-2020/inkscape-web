@@ -51,6 +51,7 @@
             {% else %}
             <li class="user-account"><a href="{{ request.user.get_absolute_url }}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
             <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+            <li class="user-forum" title="{% trans "My Forum" %}"><a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span></a></li>
               {% if request.user.is_staff %}
                 <li class="user-logout"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
               {% endif %}
@@ -107,24 +108,6 @@
             
             {% block "aside" %}
             <aside class="sm-side forum-sidebar">
-              
-              {% if request.user.is_authenticated %}
-                <ul class="nav nav-pills nav-stacked labels-info">
-                  <li>
-                    <h4>{% trans "My Forum" %}</h4>
-                  </li>
-                  <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "comment_list" %}{% endif %}">
-                    <a href="{% url "comment_list" request.user.username %}"><span class="iw-chat"></span> {% trans "My Comments" %}</a>
-                  </li>
-                  <li class="forum-item {% if forum_user.pk == request.user.pk %}{% url_name "topic_list" %}{% endif %}">
-                    <a href="{% url "topic_list" request.user.username %}"><span class="iw-comment"></span> {% trans "My Topics" %}</a>
-                  </li>
-                  <li class="forum-item {% url_name "topic_subs" %}">
-                      <a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %} {% with newsub.count as count %}{% if count %}<span class="label label-primary pull-right counter">{{ count }}</span>{% endif %}{% endwith %}</a>
-                  </li>
-                </ul>
-              {% endif %}
-
               {% for group, items in forums.groups.items %}
               <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
                 <li>

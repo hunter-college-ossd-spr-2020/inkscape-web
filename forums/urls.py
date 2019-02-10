@@ -28,7 +28,7 @@ from person import user_urls
 from .views import (
     ModerationList, ForumList,
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
-    TopicMerge, TopicSplit,
+    TopicMerge, TopicSplit, UserTopicList,
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
     UserFlagList, UserModList, UserBanList,
@@ -40,7 +40,7 @@ from .search_views import CommentSearch, TopicSearch, TopicSubjectSearch
 
 user_urls.urlpatterns += [
     url(r'^comments/$', CommentList.as_view(), name="comment_list"),
-    url(r'^topics/$', TopicList.as_view(), name="topic_list"),
+    url(r'^topics/$', UserTopicList.as_view(), name="topic_list"),
     url(r'^topics/rss/$', ForumTopicFeed(), name='topic_feed'),
 ]
 
