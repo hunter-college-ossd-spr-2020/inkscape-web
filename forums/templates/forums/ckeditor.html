@@ -2,7 +2,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function(event) {
-    if(django.jQuery) {
+    if(!$) {
         $ = django.jQuery;
     }
     CKEDITOR.config.language = '{{ language }}';
