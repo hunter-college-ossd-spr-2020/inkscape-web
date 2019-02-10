@@ -358,10 +358,10 @@ function clean_emoji(index, elem) {
    items. All things are unread/new by default, unless the user hasseen
    the ahove element that contains the date/counts contained in this listing */
 function have_you_seen_this(elem) {
-    var seen_mode = $('#seenconf').data('mode');
     var primary_key = 'seen-' + $(elem).data('pk');
     var this_changed = new Date($(elem).data('changed'));
     var this_count = parseInt($(elem).data('count'));
+    var seen_mode = $('#seenconf').data($(elem).data('model'));
 
     // Should we downgrade the visual apperence of the item because we've seen everything?
     var last_seen = new Date(parseInt(localStorage.getItem(primary_key + '-date')));

@@ -62,12 +62,12 @@
   {% endif %}
 
   {% get_forum_comment_list for object.comment_subject as comment_list %}
-  <div class="panel-body haveseen" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
+  <div class="panel-body haveseen" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}" data-model="topic">
   {% include "forums/comment_thread.html" %}
   </div>
   
   {% if object.locked %}
-    <div class="panel-footer" data-changed="{{ object.last_posted.isoformat }}" data-count="{{ object.post_count }}" data-pk="topic-{{ object.pk }}">
+    <div class="panel-footer">
         <h5 class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "Moderators have closed this thread, you may not post further comments here." %}</h5>
     </div>
   {% else %}
