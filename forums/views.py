@@ -58,7 +58,7 @@ class ForumList(UserVisit, ForumMixin, TemplateView):
                 .order_by('-first_posted')[:10]
         return data
 
-class ModerationList(ListView):
+class ModerationList(ModeratorRequired, ListView):
     """A list of all moderation actions logged"""
     model = ModerationLog
     paginate_by = 20

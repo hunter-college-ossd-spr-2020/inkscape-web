@@ -151,8 +151,8 @@
               </ul>
               {% endif %}
               <ul class="nav nav-pills nav-stacked labels-info">
-                <li class="{% url_name equal="log" %}"><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
                 {% if request.user.is_moderator %}
+                  <li class="{% url_name equal="log" %}"><a href="{% url "forums:log" %}"><span class="glyphicon glyphicon-briefcase"></span> {% trans "Moderation Log" %}</a></li>
                   {% with purgitory.count as pcount %}
                   <li class="{% url_name equal="check" %}"><a href="{% url "forums:check" %}"><span class="iw-fire"></span> {% trans "Comment Purgitory" %} <span class="label label-{% if pcount %}danger{% else %}default{% endif %} pull-right">{{ pcount }}</span></a></li>
                   <li class="{% url_name equal="flag_list" %}{% url_name equal="ban_list" %}{% url_name equal="mod_list" %}"><a href="{% url "forums:flag_list" %}"><span class="iw-users"></span> {% trans "User Flags" %}</a></li>
