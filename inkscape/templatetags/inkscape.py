@@ -140,3 +140,22 @@ def timetag_filter(value, arg=None):
 
     return mark_safe("<time datetime=\"%s\" title=\"%s\">%s</time>" % (
         date(value, 'Y-m-d\\TH:i:sO'), date(localtime(value), 'Y-m-d H:i:sO'), label))
+
+
+@register.filter("is_recent", is_safe=True)
+def time_isrecent(value, arg=None):
+    if not value:
+        return ''
+    value = _dt(value)
+    arg = _dt(arg)
+    return arg - value < timedelta(days=1)
+
+@register.filter("timenotag", is_safe=True)
+def timenotag(value, arg=None):
+    if not value:
+        return ''
+    value = _dt(value)
+    arg = _dt(arg)
+    if arg - value > timedelta(days=1):
+        return date(value, 'Y-m-d')
+    return timesince(value, arg) + " ago"
