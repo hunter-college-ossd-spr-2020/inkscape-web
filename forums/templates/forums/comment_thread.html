@@ -10,7 +10,7 @@
         
         {% if comment.is_public %}
 
-        <li class="comment left clearfix">
+        <li class="comment left clearfix" data-author="{{ comment.user.username }}" data-cite="{{ request.path }}#c{{ comment.pk }}">
           {# Start comment header info #}
           <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
 
@@ -61,7 +61,7 @@
           {% else %}
           {# Comment is not publicly visible and needs approving #}
           
-          <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}">
+          <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}" data-author="{{ comment.user.username }}", data-cite="{{ request.path }}#c{{ comment.pk }}">
             {# Start comment header info #}
             <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
             <span class="comment-header-group">

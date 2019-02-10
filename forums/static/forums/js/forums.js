@@ -390,16 +390,33 @@ function have_you_seen_this(elem) {
     });
 }
 
+function find_author(elem) {
+    if(elem != undefined) {
+        var par = $(elem).closest("*[data-author]");
+        if(par.data('author')) {
+            return par;
+        }
+    }
+}
 
 function record_selected_text() {
     var text = '';
+    var citation = undefined;
     if (typeof window.getSelection != "undefined") {
-        text = window.getSelection().toString()
+        var selection = window.getSelection();
+        text = selection.toString()
+        var citation = find_author(selection.anchorNode.parentElement);
     } else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
         text = document.selection.createRange().text;
     }
     if(text) {
-        localStorage.setItem("quoteBox", window.getSelection().toString());
+        localStorage.setItem("quoteBox", text);
+        if(citation) {
+            localStorage.setItem("quoteAuthor", citation.data('author'));
+            localStorage.setItem("quoteUrl", citation.data('cite'));
+            console.log("Quote:", "by: " + citation.data('author'), "'" + text + "'");
+            console.log("Citation:", citation.data('cite'));
+        }
     }
 }
 
