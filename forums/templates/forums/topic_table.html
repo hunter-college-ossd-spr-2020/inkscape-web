@@ -33,7 +33,11 @@
             {% else %}
               {{ topic.subject }}
             {% endif %}
-          </a>
+          </a> 
+          {# if exists Unread #}
+          <!--<a class="glyphicon glyphicon-asterisk topic-jump-unread" title="Jump to unread comments" href="#">New</a>--> 
+          {# endif #}
+
         </td>
         <td class="forum-small-cells">
           {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}

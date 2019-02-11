@@ -71,6 +71,7 @@ $border-color:           $grey-dark;
 
 $highlight-y:            $yellow;
 
+$back-to-site_highlight: $orange;
 $header-text:            $white;
 $search-input:           $grey-dark;
 $search-button:          $white;
@@ -82,6 +83,8 @@ $forum-description-hover:$orange;
 $thread-title:           $orange;
 
 $forum-list-heading:     $grey-dark;
+
+$topic-jump-unread:      $orange;
 
 $forum-comment-first:    $grey-extra-light;
 
@@ -113,6 +116,46 @@ $container-border-radius:4px;
 $gutters: 1vw;
 $borders: 1px solid $border-color;
 
+
+body{
+  background-color: $bg;
+  width:100%;
+}
+
+.forums-app {
+  position:relative;
+  padding: 0 $gutters*3 10px;
+}
+
+.forum-box {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "data data"
+    "footer footer";
+  grid-template-columns: fit-content(22em) 1fr;
+}
+
+.forums-header {
+  display: grid;
+  grid-area: header;
+  grid-template-columns: 1fr  fit-content(8em);
+  grid-template-areas:
+    "branding   branding"
+    "usermenu  search"
+    "breadcrumb breadcrumb";
+}
+
+.forum-data {
+  display: grid;
+  grid-area: data;
+  grid-template-areas:
+    "content"
+    "sidebar";
+  border-radius:$container-border-radius;
+  overflow:hidden;
+}
+
 // override bootstrap
 .panel-body {
   padding: 1vw 0;
@@ -126,6 +169,31 @@ $borders: 1px solid $border-color;
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
+}
+
+.back-to-site {
+  background-color: #000;
+  border-radius: 3px;
+  color: #666;
+  display: block;
+  line-height: 1.1;
+  text-align: center;
+  transition: all .3s ease .3s;
+
+  &::before,
+  &::after {
+    content: "\2b06";
+    font-size: 1.1em;
+    margin: 0 .5em;
+  }
+
+  &:focus,
+  &:hover {
+    background-color: $back-to-site-highlight;
+    color: #000;
+    line-height: 2;
+    text-decoration: none;
+  }
 }
 
 .forums-branding{
@@ -268,50 +336,9 @@ $borders: 1px solid $border-color;
 }
 
 
-
 /*
  *   3. Header styles -------------------------------------------    
  */
-
-
-body{
-  background-color: $bg;
-  width:100%;
-}
-
-.forums-app {
-  position:relative;
-  padding: 10px $gutters*3;
-}
-
-.forum-box {
-    display: grid;
-    grid-template-areas: 
-      "header header" 
-      "data data" 
-      "footer footer";
-    grid-template-columns: fit-content(22em) 1fr;
-  }
-  
-  .forums-header {
-    display: grid;
-    grid-area: header;
-    grid-template-columns: 1fr  fit-content(8em);
-    grid-template-areas:
-      "branding   branding"
-      "usermenu  search"
-      "breadcrumb breadcrumb";
-  }
-
-  .forum-data {
-    display: grid;
-    grid-area: data;
-    grid-template-areas: 
-      "content"
-      "sidebar";
-    border-radius:$container-border-radius;
-    overflow:hidden;
-  }
 
 .forums-header {
   color: $header-text;
@@ -483,6 +510,38 @@ body{
   font-weight: bold;
 }
 
+.topic-jump-unread {
+  @extend %bubble-edge;
+  background-color: scale-color($topic-jump-unread, $lightness: 96%);
+  border-radius: 2em;
+  color: $topic-jump-unread;
+  font: bold .714em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;
+  padding: 0.1em .6em .5em;
+  text-transform: uppercase;
+  transition: color .3s ease 0s;
+  vertical-align: middle;
+
+  &::before {
+    display: inline-block; // for transform to work
+    font: normal 1.4em/1 'Glyphicons Halflings';
+    position: relative;
+    top: 0.2em;
+    transform: rotateZ(0) scale(1);
+    transition: transform .3s ease 0s;
+  }
+
+  &:focus,
+  &:hover {
+    color: $red;
+    text-decoration: none;
+
+    &::before {
+      left: -.2em;
+      transform: rotateZ(100deg) scale(1.3);
+    }
+  }
+}
+
 .forum-topic-actions{
   margin-top:10px;
 }
@@ -520,6 +579,7 @@ a.forum-dropdown {
 }
 
 // Is the code below redundant now? I (@prkos) can't find HTML for this 
+/*
 ul.forum-nav {
   display: inline-block;
   margin: 0;
@@ -544,18 +604,20 @@ ul.forum-nav li a {
   padding: 0 20px;
   width: 100%;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 .unchanged {
   font-weight: bold;
 }
 
-#forum-list .forum-item img {
+.forum-list .forum-item img {
   width: 22px;
   margin: -2px 2px 0px 0px;
 }
 
 /////////////////////////////////////////  redundant?
+/*
 ul.forum-nav li a i {
   color: #6a6a6a;
   font-size: 16px;
@@ -565,6 +627,7 @@ ul.forum-nav li a i {
 ul.forum-nav li a span.label {
   margin-top: 13px;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 // Keep ul in selector because of bootstrap specificity
@@ -589,19 +652,23 @@ ul.labels-info {
     }
   }
   /////////////////////////////////////////  redundant?
+  /*
   i {
     padding-right: 10px;
   }
+  */
   ///////////////////////////////////////// end redundant?
 }
 
 /////////////////////////////////////////  redundant?
+/*
 .nav.nav-pills.nav-stacked.labels-info p {
   color: #9d9f9e;
   font-size: 11px;
   margin-bottom: 0;
   padding: 0 22px;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 .table-forum .search-context td {
@@ -857,6 +924,7 @@ ul {
 }
 
 ///////////////////////////////////////// redundant?
+/*
 .panel-resource {
   text-align: center;
   display: block;
@@ -868,6 +936,7 @@ ul {
   max-height: 400px;
   padding: $gutters 0;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 #id_honeypot {
@@ -1186,6 +1255,10 @@ a:active {
   border-radius: 2em;
 }
 
+.label {
+  padding: .3em .5em .2em;
+}
+
 .jumbotron{ /*overide bootstrap*/
   padding:20px;  
 }
@@ -1260,7 +1333,7 @@ $image-unit-half: $image-unit / 2;
   }
   
   /* -------------------- header layout ---------------------- */
- 
+
   .forums-branding {
     grid-area: branding;
     min-height:100px;

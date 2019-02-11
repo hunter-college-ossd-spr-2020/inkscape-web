@@ -32,6 +32,7 @@
     {% block "wrapper" %}
     <div class="container-flex forums-app">
     {% endblock "wrapper" %}
+        <a href="/" class="back-to-site" title="Back to Inkcsape website">Inkscape.org</a>
         {% block "header" %}
         <header class="forums-header">
           <div class="forums-branding"><a class="forums-logo" href="/forums/"><img src="{% static "forums/images/logo.svg" %}"> <span class="forums-name">Inkscape Forum</span> <span class="forums-tagline">Talk Freely</span></a></div>
@@ -109,14 +110,14 @@
             
             {% block "aside" %}
             <aside class="sm-side forum-sidebar">
-              <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
+              <ul class="nav nav-pills nav-stacked labels-info forum-list">
                 <li class="forum-item new {% url_name "unread" %}">
                   <a href="{% url "forums:unread" %}"><span class="glyphicon glyphicon-bullhorn"></span> {% trans "Unread Posts" %}</a>
                 </li>
               </ul>
               
               {% for group, items in forums.groups.items %}
-              <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
+              <ul class="nav nav-pills nav-stacked labels-info forum-list">
                 <li>
                   <h4>{{ group }}</h4>
                 </li>
