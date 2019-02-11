@@ -46,7 +46,7 @@ class RemoteImage(Model):
     def save(self, **kw):
         """Download the remote url and store locally, replaces file if needed."""
         if not self.local_file:
-            self.md5_prefix = hashlib.md5(self.remote_url).hexdigest()[:16]
+            self.md5_prefix = hashlib.md5(self.remote_url.encode('utf8')).hexdigest()[:16]
             filename = str(self.remote_url).rsplit('/', 1)[-1]
             filename = (self.md5_prefix + '_' + filename)[-255:]
             try:
