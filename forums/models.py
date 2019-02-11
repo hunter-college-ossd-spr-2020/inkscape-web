@@ -47,6 +47,7 @@ from django.utils.encoding import force_text
 from django.utils.text import slugify
 from django_comments.models import Comment
 from resources.models import Resource
+from person.models import Team
 
 from .querysets import ForumQuerySet, TopicQuerySet, UserFlagQuerySet
 
@@ -73,6 +74,8 @@ class Forum(Model):
 
     lang = CharField(max_length=8, null=True, blank=True,\
         help_text=_('Set this ONLY if you want this forum restricted to this language'))
+    team = ForeignKey(Team, null=True, blank=True,\
+        help_text=_('Set this ONLY if you want this forum restructed to this team.'))
 
     content_type = ForeignKey(ContentType, verbose_name=_('Fixed Content From'),\
         help_text=_("When fixed content is set, new topics can not be created. Instead, "
