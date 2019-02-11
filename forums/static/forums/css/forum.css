@@ -35,7 +35,7 @@
 /* -- Always use only functional names in code ------------------- */
 /* -------------------- Color palette Original ------------------- */
 /* ----------------- Functional Color scheme --------------------- */
-.emoji-bar img.emoji, .comment-author-address img.emoji, .comment-first-link,
+.topic-jump-unread, .emoji-bar img.emoji, .comment-author-address img.emoji, .comment-first-link,
 .comment-count,
 .comment-remove,
 .comment-edit,
@@ -395,6 +395,36 @@ body {
 
 .table-forum tr.new .topic-item {
   font-weight: bold;
+}
+
+.topic-jump-unread {
+  background-color: #fffaf6;
+  border-radius: 2em;
+  color: #ff7e28;
+  font: bold .714em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;
+  padding: 0.1em .6em .5em;
+  text-transform: uppercase;
+  transition: color .3s ease 0s;
+  vertical-align: middle;
+}
+
+.topic-jump-unread::before {
+  display: inline-block;
+  font: normal 1.4em/1 'Glyphicons Halflings';
+  position: relative;
+  top: 0.2em;
+  transform: rotateZ(0) scale(1);
+  transition: transform .3s ease 0s;
+}
+
+.topic-jump-unread:focus, .topic-jump-unread:hover {
+  color: #c00;
+  text-decoration: none;
+}
+
+.topic-jump-unread:focus::before, .topic-jump-unread:hover::before {
+  left: -.2em;
+  transform: rotateZ(100deg) scale(1.3);
 }
 
 .forum-topic-actions {
