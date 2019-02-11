@@ -87,7 +87,9 @@
 }
 
 .forum-sub-header a {
-  display: inline-block;
+  align-items: center;
+  display: flex;
+  line-height: 1.1;
 }
 
 .forum-sub-header img {
@@ -330,10 +332,6 @@ body {
   text-decoration: none;
 }
 
-.forum-sub-header {
-  line-height: 2;
-}
-
 .forum-sub-header a {
   text-decoration: none;
 }
@@ -360,6 +358,7 @@ body {
 }
 
 .forum-description {
+  align-self: center;
   color: #44b3ff;
   cursor: help;
   display: block;
@@ -1147,12 +1146,19 @@ h3 small.label {
     margin-top: 0px;
   }
   .forum-sub-header {
+    align-items: center;
     border-top: 1px solid #444;
+    display: flex;
     grid-area: breadcrumb;
     margin: 0 1vw;
+    padding-bottom: 1vw;
   }
   .forum-sub-header img {
+    align-self: flex-start;
     margin-left: 0;
+  }
+  .forum-sub-header .glyphicon {
+    margin: 0 .4em;
   }
   /* -------------------- comment layout --------------------- */
   .comment {

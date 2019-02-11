@@ -153,7 +153,9 @@ $borders: 1px solid $border-color;
   margin:0 $gutters 0 ($gutters*4);
   
   a {
-    display: inline-block;
+    align-items: center;
+    display: flex;
+    line-height: 1.1;
   }
   
   img {
@@ -410,7 +412,6 @@ body{
 }
 
 .forum-sub-header {
-  line-height: 2;
   
   a {
     text-decoration:none;
@@ -440,6 +441,7 @@ body{
 }
 
 .forum-description {
+  align-self: center;
   color: $forum-description;
   cursor: help;
   display: block;
@@ -1269,12 +1271,20 @@ $image-unit-half: $image-unit / 2;
   }
 
   .forum-sub-header {
+    align-items: center;
     border-top: 1px solid #444;
+    display: flex;
     grid-area: breadcrumb;
     margin: 0 $gutters;
+    padding-bottom: $gutters;
     
     img {
+      align-self: flex-start;
       margin-left:0;
+    }
+    
+    .glyphicon {
+      margin: 0 .4em;
     }
   }
  
