@@ -105,6 +105,7 @@ class Subscriptions(UserRequired, TopicList):
     def get_queryset(self):
         qset = super().get_queryset()
         qset.set_user(self.request.user)
+        self.set_context_datum('forum_user', self.request.user)
         return qset.subscribed_only()
 
 class UnreadTopicList(TopicList):
