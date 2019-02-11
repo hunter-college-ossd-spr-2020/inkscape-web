@@ -486,6 +486,7 @@ a.forum-dropdown {
   padding: 1vw 0;
 }
 
+/*
 ul.forum-nav {
   display: inline-block;
   margin: 0;
@@ -510,7 +511,7 @@ ul.forum-nav li a {
   padding: 0 20px;
   width: 100%;
 }
-
+*/
 .unchanged {
   font-weight: bold;
 }
@@ -520,6 +521,7 @@ ul.forum-nav li a {
   margin: -2px 2px 0px 0px;
 }
 
+/*
 ul.forum-nav li a i {
   color: #6a6a6a;
   font-size: 16px;
@@ -528,6 +530,14 @@ ul.forum-nav li a i {
 
 ul.forum-nav li a span.label {
   margin-top: 13px;
+}
+*/
+ul.labels-info {
+  /*
+  i {
+    padding-right: 10px;
+  }
+  */
 }
 
 ul.labels-info h4 {
@@ -549,17 +559,14 @@ ul.labels-info a:focus, ul.labels-info a:hover {
   color: #6a6a6a;
 }
 
-ul.labels-info i {
-  padding-right: 10px;
-}
-
+/*
 .nav.nav-pills.nav-stacked.labels-info p {
   color: #9d9f9e;
   font-size: 11px;
   margin-bottom: 0;
   padding: 0 22px;
 }
-
+*/
 .table-forum .search-context td {
   border-top: 1px solid #eeeeee;
   color: #999;
@@ -811,6 +818,7 @@ ul {
   position: relative;
 }
 
+/*
 .panel-resource {
   text-align: center;
   display: block;
@@ -820,9 +828,9 @@ ul {
 .panel-resource img {
   max-width: 100%;
   max-height: 400px;
-  padding: 1vw 0;
+  padding: $gutters 0;
 }
-
+*/
 #id_honeypot {
   display: none;
 }

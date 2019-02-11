@@ -579,6 +579,7 @@ a.forum-dropdown {
 }
 
 // Is the code below redundant now? I (@prkos) can't find HTML for this 
+/*
 ul.forum-nav {
   display: inline-block;
   margin: 0;
@@ -603,6 +604,7 @@ ul.forum-nav li a {
   padding: 0 20px;
   width: 100%;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 .unchanged {
@@ -615,6 +617,7 @@ ul.forum-nav li a {
 }
 
 /////////////////////////////////////////  redundant?
+/*
 ul.forum-nav li a i {
   color: #6a6a6a;
   font-size: 16px;
@@ -624,6 +627,7 @@ ul.forum-nav li a i {
 ul.forum-nav li a span.label {
   margin-top: 13px;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 // Keep ul in selector because of bootstrap specificity
@@ -648,19 +652,23 @@ ul.labels-info {
     }
   }
   /////////////////////////////////////////  redundant?
+  /*
   i {
     padding-right: 10px;
   }
+  */
   ///////////////////////////////////////// end redundant?
 }
 
 /////////////////////////////////////////  redundant?
+/*
 .nav.nav-pills.nav-stacked.labels-info p {
   color: #9d9f9e;
   font-size: 11px;
   margin-bottom: 0;
   padding: 0 22px;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 .table-forum .search-context td {
@@ -916,6 +924,7 @@ ul {
 }
 
 ///////////////////////////////////////// redundant?
+/*
 .panel-resource {
   text-align: center;
   display: block;
@@ -927,6 +936,7 @@ ul {
   max-height: 400px;
   padding: $gutters 0;
 }
+*/
 ///////////////////////////////////////// end redundant?
 
 #id_honeypot {
