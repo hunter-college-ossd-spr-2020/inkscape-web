@@ -109,14 +109,14 @@
             
             {% block "aside" %}
             <aside class="sm-side forum-sidebar">
-              <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
+              <ul class="nav nav-pills nav-stacked labels-info forum-list">
                 <li class="forum-item new {% url_name "unread" %}">
                   <a href="{% url "forums:unread" %}"><span class="glyphicon glyphicon-bullhorn"></span> {% trans "Unread Posts" %}</a>
                 </li>
               </ul>
               
               {% for group, items in forums.groups.items %}
-              <ul class="nav nav-pills nav-stacked labels-info" id="forum-list">
+              <ul class="nav nav-pills nav-stacked labels-info forum-list">
                 <li>
                   <h4>{{ group }}</h4>
                 </li>
