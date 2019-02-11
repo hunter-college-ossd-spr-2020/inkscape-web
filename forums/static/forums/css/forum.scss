@@ -182,7 +182,7 @@ body{
 
   &::before,
   &::after {
-    content: "\21e7";
+    content: "\2b06";
     font-size: 1.1em;
     margin: 0 .5em;
   }
@@ -1324,9 +1324,6 @@ $image-unit-half: $image-unit / 2;
   
   /* -------------------- header layout ---------------------- */
 
-  .back-to-site {
-    grid-area: website;
-  }
   .forums-branding {
     grid-area: branding;
     min-height:100px;
