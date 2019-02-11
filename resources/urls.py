@@ -30,7 +30,7 @@ from .views import (
     PasteInResource, UploadResource, DropResource, LinkToResource,
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
-    UploadJson, TagsJson, QuotaJson, ResourcesJson,
+    UploadJson, TagsJson, QuotaJson, ResourcesJson, UnpublishedGallery,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
@@ -79,6 +79,7 @@ urlpatterns = [ # pylint: disable=invalid-name
         url(r'^paste/$', PasteInResource.as_view(), name='pastebin'),
         url(r'^upload/$', UploadResource.as_view(), name='resource.upload'),
         url(r'^upload/go/$', DropResource.as_view(), name='resource.drop'),
+        url(r'^unpublished/$', UnpublishedGallery.as_view(), name='resource.unpublished'),
 
         url_tree(
             r'^(?P<gallery_id>\d+)/',

@@ -385,6 +385,18 @@ class DownloadResource(ViewResource):
         # but the sendfile method will fail because of the internal redirect.
         return redirect(item.download.url.replace('/media/', '/dl/'))
 
+class UnpublishedGallery(ListView):
+    model = Resource
+    paginate_by = 20
+    title = _('My Unpublished Resource')
+
+    def get_queryset(self):
+        qset = super().get_queryset()
+        if self.request.user.is_authenticated():
+            qset = qset.filter(published=False, is_removed=False, user=self.request.user)
+        else:
+            qset = qset.none()
+        return qset
 
 class ResourceList(CategoryListView):
     """

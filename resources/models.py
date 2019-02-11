@@ -274,8 +274,7 @@ class ResourceManager(Manager):
     def latest(self, column=None):
         if column:
             return super(ResourceManager, self).latest(column)
-        user = get_user()
-        return self.for_user(user).exclude(category=Category.objects.get(pk=1)).order_by('-created')[:4]
+        return self.exclude(category=Category.objects.get(pk=1)).filter(published=True, is_removed=False).order_by('-created')[:4]
 
 
 class GroupGalleryManager(Manager):

@@ -76,6 +76,8 @@
       {% else %}
         <li><a href="{% url "alert.subscribe" "resources.resource_alert" object.pk %}">{% trans "Subscribe to Gallery" %}</a></li>
       {% endif %}
+    {% else %}
+      <li><a href="{% url "resource.unpublished" %}">{% trans "Unpublished" %}</a></li>
     {% endif %}
   </ul>
 

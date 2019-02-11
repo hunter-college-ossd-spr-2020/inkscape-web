@@ -1,7 +1,9 @@
 {% load i18n %}
 
 <div id="left-column">
-  {% if limit > 0 %}
+  {% if page_obj %}
+    {% include "resources/resource_icons.html" with resources=page_obj %}
+  {% elif limit > 0 %}
     {% include "resources/resource_icons.html" with resources=object_list %}
   {% else %}
     {% include "resources/resource_icons.html" with resources=object_list %}
@@ -9,5 +11,7 @@
   {% endif %}
 </div>
 <div id="right-sidebar">
-  {% include "resources/resource_leftbar.html" %}
+  {% if not page_obj %}
+    {% include "resources/resource_leftbar.html" %}
+  {% endif %}
 </div>
