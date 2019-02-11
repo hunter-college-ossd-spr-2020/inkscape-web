@@ -25,6 +25,7 @@ Forum views, show topics, comments and link to apps.
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
@@ -77,6 +78,12 @@ class TopicList(UserVisit, ForumMixin, ListView):
     def get_queryset(self):
         qset = super().get_queryset().select_related('forum')
         self.set_context_datum('topic_list', True)
+        # Limit topic visiblity to teams too
+        if self.request.user.is_authenticated():
+            teams = self.request.user.teams.all()
+            qset = qset.filter(Q(forum__team__isnull=True) | Q(forum__team__in=teams))
+        else:
+            qset = qset.filter(forum__team__isnull=True)
         if 'count' in self.request.GET:
             try:
                 qset = qset.filter(post_count=int(self.request.GET['count']))

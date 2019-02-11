@@ -5,7 +5,7 @@
 {% endblock "wrapper" %}
 {% block "supercontent" %}
   {% if request.user.is_authenticated %}
-    <h2>Recent Topics</h2>
+  <h2>{% trans "Recent Topics" %}</h2>
 
     {% include "forums/topic_table.html" with topic_list=recent_topics show_forum=1 %}
 
