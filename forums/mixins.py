@@ -23,7 +23,7 @@ Basic mixin classes for forums
 """
 import json
 
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import translation
 from django.contrib.auth import get_user_model
 
@@ -150,6 +150,7 @@ class ForumMixin(ProgressiveContext):
         if not self.request.GET.get('all'):
             language = translation.get_language()
             qset = qset.filter(Q(lang=language) | Q(lang='') | Q(lang__isnull=True))
+        qset = qset.annotate(topic_count=Count('topics'))
         return qset.select_related('group')
 
     def get_context_data(self, **kwargs):
