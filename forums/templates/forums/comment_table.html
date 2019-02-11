@@ -4,7 +4,7 @@
     <tbody>
     {% for comment in comment_list %}
       {% with comment.get_topic as topic %}
-      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}">
+      <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ topic.last_posted.isoformat }}" data-pk="topic-{{ topic.pk }}" data-author="{{ comment.user.username }}">
         {% if topic %}
           <th class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}"/></th>
           <th><a href="{{ topic.get_absolute_url }}#c{{ comment.pk }}">{{ topic }}</a></th>

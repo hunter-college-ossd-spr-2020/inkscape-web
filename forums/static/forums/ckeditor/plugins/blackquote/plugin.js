@@ -131,6 +131,22 @@
         }
 
         bqBlock.insertBefore( paragraphs[ 0 ] );
+        var quoteAuthor = localStorage.getItem('quoteAuthor');
+        var quoteUrl = localStorage.getItem('quoteUrl');
+        if(quoteAuthor) {
+            bqBlock.setAttribute('data-author', quoteAuthor);
+            var cite = editor.document.createElement('cite');
+            if(quoteUrl) {
+                bqBlock.setAttribute('data-cite', quoteUrl);
+                var anchor = editor.document.createElement('a');
+                anchor.setAttribute('href', quoteUrl);
+                anchor.$.prepend(quoteAuthor);
+                cite.append(anchor);
+            } else {
+                cite.$.prepend(quoteAuthor);
+            }
+            bqBlock.append(cite);
+        }
 
         while ( paragraphs.length > 0 ) {
           block = paragraphs.shift();

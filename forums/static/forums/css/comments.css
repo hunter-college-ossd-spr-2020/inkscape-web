@@ -1,0 +1,19 @@
+/* Extra css for comments to look like the ckeditor */
+li.comment blockquote {
+    line-height: 1.6;
+    font-style: italic;
+    font-family: Georgia, Times, "Times New Roman", serif;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 0px;
+    padding: 2px 20px 2px 20px;
+    border-left-width: 5px;
+    font-size: 13px;
+}
+li.comment blockquote p {
+    margin: 20px 2px;
+    line-height: 20px;
+}
+li.comment cite {
+    font-weight: bold;
+}
