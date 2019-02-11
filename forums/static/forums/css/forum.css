@@ -46,6 +46,37 @@
 /*
  *   2. Mobile page layouts -----------------------------------------
  */
+body {
+  background-color: #333333;
+  width: 100%;
+}
+
+.forums-app {
+  position: relative;
+  padding: 0 3vw 10px;
+}
+
+.forum-box {
+  display: grid;
+  grid-template-areas: "header header" "data data" "footer footer";
+  grid-template-columns: fit-content(22em) 1fr;
+}
+
+.forums-header {
+  display: grid;
+  grid-area: header;
+  grid-template-columns: 1fr fit-content(8em);
+  grid-template-areas: "branding   branding" "usermenu  search" "breadcrumb breadcrumb";
+}
+
+.forum-data {
+  display: grid;
+  grid-area: data;
+  grid-template-areas: "content" "sidebar";
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 .panel-body {
   padding: 1vw 0;
 }
@@ -58,6 +89,29 @@
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
+}
+
+.back-to-site {
+  background-color: #000;
+  border-radius: 3px;
+  color: #666;
+  display: block;
+  line-height: 1.1;
+  text-align: center;
+  transition: all .3s ease .3s;
+}
+
+.back-to-site::before, .back-to-site::after {
+  content: "\21e7";
+  font-size: 1.1em;
+  margin: 0 .5em;
+}
+
+.back-to-site:focus, .back-to-site:hover {
+  background-color: #ff7e28;
+  color: #000;
+  line-height: 2;
+  text-decoration: none;
 }
 
 .forums-branding {
@@ -203,37 +257,6 @@
 /*
  *   3. Header styles -------------------------------------------    
  */
-body {
-  background-color: #333333;
-  width: 100%;
-}
-
-.forums-app {
-  position: relative;
-  padding: 10px 3vw;
-}
-
-.forum-box {
-  display: grid;
-  grid-template-areas: "header header"  "data data"  "footer footer";
-  grid-template-columns: fit-content(22em) 1fr;
-}
-
-.forums-header {
-  display: grid;
-  grid-area: header;
-  grid-template-columns: 1fr fit-content(8em);
-  grid-template-areas: "branding   branding" "usermenu  search" "breadcrumb breadcrumb";
-}
-
-.forum-data {
-  display: grid;
-  grid-area: data;
-  grid-template-areas: "content" "sidebar";
-  border-radius: 4px;
-  overflow: hidden;
-}
-
 .forums-header {
   color: #fff;
 }
@@ -1175,6 +1198,9 @@ a:active {
     padding: 1vw 0;
   }
   /* -------------------- header layout ---------------------- */
+  .back-to-site {
+    grid-area: website;
+  }
   .forums-branding {
     grid-area: branding;
     min-height: 100px;

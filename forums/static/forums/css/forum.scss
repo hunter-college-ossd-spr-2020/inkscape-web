@@ -71,6 +71,7 @@ $border-color:           $grey-dark;
 
 $highlight-y:            $yellow;
 
+$back-to-site_highlight: $orange;
 $header-text:            $white;
 $search-input:           $grey-dark;
 $search-button:          $white;
@@ -115,6 +116,46 @@ $container-border-radius:4px;
 $gutters: 1vw;
 $borders: 1px solid $border-color;
 
+
+body{
+  background-color: $bg;
+  width:100%;
+}
+
+.forums-app {
+  position:relative;
+  padding: 0 $gutters*3 10px;
+}
+
+.forum-box {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "data data"
+    "footer footer";
+  grid-template-columns: fit-content(22em) 1fr;
+}
+
+.forums-header {
+  display: grid;
+  grid-area: header;
+  grid-template-columns: 1fr  fit-content(8em);
+  grid-template-areas:
+    "branding   branding"
+    "usermenu  search"
+    "breadcrumb breadcrumb";
+}
+
+.forum-data {
+  display: grid;
+  grid-area: data;
+  grid-template-areas:
+    "content"
+    "sidebar";
+  border-radius:$container-border-radius;
+  overflow:hidden;
+}
+
 // override bootstrap
 .panel-body {
   padding: 1vw 0;
@@ -128,6 +169,31 @@ $borders: 1px solid $border-color;
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
+}
+
+.back-to-site {
+  background-color: #000;
+  border-radius: 3px;
+  color: #666;
+  display: block;
+  line-height: 1.1;
+  text-align: center;
+  transition: all .3s ease .3s;
+
+  &::before,
+  &::after {
+    content: "\21e7";
+    font-size: 1.1em;
+    margin: 0 .5em;
+  }
+
+  &:focus,
+  &:hover {
+    background-color: $back-to-site-highlight;
+    color: #000;
+    line-height: 2;
+    text-decoration: none;
+  }
 }
 
 .forums-branding{
@@ -270,50 +336,9 @@ $borders: 1px solid $border-color;
 }
 
 
-
 /*
  *   3. Header styles -------------------------------------------    
  */
-
-
-body{
-  background-color: $bg;
-  width:100%;
-}
-
-.forums-app {
-  position:relative;
-  padding: 10px $gutters*3;
-}
-
-.forum-box {
-    display: grid;
-    grid-template-areas: 
-      "header header" 
-      "data data" 
-      "footer footer";
-    grid-template-columns: fit-content(22em) 1fr;
-  }
-  
-  .forums-header {
-    display: grid;
-    grid-area: header;
-    grid-template-columns: 1fr  fit-content(8em);
-    grid-template-areas:
-      "branding   branding"
-      "usermenu  search"
-      "breadcrumb breadcrumb";
-  }
-
-  .forum-data {
-    display: grid;
-    grid-area: data;
-    grid-template-areas: 
-      "content"
-      "sidebar";
-    border-radius:$container-border-radius;
-    overflow:hidden;
-  }
 
 .forums-header {
   color: $header-text;
@@ -1298,7 +1323,10 @@ $image-unit-half: $image-unit / 2;
   }
   
   /* -------------------- header layout ---------------------- */
- 
+
+  .back-to-site {
+    grid-area: website;
+  }
   .forums-branding {
     grid-area: branding;
     min-height:100px;
