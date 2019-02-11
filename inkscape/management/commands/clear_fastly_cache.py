@@ -27,7 +27,17 @@ class Command(BaseCommand):
     """Clear fastly cache based on last clear and modified times"""
     help = __doc__
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument('--url', '-u', default=[], action='append',
+            dest='urls', help='Only invalidate this url.')
+
+    def handle(self, urls=(), *args, **options):
         cache = FastlyCache()
-        cache.clean_static()
-        cache.clean_media()
+        if urls:
+            for url in urls:
+                print("Purging: {}".format(url))
+                cache.purge(url)
+        else:
+            cache.clean_static()
+            cache.clean_media()
