@@ -1065,6 +1065,14 @@ h3 small.label {
 /*
  *   5. Bootstrap form styles additions and overrides ---------------
  */
+a:focus {
+  outline-offset: 0;
+}
+
+a:active {
+  color: #555;
+}
+
 .btn-sm,
 .btn-group-sm > .btn {
   border-radius: 2em;
