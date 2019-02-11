@@ -111,7 +111,11 @@ class Subscriptions(UserRequired, TopicList):
 class UnreadTopicList(TopicList):
     """An empty forum which javascript asks for the latest topics."""
     template_name = 'forums/forumtopic_list_unread.html'
-    paginate_by = 200
+    paginate_by = None
+
+    def get_queryset(self):
+        qset = super().get_queryset()
+        return qset[:100]
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
