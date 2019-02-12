@@ -22,7 +22,7 @@ Specialised querysets
 """
 from collections import OrderedDict
 
-from django.db.models import QuerySet, Model
+from django.db.models import QuerySet, Model, Q
 
 class ForumQuerySet(QuerySet):
     """Query to help forums be grouped together"""
@@ -34,6 +34,17 @@ class ForumQuerySet(QuerySet):
                 ret[item.group.name] = []
             ret[item.group.name].append(item)
         return ret
+
+    def for_lang(self, lang):
+        """Filter to just this language"""
+        return self.filter(Q(lang=lang) | Q(lang='') | Q(lang__isnull=True))
+
+    def for_user(self, user):
+        """Filter out un-needed forums"""
+        if user and user.is_authenticated():
+            teams = user.teams.all()
+            return self.filter(Q(team__isnull=True) | Q(team__in=teams))
+        return self.filter(team__isnull=True)
 
 class TopicQuerySet(QuerySet):
     """
@@ -49,6 +60,13 @@ class TopicQuerySet(QuerySet):
         """Set the user looking at this this of topics"""
         self.viewer = user
         self.subs = None
+
+    def for_user(self, user):
+        """Set the user and filter out un-needed topics"""
+        if user and user.is_authenticated():
+            teams = user.teams.all()
+            return self.filter(Q(forum__team__isnull=True) | Q(forum__team__in=teams))
+        return self.filter(forum__team__isnull=True)
 
     def _clone(self, **kwargs):
         clone = super()._clone(**kwargs)

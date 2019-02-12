@@ -149,14 +149,9 @@ class ForumMixin(ProgressiveContext):
         qset = Forum.objects.all()
         # Limit to just the selected languages
         if not self.request.GET.get('all'):
-            language = translation.get_language()
-            qset = qset.filter(Q(lang=language) | Q(lang='') | Q(lang__isnull=True))
+            qset = qset.for_lang(translation.get_language())
         # Limit to just the selected teams
-        if self.request.user.is_authenticated():
-            teams = self.request.user.teams.all()
-            qset = qset.filter(Q(team__isnull=True) | Q(team__in=teams))
-        else:
-            qset = qset.filter(team__isnull=True)
+        qset = qset.for_user(self.request.user)
         qset = qset.annotate(topic_count=Count('topics'))
         return qset.select_related('group')
 
