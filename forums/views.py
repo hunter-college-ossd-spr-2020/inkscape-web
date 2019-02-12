@@ -22,6 +22,8 @@
 Forum views, show topics, comments and link to apps.
 """
 
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
@@ -104,6 +106,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
         return qset
 
 class UserTopicList(TopicList):
+    """A list of topics that the user has posted themselves"""
     template_name = 'forums/forumtopic_list_user.html'
 
 class Subscriptions(UserRequired, TopicList):
@@ -126,6 +129,25 @@ class UnreadTopicList(TopicList):
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
+    def dispatch(self, request, *args, **kwargs):
+        """Catch jump to request"""
+        ret = super().dispatch(request, *args, **kwargs)
+        jumpto = request.GET.get('jumpto', None)
+        if jumpto:
+            try:
+                dtime = datetime.strptime(jumpto, "%Y-%m-%dT%H:%M:%S.%fZ")
+                tzone = timedelta(minutes=int(request.GET.get('tz', 0)))
+                dtime += tzone
+                dtime = make_aware(dtime, None) # Assumes server is UTC!
+                topic = self.get_object()
+                comment = topic.comments.filter(submit_date__gt=dtime).first()
+                if comment:
+                    url = topic.get_absolute_url()
+                    return HttpResponseRedirect('{}#c{}'.format(url, comment.pk))
+            except ValueError as err:
+                print("ERROR: {}".format(err))
+        return ret
+
     def get_queryset(self):
         return ForumTopic.objects\
             .filter(forum__slug=self.kwargs['forum'])\

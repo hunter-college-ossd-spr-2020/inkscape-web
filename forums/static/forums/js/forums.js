@@ -372,6 +372,14 @@ function have_you_seen_this(elem) {
           $(elem).removeClass("new");
           $(elem).addClass("old");
         }
+    } else if(last_seen != undefined) {
+        // A jump link is a link which adds the date-time to the query, we don't add
+        // this link if we've never seen this before.
+        var jump_link = $('.add-jump-link', elem);
+        if(jump_link.length > 0 && isValidDate(last_seen)) {
+            var new_anchor = $('<a class="glyphicon glyphicon-asterisk topic-jump-unread" title="Jump to latest" href="' + jump_link.attr('href') + '?jumpto='+last_seen.toISOString()+'">New</a>');
+            new_anchor.insertAfter(jump_link);
+        }
     }
 
     // Should we modify the counter and change the style of the counter because we've not
@@ -437,4 +445,7 @@ function timeSince(date) {
   interval = Math.floor(seconds / 60);
   if (interval > 1) {return interval + " minutes";}
   return Math.floor(seconds) + " seconds";
+}
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
 }

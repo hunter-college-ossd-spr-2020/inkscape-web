@@ -27,17 +27,13 @@
           {% endif %}
         </td>
         <td class="topic-item">
-          <a href="{{ topic.get_absolute_url }}">
+          <a href="{{ topic.get_absolute_url }}" class="add-jump-link">
             {% if query %}
               {% highlight_all topic.subject %}
             {% else %}
               {{ topic.subject }}
             {% endif %}
           </a> 
-          {# if exists Unread #}
-          <!--<a class="glyphicon glyphicon-asterisk topic-jump-unread" title="Jump to unread comments" href="#">New</a>--> 
-          {# endif #}
-
         </td>
         <td class="forum-small-cells">
           {% if topic.has_attachments %}<span class="glyphicon glyphicon-paperclip"></span>{% endif %}
