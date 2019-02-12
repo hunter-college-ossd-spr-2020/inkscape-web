@@ -74,7 +74,9 @@ class ForumTopicAlert(BaseAlert):
     def post_send(self, *alerts, **kwargs):
         """Over-ride to add forum subscribers and remove own user from list."""
         alerts = list(alerts)
-        forum = kwargs['instance'].forum
+        forum = getattr(kwargs['instance'], 'forum', None)
+        if forum is None:
+            return super().post_send(*alerts, **kwargs)
         users = [alert.user for alert in alerts]
         for sub in ForumAlert.get_alert_type().subscriptions.filter(target=forum.pk):
             if sub.user in users:
