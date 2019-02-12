@@ -26,7 +26,23 @@ from django import forms
 from alerts.base import BaseAlert
 from alerts.models import AlertSubscription, UserAlert
 
-from .models import ForumTopic
+from .models import Forum, ForumTopic
+
+class ForumAlert(BaseAlert):
+    """
+    Allow users to subscribe to a whole forum (lots of messages!)
+    """
+    name = _("Form Updated")
+    desc = _("Activity on an entire forum you are subscribed to")
+    info = _("When a user creates a new topic or posts to an existing one in a forum you've subscribed to.")
+    sender = Forum
+
+    # No automatic signal, used by ForumTopicAlert with no signal itself.
+    signal = None
+
+    subscribe_all = False
+    subscribe_any = True
+    subscribe_own = False
 
 class ForumTopicAlert(BaseAlert):
     """
@@ -40,7 +56,7 @@ class ForumTopicAlert(BaseAlert):
     # No automatic signal, called from app.py when needed
     signal = None
 
-    subject = "{% trans 'Forum activity on:' %} {{ instance }}"
+    subject = "{% trans 'Forum topic activity on:' %} {{ instance }}"
     object_name = "{% trans 'Topic activty' %}"
     email_subject = "{% trans 'Forum activity on:' %} {% autoescape off %}{{ instance }}{% endautoescape %}"
     default_email = True
@@ -54,6 +70,20 @@ class ForumTopicAlert(BaseAlert):
         return [('auto', forms.BooleanField(required=False,\
                  initial=True, label=_("Automatic"),\
                  help_text=_("Automatically subscribe to any topic I reply to.")))]
+
+    def post_send(self, *alerts, **kwargs):
+        """Over-ride to add forum subscribers and remove own user from list."""
+        alerts = list(alerts)
+        forum = kwargs['instance'].forum
+        users = [alert.user for alert in alerts]
+        for sub in ForumAlert.get_alert_type().subscriptions.filter(target=forum.pk):
+            if sub.user in users:
+                continue
+            if self._filter_subscriber(sub.user, kwargs, 'any'):
+                ret = self.alert_type.send_to(sub.user, **kwargs)
+                if ret and isinstance(ret, list):
+                    alerts += ret
+        return super().post_send(*alerts, **kwargs)
 
     @classmethod
     def auto_subscribe(cls, user, topic):

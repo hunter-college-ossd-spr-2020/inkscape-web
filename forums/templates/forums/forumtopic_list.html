@@ -1,5 +1,5 @@
 {% extends "forums/base.html" %}
-{% load i18n static %}
+{% load i18n static forum_comments %}
 {% block "wrapper" %}
 <div class="container-flex forums-app forums-topic-list">
 {% endblock "wrapper" %}
@@ -27,6 +27,23 @@
     <a href="#" id="seenall" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-eye-open"></span> {% trans "Mark all as Read" %}</a>
     <a href="?{% if request.GET.count == "1" %}" class="active {% else %}count=1" class="{% endif %}btn btn-sm btn-default"><span class="glyphicon glyphicon-bell"></span> {% trans "Unanswered" %}</a>
   </div>
+  {% endif %}
+
+  {% if request.user.is_authenticated %}
+    <div class="btn-group">
+      {% with forum|subscription:request.user as subscription %}
+        {% if not subscription %}
+          <a class="btn btn-sm btn-danger" href="{% url "alert.subscribe" "forums.forum_alert" forum.pk %}?next={{ request.path }}&post=1">
+            <span class="glyphicon glyphicon-heart"></span> {% trans "Subscribe" %}
+          </a>
+        {% else %}
+          <a class="btn btn-sm btn-default" href="{% url "alert.unsubscribe" "forums.forum_alert" forum.pk %}?next={{ request.path }}&post=1">
+            <span class="glyphicon glyphicon-heart-empty"></span> {% trans "Unsubscribe" %}
+          </a>
+        {% endif %}
+      {% endwith %}
+      <a href="{% url "alert.settings" "forums.forum_alert" %}?next={{ request.path }}" class="btn btn-sm btn-default" title="{% trans "Subscription Settings" %}"><span class="glyphicon glyphicon-wrench"></span></a>
+    </div>
   {% endif %}
 
   {{ block.super }}
