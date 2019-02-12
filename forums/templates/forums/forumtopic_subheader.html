@@ -1,0 +1,11 @@
+{% extends "forums/forumtopic_detail.html" %}
+{% load i18n static forum_comments inkscape comments %}
+<div class="forum-sub-header">
+    <a class="forum-name" href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}{{ object.forum }}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
+    <small class="forum-description">{{ forum.desc }}</small>
+</div>
+
+
+
+
+
