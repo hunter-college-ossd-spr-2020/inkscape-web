@@ -1,8 +1,8 @@
-{% load i18n %}{% autoescape off %}{% blocktrans with user=alert.user %}Dear {{ user }},{% endblocktrans %}
+{% load i18n inkscape %}{% autoescape off %}{% blocktrans with user=alert.user %}Dear {{ user }},{% endblocktrans %}
 {% if action == 'edit' %}
-{% blocktrans %}A post has been edited on the topic "{{ instance }}":{% endblocktrans %}{% else %}
-{% blocktrans %}A new post on the topic "{{ instance }}":{% endblocktrans %}{% endif %}
+{% blocktrans with user=comment.user %}A post has been edited on the topic "{{ instance }}" by {{ user }}:{% endblocktrans %}{% else %}
+{% blocktrans with user=comment.user %}A new post on the topic "{{ instance }}" by {{ user }}:{% endblocktrans %}{% endif %}
 ---
-{{ comment.comment|striptags }}
+{{ comment.comment|striptags|decodetext }}
 ----
 {% trans "Link:" %} {{ site }}{{ instance.get_absolute_url }}#c{{ comment.pk }}{% endautoescape %}

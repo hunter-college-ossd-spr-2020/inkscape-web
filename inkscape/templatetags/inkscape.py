@@ -17,6 +17,9 @@
 """
 Template tags for the whole project
 """
+import re
+import html.entities
+
 from datetime import timedelta, datetime
 
 from django import template
@@ -29,6 +32,9 @@ from django.db.models import Model
 from django.urls import resolve
 
 register = template.Library() # pylint: disable=invalid-name
+
+HTENT = re.compile('&([^;]+);')
+NAMES = html.entities.name2codepoint
 
 def _dt(arg):
     if not arg:
@@ -159,3 +165,8 @@ def timenotag(value, arg=None):
     if arg - value > timedelta(days=1):
         return date(value, 'Y-m-d')
     return timesince(value, arg) + " ago"
+
+@register.filter("decodetext", is_safe=True)
+def decodetext(value):
+    """Removes HTML entities from text"""
+    return HTENT.sub(lambda m: chr(int(NAMES.get(m.group(1), m.group(1).strip('#')))), value)
