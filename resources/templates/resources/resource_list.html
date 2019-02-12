@@ -4,7 +4,7 @@
   <div id="content"{% block contentclasses %}{% endblock %}>
     <div class="wrapper">
       {% include "breadcrumbs.html" %}
-      {% include 'resources/resourcegallery_contents.html' %}
+      {% include 'resources/resourcegallery_contents.html' with noleftbar=1 %}
       {% include "pagination.html" %}
     </div>
   </div> 

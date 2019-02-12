@@ -396,7 +396,7 @@ class UnpublishedGallery(ListView):
             qset = qset.filter(published=False, is_removed=False, user=self.request.user)
         else:
             qset = qset.none()
-        return qset
+        return qset.order_by('-edited')
 
 class ResourceList(CategoryListView):
     """
