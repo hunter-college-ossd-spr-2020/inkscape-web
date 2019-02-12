@@ -2,11 +2,7 @@
 
 {% if object.is_video %}
   <div class="image video">
-    {% if object.video.type == "youtube" %}
-      <iframe src="https://www.youtube.com/embed/{{ object.video.id }}" frameborder="0" allowfullscreen id="videoPlayer"></iframe>
-    {% elif object.video.type == "vimeo" %}
-      <iframe id="videoPlayer" src="https://player.vimeo.com/video/{{ object.video.id }}" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-    {% endif %}
+    {% include "embed_video.html" %}
   </div>
 {% elif object.download %}
   {% if object.is_available %}
