@@ -67,7 +67,13 @@ SECRET_KEY = 'iccj=*n_h03lm!)53e^ze&qudzcyoc+qi8s=$+fj6khix-w&*e'
 
 ALLOWED_HOSTS = ['*']
 DEBUG = True
-ENABLE_DEBUG_TOOLBAR = False # it's broken, disabled temporarily
+# To enable the debug toolbar, make sure you install the debug-toolbar modules
+# Using these commands:
+#
+# ./pythonenv/bin/pip install django-debug-toolbar==1.10.1
+# ./pythonenv/bin/pip install django-debug-toolbar-line-profiler==0.6.1
+#
+ENABLE_DEBUG_TOOLBAR = False
 ENABLE_DESIGN_TOOLBAR = False
 # Profiler can cause issues for admin, cms, ajax and other things.
 ENABLE_PROFILER_TOOLBAR = False
