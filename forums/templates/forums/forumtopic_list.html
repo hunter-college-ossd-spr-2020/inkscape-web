@@ -29,7 +29,7 @@
   </div>
   {% endif %}
 
-  {% if request.user.is_authenticated %}
+  {% if request.user.is_authenticated and forum %}
     <div class="btn-group">
       {% with forum|subscription:request.user as subscription %}
         {% if not subscription %}
