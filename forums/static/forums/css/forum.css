@@ -358,7 +358,7 @@ body {
   text-align: right;
 }
 
-.user-menu li {
+.user-menu > li {
   display: inline-block;
   line-height: 1;
   margin-left: 1vw;
@@ -1186,6 +1186,10 @@ a:active {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+.dropdown-menu .divider {
+  display: block;
 }
 
 /*
