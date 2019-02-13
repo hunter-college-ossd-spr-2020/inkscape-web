@@ -13,6 +13,9 @@
     {% block "css" %}
     <link href="{% static "forums/css/bootstrap.min.css" %}" rel="stylesheet" id="bootstrap-css">
     <link href="{% static "forums/css/iw.css" %}" rel="stylesheet" id="iw-icons-css">
+    <link href="{% static "forums/js/slick/slick.css" %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static "forums/js/slick/slick-theme.css" %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static "forums/js/slick-lightbox.css" %}" rel="stylesheet" type="text/css"/>
     <link href="{% static "forums/css/forum.css" %}" rel="stylesheet" id="forum-css">
     <link href="{% static "forums/css/comments.css" %}" rel="stylesheet" id="comment-css">
     {% endblock %}
@@ -179,5 +182,8 @@
         </div>
     </div>{# end .container #}
     {% endblock %}
+
+    <script type="text/javascript" src="{% static "forums/js/slick/slick.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "forums/js/slick-lightbox.min.js" %}"></script>
   </body>
 </html>

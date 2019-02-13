@@ -20,6 +20,62 @@ window.setInterval(refresh_render_time, 60000);
 
 $(document).ready(function() {
   refresh_render_time();
+  
+  /**
+   *   Slick slider options 
+   */
+   
+  $('.single-item').slick();
+  
+  $('.multiple-items').slick({
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+  });
+  
+  $('.slick-responsive').slick({
+    dots: true,
+    infinite: false,
+    speed: 300,
+    slidesToShow: 6,
+    slidesToScroll: 6,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 10,
+          slidesToScroll: 10,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+      // You can unslick at a given breakpoint now by adding:
+      // settings: "unslick"
+      // instead of a settings object
+    ]
+  });
+  
+  /**
+   *   Slick slider Lightbox options
+   */
+   
+  $('.comment-attachments').slickLightbox({
+    itemSelector: '> .inline > a'
+  });
 
   /* Each haveseen item is a HTML element that expresses how the user
      has seen this item. Once seen, the date and the counts are recorded
