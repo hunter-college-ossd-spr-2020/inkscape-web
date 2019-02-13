@@ -298,3 +298,20 @@ class FileEx(object):
             num_chars += len(line)
         return (num_lines, num_words)
 
+def url_filefield(url, filename=None):
+    """
+    Download the given url and return it as a file field
+    """
+    if not url:
+        return None
+    from django.core import files
+    from io import BytesIO
+    import requests
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        return None
+    bhl = BytesIO()
+    bhl.write(resp.content)
+    if filename is None:
+        filename = url.split("/")[-1]
+    return files.File(bhl, filename)

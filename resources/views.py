@@ -38,6 +38,7 @@ from django.db.models import Q
 
 from person.models import User, Team
 
+from .utils import url_filefield
 from .video_url import video_detect
 from .category_views import CategoryListView
 from .mixins import (
@@ -249,14 +250,19 @@ class ResourcesJson(View):
                       and match_v['id'] == is_video['id'] \
                       and match_v['type'] == is_video['type']:
                     return str(match.pk)
-            # Create a new video object in our resource database.
-            details = video_detect(query, True)
-            ret = Resource(
-                user=self.request.user,
-                name=details['title'],
-                link=query, owner=False, published=False)
-            ret.save()
-            return str(ret.pk)
+
+            if self.request.user.is_authenticated():
+                # Create a new video object in our resource database.
+                details = video_detect(query, True)
+                ret = Resource(
+                    user=self.request.user,
+                    name=details['title'],
+                    owner_name=details['author'],
+                    thumbnail=url_filefield(details['thumbnail_url'],
+                                            'video_' + details['id'] + '.png'),
+                    link=query, owner=False, published=False)
+                ret.save()
+                return str(ret.pk)
         return query
 
 class LinkToResource(UploadResource):
