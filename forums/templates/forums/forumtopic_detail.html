@@ -135,7 +135,11 @@
   
   {% endif %}
   <div class="forum-breadcrumbs">
-    <a href="/" title="Back to Inkcsape website"><img src="/static/images/inkscape-logo.svg" alt="Inkscape"> Inkscape.org</a> <span class="glyphicon glyphicon-chevron-right"></span> <a href="/forums"><img src="/static/forums/images/logo.svg"> Inkscape Forum</a> <span class="glyphicon glyphicon-chevron-right"></span> {% include "forums/forumtopic_subheader.html" %}
+      <a href="/" title="Back to Inkcsape website"><img src="{% static "images/inkscape-logo.svg" %}" alt="Inkscape"> Inkscape.org</a>
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      <a href="{% url "forums:list" %}"><img src="{% statuc "forums/images/logo.svg" %}"> Inkscape Forum</a>
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      {% include "forums/forumtopic_subheader.html" %}
   </div>
 {% endblock %}
 
