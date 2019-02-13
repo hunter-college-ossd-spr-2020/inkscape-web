@@ -1,7 +1,7 @@
 /*
  * Provides a way for javascript to show if links have changed since the last visit.
  */
-var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '2622', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438'];
+var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '26f0', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438',];
 
 function refresh_render_time() {
   $(".render-time").each(function() {
@@ -325,22 +325,23 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
         span.data('chr', chr);
         dropdown.append(span);
         span.click(function() {
-            add_emote_to_comment($(this), post_url);
+            add_emote_to_comment($(this), pot, post_url);
         });
     }
 }
 
-function add_emote_to_comment(span, post_url) {
+function add_emote_to_comment(emoji, pot, post_url) {
     $.post(post_url, {
         csrfmiddlewaretoken: Cookies.get('csrftoken'),
-        flag: span.data('chr'),
+        flag: emoji.data('chr'),
     }, function(data) {
-        var bar_span = $('#emote-'+data.id);
+        var bar_span = $('#emote-'+data.id, pot);
         if(bar_span.length) {
-            bar_span.text(span.data('chr'));
+            console.log("Existing emojis", emoji);
+            bar_span.text(emoji.data('chr'));
         } else {
-            bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
-            span.append(bar_span);
+            bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+emoji.data('chr')+'</span>');
+            pot.append(bar_span);
         }
         clean_emoji(-1, bar_span);
     });
