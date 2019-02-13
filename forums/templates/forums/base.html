@@ -32,7 +32,7 @@
     {% block "wrapper" %}
     <div class="container-flex forums-app">
     {% endblock "wrapper" %}
-        <a href="/" class="back-to-site" title="Back to Inkcsape website">Inkscape.org</a>
+        <a href="/" class="back-to-site" title="{% trans "Back to Inkcsape website" %}">Inkscape.org</a>
         {% block "header" %}
         <header class="forums-header">
           <div class="forums-branding"><a class="forums-logo" href="/forums/"><img src="{% static "forums/images/logo.svg" %}"> <span class="forums-name">Inkscape Forum</span> <span class="forums-tagline">Talk Freely</span></a></div>
@@ -46,23 +46,32 @@
           {% endblock "search-block" %}
           
           {% block "user-menu" %}
-          <ul class="user-menu">
+          <ul class="user-menu dropdown">
             {% if not request.user.is_authenticated %}
             <li class="user-register"><a href="{% url "auth_register" %}?next={{ request.path }}"><span class="glyphicon glyphicon-record"></span> {% trans "Register" %}</a></li>
             <li class="user-login"><a href="{% url "auth_login" %}?next={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span> {% trans "Log in" %}</a></li>
             {% else %}
-            <li class="user-account"><a href="{{ request.user.get_absolute_url }}"><span class="glyphicon glyphicon-edit"></span> {% trans "My account" %}</a></li>
+            <li class="user-account">
+              <a class="dropdown-toggle" href="#" role="button" 
+               aria-expanded="false" data-toggle="dropdown" aria-haspopup="true"><span class="glyphicon glyphicon-user"></span> {% trans "My account" %} <span class="caret"></span></a>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuDivider">
+                <li class="dropdown-item {% url_name "topic_subs" %}"><a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %}</a></li>
+                <li class="dropdown-item {% url_name "topic_list" %}"><a href="{% url "topic_list" request.user.username %}"><span class="iw-comment"></span> {% trans "My Topics" %}</a></li>
+                <li class="dropdown-item {% url_name "comment_list" %}"><a href="{% url "comment_list" request.user.username %}"><span class="iw-chat"></span> {% trans "My Comments" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-item"><a href="{{ request.user.get_absolute_url }}" title="{% trans "My profile on Inkscape.org website" %}"><span class="glyphicon glyphicon-user"></span> {% trans "My profile" %}</a></li>
+              </ul>
+            </li>
             <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
-            <li class="user-forum" title="{% trans "My Forum" %}"><a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span></a></li>
-              {% if request.user.is_staff %}
-                <li class="user-logout"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
-              {% endif %}
-              {% if rss %}
-                <li class="thread-rss"><a href="{{ rss }}"><span class="iw-rss"></span></a></li>
-              {% endif %}
+            {% if request.user.is_staff %}
+              <li class="forum-admin" title="{% trans "Forum Administration" %}"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
             {% endif %}
+            {% if rss %}
+              <li class="thread-rss"><a href="{{ rss }}"><span class="iw-rss"></span></a></li>
+            {% endif %}
+          {% endif %}
           </ul>
-          {% endblock %}
+          {% endblock "user-menu" %}
           
           {% block "forumheader" %}{% endblock %}
 

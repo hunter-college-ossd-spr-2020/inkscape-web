@@ -9,14 +9,3 @@
     <small class="forum-description">{% trans "A list of all topics which you have subscribed to, posted or comments made." %}</small>
   </div>
 {% endblock %}
-
-{% block "tools" %}
-  {% if forum_user %}
-  <div class="btn-group">
-    <a href="{% url "forums:topic_subs" %}" class="btn btn-sm btn-default {% url_name "topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %}</a>
-    <a href="{% url "topic_list" forum_user.username %}" class="btn btn-sm btn-default {% url_name "topic_list" %}"><span class="iw-comment"></span> {% trans "My Topics" %}</a>
-    <a href="{% url "comment_list" forum_user.username %}" class="btn btn-sm btn-default {% url_name "comment_list" %}"><span class="iw-chat"></span> {% trans "My Comments" %}</a>
-  </div>
-  {% endif %}
-  {{ block.super }}
-{% endblock %}

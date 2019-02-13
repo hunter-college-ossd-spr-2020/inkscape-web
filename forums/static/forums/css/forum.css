@@ -358,7 +358,7 @@ body {
   text-align: right;
 }
 
-.user-menu li {
+.user-menu > li {
   display: inline-block;
   line-height: 1;
   margin-left: 1vw;
@@ -1157,6 +1157,10 @@ h3 small.label {
   padding: 0;
 }
 
+.inkscape-coc.btn {
+  white-space: normal;
+}
+
 /*
  *   5. Bootstrap form styles additions and overrides ---------------
  */
@@ -1186,6 +1190,10 @@ a:active {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+.dropdown-menu .divider {
+  display: block;
 }
 
 /*

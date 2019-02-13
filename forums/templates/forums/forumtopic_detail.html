@@ -109,14 +109,12 @@
                 <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
               </span>
               <span class="btn-group pull-right">
+                <a href="/community/coc/" class="inkscape-coc btn btn-sm btn-info"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
                 {% if perms.forums.can_post_comment %}
                   <button class="btn btn-primary btn-sm"type="submit"> {% trans "Submit Comment" %}</button>
                 {% else %}
                   <button class="btn btn-warning btn-sm"type="submit"> {% trans "Submit for Moderation" %}</button>
                 {% endif %}
-              </span>
-              <span class="btn-group pull-left">
-                <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
               </span>
             </div>
           </form>
@@ -137,7 +135,11 @@
   
   {% endif %}
   <div class="forum-breadcrumbs">
-    <a href="/" title="Back to Inkcsape website"><img src="/static/images/inkscape-logo.svg" alt="Inkscape"> Inkscape.org</a> <span class="glyphicon glyphicon-chevron-right"></span> <a href="/forums"><img src="/static/forums/images/logo.svg"> Inkscape Forum</a> <span class="glyphicon glyphicon-chevron-right"></span> {% include "forums/forumtopic_subheader.html" %}
+      <a href="/" title="Back to Inkcsape website"><img src="{% static "images/inkscape-logo.svg" %}" alt="Inkscape"> Inkscape.org</a>
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      <a href="{% url "forums:list" %}"><img src="{% static "forums/images/logo.svg" %}"> Inkscape Forum</a>
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      {% include "forums/forumtopic_subheader.html" %}
   </div>
 {% endblock %}
 
