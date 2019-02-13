@@ -187,21 +187,6 @@ class MimeType(object):
         """Returns a banner image icon"""
         return self.icon('banner')
 
-VIDEO_URLS = {
-    'youtube': r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be'
-               r'/)(watch\?v=|embed/|v/|.+\?v=)?(?P<video_id>[^&=%\?]{11})',
-    'vimeo': r'(http:\/\/)?(www\.)?(vimeo\.com)(\/channels\/.+)?\/(?P<video_id>.+)/?',
-}
-
-def video_embed(url):
-    """Embed the video using known video_urls"""
-    if url is not None:
-        for site_id, regex in VIDEO_URLS.items():
-            match = re.match(regex, url)
-            if match:
-                return {'type': site_id, 'id': match.group('video_id')}
-    return None
-
 def hash_verify(sig_type, sig, data):
     """Verify the signature against the data (for example md5)"""
     import hashlib
@@ -313,3 +298,20 @@ class FileEx(object):
             num_chars += len(line)
         return (num_lines, num_words)
 
+def url_filefield(url, filename=None):
+    """
+    Download the given url and return it as a file field
+    """
+    if not url:
+        return None
+    from django.core import files
+    from io import BytesIO
+    import requests
+    resp = requests.get(url)
+    if resp.status_code != 200:
+        return None
+    bhl = BytesIO()
+    bhl.write(resp.content)
+    if filename is None:
+        filename = url.split("/")[-1]
+    return files.File(bhl, filename)
