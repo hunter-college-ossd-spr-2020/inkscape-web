@@ -213,18 +213,38 @@ function add_attachment(datum, options) {
     var box = $('#file_template').clone();
     box.attr('id', 'r' + datum.pk);
     box.data('pk', datum.pk);
-    $('.fn', box).text(datum.filename);
+    if(datum.filename) {
+        $('.fn', box).text(datum.filename);
+    } else {
+        $('.fn', box).text(datum.name);
+    }
     box.show();
     $('#file_box').append(box);
     if(options.inline) {
-        $('.inline span', box).addClass('glyphicon-picture');
+        if(datum.is_video) {
+            $('.inline span', box).addClass('glyphicon-facetime-video');
+        } else {
+            $('.inline span', box).addClass('glyphicon-picture');
+        }
         $('.inline', box).addClass('btn-primary');
     } else {
-        $('.inline span', box).addClass('glyphicon-file');
+        if(datum.filename) {
+            $('.inline span', box).addClass('glyphicon-file');
+        } else {
+            $('.inline span', box).addClass('glyphicon-link');
+        }
     }
     $('.inline', box).click(function() {
-        $('span', this).toggleClass('glyphicon-picture');
-        $('span', this).toggleClass('glyphicon-file');
+        if(datum.is_video) {
+            $('span', this).toggleClass('glyphicon-facetime-video');
+        } else {
+            $('span', this).toggleClass('glyphicon-picture');
+        }
+        if(datum.filename) {
+            $('span', this).toggleClass('glyphicon-file');
+        } else {
+            $('span', this).toggleClass('glyphicon-link');
+        }
         $(this).toggleClass('btn-primary');
         update_attachments();
         return false;

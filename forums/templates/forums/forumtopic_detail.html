@@ -3,11 +3,11 @@
 {% block "wrapper" %}
 <div class="container-flex forums-app forums-topic-detail">
 {% endblock "wrapper" %}
+
 {% block "forumheader" %}
-<div class="forum-sub-header">
-    <a class="forum-name" href="{{ object.forum.get_absolute_url }}">{% if object.forum.icon %}<img src="{{ object.forum.icon.url }}" title="{{ object.form }}"> {% endif %}{{ object.forum }}</a> <span class="glyphicon glyphicon-chevron-right"></span> <span class="forum-thread-title">{{ object.subject }}</span>
-    <small class="forum-description">{{ forum.desc }}</small>
-</div>
+  <div class="forum-sub-header">
+    {% include "forums/forumtopic_subheader.html" %}
+  </div>
 {% endblock %}
 
 {% block "aside" %}{% endblock %}
@@ -134,5 +134,10 @@
       {% endif %}
     </div>
   </div>
+  
   {% endif %}
+  <div class="forum-breadcrumbs">
+    <a href="/" title="Back to Inkcsape website"><img src="/static/images/inkscape-logo.svg" alt="Inkscape"> Inkscape.org</a> <span class="glyphicon glyphicon-chevron-right"></span> <a href="/forums"><img src="/static/forums/images/logo.svg"> Inkscape Forum</a> <span class="glyphicon glyphicon-chevron-right"></span> {% include "forums/forumtopic_subheader.html" %}
+  </div>
 {% endblock %}
+

@@ -174,8 +174,9 @@ body{
 .back-to-site {
   background-color: #000;
   border-radius: 3px;
-  color: #666;
+  color: #ccc;
   display: block;
+  font-weight: bold;
   line-height: 1.1;
   text-align: center;
   transition: all .3s ease .3s;
@@ -229,6 +230,19 @@ body{
   img {
     max-height: 40px;
     padding: 5px 4px 8px $gutters; 
+  }
+}
+
+.forum-breadcrumbs {
+  margin: 5*$gutters 0 0;
+
+  img {
+    max-height: 2em;
+  }
+
+  .glyphicon{
+    color: #555;
+    top: 2px;
   }
 }
 
@@ -460,6 +474,11 @@ body{
     display:block;
     float:left;
   }
+
+  .glyphicon {
+    color: #999;
+    top: -1px;
+  }
 }
 
 .forum-name {
@@ -480,6 +499,10 @@ body{
   &:focus,
   &:hover {
     color: $forum-description-hover;
+  }
+
+  &::before {
+    content: " • ";
   }
 }
 
@@ -1266,9 +1289,6 @@ a:active {
   font-weight: bold;
   letter-spacing: 1px;
   text-transform: uppercase;
-}
-.forum-sub-header .glyphicon{
-  color:#999;
 }
 
 /*
