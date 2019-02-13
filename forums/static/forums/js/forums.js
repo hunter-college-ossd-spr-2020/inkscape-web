@@ -189,7 +189,8 @@ function update_attachments() {
   $('tr', '#file_box').each(function() {
       var pk = $(this).data('pk');
       if(pk != undefined) {
-          if($('.inline span', this).hasClass('glyphicon-picture')) {
+          var sp = $('.inline span', this);
+          if(sp.hasClass('glyphicon-picture') || sp.hasClass('glyphicon-facetime-video')) {
               inlines.push(pk);
           } else {
               attachments.push(pk);
