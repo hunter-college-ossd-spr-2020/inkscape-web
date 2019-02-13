@@ -55,9 +55,9 @@
               <a class="dropdown-toggle" href="#" role="button" 
                aria-expanded="false" data-toggle="dropdown" aria-haspopup="true"><span class="glyphicon glyphicon-user"></span> {% trans "My account" %} <span class="caret"></span></a>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuDivider">
-                <li class="dropdown-item"><a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %}</a></li>
-                <li class="dropdown-item"><a href="{{ request.user.get_absolute_url }}topics"><span class="iw-comment"></span> {% trans "My Topics" %}</a></li>
-                <li class="dropdown-item"><a href="{{ request.user.get_absolute_url }}comments"><span class="iw-chat"></span> {% trans "My Comments" %}</a></li>
+                <li class="dropdown-item {% url_name "topic_subs" %}"><a href="{% url "forums:topic_subs" %}"><span class="glyphicon glyphicon-heart"></span> {% trans "My Subscriptions" %}</a></li>
+                <li class="dropdown-item {% url_name "topic_list" %}"><a href="{% url "topic_list" request.user.username %}"><span class="iw-comment"></span> {% trans "My Topics" %}</a></li>
+                <li class="dropdown-item {% url_name "comment_list" %}"><a href="{% url "comment_list" request.user.username %}"><span class="iw-chat"></span> {% trans "My Comments" %}</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-item"><a href="{{ request.user.get_absolute_url }}" title="{% trans "My profile on Inkscape.org website" %}"><span class="glyphicon glyphicon-user"></span> {% trans "My profile" %}</a></li>
               </ul>
