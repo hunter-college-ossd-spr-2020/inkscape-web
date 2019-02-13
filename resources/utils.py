@@ -187,21 +187,6 @@ class MimeType(object):
         """Returns a banner image icon"""
         return self.icon('banner')
 
-VIDEO_URLS = {
-    'youtube': r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be'
-               r'/)(watch\?v=|embed/|v/|.+\?v=)?(?P<video_id>[^&=%\?]{11})',
-    'vimeo': r'(http:\/\/)?(www\.)?(vimeo\.com)(\/channels\/.+)?\/(?P<video_id>.+)/?',
-}
-
-def video_embed(url):
-    """Embed the video using known video_urls"""
-    if url is not None:
-        for site_id, regex in VIDEO_URLS.items():
-            match = re.match(regex, url)
-            if match:
-                return {'type': site_id, 'id': match.group('video_id')}
-    return None
-
 def hash_verify(sig_type, sig, data):
     """Verify the signature against the data (for example md5)"""
     import hashlib

@@ -38,6 +38,7 @@ from django.db.models import Q
 
 from person.models import User, Team
 
+from .video_url import video_detect
 from .category_views import CategoryListView
 from .mixins import (
     OwnerDeleteMixin, OwnerCreateMixin, OwnerUpdateMixin,
@@ -212,6 +213,8 @@ class ResourcesJson(View):
         elif 'q' in request.GET:
             query = Q()
             for qey in request.GET.getlist('q'):
+                if qey and '://' in qey:
+                    qey = self.parse_url(qey)
                 max_num += 2
                 if qey.isnumeric():
                     context['pk'] = qey
@@ -231,6 +234,30 @@ class ResourcesJson(View):
 
         return JsonResponse(context, safe=False,
                             content_type='application/json; charset=utf-8')
+
+    def parse_url(self, query):
+        """
+        We want to parse a given URL and decide if it's a video URL
+        or some other interesting or important URL.
+        """
+        is_video = video_detect(query)
+        if is_video:
+            # Find an existing video in our resource database that matches.
+            for match in Resource.objects.filter(link__contains=is_video['id']):
+                match_v = match.video
+                if match_v \
+                      and match_v['id'] == is_video['id'] \
+                      and match_v['type'] == is_video['type']:
+                    return str(match.pk)
+            # Create a new video object in our resource database.
+            details = video_detect(query, True)
+            ret = Resource(
+                user=self.request.user,
+                name=details['title'],
+                link=query, owner=False, published=False)
+            ret.save()
+            return str(ret.pk)
+        return query
 
 class LinkToResource(UploadResource):
     """Create a link to a resource instead of an upload"""

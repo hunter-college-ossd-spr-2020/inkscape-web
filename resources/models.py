@@ -42,6 +42,7 @@ from inkscape.fields import ResizedImageField
 from .storage import resource_storage
 from .slugify import set_slug
 from .utils import *
+from .video_url import video_detect
 
 from uuid import uuid4
 
@@ -581,7 +582,7 @@ class Resource(Model):
 
     @property
     def video(self):
-        return video_embed(self.link)
+        return video_detect(self.link)
 
     @property
     def next(self):
@@ -599,7 +600,7 @@ class Resource(Model):
 
     def as_json(self):
         """Return a standard dictionary for json output"""
-        return {
+        ret = {
             'pk': self.pk,
             'name': self.name,
             'link': self.link,
@@ -609,8 +610,11 @@ class Resource(Model):
             'rendering': self.rendering_url(),
             'download': self.download_url(),
             'is_image': self.mime().is_image(),
-            'is_video': self.is_video,
         }
+        if self.is_video:
+            ret['video'] = self.video
+            ret['is_video'] = True
+        return ret
 
     @cached
     def mime(self):

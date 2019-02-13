@@ -2,7 +2,7 @@
 # Copyright 2015, Maren Hachmann <marenhachmann@yahoo.com>
 #                 Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -26,15 +26,13 @@ __all__ = ('ResourceTests', 'ResourceAnonTests')
 
 import os
 
-from .base import BaseCase
-
-from django.core.urlresolvers import reverse
-
-from resources.models import Resource, Quota, Gallery, Category
+from resources.models import Resource, Quota, Gallery
 from resources.forms import ResourceForm, ResourceEditPasteForm, ResourcePasteForm
-from resources.utils import video_embed
+from resources.video_url import video_detect
 
 from person.models import User
+
+from .base import BaseCase
 
 class ResourceTests(BaseCase):
     """Test non-request functions and methods"""
@@ -774,7 +772,7 @@ class ResourceAnonTests(BaseCase):
 
     def test_video_view(self):
         """Make sure video links embed a vieo feature"""
-        self.assertTrue(video_embed('http://youtube.com/watch?v=01234567911'))
+        self.assertTrue(video_detect('http://youtube.com/watch?v=01234567911'))
         for resource in Resource.objects.filter(link__contains='VideoTag'):
             response = self.assertGet('resource', pk=resource.pk)
             self.assertContains(response, '<iframe')
