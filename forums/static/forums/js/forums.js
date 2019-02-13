@@ -269,22 +269,23 @@ function generate_emoji_pallet(dropdown, post_url, pot) {
         span.data('chr', chr);
         dropdown.append(span);
         span.click(function() {
-            add_emote_to_comment($(this), post_url);
+            add_emote_to_comment($(this), pot, post_url);
         });
     }
 }
 
-function add_emote_to_comment(span, post_url) {
+function add_emote_to_comment(emoji, pot, post_url) {
     $.post(post_url, {
         csrfmiddlewaretoken: Cookies.get('csrftoken'),
-        flag: span.data('chr'),
+        flag: emoji.data('chr'),
     }, function(data) {
-        var bar_span = $('#emote-'+data.id);
+        var bar_span = $('#emote-'+data.id, pot);
         if(bar_span.length) {
-            bar_span.text(span.data('chr'));
+            console.log("Existing emojis", emoji);
+            bar_span.text(emoji.data('chr'));
         } else {
-            bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+span.data('chr')+'</span>');
-            span.append(bar_span);
+            bar_span = $('<span class="emoji" id="emote-'+data.id+'">'+emoji.data('chr')+'</span>');
+            pot.append(bar_span);
         }
         clean_emoji(-1, bar_span);
     });
