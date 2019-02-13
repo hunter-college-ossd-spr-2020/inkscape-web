@@ -27,13 +27,13 @@
       {% if object == request.user %}<a href="{% url "moderation:index" %}">{% endif %}<img src="{% static "images/social/moderation.svg" %}" title="{% trans "Inkscape Community Moderator" %}"/></a>
     {% endif %}
     {% if object.dauser %}
-      <a href="http://{{ object.dauser }}.deviantart.com/"><img src="{% static "images/social/deviantart.svg" %}" title="{% trans "My DeviantArt Account" %}"/></a>
+      <a href="http://{{ object.dauser }}.deviantart.com/" rel="nofollow noopener" target="_blank"><img src="{% static "images/social/deviantart.svg" %}" title="{% trans "My DeviantArt Account" %}"/></a>
     {% endif %}
     {% if object.ocuser %}
-      <a href="https://openclipart.org/user-detail/{{ object.ocuser }}"><img src="{% static "images/social/openclipart.svg" %}" title="{% trans "My Openclipart Profile" %}"/></a>
+      <a href="https://openclipart.org/user-detail/{{ object.ocuser }}" rel="nofollow noopener" target="_blank"><img src="{% static "images/social/openclipart.svg" %}" title="{% trans "My Openclipart Profile" %}"/></a>
     {% endif %}
     {% if object.tbruser %}
-      <a href="http://{{ object.tbruser }}.tumblr.com/"><img src="{% static "images/social/tumblr.svg" %}" title="{% trans "My Tumblr" %}"/></a>
+      <a href="http://{{ object.tbruser }}.tumblr.com/" rel="nofollow noopener" target="_blank"><img src="{% static "images/social/tumblr.svg" %}" title="{% trans "My Tumblr" %}"/></a>
     {% endif %}
     {% if request.user.is_authenticated and request.user != object %}
       <a href="{% url "message.new" object.username %}"><img src="{% static "images/social/message.svg" %}" title="{% trans "Send Message" %}"/></a>

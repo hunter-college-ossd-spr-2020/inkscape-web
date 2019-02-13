@@ -77,7 +77,7 @@
                 {% endif %}
               </div>
               <section class="comment-text">
-                {{ comment.comment|safe|urlize }}
+                {{ comment.comment|safe|urlized }}
                 {% if not request.user.is_moderator %}
                   <div class="alert alert-warning" role="alert">
                     <strong>{% trans "Not Public!" %}</strong> {% trans "Your comment is held for moderator approval" %}

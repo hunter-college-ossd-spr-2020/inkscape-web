@@ -25,7 +25,7 @@ from datetime import timedelta, datetime
 from django import template
 from django.templatetags.static import StaticNode
 from django.utils.safestring import mark_safe
-from django.template.defaultfilters import date, timesince
+from django.template.defaultfilters import date, timesince, stringfilter, _urlize
 from django.templatetags.tz import localtime
 from django.utils import timezone
 from django.db.models import Model
@@ -170,3 +170,11 @@ def timenotag(value, arg=None):
 def decodetext(value):
     """Removes HTML entities from text"""
     return HTENT.sub(lambda m: chr(int(NAMES.get(m.group(1), m.group(1).strip('#')))), value)
+  
+@register.filter("urlized", is_safe=True, needs_autoescape=True)
+@stringfilter
+def urlized_filter(value, autoescape=True):
+    """Turns plain text urls in a text into clickable html tags, with rel="nofollow noopener" target="_blank"
+    for safety, and to not lose users to third-party sites. Use instead of django's urlize filter.
+    """
+    return mark_safe(_urlize(value, nofollow=True, autoescape=autoescape).replace('rel="nofollow"', 'rel="nofollow noopener" target="_blank"'))

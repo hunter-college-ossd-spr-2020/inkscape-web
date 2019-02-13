@@ -59,7 +59,7 @@
     </div>
 
     <div class="desc">
-      {{ object.description|urlize|linebreaks }}
+      {{ object.description|urlized|linebreaks }}
       {% if object.read_more %}
         ...
         <p><a id="readmore" href="{% url "resource.readme" object.pk %}">{% trans "read more" %}</a></p>

@@ -11,7 +11,7 @@
       
 <!--description / link -->
     <div class="resourcedesc">
-      {% if object.obj.bio %}{{ object.obj.bio|truncatewords:60|urlize|linebreaks }}{% else %}{{ object.obj.username }} {% trans "hasn't written anything about themselves yet." %}{% endif %}
+      {% if object.obj.bio %}{{ object.obj.bio|truncatewords:60|urlized|linebreaks }}{% else %}{{ object.obj.username }} {% trans "hasn't written anything about themselves yet." %}{% endif %}
     </div>
 
 <!-- information -->
