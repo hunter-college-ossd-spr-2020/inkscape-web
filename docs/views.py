@@ -89,7 +89,7 @@ def page(request, url, lang=None):
     if not lang:
         lang = get_language_from_path(request.path)
         if lang in (None, ''):
-            lang = get_language_from_request(request)
+            lang = 'en'
 
     path = get_localized_path(path, lang)
 
