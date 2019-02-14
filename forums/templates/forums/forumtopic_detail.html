@@ -1,5 +1,17 @@
 {% extends "forums/base.html" %}
 {% load i18n static forum_comments inkscape comments %}
+
+{% block "css" %}{{ block.super }}
+<link href="{% static "slick/slick.css" %}" rel="stylesheet" type="text/css"/>
+<link href="{% static "slick/slick-theme.css" %}" rel="stylesheet" type="text/css"/>
+<link href="{% static "slick/lightbox.css" %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block "js" %}{{ block.super }}
+<script type="text/javascript" src="{% static "slick/slick.min.js" %}"></script>
+<script type="text/javascript" src="{% static "slick/lightbox.min.js" %}"></script>
+{% endblock %}
+
 {% block "wrapper" %}
 <div class="container-flex forums-app forums-topic-detail">
 {% endblock "wrapper" %}

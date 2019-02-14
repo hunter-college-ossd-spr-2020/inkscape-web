@@ -31,7 +31,7 @@
       
 <!--description / link -->
     <div class="resourcedesc">
-      {{ object.desc|truncatewords:60|urlize|linebreaks }}
+      {{ object.desc|truncatewords:60|urlized|linebreaks }}
       {% if object.link and not object.is_video %}
         <p>{% trans "Link" %}: <a href="{{ object.link }}">{{ object.link }}</a></p>
       {% endif %}
