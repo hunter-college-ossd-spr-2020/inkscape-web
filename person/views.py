@@ -21,7 +21,10 @@
 """Customise the user authentication model"""
 
 
-from django.views.generic import UpdateView, DetailView, ListView, RedirectView, TemplateView
+from django.views.generic import (
+    UpdateView, DetailView, ListView, RedirectView, TemplateView, View
+)
+from django.template.response import TemplateResponse
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import ugettext_lazy as _, get_language
 from django.utils.timezone import now
@@ -272,3 +275,47 @@ class UnwatchTeam(AddMember):
         team.update_membership(user, expired=now(), removed_by=actor)
         messages.info(self.request, _("No longer watching this team."))
         return team.get_absolute_url()
+
+class UserAvatar(View):
+    """
+    Attempts to find a user's avatar by their IRC nickname or website username.
+    """
+    permanent = True
+    skip_middleware = True
+
+    def get_object(self, nick):
+        """Get the nearest matching user with this nickname"""
+        user = User.objects.filter(ircnick=nick).order_by('pk').first()
+        if user is None:
+            user = User.objects.filter(username=nick).order_by('pk').first()
+        return user, nick
+
+    def get(self, request, nick, ext=None):
+        """Redirect to the given picture file."""
+        from django.http import HttpResponse
+        from resources.utils import FileEx
+
+        user, nick = self.get_object(nick)
+        if user is None or not user.photo:
+            return self.generate_svg(nick)
+        user.photo.open()
+        fex = FileEx(user.photo.path)
+        return HttpResponse(user.photo.read(), content_type=str(fex.mime))
+
+    @staticmethod
+    def string_to_colour(string):
+        """Convert a string into a colour for use in a generated avatar"""
+        total = 0
+
+        for char in string:
+            total = ord(char) + ((total << 5) - total)
+
+        return '#' + ''.join(['{:02x}'.format((total >> (i * 8)) & 0xFF) for i in range(3)])
+
+    def generate_svg(self, nick):
+        """Return a generated svg based on a template"""
+        return TemplateResponse(
+            self.request,
+            template='person/irc_avatar.svg',
+            context={'nick': nick, 'colour': self.string_to_colour(nick)},
+            content_type='image/svg+xml')

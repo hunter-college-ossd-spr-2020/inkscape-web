@@ -31,7 +31,7 @@ from django.contrib.auth.views import (
 )
 from inkscape.url_utils import url_tree
 
-from .views import LoginView, EditProfile, TeamList, MyProfile, AgreeToCla, Welcome
+from .views import LoginView, EditProfile, TeamList, MyProfile, AgreeToCla, Welcome, UserAvatar
 from .forms import RegisForm, PasswordForm
 
 AC = TemplateView.as_view(template_name='django_registration/activation_complete.html')
@@ -65,4 +65,6 @@ urlpatterns = [ # pylint: disable=invalid-name
             AV.as_view(), name='django_registration_activate'),
         url(r'^activated/$', AC, name='django_registration_activation_complete'),
     ),
+
+    url(r'^avatar/(?P<nick>[^\/]+?)\.?(?P<ext>svg|png|jpe?g)?$', UserAvatar.as_view(), name='user_avatar'),
 ]
