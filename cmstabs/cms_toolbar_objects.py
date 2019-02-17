@@ -22,6 +22,7 @@ from django.db.models import QuerySet, Model
 
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.translation import ugettext_lazy as _, get_language_from_path
+from django.urls import translate_url
 from django.contrib.contenttypes.models import ContentType
 
 from cms.toolbar.toolbar import CMSToolbar
@@ -68,6 +69,9 @@ class ObjectsToolbar(SubToolbar):
         args = (obj.pk,) if obj is not None else ()
         perm = '%s.%s_%s' % (ct.app_label, method, ct.model)
         if self.request.user.has_perm(perm):
+            lang = get_language_from_path(self.request.path)
+            if lang not in ('en', None):
+                return translate_url(reverse('admin:%s_%s_%s' % bits, args=args), lang)
             return reverse('admin:%s_%s_%s' % bits, args=args)
         raise NoReverseMatch("No permission")
 
