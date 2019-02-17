@@ -294,7 +294,7 @@ CKEDITOR_SETTINGS = {
     'readOnly': False,
 }
 CKEDITOR_NEWS = {
-    'extraPlugins': 'image,cmslink',
+    'extraPlugins': 'image',
     'filebrowserImageBrowseUrl': '/gallery/pick/',
     'toolbar_HTMLField': [
         ['Undo', 'Redo'], ['ShowBlocks'],
@@ -305,7 +305,7 @@ CKEDITOR_NEWS = {
         ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript'],
         ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
         ['Image', '-', 'HorizontalRule'],
-        ['CMSLink', 'Unlink'],
+        ['Link', 'Unlink'],
         ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Table'],
         ['Source']
     ],

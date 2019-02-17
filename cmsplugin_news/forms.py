@@ -30,14 +30,6 @@ from djangocms_text_ckeditor.widgets import TextEditorWidget
 
 from .models import News
 
-def clean_http(content):
-    """
-    Removes issues caused by bad or broken ckeditor.
-    """
-    for side_a in ('http://', 'https://'):
-        for side_b in ('http://', 'https://'):
-            content = content.replace(side_a + side_b, max([side_a, side_b]))
-    return content
 
 class NewsAdminForm(ModelForm):
     english = News.objects.filter(language="")
@@ -63,12 +55,6 @@ class NewsAdminForm(ModelForm):
 
         if 'content' in self.fields:
             self.fields['content'].widget = TextEditorWidget(**kwarg)
-
-    def clean_content(self):
-        return clean_http(self.cleaned_data['content'])
-
-    def clean_excerpt(self):
-        return clean_http(self.cleaned_data['excerpt'])
 
 class TranslationForm(NewsAdminForm):
     template = "<fieldset class='tr collapse close'>"\
