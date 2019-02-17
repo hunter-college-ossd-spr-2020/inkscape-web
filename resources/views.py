@@ -421,7 +421,7 @@ class DownloadResource(ViewResource):
 class UnpublishedGallery(ListView):
     model = Resource
     paginate_by = 20
-    title = _('My Unpublished Resource')
+    title = _('My Unpublished Resources')
 
     def get_queryset(self):
         qset = super().get_queryset()

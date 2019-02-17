@@ -32,7 +32,7 @@ class ForumAlert(BaseAlert):
     """
     Allow users to subscribe to a whole forum (lots of messages!)
     """
-    name = _("Form Updated")
+    name = _("Forum Updated")
     desc = _("Activity on an entire forum you are subscribed to")
     info = _("When a user creates a new topic or posts to an existing one in a forum you've subscribed to.")
     sender = Forum
