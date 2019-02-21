@@ -6,7 +6,7 @@
 {% block "forumheader" %}
   {% if forum %}
   <div class="forum-sub-header">
-    <a class="forum-name" href="{{ forum.get_absolute_url }}">{% if forum.icon %}<img src="{{ forum.icon.url }}" title="{{ forum }}"> {% endif %}{{ forum }}</a>
+    <a class="forum-name" href="{{ forum.get_absolute_url }}"><img src="{{ forum.icon.url }}" title="{{ forum }}"> {{ forum }}</a>
     <small class="forum-description">{{ forum.desc }}</small>
   </div>
   {% endif %}

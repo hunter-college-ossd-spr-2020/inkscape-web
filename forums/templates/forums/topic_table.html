@@ -13,7 +13,7 @@
       <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}" data-model="topic">
         <td class="icon forum-small-cells">
           {% if show_forum %}
-          <td class="forum-small-cells avatar"><img src="{% if topic.forum.icon %}{{ topic.forum.icon.url }}{% endif %}" title="{{ topic.forum }}"/></td>
+          <td class="forum-small-cells avatar"><img src="{{ topic.forum.icon.url }}" title="{{ topic.forum }}"/></td>
           {% else %}
           <a {% if request.user.is_authenticated %}
                {% if not topic.is_subscribed %}

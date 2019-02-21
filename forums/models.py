@@ -50,6 +50,7 @@ from resources.models import Resource
 from person.models import Team
 
 from .querysets import ForumQuerySet, TopicQuerySet, UserFlagQuerySet
+from .fields import IconField
 
 APP = apps.get_app_config('forums')
 
@@ -70,7 +71,8 @@ class Forum(Model):
     name = CharField(max_length=128, unique=True)
     slug = SlugField(max_length=128, unique=True)
     desc = TextField(validators=[MaxLengthValidator(1024)], null=True, blank=True)
-    icon = FileField(upload_to='forum/icon', null=True, blank=True)
+    icon = IconField(upload_to='forum/icon', null=True, blank=True,\
+        fallback='forums/images/fallback_icon.svg')
 
     lang = CharField(max_length=8, null=True, blank=True,\
         help_text=_('Set this ONLY if you want this forum restricted to this language'))

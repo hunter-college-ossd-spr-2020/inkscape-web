@@ -20,13 +20,15 @@
 """
 Fields for forum forms
 """
+from django.db.models.fields.files import FileField, FieldFile
 from django.db.models import QuerySet
+from django.contrib.staticfiles import storage
 from django.forms import ValidationError, CharField
 from resources.models import Resource
 
 class ResourceList(CharField):
     """
-    A list of resource primary keys
+    A list of resource primary keys (form field)
     """
     def prepare_value(self, value):
         if value is not None and value != '':
@@ -44,3 +46,19 @@ class ResourceList(CharField):
                 raise ValidationError("Contains invalid primary key number.")
             return Resource.objects.filter(pk__in=pks)
         return []
+
+class IconFile(FieldFile):
+    """File attr class for IconField, does the dirty work."""
+    @property
+    def url(self):
+        if self.field.fallback and not self:
+            return storage.staticfiles_storage.url(self.field.fallback)
+        return super().url
+
+class IconField(FileField):
+    """A file field (model field) with a default fallback static image."""
+    attr_class = IconFile
+
+    def __init__(self, *args, **kwargs):
+        self.fallback = kwargs.pop('fallback', None)
+        super().__init__(*args, **kwargs)
