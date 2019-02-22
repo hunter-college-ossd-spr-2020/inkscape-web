@@ -22,6 +22,7 @@
 Basic menu template tag
 """
 
+from django.db.models import Q
 from django.core.cache import cache
 from django.conf import settings
 
@@ -42,7 +43,8 @@ def cache_key(lang, cat='menu'):
 def generate_menu(lang):
     """Generate the menu tree"""
     root_menu = []
-    qset = MenuItem.objects.filter(root_id=lang, category__isnull=True)
+    qset = MenuItem.objects.filter(Q(root_id=lang) | Q(root_id='all'))\
+        .filter(category__isnull=True)
     items = dict((item['pk'], {'item': item, 'submenu': []})
                  for item in qset.values('pk', 'parent', 'name', 'url', 'title'))
     items[None] = {'submenu': root_menu}
@@ -71,7 +73,8 @@ def render_foot(lang='en'):
     if root_foot is None:
         root_foot = {
             'foot_items': MenuItem.objects\
-                .filter(root_id=lang, category='foot')\
+                .filter(Q(root_id=lang) | Q(root_id='all'))\
+                .filter(category='foot')\
                 .values('pk', 'name', 'url', 'title'),
         }
         cache.set(ckey, root_foot, DURATION)

@@ -33,9 +33,11 @@ MENU_TYPES = (
     ('foot', 'Footer'),
 )
 
+LANGS = [('all', 'All Languages')] + list(settings.LANGUAGES)
+
 class MenuRoot(Model):
     """A whole menu for a language"""
-    language = CharField(max_length=12, choices=settings.LANGUAGES, primary_key=True)
+    language = CharField(max_length=12, choices=LANGS, primary_key=True)
 
     def __str__(self):
         return self.get_language_display()
