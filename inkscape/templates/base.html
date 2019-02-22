@@ -158,13 +158,7 @@
   {% block finalfooter %}
     <p id="final-footer">
       <span>{% trans "With thanks to:" %}</span>
-      <a href="http://skymaiden.com" title="{% trans "Website Designed in Inkscape" %}">Hinerangi Courtenay</a>
-      <a href="https://gitlab.com/doctormo/" title="{% trans "Developed in Django" %}">Martin Owens</a>
-      <a href="http://www.fastly.com/" title="{% trans "Data Cached by Fastly" %}">Fastly</a>
-      <a href="https://osuosl.org/" title="{% trans "Site Hosted by OSUOSL" %}">OSUOSL</a>
-      <a href="https://www.privateinternetaccess.com/" title="Private Internet Access {% trans "(Platinum Sponsor)" %}">PIA</a>
-      <a href="https://www.vectorstock.com/" title="VectorStock {% trans "(Platinum Sponsor)" %}">VectorStock</a>
-      <a href="/support-us/sponsors" title="{% trans "The Sponsors" %}">{% trans "The Sponsors" %}</a>
+      {% render_foot lang=lang %}
       <a href="{% url "authors" %}" title="{% trans "The Authors" %}">{% trans "The Authors" %}</a>
       <a id="dev-stamp" href="https://gitlab.com/inkscape/inkscape-web"><img src="{% static "images/django.svg" %}" title="{% trans "This site is running:" %}
 Python {{ PYTHON_VERSION }}

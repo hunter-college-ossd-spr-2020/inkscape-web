@@ -31,17 +31,20 @@ from ..models import MenuItem
 
 register = Library() # pylint: disable=invalid-name
 
-def cache_key(lang):
+DURATION = getattr(settings, 'MENU_CACHE_DURATION', 300)
+
+def cache_key(lang, cat='menu'):
     """Generate a caching key"""
-    prefix = getattr(settings, 'MENU_CACHE_PREFIX', 'menu')
+    key = cat.upper() + '_CACHE_PREFIX'
+    prefix = getattr(settings, key, cat)
     return '%s_%s' % (prefix, lang)
 
 def generate_menu(lang):
     """Generate the menu tree"""
     root_menu = []
-    qset = MenuItem.objects.filter(root_id=lang)
+    qset = MenuItem.objects.filter(root_id=lang, category__isnull=True)
     items = dict((item['pk'], {'item': item, 'submenu': []})
-                 for item in qset.values('pk', 'parent', 'name', 'url'))
+                 for item in qset.values('pk', 'parent', 'name', 'url', 'title'))
     items[None] = {'submenu': root_menu}
 
     for datum in items.values():
@@ -53,8 +56,23 @@ def generate_menu(lang):
 @register.inclusion_tag('menu.html')
 def render_menu(lang='en'):
     """Generates the menu as a list of dictionaries and submenu lists"""
-    root_menu = cache.get(cache_key(lang), None)
-    if not root_menu:
+    ckey = cache_key(lang)
+    root_menu = cache.get(ckey, None)
+    if root_menu is None:
         root_menu = generate_menu(lang)
-        cache.set(cache_key(lang), root_menu, getattr(settings, 'MENU_CACHE_DURATION', 300))
+        cache.set(ckey, root_menu, DURATION)
     return {'menu_items': root_menu}
+
+@register.inclusion_tag('foot.html')
+def render_foot(lang='en'):
+    """Generates the footer as a list of dictionaries and submenu lists"""
+    ckey = cache_key(lang, 'foot')
+    root_foot = cache.get(ckey, None)
+    if root_foot is None:
+        root_foot = {
+            'foot_items': MenuItem.objects\
+                .filter(root_id=lang, category='foot')\
+                .values('pk', 'name', 'url', 'title'),
+        }
+        cache.set(ckey, root_foot, DURATION)
+    return root_foot

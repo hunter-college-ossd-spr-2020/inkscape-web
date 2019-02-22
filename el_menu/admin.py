@@ -38,9 +38,9 @@ class MenuRootAdmin(ModelAdmin):
 site.register(MenuRoot, MenuRootAdmin)
 
 class MenuItemAdmin(ModelAdmin):
-    list_display = ('name', 'url', 'parent', 'root')
-    search_fields = ('name', 'url')
-    list_filter = ('root',)
+    list_display = ('name', 'url', 'parent', 'root', 'category', 'title')
+    search_fields = ('name', 'url', 'title')
+    list_filter = ('root', 'category')
     raw_id_fields = ('parent',)
 
 site.register(MenuItem, MenuItemAdmin)

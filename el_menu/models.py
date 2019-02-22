@@ -25,7 +25,12 @@ Basic menu are a custom app to show inkscape menu.
 from django.conf import settings
 
 from django.db.models import (
-    Model, Manager, CharField, IntegerField, ForeignKey
+    Model, Manager, CharField, IntegerField, ForeignKey, SlugField,
+)
+
+MENU_TYPES = (
+    (None, 'Main Menu'),
+    ('foot', 'Footer'),
 )
 
 class MenuRoot(Model):
@@ -40,13 +45,18 @@ class MenuItem(Model):
     """A collection menus"""
     root = ForeignKey(MenuRoot, related_name='items')
     parent = ForeignKey('self', null=True, blank=True, related_name='children')
+    category = SlugField(max_length=12, choices=MENU_TYPES, null=True, blank=True)
     # This must NOT be a URLField as a URLField is restricted to external
     # fully qualified urls and doesn't accept local page URLs.
     url = CharField(max_length=255, help_text="Location of content.")
     name = CharField(max_length=128)
+    title = CharField(max_length=255, null=True, blank=True)
     order = IntegerField(default=0)
 
     cms_id = IntegerField(null=True, blank=True)
+
+    class Menu:
+        ordering = ('order',)
 
     def __str__(self):
         return self.name
