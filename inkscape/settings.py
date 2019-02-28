@@ -32,6 +32,7 @@ LANGUAGES = (
     ('en', 'English'),
     ('de', 'German'),
     ('fr', 'French'),
+    ('hr', 'Croatian'),
     ('it', 'Italian'),
     ('es', 'Spanish'),
     ('pt', 'Portuguese'),
