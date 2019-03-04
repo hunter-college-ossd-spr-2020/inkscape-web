@@ -99,7 +99,7 @@ class License(Model):
 
 class Category(Model):
     name   = CharField(max_length=128)
-    slug   = SlugField(max_length=128)
+    slug   = SlugField(max_length=128, unique=True)
     desc   = TextField(validators=[MaxLengthValidator(1024)], **null)
     symbol = FileField(_('Category Icon (svg:128x128)'), **upto('icon', 'category'))
     groups = ManyToManyField(Group, blank=True,
@@ -317,7 +317,7 @@ class Resource(Model):
 
     user      = ForeignKey(settings.AUTH_USER_MODEL, related_name='resources', default=get_user)
     name      = CharField(max_length=64)
-    slug      = SlugField(max_length=70)
+    slug      = SlugField(max_length=70, unique=True)
     desc      = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **null)
     category  = ForeignKey(Category, verbose_name=_("Category"), related_name='items', **null)
     tags      = ManyToManyField(Tag, verbose_name=_("Tags"), related_name='resources', blank=True)
@@ -771,7 +771,7 @@ class Gallery(Model):
     category = ForeignKey(Category, related_name='galleries', **null)
 
     name = CharField(max_length=64)
-    slug = SlugField(max_length=70)
+    slug = SlugField(max_length=70, unique=True)
     desc = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **null)
     thumbnail = ResizedImageField(_('Thumbnail'), 190, 190, **upto('thumb'))
     status = CharField(max_length=1, db_index=True, choices=GALLERY_STATUSES, **null)

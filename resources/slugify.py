@@ -34,11 +34,26 @@ def unique_slug(model, proposed, field='slug'):
 
 def set_slug(obj, field='slug', source='name'):
     """Sets a slug attribute smartly"""
+    is_unique = obj._meta.get_field(field).unique
 
     original = (getattr(obj, field, '') or '').rsplit('+', 1)[0]
     proposed = slugify(str(getattr(obj, source)))
 
     if not original or proposed != original:
+        if is_unique:
+            proposed = get_unique_slug(obj, field, proposed)
         setattr(obj, field, unique_slug(type(obj), proposed, field=field))
 
     return getattr(obj, field)
+
+def get_unique_slug(obj, field, slug):
+    """Test the database and keep mutating the slug until it's unique"""
+    original = slug
+    index = 1
+    # Test if this object already exists
+    while type(obj).objects.filter(**{field: slug}):
+        slug = "{}+{}".format(original, index)
+        index += 1
+        if index > 9999:
+            raise ValueError("Too many slugs with the same name!")
+    return slug

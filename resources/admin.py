@@ -74,7 +74,7 @@ class GalleryAdmin(ModelAdmin):
     readonly_fields = ('items', 'slug',)
     list_display = ('name', 'user', 'group', 'status', 'item_count')
     list_filter = ('group', 'status')
-    search_fields = ('name', 'user')
+    search_fields = ('name', 'user__username', 'slug', 'desc')
     raw_id_fields = ('user',)
 
     def item_count(self, obj):
