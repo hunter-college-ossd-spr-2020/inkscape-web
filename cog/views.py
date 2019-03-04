@@ -65,6 +65,8 @@ class ErrorList(ListView):
     @staticmethod
     def add_item(item):
         """Count the collected data"""
+        if not item['error']:
+            return
         obj, created = Error.objects.get_or_create(
                 traceback_id=item['key'][:255], defaults={
                 'traceback': json.dumps(item['traceback']),
