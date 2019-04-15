@@ -28,6 +28,7 @@ import re
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.template.defaultfilters import striptags
+from django.conf import settings
 
 from django.forms import (
     Form, ModelForm, CharField, ValidationError, BooleanField, IntegerField,
@@ -47,6 +48,7 @@ from .alert import ForumTopicAlert
 EMOJI = re.compile(r'([\u263a-\U0001f645])')
 MENTION = re.compile(r'(^|[^>\w~])@(?P<name>[\w-]+)')
 MENTION_FIX = re.compile(r'~@(?P<name>[\w-]+)')
+FORUM_NOT_READY = getattr(settings, 'FORUM_NOT_READY', False)
 
 def replace_mention(match):
     """The ckeditor won't always attack links/mentions correctly."""
@@ -86,6 +88,8 @@ class AttachmentMixin(object):
     def clean_comment(self):
         """Pick out all emojis and protect against multi-posting"""
         if not self.user.has_perm('forums.can_post_comment'):
+            if FORUM_NOT_READY:
+                raise ValidationError("The Forum is not open yet. Please post your question in other parts of the website.")
             unmoderated = Comment.objects.filter(
                 user=self.user,
                 is_public=False,
