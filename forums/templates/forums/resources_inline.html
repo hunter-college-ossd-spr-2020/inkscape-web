@@ -21,6 +21,10 @@
             <a href="{{ object.download_url }}"><img src="{{ object.icon_url }}" alt="{{ object }}"></a>
           </div>
         {% endif %}
+      {% elif object.link and object.thumbnail %}
+        <div class="inline image link">
+          <a href="{{ object.link }}"><img src="{{ object.thumbnail_url }}" alt="{{ object }}"></a>
+        </div>
       {% endif %}
     {% endwith %}
   {% endif %}

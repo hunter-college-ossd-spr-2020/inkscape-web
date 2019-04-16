@@ -274,6 +274,26 @@ class ResourcesJson(View):
                     link=query, owner=False, published=False)
                 ret.save()
                 return str(ret.pk)
+
+        if query.rsplit('.', 1)[-1] in ('png', 'svg', 'jpeg', 'jpg'):
+            # Linked image on another website
+            filename = query.split('?')[0].split('/')[-1]
+
+            for match in Resource.objects.filter(link=query):
+                return str(match.pk)
+
+            if self.request.user.is_authenticated():
+                # Create a new image link object in our resource database.
+                ret = Resource(
+                    user=self.request.user,
+                    name='Linked Image (' + filename + ')',
+                    owner_name='Internet',
+                    thumbnail=url_filefield(query, filename),
+                    link=query, owner=False, published=False)
+                ret.save()
+                return str(ret.pk)
+
+
         return query
 
 class LinkToResource(UploadResource):
