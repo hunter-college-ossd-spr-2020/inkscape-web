@@ -57,7 +57,7 @@ class MenuItem(Model):
 
     cms_id = IntegerField(null=True, blank=True)
 
-    class Menu:
+    class Meta:
         ordering = ('order',)
 
     def __str__(self):
