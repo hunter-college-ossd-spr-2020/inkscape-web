@@ -24,7 +24,8 @@ $(document).ready(function() {
   /**
    *   Slick slider options 
    */
-   
+if($('.single-item').slick) {
+
   $('.single-item').slick();
   
   $('.multiple-items').slick({
@@ -76,6 +77,7 @@ $(document).ready(function() {
   $('.comment-attachments').slickLightbox({
     itemSelector: '> .inline > a'
   });
+}
 
   /* Each haveseen item is a HTML element that expresses how the user
      has seen this item. Once seen, the date and the counts are recorded
