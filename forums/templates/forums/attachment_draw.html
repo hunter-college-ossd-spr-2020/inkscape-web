@@ -25,9 +25,15 @@
     </tbody>
   </table>
   <hr/>
+  <div class="alert alert-danger" id="attachment_not_found" style="display: none; text-align: left;">
+    <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing found!</strong> Searching yielded no results. Please try again!
+  </div>
+  <div class="alert alert-danger" id="attachment_error" style="display: none; text-align: left;">
+    <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Error!</strong> <i>No error message</i>
+  </div>
   <div class="row">
     <div class="input-group pull-left">
-        <input type="text" class="input-sm form-control" placeholder="{% trans "Search for Existing Resource or Video URL" %}" id="resource_search">
+      <input type="text" class="input-sm form-control" placeholder="{% trans "Search for Existing Resource or Video URL" %}" id="resource_search">
       <span class="input-group-btn">
         <button id="resource_add" class="btn btn-sm btn-default" type="button"><span class="glyphicon glyphicon-search"></button>
         <input type="file" id="file_add" style="display: none;">

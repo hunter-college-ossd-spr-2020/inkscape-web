@@ -215,7 +215,12 @@ class ResourcesJson(View):
             query = Q()
             for qey in request.GET.getlist('q'):
                 if qey and '://' in qey:
-                    qey = self.parse_url(qey)
+                    try:
+                        qey = self.parse_url(qey)
+                    except ValueError as err:
+                        context['error'] = str(err)
+                        qey = None
+
                 max_num += 2
                 if qey.isnumeric():
                     context['pk'] = qey
@@ -225,10 +230,16 @@ class ResourcesJson(View):
                     query |= Q(name__iexact=qey)\
                            | Q(slug__iexact=qey)\
                            | Q(download__iendswith=qey)
-            qset = qset.filter(query)
+
+            if not query:
+                qset = qset.none()
+            else:
+                qset = qset.filter(query)
+        else:
+            qset = qset.none()
 
         if qset.count() > max_num:
-            context['error'] = 'Too many results (>{}).format(max_num)'
+            context['error'] = 'Too many results (>{})'.format(max_num)
             qset = qset.none()
 
         context['resources'] = [resource.as_json() for resource in qset]

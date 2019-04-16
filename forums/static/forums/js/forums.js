@@ -154,6 +154,8 @@ if($('.single-item').slick) {
       }
   });
   $('#add_attachments').show().click(function() {
+      $('#attachment_not_found').hide();
+      $('#attachment_error').hide();
       if(!$(this).data('setup')) {
           $(this).data('setup', 1);
 
@@ -262,6 +264,13 @@ function update_attachments() {
 
 function add_attachments(query, options) {
     $.getJSON('/json/resources.json', query, function(data) {
+        $('#resource_search').val('');
+        if(!data.resources.length && query.q) {
+            $('#attachment_not_found').show();
+        } else if(data.error) {
+            $('#attachment_error').show();
+            $('#attachment_error i').text(data.error);
+        }
         $.each(data.resources, function(index, datum) {
             add_attachment(datum, options);
         });
@@ -493,7 +502,9 @@ function record_selected_text() {
     if (typeof window.getSelection != "undefined") {
         var selection = window.getSelection();
         text = selection.toString()
-        var citation = find_author(selection.anchorNode.parentElement);
+        if(selection.anchorNode) {
+            var citation = find_author(selection.anchorNode.parentElement);
+        }
     } else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
         text = document.selection.createRange().text;
     }
