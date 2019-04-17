@@ -5,12 +5,11 @@
 
       {# Start forum thread comment loop #}
       {% for comment in comment_list %}
-        <a name="c{{ comment.id }}" id="c{{ comment.id }}"></a>
         {% url 'view_profile' comment.user.username as profile_url %}
         
         {% if comment.is_public %}
 
-        <li class="comment left clearfix" data-author="{{ comment.user.username }}" data-cite="{{ request.path }}#c{{ comment.pk }}">
+        <li class="comment left clearfix" data-author="{{ comment.user.username }}" data-cite="{{ request.path }}#c{{ comment.pk }}" name="c{{ comment.id }}" id="c{{ comment.id }}">
           {# Start comment header info #}
           <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
 
