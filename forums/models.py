@@ -388,6 +388,8 @@ class UserFlag(Model):
     # Translators: 'flag' is a noun here.
     flag = CharField(_('flag'), max_length=5, db_index=True)
     title = CharField(_('title'), max_length=128, null=True, blank=True)
+    modflag = BooleanField(default=False,
+        help_text="If true, this flag is only visible to moderators.")
     created = DateTimeField(auto_now_add=True, null=True, blank=True)
 
     objects = UserFlagQuerySet.as_manager()

@@ -402,7 +402,11 @@ class UserFlagToggle(ModeratorRequired, FlagCreateView):
         return super().get_object()
 
     def get_data(self):
-        return {'title': self.request.GET.get('title', 'Unknown Flag')}
+        data = self.request.GET
+        return {
+            'title': data.get('title', 'Unknown Flag'),
+            'modflag': data.get('mod', False) == 'modonly',
+        }
 
     def flag_added(self, obj, **data):
         self.record_action(instance=obj, added=True, **data)

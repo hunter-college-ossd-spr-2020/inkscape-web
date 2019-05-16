@@ -25,6 +25,7 @@
         <th scope="col"></th>
         <th scope="col">{% trans "Username" %}</th>
         <th scope="col">{% trans "Hover Text" %}</th>
+        <th scope="col" class="text-right" title="{% trans "Flag is only visible to other moderators" %}">{% trans "Mod" %}</th>
         <th scope="col" class="text-right">{% trans "Created" %}</th>
         <th scope="col" class="text-right">{% trans "Delete" %}</th>
       </tr>
@@ -37,24 +38,26 @@
           <a href="{{ flag.user.get_absolute_url }}">{{ flag.user.username }}</a>
         </td>
         <td class="text-left">{{ flag.title }}</td>
+        <td class="text-right text-{% if flag.modflag %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if flag.modflag %}ok{% else %}remove{% endif %}"></span></td>
         <td class="text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ flag.created|timetag }}</td>
         <td class="text-right"><a href="{% url "forums:flag_user" %}?flag={{ flag.flag }}&user={{ flag.user.username }}&next={{ request.path }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></td>
       </tr>
     {% empty %}
       <tr>
         <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
-        <td class="user-item">{% trans "No custom user flags" %}</td>
+        <td class="user-item" colspan="5">{% trans "No custom user flags" %}</td>
       </tr>
     {% endfor %}
     </tbody>
     <tbody>
-      <tr class="success text-success"><td colspan="5">
+      <tr class="success text-success"><td colspan="6">
     <span class="glyphicon glyphicon-info-sign"></span> {% trans "User flags are rewards and decorations or other classifiers which help users stand out and communicate position, knowlege or contributions to the project. Each flag is a single emoji which looks better if it's in the website's emoji pack. Users may have multiple custom flags." %}
       </td></tr>
       <tr class="active">
         <td><input type="text" placeholder="😋" name="flag" size="1" maxlength="5" style="width: 30px"></th>
         <td><input type="text" placeholder="username" name="user"></th>
         <td><input type="text" placeholder="hover text" maxlength="127" name="title"></th>
+        <td><input type="checkbox" value="modonly" name="mod"></th>
         <td></th>
         <td class="text-right"><button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></th>
       </tr>
