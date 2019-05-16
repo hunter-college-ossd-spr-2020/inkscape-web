@@ -57,7 +57,6 @@ APP = apps.get_app_config('forums')
 class ForumGroup(Model):
     name = CharField(max_length=128, unique=True)
 
-    get_absolute_url = lambda self: self.forums.all().get_absolute_url()
     parent = property(lambda self: self.forums.all().parent)
 
     def __str__(self):
