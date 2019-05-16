@@ -387,7 +387,7 @@ class UserFlag(Model):
                       related_name="forum_flags", on_delete=CASCADE)
     # Translators: 'flag' is a noun here.
     flag = CharField(_('flag'), max_length=5, db_index=True)
-    title = CharField(_('title'), max_length=32, null=True, blank=True)
+    title = CharField(_('title'), max_length=128, null=True, blank=True)
     created = DateTimeField(auto_now_add=True, null=True, blank=True)
 
     objects = UserFlagQuerySet.as_manager()
