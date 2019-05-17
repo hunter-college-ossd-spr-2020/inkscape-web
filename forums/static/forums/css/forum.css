@@ -1011,6 +1011,20 @@ h3 small.label {
   color: #888;
 }
 
+.table tr.announce {
+  color: #603c76;
+  background-color: #e9d8f0;
+}
+
+.table tr.announce:hover {
+  background-color: #dbb4ec;
+}
+
+.table tr.announce a,
+.table tr.announce .icon {
+  color: #603c76;
+}
+
 .table tr.sticky {
   color: #3c763d;
   background-color: #dff0d8;

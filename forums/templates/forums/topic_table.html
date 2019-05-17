@@ -10,7 +10,7 @@
     </thead>
     <tbody>
     {% for topic in topic_list %}
-      <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}" data-model="topic">
+      <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked and topic.sticky %} announce{% elif topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}" data-model="topic">
         <td class="icon forum-small-cells">
           {% if show_forum %}
           <td class="forum-small-cells avatar"><img src="{{ topic.forum.icon.url }}" title="{{ topic.forum }}"/></td>
@@ -22,7 +22,15 @@
                  href="{% url "alert.unsubscribe" "forums.forum_topic_alert" topic.pk %}?next={{ request.path }}&post=1" title="{% trans "Unsubscribe" %}"
                {% endif %}
             {% endif %}>
-            <span class="glyphicon glyphicon-{% if topic.locked %}lock{% elif topic.sticky %}bookmark{% elif topic.is_subscribed %}heart text-danger{% elif request.user.is_authenticated %}heart-empty{% else %}star-empty{% endif %}"></span>
+              {% if topic.locked %}
+                {% if topic.sticky %}
+                <span class="glyphicon glyphicon-bullhorn"></span>
+                {% else %}
+                  <span class="glyphicon glyphicon-lock"></span>
+                {% endif %}
+              {% else %}
+                <span class="glyphicon glyphicon-{% if topic.sticky %}bookmark{% elif topic.is_subscribed %}heart text-danger{% elif request.user.is_authenticated %}heart-empty{% else %}star-empty{% endif %}"></span>
+              {% endif %}
           </a>
           {% endif %}
         </td>
