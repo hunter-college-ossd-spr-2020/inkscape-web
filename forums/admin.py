@@ -25,6 +25,8 @@ from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 
 from django.contrib.admin import ModelAdmin, site, TabularInline
+from django.contrib.contenttypes.admin import GenericTabularInline
+from django_comments.models import Comment
 
 from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag
 
@@ -34,8 +36,33 @@ class UserFlagAdmin(ModelAdmin):
 
 site.register(UserFlag, UserFlagAdmin)
 site.register(ForumGroup)
-site.register(Forum)
-site.register(ForumTopic)
+
+class ForumAdmin(ModelAdmin):
+    list_filter = ('group', 'team')
+    search_fields = ('name', 'desc')
+    list_display = ('name', 'desc', 'group', 'team', 'lang', 'post_count', 'last_posted')
+    readonly_fields = ('post_count', 'last_posted')
+
+site.register(Forum, ForumAdmin)
+
+class CommentInline(GenericTabularInline):
+    model = Comment
+    ct_fk_field = 'object_pk'
+    ct_field = 'content_type'
+    raw_id_fields = ('user',)
+    readonly_fields = ('site', 'ip_address', 'submit_date', 'user_url')
+
+class TopicAdmin(ModelAdmin):
+    inlines = [CommentInline]
+    list_filter = ('forum',)
+    search_fields = ('subject',)
+    list_display = ('subject', 'forum', 'last_posted', 'last_username', 'locked', 'sticky')
+    readonly_fields = (
+        'post_count', 'last_posted', 'last_posted',
+        'first_username', 'last_username', 'has_attachments',
+    )
+
+site.register(ForumTopic, TopicAdmin)
 
 class FlagInline(TabularInline):
     raw_id_fields = ('user',)
