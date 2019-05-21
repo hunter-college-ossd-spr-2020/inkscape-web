@@ -288,7 +288,7 @@ class ResourcesJson(View):
                     user=self.request.user,
                     name='Linked Image (' + filename + ')',
                     owner_name='Internet',
-                    thumbnail=url_filefield(query, filename),
+                    rendering=url_filefield(query, filename),
                     link=query, owner=False, published=False)
                 ret.save()
                 return str(ret.pk)
