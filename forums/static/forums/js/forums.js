@@ -236,7 +236,7 @@ if($('.single-item').slick) {
 
   $('[data-toggle="tooltip"]').tooltip();
   $('[data-toggle="emojitip"]').tooltip(
-      {placement: "bottom", container: "body", animated: "fade"});
+      {placement: "bottom", container: "body", animated: "fade", html: true});
   $('.comment-author span.emoji').tooltip(
       {placement: "bottom", container: "body", animated: "fade"});
 });
@@ -419,6 +419,22 @@ function clean_emoji(index, elem) {
     if(emoji) {
         var code = get_emoji_code(emoji);
         var sibling = $('.code-' + code, $(elem).parent());
+
+        if(emoji == "*") {
+            // Special edited flag
+            code = "002a"; // Preset code
+            sibling = []; // Always show edits, no combine
+
+            var users = $(document).data('users');
+            if(!users) { users = new Object(); }
+            var owner = $(elem).data('owner');
+            if(users[owner]) { owner = users[owner]; }
+
+            $(elem).data('owner', null);
+            // XXX This needs the ability to be translated somehow.
+            $(elem).attr('title', "Edited by " + owner + '<br/>' + $(elem).attr('title'));
+            $(elem).attr('data-toggle', 'emojitip');
+        }
 
         $(elem).empty();
 

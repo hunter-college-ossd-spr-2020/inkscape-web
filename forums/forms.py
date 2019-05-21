@@ -36,7 +36,7 @@ from django.forms import (
 )
 
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
-from django_comments.models import Comment
+from django_comments.models import Comment, CommentFlag
 
 from person.models import Team, User
 
@@ -49,6 +49,7 @@ EMOJI = re.compile(r'([\u263a-\U0001f645])')
 MENTION = re.compile(r'(^|[^>\w~])@(?P<name>[\w-]+)')
 MENTION_FIX = re.compile(r'~@(?P<name>[\w-]+)')
 FORUM_NOT_READY = getattr(settings, 'FORUM_NOT_READY', False)
+COMMENT_EDITED = "*"
 
 def replace_mention(match):
     """The ckeditor won't always attack links/mentions correctly."""
@@ -235,6 +236,12 @@ class EditCommentForm(AttachmentMixin, ModelForm):
         if commit:
             self.instance.save(update_fields=('comment',))
             self.save_attachments(self.instance)
+            # Flag this comment as edited (by this user)
+            CommentFlag.objects.get_or_create(
+                flag=COMMENT_EDITED,
+                user=self.user,
+                comment_id=self.instance.pk,
+            )
         return self.instance
 
 
@@ -380,3 +387,19 @@ class MergeTopics(Form):
         )
         self.from_topic.delete()
         return with_topic
+
+
+class CommentFlagForm(ModelForm):
+    """Allow users to place flags on comments (emoji)"""
+    class Meta:
+        model = CommentFlag
+        fields = ('flag',)
+
+    reserved_flags = [COMMENT_EDITED]
+
+    def clean_flag(self):
+        """Make sure we never allow users to create a reserved flag"""
+        flag = self.cleaned_data['flag']
+        if flag in self.reserved_flags:
+            raise ValidationError("Reserved Flag can not be set!")
+        return flag

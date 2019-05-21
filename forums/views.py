@@ -38,7 +38,9 @@ from django_comments.models import CommentFlag
 
 from .base_views import FlagCreateView, FieldUpdateView
 from .forms import (
-    NewTopicForm, EditCommentForm, AddCommentForm, SplitTopic, MergeTopics
+    NewTopicForm, EditCommentForm, AddCommentForm,
+    SplitTopic, MergeTopics,
+    CommentFlagForm,
 )
 from .mixins import (
     CsrfExempt, UserVisit, ForumMixin, TopicMixin,
@@ -210,6 +212,10 @@ class CommentEdit(OwnerRequired, UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def form_valid(self, form):
+        obj = form.save()
+        return HttpResponseRedirect(obj.get_absolute_url())
+
 class CommentModPublic(ModeratorRequired, FieldUpdateView):
     """
     Toggle the public flag of a comment, this can also hide.
@@ -336,10 +342,11 @@ class TopicSplit(TopicMerge):
     form_class = SplitTopic
     context_title = _('Split Topic')
 
+
 class CommentEmote(CsrfExempt, UserRequired, UpdateView):
     """Update an Emote on a comment using a comment flag"""
     model = CommentFlag
-    fields = ('flag',)
+    form_class = CommentFlagForm
 
     def form_valid(self, form):
         """Redirect OR return Empty 200 SUCESS"""
@@ -355,8 +362,11 @@ class CommentEmote(CsrfExempt, UserRequired, UpdateView):
         })
 
     def get_object(self, queryset=None):
-        return self.get_queryset().get_or_create(user=self.request.user,
-                                                 comment_id=self.kwargs['pk'])[0]
+        qset = self.get_queryset().exclude(flag__in=self.form_class.reserved_flags)
+        return qset.get_or_create(
+            user=self.request.user,
+            comment_id=self.kwargs['pk'],
+        )[0]
 
 class UserFlagBase(ModeratorRequired, ListView):
     """List of user flags (all kinds)"""
