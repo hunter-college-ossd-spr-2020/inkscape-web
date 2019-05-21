@@ -29,9 +29,9 @@ from unidecode import unidecode
 from django.apps import apps
 from django.db.models.functions import Cast
 from django.db.models import (
-    Model, QuerySet, CASCADE, SET_NULL,
+    Model, Manager, CASCADE, SET_NULL,
     ForeignKey, OneToOneField, IntegerField, DateTimeField, BooleanField,
-    CharField, SlugField, TextField, FileField, PositiveIntegerField,
+    CharField, SlugField, TextField, PositiveIntegerField,
 )
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
@@ -335,6 +335,15 @@ class ForumTopic(Model):
 
         return super(ForumTopic, self).save(**kw)
 
+class AttachmentManager(Manager):
+    """Add some management functions for templates to show presentations"""
+    def is_presentation(self):
+        """Return true if there is one single inline attachment"""
+        return self.inlines().count()
+
+    def inlines(self):
+        """Return the queryset just inlines"""
+        return self.filter(inline=True)
 
 class CommentAttachment(Model):
     """A single attachment on a comment"""
@@ -343,6 +352,7 @@ class CommentAttachment(Model):
     inline = BooleanField(default=False)
 
     desc = CharField(max_length=128, null=True, blank=True)
+    objects = AttachmentManager()
 
     def __str__(self):
         return "{} attached to comment in the forum.".format(self.resource)
