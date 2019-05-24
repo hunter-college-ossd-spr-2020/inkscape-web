@@ -1260,7 +1260,7 @@ a.focus();delete this._.lastFocused;this._.showBlockParams=null;this._.editor.fi
                                     var rec = '';
                                     for (var i = 0; i < recent.length; i++) {
                                         var emoji = recent[i];
-                                        rec += '<li class="cke_emoji-item"><a draggable="false" data-cke-emoji-full-name="'+emoji.fullname+'" data-cke-emoji-name="'+emoji.name+'" data-cke-emoji-symbol="'+emoji+'" data-cke-emoji-group="recent" data-ske-emoji-keywords="" title="'+emoji.title+'" href="#" _cke_focus="1">'+emoji.emojiText+'</a></li>';
+                                        rec += '<li class="cke_emoji-item"><a draggable="false" data-cke-emoji-full-name="'+emoji.fullname+'" data-cke-emoji-name="'+emoji.name+'" data-cke-emoji-symbol="'+emoji.emojiText+'" data-cke-emoji-group="recent" data-ske-emoji-keywords="" title="'+emoji.title+'" href="#" _cke_focus="1">'+emoji.emojiText+'</a></li>';
                                     }
                                     if(rec) {
                                         ret = '<section data-cke-emoji-group="recent"><h2 id="recent">Recently Used</h2><ul>' + rec + '</ul></section>' + ret;
