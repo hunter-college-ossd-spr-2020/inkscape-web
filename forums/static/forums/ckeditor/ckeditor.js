@@ -1200,7 +1200,12 @@ a.focus();delete this._.lastFocused;this._.showBlockParams=null;this._.editor.fi
 						event: 'click',
 						listener: function( event ) {
 							if ( event.data.getTarget().data( 'cke-emoji-name' ) ) {
-								this.editor.execCommand( 'insertEmoji', { emojiText: event.data.getTarget().data( 'cke-emoji-symbol' ) } );
+								this.editor.execCommand( 'insertEmoji', {
+                                                                    emojiText: event.data.getTarget().data( 'cke-emoji-symbol' ),
+                                                                    fullname: event.data.getTarget().data( 'cke-emoji-full-name' ),
+                                                                    name: event.data.getTarget().data( 'cke-emoji-name' ),
+                                                                    title: event.data.getTarget().getAttribute( 'title' ),
+                                                                } );
 							}
 						}
 					} );
@@ -1242,7 +1247,7 @@ a.focus();delete this._.lastFocused;this._.showBlockParams=null;this._.editor.fi
 					}
 				},
 				getEmojiSections: function() {
-					return arrTools.reduce( this.groups, function( acc, item ) {
+					var ret = arrTools.reduce( this.groups, function( acc, item ) {
 						// If group is empty skip it.
 						if ( !item.items.length ) {
 							return acc;
@@ -1250,6 +1255,17 @@ a.focus();delete this._.lastFocused;this._.showBlockParams=null;this._.editor.fi
 							return acc + this.getEmojiSection( item );
 						}
 					}, '', this );
+                                    /* Add list of recently used Emoji (for Brynn!) */
+                                    var recent = JSON.parse(localStorage.getItem("recentEmoji") || '[]') || [];
+                                    var rec = '';
+                                    for (var i = 0; i < recent.length; i++) {
+                                        var emoji = recent[i];
+                                        rec += '<li class="cke_emoji-item"><a draggable="false" data-cke-emoji-full-name="'+emoji.fullname+'" data-cke-emoji-name="'+emoji.name+'" data-cke-emoji-symbol="'+emoji+'" data-cke-emoji-group="recent" data-ske-emoji-keywords="" title="'+emoji.title+'" href="#" _cke_focus="1">'+emoji.emojiText+'</a></li>';
+                                    }
+                                    if(rec) {
+                                        ret = '<section data-cke-emoji-group="recent"><h2 id="recent">Recently Used</h2><ul>' + rec + '</ul></section>' + ret;
+                                    }
+                                    return ret;
 				},
 				getEmojiSection: function( item ) {
 					var groupName = htmlEncode( item.name ),
@@ -1526,7 +1542,16 @@ a.focus();delete this._.lastFocused;this._.showBlockParams=null;this._.editor.fi
 
 			editor.addCommand( 'insertEmoji', {
 				exec: function( editor, data ) {
-					editor.insertHtml( data.emojiText );
+                                    var relist = [data];
+                                    var recent = JSON.parse(localStorage.getItem("recentEmoji") || '[]') || [];
+                                    for (var i = 0; i < recent.length; i++) {
+                                        if(recent[i].emojiText != data.emojiText && i < 12) {
+                                            relist.push(recent[i]);
+                                        }
+                                    }
+                                    console.log("Saving:", relist);
+                                    localStorage.setItem("recentEmoji", JSON.stringify(relist));
+				    editor.insertHtml( data.emojiText );
 				}
 			} );
 
