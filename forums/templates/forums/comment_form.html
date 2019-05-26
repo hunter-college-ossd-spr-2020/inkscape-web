@@ -47,9 +47,9 @@
   </span>
   <span class="btn-group pull-left">
     {% if object.user_id == request.user.pk %}
-      <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
+      <a href="/community/coc/" target="_blank" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please keep to the <strong>Code of Conduct</strong> while editing.{% endblocktrans %}</a>
     {% elif not object %}
-      <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
+      <a href="/community/coc/" target="_blank" class="btn"><span class="glyphicon glyphicon-check"></span> {% blocktrans %}Please read Inkscape's <strong>Code of Conduct</strong> before posting.{% endblocktrans %}</a>
     {% else %}
     <a href="/community/coc/" class="btn"><span class="glyphicon glyphicon-flash"></span> {% blocktrans %}Please take care editing <strong>other people's comments</strong>.{% endblocktrans %}</a>
     {% endif %}

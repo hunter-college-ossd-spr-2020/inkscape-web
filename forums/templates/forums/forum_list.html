@@ -19,7 +19,7 @@
       <p>{% trans "You may post questions and comments here, but you will need a user acocunt and you will also need to abide by the community code of conduct." %}</p>
 
       <p>
-        <a class="btn btn-danger btn-lg" href="/community/coc/" role="button">{% trans "Code of Conduct" %}</a>
+        <a class="btn btn-danger btn-lg" target="_blank" href="/community/coc/" role="button">{% trans "Code of Conduct" %}</a>
         <a class="btn btn-primary btn-lg" href="{% url 'auth_login' %}?next={{ request.path }}" role="button">{% trans "Login Now" %}</a>
       </p>
     </div>
