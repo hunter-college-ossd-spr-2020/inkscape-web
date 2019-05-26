@@ -63,7 +63,7 @@
               </ul>
             </li>
             <li class="user-logout"><a href="{% url "auth_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
-            {% if request.user.is_staff %}
+            {% if request.user.is_staff and perms.forums.change_forumtopic %}
               <li class="forum-admin" title="{% trans "Forum Administration" %}"><a href="{% url "admin:app_list" "forums" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
             {% endif %}
             {% if rss %}
