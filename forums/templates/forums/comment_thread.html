@@ -60,7 +60,7 @@
           {% else %}
           {# Comment is not publicly visible and needs approving #}
           
-          <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}" data-author="{{ comment.user.username }}", data-cite="{{ request.path }}#c{{ comment.pk }}">
+          <li class="comment left clearfix not-public{% if not request.user.is_moderator %} not-visible{% endif %}" data-author="{{ comment.user.username }}", data-cite="{{ request.path }}#c{{ comment.pk }}" id="c{{ comment.id }}">
             {# Start comment header info #}
             <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
             <span class="comment-header-group">
