@@ -339,11 +339,14 @@ class AttachmentManager(Manager):
     """Add some management functions for templates to show presentations"""
     def is_presentation(self):
         """Return true if there is one single inline attachment"""
-        return self.inlines().count()
+        return bool(len(self.inlines()))
 
     def inlines(self):
         """Return the queryset just inlines"""
-        return self.filter(inline=True)
+        ret = []
+        for item in self.get_queryset():
+            ret.append(item.inline)
+        return ret
 
 class CommentAttachment(Model):
     """A single attachment on a comment"""

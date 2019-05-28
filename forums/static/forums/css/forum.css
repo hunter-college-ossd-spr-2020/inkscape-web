@@ -956,6 +956,15 @@ h3 small.label {
   max-height: 90px;
 }
 
+.presentation {
+  display: block;
+  width: 100%;
+}
+.presentation img {
+  max-width: 90%;
+  max-height: 400px;
+}
+
 /* -------------------- 4.4 Users online palette ----------------- */
 #users-online {
   padding: 8px;
