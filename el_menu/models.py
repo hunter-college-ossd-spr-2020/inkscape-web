@@ -55,7 +55,9 @@ class MenuItem(Model):
     title = CharField(max_length=255, null=True, blank=True)
     order = IntegerField(default=0)
 
-    cms_id = IntegerField(null=True, blank=True)
+    cms_id = IntegerField('Content ID', null=True, blank=True,\
+        help_text="A content id (sometimes the CMS ID) which can link pages"\
+        " in different languages together.")
 
     class Meta:
         ordering = ('order',)
