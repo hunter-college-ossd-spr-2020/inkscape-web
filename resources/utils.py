@@ -208,8 +208,9 @@ def gpg_verify(user, sig, data):
         else:
             raise IOError("Can't verify on closed file handle.")
 
+    # This is python-gnupg and NOT gnupg, make sure you have the right one installed
     import gnupg
-    gpg = gnupg.GPG(homedir=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
+    gpg = gnupg.GPG(gnupghome=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
     gpg.import_keys(str(user.gpg_key))
     result = bool(gpg.verify_file(sig, data.path))
     del gpg
