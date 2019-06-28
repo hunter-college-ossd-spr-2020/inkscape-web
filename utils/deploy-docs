@@ -44,8 +44,8 @@ git status -uno | grep "Your branch"
 
 if [[ $? == 0 || $FORCE == 1 ]]; then
   echo "New revisions found, updating!"
-  #git reset --hard origin/master
-  git log -1 --date=local --format="%cd (%h)" > $DOC_TARGET/revision
+  git reset --hard origin/master
+  git log -1 --date=local --format="%cd (%h)" > $TARGET/$DOC_TARGET/revision
 else
   echo "Docs alrady up to date!"
 fi
