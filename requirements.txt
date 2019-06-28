@@ -8,14 +8,14 @@ django-ajax-selects==1.7.0
 django-haystack==2.8.1
 django-contrib-comments==1.8.0
 django-markdown-deux==1.0.5
-django-boxed-alerts==1.3.4
+django-boxed-alerts==1.3.5
 
 # cms
 django-cms==3.5.2
 djangocms-file==2.0.2
 djangocms-text-ckeditor==3.6.0
 cmsplugin-search==0.8.0
-cmsplugin-alerts==1.2.1
+cmsplugin-alerts==1.2.2
 cmsplugin-diff==1.2.3
 
 # download_remote_images command
