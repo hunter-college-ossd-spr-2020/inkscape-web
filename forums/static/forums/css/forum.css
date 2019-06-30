@@ -623,15 +623,31 @@ ul.labels-info a:focus, ul.labels-info a:hover {
   margin-bottom: 0;
 }
 
-.table-forum tr td {
+.table-forum td {
   padding: 12px !important;
 }
 
-.table-forum tr td:hover {
+.table-forum .icon,
+.table-forum .topic-item {
+  padding: 0 !important;
+}
+
+.table-forum .icon > a,
+.table-forum .topic-item > a {
+  display: inline-block;
+  padding: 12px !important;
+  width: 100%;
+}
+
+.table-forum .icon > a:focus, .table-forum .icon > a:hover,
+.table-forum .topic-item > a:focus,
+.table-forum .topic-item > a:hover {
+  background-color: #ffc199;
   cursor: pointer;
 }
 
-.table-forum tr td .fa-star.inbox-started, .table-inbox tr td .fa-star:hover {
+.table-forum tr td .fa-star.inbox-started,
+.table-inbox tr td .fa-star:hover {
   color: #f78a09;
 }
 
@@ -954,15 +970,6 @@ h3 small.label {
 .inline-attachments .inline img {
   max-width: 90px;
   max-height: 90px;
-}
-
-.presentation {
-  display: block;
-  width: 100%;
-}
-.presentation img {
-  max-width: 90%;
-  max-height: 400px;
 }
 
 /* -------------------- 4.4 Users online palette ----------------- */

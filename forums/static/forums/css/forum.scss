@@ -717,15 +717,35 @@ ul.labels-info {
   margin-bottom: 0;
 }
 
-.table-forum tr td {
+
+// spacious cells, but if anchor is the only child shift padding to anchor
+// only child selected not through CSS, but through parent td class
+
+.table-forum td {
+  // !important necessary to easily override the nasty boostrap selector
   padding: 12px !important;
 }
 
-.table-forum tr td:hover {
-  cursor: pointer;
+.table-forum .icon,
+.table-forum .topic-item {
+  padding: 0 !important;
+  
+  & > a {
+    display: inline-block;
+    padding: 12px !important;
+    width: 100%;
+    
+    &:focus,
+    &:hover {
+      background-color: #ffc199;
+      cursor: pointer;
+    }
+  }
 }
 
-.table-forum tr td .fa-star.inbox-started, .table-inbox tr td .fa-star:hover {
+
+.table-forum tr td .fa-star.inbox-started,
+.table-inbox tr td .fa-star:hover {
   color: #f78a09;
 }
 
