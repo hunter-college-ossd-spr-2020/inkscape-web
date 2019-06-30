@@ -339,7 +339,7 @@ class AttachmentManager(Manager):
     """Add some management functions for templates to show presentations"""
     def is_presentation(self):
         """Return true if there is one single inline attachment"""
-        return bool(len(self.inlines()))
+        return len(self.inlines()) == 1
 
     def inlines(self):
         """Return the queryset just inlines"""
