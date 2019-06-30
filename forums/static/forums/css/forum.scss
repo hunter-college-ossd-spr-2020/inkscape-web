@@ -1052,7 +1052,8 @@ h3 small.label {
 
 /* -------------------- 4.3 Attachments --------------------- */
 
-.inline-attachments {
+.inline-attachments, 
+.comment-attachments {
   padding-top: 0px;
   margin-bottom: 15px;
   padding-bottom: 5px;
@@ -1060,20 +1061,73 @@ h3 small.label {
 
 .inline-attachments .inline {
   display: inline-block;
-  border: 1px #fafafa solid;
+  border: 1px #eee solid;
   padding: 3px;
-  margin: 5px;
+  margin: 5px 10px 5px 0;
+  flex: 0 1 auto;
+  
+  a {
+    background-color: #eee;
+    display: block;
+    height: 100%;    
+  }
+  
+  img {
+    max-width: 100%;
+  }
+  
+  &:focus,
+  &:hover {
+    border-color: #ffc199;
+    
+    a {
+      background-color: #ffc199;
+    }
+  }
 }
 
-.inline-attachments .inline:first-child {
+.inline-attachments .inline:first-child, 
+.presentation.image:first-child {
   margin-left: 0;
-  padding-left: 0;
 }
 
 .inline-attachments .inline img {
-  max-width: 90px;
-  max-height: 90px;
+  max-width: 100%;
+  max-height: 600px;
 }
+
+.inline-attachments {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.presentation.image {
+  border: 1px #eee solid;
+  display: inline-block;
+  margin: 5px;
+  padding: 3px;
+  
+  a {
+    background-color: #eee;
+    display: inline-block;
+    height: 100%;    
+  }
+  
+  img {
+    max-width: 100%;
+  }
+  
+  &:focus,
+  &:hover {
+    border-color: #ffc199;
+    
+    a {
+      background-color: #ffc199;
+    }
+  }
+}
+
+
 
 /* -------------------- 4.4 Users online palette ----------------- */
 

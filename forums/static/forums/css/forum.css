@@ -949,7 +949,8 @@ h3 small.label {
 }
 
 /* -------------------- 4.3 Attachments --------------------- */
-.inline-attachments {
+.inline-attachments,
+.comment-attachments {
   padding-top: 0px;
   margin-bottom: 15px;
   padding-bottom: 5px;
@@ -957,19 +958,68 @@ h3 small.label {
 
 .inline-attachments .inline {
   display: inline-block;
-  border: 1px #fafafa solid;
+  border: 1px #eee solid;
   padding: 3px;
-  margin: 5px;
+  margin: 5px 10px 5px 0;
+  flex: 0 1 auto;
 }
 
-.inline-attachments .inline:first-child {
-  margin-left: 0;
-  padding-left: 0;
+.inline-attachments .inline a {
+  background-color: #eee;
+  display: block;
+  height: 100%;
 }
 
 .inline-attachments .inline img {
-  max-width: 90px;
-  max-height: 90px;
+  max-width: 100%;
+}
+
+.inline-attachments .inline:focus, .inline-attachments .inline:hover {
+  border-color: #ffc199;
+}
+
+.inline-attachments .inline:focus a, .inline-attachments .inline:hover a {
+  background-color: #ffc199;
+}
+
+.inline-attachments .inline:first-child,
+.presentation.image:first-child {
+  margin-left: 0;
+}
+
+.inline-attachments .inline img {
+  max-width: 100%;
+  max-height: 600px;
+}
+
+.inline-attachments {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.presentation.image {
+  border: 1px #eee solid;
+  display: inline-block;
+  margin: 5px;
+  padding: 3px;
+}
+
+.presentation.image a {
+  background-color: #eee;
+  display: inline-block;
+  height: 100%;
+}
+
+.presentation.image img {
+  max-width: 100%;
+}
+
+.presentation.image:focus, .presentation.image:hover {
+  border-color: #ffc199;
+}
+
+.presentation.image:focus a, .presentation.image:hover a {
+  background-color: #ffc199;
 }
 
 /* -------------------- 4.4 Users online palette ----------------- */

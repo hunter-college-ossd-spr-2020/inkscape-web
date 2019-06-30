@@ -75,7 +75,11 @@ if($('.single-item').slick) {
    */
    
   $('.comment-attachments').slickLightbox({
-    itemSelector: '> .inline > a'
+    itemSelector: '> .presentation > a',
+  });
+  
+  $('.inline-attachments').slickLightbox({
+    itemSelector: '> .inline > a',
   });
 }
 
