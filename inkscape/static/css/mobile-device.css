@@ -64,6 +64,9 @@ div.cms .cms-toolbar-trigger {
   display: list-item;
   float: left;
 }
+#menu li ul {
+  top: 39px;
+}
 #menu > li > a {
   padding: 10px 15px;
   border: 0;
