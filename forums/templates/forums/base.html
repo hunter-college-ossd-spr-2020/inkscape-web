@@ -55,6 +55,7 @@
                   <li class="dropdown-item">
                     <a>
                       <span class="glyphicon glyphicon-arrow-right"></span> {% trans "Beginners Start Here:" %}<br/>
+                      <span style="padding-left: 30px;">{% trans "Start Inkscape application" %}</span><br/>
                       <span style="padding-left: 30px;">{% trans "Help menu > Tutorials > Basic" %}</span><br/>
                       <span style="padding-left: 30px;">{% trans "Help menu > Tutorials > Shapes" %}</span><br/>
                       <span style="padding-left: 30px;">{% trans "Help menu > Tutorials > Advanced" %}</span><br/>
@@ -62,9 +63,10 @@
                   </li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-item"><a href="https://inkscape.org/learn/faq/"><span class="glyphicon glyphicon-info-sign"></span> {% trans "Inkscape FAQ" %}</a></li>
+                <li class="dropdown-item"><a href="http://tavmjong.free.fr/INKSCAPE/MANUAL/html/index.php"><span class="glyphicon glyphicon-book"></span> {% trans "Inkscape Manual" %}</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-item"><a href="http://alpha.inkscape.org/vectors/www.inkscapeforum.com/"><span class="glyphicon glyphicon-hdd"></span> {% trans "Old InkscapeForum Archive" %}</a></li>
-                <li class="dropdown-item"><a href="https://forum.inkscapecommunity.com/index.php"><span class="glyphicon glyphicon-hdd"></span> {% trans "Old InkscapeCommunity" %}</a></li>
+                <li class="dropdown-item"><a href="https://forum.inkscapecommunity.com/index.php" title="{% trans "at the Inkscape Community forum" %}"><span class="glyphicon glyphicon-list-alt"></span> {% trans "Inkscape Resources list" %}</a></li>
               </ul>
             </li>
             {% if not request.user.is_authenticated %}
