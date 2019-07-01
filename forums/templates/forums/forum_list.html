@@ -1,8 +1,43 @@
 {% extends "forums/base.html" %}
 {% load i18n static %}
+
+{% block "css" %}
+<link href="{% static "slick/slick.css" %}" rel="stylesheet" type="text/css"/>
+<link href="{% static "slick/slick-theme.css" %}" rel="stylesheet" type="text/css"/>
+<link href="{% static "slick/lightbox.css" %}" rel="stylesheet" type="text/css"/>
+{{ block.super }}
+{% endblock %}
+
+{% block "jsvendors" %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "slick/slick.min.js" %}"></script>
+<script type="text/javascript" src="{% static "slick/lightbox.min.js" %}"></script>
+{% endblock %}
+
+{% block "js" %}
+{{ block.super }}
+{% endblock %}
+
 {% block "wrapper" %}
 <div class="container-flex forums-app forums-list">
 {% endblock "wrapper" %}
+
+{% block "slickslider" %}
+<!--<div class="multiple-items">
+  <div style="width:10em;"><h1>Slide 1</h1></div>
+  <div style="width:10em;"><h1>Slide 2</h1></div>
+  <div style="width:10em;"><h1>Slide 3</h1></div>
+  <div style="width:10em;"><h1>Slide 4</h1></div>
+  <div style="width:10em;"><h1>Slide 5</h1></div>
+  <div style="width:10em;"><h1>Slide 6</h1></div>
+  <div style="width:10em;"><h1>Slide 7</h1></div>
+  <div style="width:10em;"><h1>Slide 8</h1></div>
+  <div style="width:10em;"><h1>Slide 9</h1></div>
+  <div style="width:10em;"><h1>Slide 10</h1></div>
+</div>-->
+{% endblock "slickslider" %}
+
+
 {% block "supercontent" %}
   {% if request.user.is_authenticated %}
   <h2>{% trans "Recent Topics" %}</h2>

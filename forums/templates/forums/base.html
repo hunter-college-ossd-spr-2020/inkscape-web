@@ -17,9 +17,12 @@
     <link href="{% static "forums/css/comments.css" %}" rel="stylesheet" id="comment-css">
     {% endblock %}
 
-    {% block "js" %}
+    {% block "jsvendors" %}
     <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.min.js" %}"></script>
     <script type="text/javascript" src="{% static "forums/js/bootstrap.min.js" %}"></script>
+    {% endblock %}
+    
+    {% block "js" %}
     <script type="text/javascript" src="{% static "js/js.cookie.js" %}"></script>
     <script type="text/javascript" src="{% static "js/inkscape.js" %}"></script>
     <script type="text/javascript" src="{% static "forums/js/forums.js" %}"></script>
@@ -101,6 +104,8 @@
         {% endblock "header" %}
         <div class="forum-data">
             <div class="forum-content">
+              {% block "slickslider" %}
+              {% endblock %}
               {% block "supercontent" %}
               <div class="forum-head">
                 {% block "page-header" %}
