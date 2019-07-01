@@ -168,10 +168,6 @@ body {
 
 .forum-sidebar {
   grid-area: sidebar;
-}
-
-.forum-sidebar {
-  grid-area: sidebar;
   margin-top: 1px;
 }
 
@@ -486,8 +482,18 @@ body {
   margin-top: 10px;
 }
 
-.forum-sidebar {
-  background: none repeat scroll 0 0 #e5e8ef;
+.forum-list {
+  background-color: #e5e8ef;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.forum-list li:last-child a {
+  border-radius: 0 0 4px 4px;
+}
+
+.forum-list li:only-child a {
+  border-radius: 4px;
 }
 
 .forum-content {
@@ -1313,7 +1319,6 @@ a:active {
     padding: 1vw;
   }
   .forum-sidebar {
-    border-radius: 4px;
     grid-area: sidebar;
     margin-right: 1vw;
     min-width: 270px;

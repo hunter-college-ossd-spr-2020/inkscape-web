@@ -248,16 +248,12 @@ body{
 
 .forum-sidebar {
   grid-area: sidebar;
-}
-
-.forum-sidebar {
-    grid-area: sidebar;
-    margin-top:1px;
+  margin-top:1px;
 }
 
 .forum-data {
-    border-radius:$container-border-radius;
-    overflow:hidden;
+  border-radius:$container-border-radius;
+  overflow:hidden;
 }
 
 .forum-content {
@@ -568,8 +564,18 @@ body{
   margin-top:10px;
 }
 
-.forum-sidebar {
-  background: none repeat scroll 0 0 #e5e8ef;
+.forum-list {
+  background-color:#e5e8ef;
+  border-radius: $container-border-radius;
+  margin:$container-border-radius 0;
+  
+  & li:last-child a {
+    border-radius: 0 0 $container-border-radius $container-border-radius;
+  }
+  
+  & li:only-child a {
+    border-radius: $container-border-radius;
+  }
 }
 
 .forum-content {
@@ -1435,7 +1441,6 @@ $image-unit-half: $image-unit / 2;
   }
   
   .forum-sidebar {
-    border-radius: $container-border-radius;
     grid-area: sidebar;
     margin-right: $gutters;
     min-width:270px;
