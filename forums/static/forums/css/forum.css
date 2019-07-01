@@ -488,16 +488,16 @@ body {
   margin: 4px 0;
 }
 
-.nav-pills li:only-child a {
-  border-radius: 4px;
-}
-
 .nav-pills li:first-child a {
   border-radius: 4px 4px 0 0;
 }
 
 .nav-pills li:last-child a {
   border-radius: 0 0 4px 4px;
+}
+
+.nav-pills li:only-child a {
+  border-radius: 4px;
 }
 
 .forum-content {

@@ -569,16 +569,16 @@ body{
   border-radius: $container-border-radius;
   margin:$container-border-radius 0;
   
-  & li:only-child a {
-    border-radius: $container-border-radius;
-  }
-  
   & li:first-child a {
     border-radius: $container-border-radius $container-border-radius 0 0;
   }
   
   & li:last-child a {
     border-radius: 0 0 $container-border-radius $container-border-radius;
+  }
+  
+  & li:only-child a {
+    border-radius: $container-border-radius;
   }
 }
 
