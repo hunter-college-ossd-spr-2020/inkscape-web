@@ -482,18 +482,22 @@ body {
   margin-top: 10px;
 }
 
-.forum-list {
+.nav-pills {
   background-color: #e5e8ef;
   border-radius: 4px;
   margin: 4px 0;
 }
 
-.forum-list li:last-child a {
-  border-radius: 0 0 4px 4px;
+.nav-pills li:only-child a {
+  border-radius: 4px;
 }
 
-.forum-list li:only-child a {
-  border-radius: 4px;
+.nav-pills li:first-child a {
+  border-radius: 4px 4px 0 0;
+}
+
+.nav-pills li:last-child a {
+  border-radius: 0 0 4px 4px;
 }
 
 .forum-content {
