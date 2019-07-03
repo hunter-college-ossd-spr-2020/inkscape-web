@@ -534,10 +534,11 @@ body{
   border-radius: 2em;
   color: $topic-jump-unread;
   font: bold .714em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;
-  padding: 0.1em .6em .5em;
+  padding: 0.4em 1em .8em;
   text-transform: uppercase;
   transition: color .3s ease 0s;
   vertical-align: middle;
+  width: auto;
 
   &::before {
     display: inline-block; // for transform to work
@@ -740,9 +741,9 @@ ul.labels-info {
 .table-forum .topic-item {
   padding: 0 !important;
   
-  & > a {
+  & > a:not(.topic-jump-unread) {
     display: inline-block;
-    padding: 12px !important;
+    padding: 12px;
     width: 100%;
     
     &:focus,
@@ -751,6 +752,11 @@ ul.labels-info {
       cursor: pointer;
     }
   }
+}
+
+.add-jump-link {
+  margin-right: -5em;
+  padding-right: 5em !important;
 }
 
 

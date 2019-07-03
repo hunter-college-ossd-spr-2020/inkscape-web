@@ -449,10 +449,11 @@ body {
   border-radius: 2em;
   color: #ff7e28;
   font: bold .714em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;
-  padding: 0.1em .6em .5em;
+  padding: 0.4em 1em .8em;
   text-transform: uppercase;
   transition: color .3s ease 0s;
   vertical-align: middle;
+  width: auto;
 }
 
 .topic-jump-unread::before {
@@ -642,18 +643,23 @@ ul.labels-info a:focus, ul.labels-info a:hover {
   padding: 0 !important;
 }
 
-.table-forum .icon > a,
-.table-forum .topic-item > a {
+.table-forum .icon > a:not(.topic-jump-unread),
+.table-forum .topic-item > a:not(.topic-jump-unread) {
   display: inline-block;
-  padding: 12px !important;
+  padding: 12px;
   width: 100%;
 }
 
-.table-forum .icon > a:focus, .table-forum .icon > a:hover,
-.table-forum .topic-item > a:focus,
-.table-forum .topic-item > a:hover {
+.table-forum .icon > a:not(.topic-jump-unread):focus, .table-forum .icon > a:not(.topic-jump-unread):hover,
+.table-forum .topic-item > a:not(.topic-jump-unread):focus,
+.table-forum .topic-item > a:not(.topic-jump-unread):hover {
   background-color: #ffc199;
   cursor: pointer;
+}
+
+.add-jump-link {
+  margin-right: -5em;
+  padding-right: 5em !important;
 }
 
 .table-forum tr td .fa-star.inbox-started,
