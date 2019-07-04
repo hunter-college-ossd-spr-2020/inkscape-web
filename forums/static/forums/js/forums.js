@@ -25,6 +25,8 @@ $(document).ready(function() {
    *   Slick slider options 
    */
 
+  if($('body').slick) {
+
   $('.single-item').slick();
   
   $('.multiple-items').slick({
@@ -86,6 +88,7 @@ $(document).ready(function() {
     itemSelector: '> .inline > a',
   });
 
+  }
 
   /* Each haveseen item is a HTML element that expresses how the user
      has seen this item. Once seen, the date and the counts are recorded
@@ -199,7 +202,7 @@ $(document).ready(function() {
   $('#resource_add').click(function() {
       var query = $('#resource_search').val();
       if(query) {
-          add_attachments({'q': query}, {'inline': 0, 'update': 1});
+          add_attachments({'q': query}, {'update': 1});
       }
       return false;
   });
@@ -296,7 +299,11 @@ function add_attachment(datum, options) {
     }
     box.show();
     $('#file_box').append(box);
-    if(options.inline) {
+    var inline = options.inline;
+    if(options.inline === undefined) {
+        inline = datum.is_image || datum.is_video;
+    }
+    if(inline) {
         if(datum.is_video) {
             $('.inline span', box).addClass('glyphicon-facetime-video');
         } else {
