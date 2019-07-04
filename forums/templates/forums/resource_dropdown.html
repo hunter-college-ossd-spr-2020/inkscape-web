@@ -2,7 +2,7 @@
 
             {# Start attachment dropdown #}
             {% if comment.attachments.count %}
-              <div class="dropdown pull-right check-dropdown">
+              <div class="dropdown check-dropdown">
                 <a href="#" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Attachments" %}" id="attachments-{{ comment.pk }}"><span class="glyphicon glyphicon-paperclip"></span> {% trans "Attachments" %}</a>
                 <ul class="dropdown-menu" aria-labelledby="attachments-{{ comment.pk }}">
                   {% for attachment in comment.attachments.all %}
