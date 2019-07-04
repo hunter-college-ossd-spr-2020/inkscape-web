@@ -210,7 +210,7 @@ $(document).ready(function() {
       var formData = new FormData();
       var file = this.files[0];
       formData.append('download', file);
-      formData.append('name', "$"+file.name);
+      formData.append('name', "$"+file.name.substring(0, 60));
       formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
       var xhr = new XMLHttpRequest();
@@ -230,6 +230,8 @@ $(document).ready(function() {
               var datum = JSON.parse(xhr.responseText);
               if(datum.download) {
                   alert("Problem uploading: " + datum.download);
+              } else if(datum.name) {
+                  alert("Problem with filename: " + datum.name[0]);
               } else {
                   alert("Problem uploading: " + datum);
               }
