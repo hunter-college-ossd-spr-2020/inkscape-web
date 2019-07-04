@@ -54,13 +54,6 @@
             {# End comment text #}
       
             {# Start comment attachments #}
-            {% if comment.attachments.is_presentation %}
-              <div class="comment-attachments">
-                {% for attachment in comment.attachments.all %}
-                  {% include "forums/resources_presentation.html" with attachment=attachment %}
-                {% endfor %}
-              </div>
-            {% endif %}
             {% if not comment.attachments.is_presentation %}
               <section class="comment-attachments inline-attachments">
                 {% include "forums/resources_inline.html" with attachment_list=comment.attachments.all %}

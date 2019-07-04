@@ -965,8 +965,9 @@ h3 small.label {
 }
 
 /* -------------------- 4.3 Attachments --------------------- */
-.inline-attachments,
-.comment-attachments {
+.inline-attachments {
+  display: flex;
+  flex-wrap: wrap;
   padding-top: 0px;
   margin-bottom: 15px;
   padding-bottom: 5px;
@@ -976,7 +977,7 @@ h3 small.label {
   display: inline-block;
   border: 1px #eee solid;
   padding: 3px;
-  margin: 5px 10px 5px 0;
+  margin: 5px 10px 2% 0;
   flex: 0 1 auto;
 }
 
@@ -998,44 +999,13 @@ h3 small.label {
   background-color: #ffc199;
 }
 
-.inline-attachments .inline:first-child,
-.presentation.image:first-child {
+.inline-attachments .inline:first-child {
   margin-left: 0;
 }
 
 .inline-attachments .inline img {
   max-width: 100%;
   max-height: 600px;
-}
-
-.inline-attachments {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.presentation.image {
-  border: 1px #eee solid;
-  display: inline-block;
-  margin: 5px;
-  padding: 3px;
-}
-
-.presentation.image a {
-  background-color: #eee;
-  display: inline-block;
-  height: 100%;
-}
-
-.presentation.image img {
-  max-width: 100%;
-}
-
-.presentation.image:focus, .presentation.image:hover {
-  border-color: #ffc199;
-}
-
-.presentation.image:focus a, .presentation.image:hover a {
-  background-color: #ffc199;
 }
 
 /* -------------------- 4.4 Users online palette ----------------- */
@@ -1289,6 +1259,15 @@ a:active {
 
 .dropdown-menu .divider {
   display: block;
+}
+
+.slick-lightbox-slick-item-inner {
+  max-width: 86%;
+}
+
+.slick-lightbox-slick-img {
+  max-height: 100%;
+  max-width: 100%;
 }
 
 /*

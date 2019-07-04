@@ -1,10 +1,11 @@
 {% extends "forums/base.html" %}
 {% load i18n static forum_comments inkscape comments %}
 
-{% block "css" %}{{ block.super }}
+{% block "css" %}
 <link href="{% static "slick/slick.css" %}" rel="stylesheet" type="text/css"/>
 <link href="{% static "slick/slick-theme.css" %}" rel="stylesheet" type="text/css"/>
 <link href="{% static "slick/lightbox.css" %}" rel="stylesheet" type="text/css"/>
+{{ block.super }}
 {% endblock %}
 
 {% block "js" %}{{ block.super }}

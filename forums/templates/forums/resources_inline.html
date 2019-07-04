@@ -14,7 +14,7 @@
       {% elif object.download and object.is_available %}
         {% if object.mime.is_image %}
           <div class="inline image">
-              <a href="{{ object.download_url }}"><img src="{{ object.thumbnail_url }}" alt="{{ object }}" data-icon="{{ object.thumbnail_url }}" data-fullview="{{ object.download.url }}"></a>
+              <a href="{{ object.download_url }}"><img src="{{ object.download_url }}" alt="{{ object }}" data-icon="{{ object.thumbnail_url }}" data-fullview="{{ object.download.url }}"></a>
           </div>
         {% else %}
           <div class="inline file">

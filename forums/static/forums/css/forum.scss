@@ -1068,8 +1068,9 @@ h3 small.label {
 
 /* -------------------- 4.3 Attachments --------------------- */
 
-.inline-attachments, 
-.comment-attachments {
+.inline-attachments {
+  display: flex;
+  flex-wrap: wrap;
   padding-top: 0px;
   margin-bottom: 15px;
   padding-bottom: 5px;
@@ -1079,7 +1080,7 @@ h3 small.label {
   display: inline-block;
   border: 1px #eee solid;
   padding: 3px;
-  margin: 5px 10px 5px 0;
+  margin: 5px 10px 2% 0;
   flex: 0 1 auto;
   
   a {
@@ -1102,45 +1103,13 @@ h3 small.label {
   }
 }
 
-.inline-attachments .inline:first-child, 
-.presentation.image:first-child {
+.inline-attachments .inline:first-child {
   margin-left: 0;
 }
 
 .inline-attachments .inline img {
   max-width: 100%;
   max-height: 600px;
-}
-
-.inline-attachments {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.presentation.image {
-  border: 1px #eee solid;
-  display: inline-block;
-  margin: 5px;
-  padding: 3px;
-  
-  a {
-    background-color: #eee;
-    display: inline-block;
-    height: 100%;    
-  }
-  
-  img {
-    max-width: 100%;
-  }
-  
-  &:focus,
-  &:hover {
-    border-color: #ffc199;
-    
-    a {
-      background-color: #ffc199;
-    }
-  }
 }
 
 
@@ -1400,6 +1369,17 @@ a:active {
 .dropdown-menu .divider {
 	display: block; // need to override custom code
 }
+
+// Slick slideshow and lightbox overrides
+.slick-lightbox-slick-item-inner {
+  // make room for left and right arrows
+  max-width: 86%;
+}
+.slick-lightbox-slick-img {
+  max-height:100%;
+  max-width:100%;
+}
+
 
 /*
  *   6. Wider screen layout -----------------------------------------
