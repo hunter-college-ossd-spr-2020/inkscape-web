@@ -23,9 +23,19 @@
     {% endif %}>
   </div>
   <ul class="tabs fixed">
-    {% for platform in platforms %}
-      {% include "releases/platform_tab.html" %}
-    {% endfor %}
+    {% with release=object %}
+      {% for platform in platforms %}
+        {% include "releases/platform_tab.html" %}
+      {% empty %}
+      <li>
+        <a>
+          <strong>{% trans "No Platforms" %}</strong>
+          <img src="{% static "images/releases/icon.png" %}"/>
+          {% trans "Not released for any platforms yet." %}
+        </a>
+      </li>
+      {% endfor %}
+    {% endwith %}
   </ul>
 </div>
 
