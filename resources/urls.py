@@ -105,9 +105,9 @@ urlpatterns = [ # pylint: disable=invalid-name
             url(r'^(?P<fn>[^\/]+)/?$', DownloadResource.as_view(), name='download_resource'),
         ),
         *resource_search(
-            url(r'^(?P<galleries>[^\/]+)/', GalleryView.as_view(), name='resources'),
-            url(r'^(?P<galleries>[^\/]+)/rss/', GalleryFeed(), name='resources_rss'),
-            url(r'^(?P<galleries>[^\/]+)/json/', ResourceJson.as_view(), name='resources_json'),
+            url(r'^(?P<galleries>[^\/]+)/$', GalleryView.as_view(), name='resources'),
+            url(r'^(?P<galleries>[^\/]+)/rss/$', GalleryFeed(), name='resources_rss'),
+            url(r'^(?P<galleries>[^\/]+)/json/$', ResourceJson.as_view(), name='resources_json'),
         )
     ),
 ]
