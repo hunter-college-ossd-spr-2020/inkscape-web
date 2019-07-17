@@ -117,7 +117,8 @@ class ListFeed(Feed):
 
     def media_url(self, url):
         """Gets the media URL for the resource"""
-        url = os.path.join(settings.MEDIA_URL, url)
+        if '://' not in url:
+            url = os.path.join(settings.MEDIA_URL, url)
         if '://' not in url:
             # Localhost or same as site url
             current_site = get_current_site(self.request)
