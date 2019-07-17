@@ -77,4 +77,14 @@ class ListFeed(Feed):
     item_author_name = lambda self, item: str(item().user)
     item_author_link = lambda self, item: item().user.get_absolute_url()
 
+    item_enclosure_mime_type = lambda self, item: item.media_type
+    item_enclosure_length = lambda self, item: item.download.size
+
+    @staticmethod
+    def item_enclosure_url(item):
+        """Enclose the item (for viewing and playing)"""
+        if item.download:
+            return item.download.url
+        return None
+
     link = ''
