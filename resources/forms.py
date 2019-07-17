@@ -179,8 +179,8 @@ class ResourceBaseForm(ModelForm):
             # Limit any resources submitted to a pre-defined gallery to the
             # gallery's selected category if one is set.
             if self.gallery and self.gallery.category:
-                field.queryset = Category.objects.filter(pk=self.gallery.category.pk)
-                field.widget = DisabledSelect(field.widget.attrs, field.widget.choices)
+                field.initial = self.gallery.category.pk
+                field.queryset = Category.objects.filter(pk=field.initial)
             else:
                 # Filter out any categories we're not allowed to see because
                 # we are not in the required groups to see them.
