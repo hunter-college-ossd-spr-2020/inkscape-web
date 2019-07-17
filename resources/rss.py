@@ -27,12 +27,38 @@ This is DRY as it stops us repeating the complex work in resource
 listing logic.
 """
 
-from django.contrib.syndication.views import Feed
+import os
+
+from django.conf import settings
+from django.contrib.syndication.views import Feed, add_domain
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.feedgenerator import Rss201rev2Feed
+
+class FeedGenerator(Rss201rev2Feed):
+    def add_root_elements(self, handler):
+        super().add_root_elements(handler)
+        if 'image_url' in self.feed and self.feed['image_url']:
+            handler.startElement('image', {})
+            handler.addQuickElement("url", self.feed['image_url'])
+            handler.addQuickElement("title", self.feed['title'])
+            handler.addQuickElement("link", self.feed['link'])
+            handler.addQuickElement("width", self.feed['image_size'])
+            handler.addQuickElement("height", self.feed['image_size'])
+            handler.endElement(u'image')
 
 class ListFeed(Feed):
     """
     Using the list_class view, generate an RSS for the user.
     """
+    feed_type = FeedGenerator
+
+    def feed_extra_kwargs(self, obj):
+        """Add image tags"""
+        return {
+            'image_url': self._get_dynamic_attr('image_url', obj),
+            'image_size': self._get_dynamic_attr('image_size', obj),
+        }
+
     @property
     def list_class(self):
         """
@@ -56,6 +82,7 @@ class ListFeed(Feed):
             list_view = self.list_class.as_view()
             self.request._list = list_view(request=self.request, *self.args, **self.kwargs)
         return self.request._list
+
 
     def items(self):
         """Returns the items for this feed, depends on query"""
@@ -83,7 +110,16 @@ class ListFeed(Feed):
     def item_enclosure_url(self, item):
         """Enclose the item (for viewing and playing)"""
         if item().download:
-            return item().download.url
+            return self.media_url(item().download.url)
         return None
 
     link = ''
+
+    def media_url(self, url):
+        """Gets the media URL for the resource"""
+        url = os.path.join(settings.MEDIA_URL, url)
+        if '://' not in url:
+            # Localhost or same as site url
+            current_site = get_current_site(self.request)
+            url = add_domain(current_site.domain, url, self.request.is_secure())
+        return url

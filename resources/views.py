@@ -615,8 +615,10 @@ class GalleryView(ResourceList):
 
     def get_gallery(self):
         """Get the Gallery in context object"""
-        opts = dict(self.get_value_opts)
-        return get_object_or_404(Gallery, slug=opts['galleries'])
+        if not hasattr(self, '_gallery'):
+            opts = dict(self.get_value_opts)
+            self._gallery = get_object_or_404(Gallery, slug=opts['galleries'])
+        return self._gallery
 
     def get_template_names(self):
         return ['resources/resourcegallery_specific.html']
@@ -671,15 +673,21 @@ class ResourceFeed(ListFeed):
 
 class GalleryFeed(ListFeed):
     list_class = GalleryView
-    @property
-    def title(self):
-        """Get the gallery name"""
-        return self.get_gallery().name
+    image_size = '190'
 
     @property
-    def description(self):
-        """Get the gallery description"""
-        return self.get_gallery().desc or _("Gallery Resources RSS Feed")
+    def gallery(self):
+        if not hasattr(self, '_gallery'):
+            self._gallery = self.list.context_data['galleries']
+        return self._gallery
+
+    link = lambda self: self.gallery.get_absolute_url()
+    title = lambda self: self.gallery.name
+    feed_url = lambda self: self.link() + 'rss/'
+    image_url = lambda self: self.media_url(self.gallery.thumbnail_url())
+    description = lambda self: self.gallery.desc or _('Gallery Resources RSS Feed')
+    author_name = lambda self: self.gallery.group
+
 
 class ResourceJson(ResourceList):
     """Take any list of resources, and produce json output"""
