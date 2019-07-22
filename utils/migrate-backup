@@ -151,6 +151,10 @@ UPDATES = OrderedDict([
   ('sites.site', (
     [set_to, 'domain', 'localhost:8000'],
   )),
+  ('auth.group', (
+    [delete, 'permissions'],
+  )),
+  ('cms.usersettings', ([delete],)),
   ('cms.treenode', (
     [set_to, 'site', 1],
   )),
@@ -173,6 +177,7 @@ UPDATES = OrderedDict([
   ('filer.file', (
     [download, 'file'],
   )),
+  ('filer.clipboard', ([delete],)),
   ('djangocms_picture.picture', (
     [download, 'image'],
   )),
