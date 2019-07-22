@@ -42,7 +42,7 @@
     <tbody>
     {% for comment in page.object_list %}
       <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="topic-{{ topic.pk }}">
-        <td class="subscribed forum-small-cells avatar"><img src="{% if comment.object.user.photo %}{{ comment.object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}"/></td>
+        <td class="subscribed forum-small-cells avatar"><img src="{{ comment.object.user.photo_url }}"/></td>
         <td class="view-message"><a href="{{ comment.get_absolute_url }}">{% highlight comment.text with query max_length 120 %}</a></td>
         <td class="view-message text-right">{{ comment.submit_date|timetag }}</td>
       </tr>

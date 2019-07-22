@@ -4,7 +4,7 @@
 <!-- picture   -->
     <div class="resourcepic">
       <div class="aligner">
-        <a href="{{profile_url}}"><img src="{% if object.obj.photo %}{{ object.obj.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+        <a href="{{profile_url}}"><img src="{{ object.obj.photo_url }}"/></a>
         <a class="button" href="{{ object.obj.get_absolute_url }}">{% trans "Visit profile" %}</a>
       </div>
     </div>

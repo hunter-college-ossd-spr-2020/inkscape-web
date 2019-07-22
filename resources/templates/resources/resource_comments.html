@@ -24,7 +24,7 @@
 
   <section class="panel-body forum-comment-first-text">
     <span class="comment-img pull-left">
-      <img src="{% if object.user.photo %}{{ object.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ object.user }}" class="img-circle" /> </span>
+      <img src="{{ object.user.photo_url }}" alt="{{ object.user }}" class="img-circle" /> </span>
     <div class="comment-body clearfix">
       <div class="header">
         <strong class="primary-font"><a href="{{ object.user.get_absolute_url }}">{{ object.user }}</a></strong>

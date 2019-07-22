@@ -5,7 +5,7 @@
   <div class="details">
     <div class="title">
       {% url 'view_profile' comment.user.username as profile_url %}
-      <a href="{{profile_url}}"><img class="userphoto" src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+      <a href="{{profile_url}}"><img class="userphoto" src="{{ comment.user.photo_url }}"/></a>
       <div>
         {% with comment.user|default:comment.user_name as user_name and comment.submit_date|timetag as comment_date and profile_url|default:comment.user_url as comment_url %}
           {% if comment_url %}

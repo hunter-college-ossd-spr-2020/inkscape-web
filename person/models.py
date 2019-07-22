@@ -20,13 +20,15 @@
 """Customise the user model"""
 
 import os
+import hashlib
+import urllib
 
 from datetime import timedelta
 
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.db.models import (
-    F, Q, QuerySet, Max, Model, Manager, TextField, CharField, URLField,
+    F, Q, Max, Model, Manager, TextField, CharField, URLField,
     DateTimeField, BooleanField, IntegerField, ForeignKey, SlugField,
     ImageField,
 )
@@ -40,6 +42,7 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.sessions.models import Session
 from django.contrib.auth import SESSION_KEY
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from django.contrib.auth.models import Group, AbstractUser, UserManager, Permission
 from alerts.models import AlertSubscription
@@ -178,7 +181,12 @@ class User(AbstractUser):
         """Return the photo url if it exist"""
         if self.photo:
             return self.photo.url
-        return None
+        default = static('forums/images/user.svg')
+        if self.email:
+            emh = hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+            rstr = urllib.parse.urlencode({'d': default, 's': '190'})
+            return "https://www.gravatar.com/avatar/{}?{}".format(emh, rstr)
+        return default
 
     def photo_preview(self):
         """Returns a photo preview or a default svg file"""

@@ -34,7 +34,7 @@
 
 {% block "profile" %}
   <a href="{{ object.team.get_absolute_url }}"><img id="photo" src="{{ object.team.icon.url }}"/></a>
-  <a href="{{ object.user.get_absolute_url }}" style="float: right;"><img id="photo" src="{% if object.user.photo %}{{ object.user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"></a>
+  <a href="{{ object.user.get_absolute_url }}" style="float: right;"><img id="photo" src="{{ object.user.photo_url }}"></a>
 {% endblock %}
 {% block "fullbio" %}
   <div style="text-align: center;">

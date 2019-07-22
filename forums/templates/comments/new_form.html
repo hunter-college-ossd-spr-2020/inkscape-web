@@ -16,7 +16,7 @@
   <div class="comment">
     <div class="details">
       <div class="title">
-        <img class="userphoto" src="{% if request.user.photo %}{{ request.user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/>
+        <img class="userphoto" src="{{ request.user.photo_url }}"/>
         <div>{{ comment_label|default:label }}</div>
       </div>
     </div>

@@ -4,7 +4,7 @@
   <div style="width: 650px; min-height: 80px;">
     <span>
       <a href="{% if member.user.website %}{{ member.user.website }}{% else %}{{ member.user.get_absolute_url }}{% endif %}" title="{{ member.user }}" rel="nofollow">
-        <img src="{% if member.user.photo %}{{ member.user.photo.url }}{% else %}{% static "images/fix-me.png" %}{% endif %}" alt="{{ member.user }}" title="{{ member.user }}" style="display: block;float: left;margin: 1ex 1.5em 1ex 0;"/>
+        <img src="{{ member.user.photo_url }}" alt="{{ member.user }}" title="{{ member.user }}" style="display: block;float: left;margin: 1ex 1.5em 1ex 0;"/>
       </a>
     </span>
 

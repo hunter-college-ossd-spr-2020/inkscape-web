@@ -15,7 +15,7 @@
 
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}" data-userid="{{ comment.user.id }}">
-                  <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if not flag.modflag or request.user.is_moderator %}<span class="emoji{% if flag.modflag %} modflag{% endif %}" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+                  <a class="comment-author" href="{{ profile_url }}"><img src="{{ comment.user.photo_url }}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if not flag.modflag or request.user.is_moderator %}<span class="emoji{% if flag.modflag %} modflag{% endif %}" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
             </span>
       
@@ -69,7 +69,7 @@
             <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
             <span class="comment-header-group">
               <address class="comment-author-address" data-user="{{ comment.user.username }}" data-userid="{{ comment.user.id }}">
-                  <a class="comment-author" href="{{ profile_url }}"><img src="{% if comment.user.photo %}{{ comment.user.photo.url }}{% else %}{% static "forums/images/user.svg" %}{% endif %}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }}</a></address> 
+                  <a class="comment-author" href="{{ profile_url }}"><img src="{{ comment.user.photo_url }}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }}</a></address> 
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
             </span>
             {% if request.user.is_moderator or comment.user == request.user %}

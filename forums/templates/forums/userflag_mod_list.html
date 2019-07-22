@@ -5,7 +5,6 @@
 
 {% block "content" %}
 <form method="GET" action="{% url "forums:mod_user" %}">
-  {% static "forums/images/user.svg" as default_photo %}
   <table class="table table-forum table-hover">
     <thead>
       <tr>
@@ -22,7 +21,7 @@
     {% for flag in page_obj %}
     <tr class="{% cycle 'odd' 'even' %}">
         <td class="text-right">
-          <img src="{{ flag.user.photo_url|default:default_photo }}" style="max-width: 45px; max-height: 45px; margin: -6px;"/>
+          <img src="{{ flag.user.photo_url }}" style="max-width: 45px; max-height: 45px; margin: -6px;"/>
         </td>
         <td class="user-item">
           <a href="{{ flag.user.get_absolute_url }}">{{ flag.user.username }}</a>

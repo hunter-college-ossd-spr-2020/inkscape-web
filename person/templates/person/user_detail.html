@@ -4,7 +4,7 @@
 {% block title %}{% trans "User Profile" %} | {{ object.name }}{% endblock %} 
 
 {% block "profile" %}
-  <img id="photo" src="{% if object.photo %}{{ object.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/>
+  <img id="photo" src="{{ object.photo_url }}"/>
 
   <div class="profilebuttons">
     {% if request.user != object and request.user.is_authenticated %}

@@ -112,7 +112,7 @@
       {% for member in object.members.all %}
        {% with user=member.user %}
         <div class="galleryitem">
-          <a class="link" href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ user.get_absolute_url }}{% endif %}"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}" title="Full User Details"/></a>
+          <a class="link" href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ user.get_absolute_url }}{% endif %}"><img src="{{ user.photo_url }}" title="Full User Details"/></a>
           <p title="Full User Details"><a href="{% if request.user in object.peers %}{{ member.get_absolute_url }}{% else %}{{ user.get_absolute_url }}{% endif %}">{{ user }}</a></p>
           <div class="minitabs">
             {% if member.title %}

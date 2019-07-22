@@ -5,7 +5,7 @@
         <div class="details">
 	  <div class="title">
 	    {% url 'view_profile' object.object_owner.username as profile_url %}
-	    <a href="{{ profile_url }}"><img class="userphoto" src="{% if object.object_owner.photo %}{{ object.object_owner.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+	    <a href="{{ profile_url }}"><img class="userphoto" src="{{ object.object_owner.photo_url }}"/></a>
 	    <div>
 		<a href="{{ profile_url }}">{{ object.object_owner.username }}</a>
 	    </div>

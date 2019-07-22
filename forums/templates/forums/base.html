@@ -170,18 +170,17 @@
                 <li>
                   <h4>Online</h4>
                 </li>
-                {% static "forums/images/user.svg" as default_photo %}
                 <li>
                 {% for pk, visitor in visitors.items reversed %}
                   {% if pk == request.user.pk %}
                   <a  class="me" href="{% url 'view_profile' visitor.username %}">
-                    <img src="{{ visitor.photo_url|default:default_photo }}"/>
+                    <img src="{{ visitor.photo_url }}"/>
                     <span>{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }}</span>
                   </a>
                   <li>
                   {% else %}
                   <a href="{% url 'view_profile' visitor.username %}" title="{{ visitor.first_name|default:visitor.username }} {{ visitor.last_name }} - {{ visitor.last_seen|ago }}" data-user="{{ visitor.username }}" data-userid="{{ visitor.id }}">
-                    <img src="{{ visitor.photo_url|default:default_photo }}"/>
+                    <img src="{{ visitor.photo_url }}"/>
                   </a>
                   {% endif %}
                 {% endfor %}

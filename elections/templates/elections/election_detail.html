@@ -195,7 +195,7 @@
           {% for user in search %}
             <a class="link" href="{% url "elections:invite" election.for_team.slug election.slug user.pk %}" title="{% trans "Send Invitation" %}" data-other-link="{% url "elections:invite-msg" election.for_team.slug election.slug user.pk %}" data-other-text="{% trans "View Message" %}">
               <div class="galleryitem">
-                <img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/>
+                <img src="{{ user.photo_url }}"/>
                 <p title="{% trans "Send Invitation" %}">{% blocktrans %}Invite {{ user }}{% endblocktrans %}</p>
               </div>
             </a>
@@ -224,7 +224,7 @@
       <div class="photos">
         {% for user in log.candidates %}
           <div class="galleryitem">
-            <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+            <a class="link"><img src="{{ user.photo_url }}"/></a>
             <p>{{ user }}</p>
             {% if user.winner %}
               <span class="vote"><img src="{% static "images/elected.svg" %}"/></span>
@@ -272,7 +272,7 @@
       {% for candidate, vote in candidates %}
        {% with user=candidate.user %}
          <div class="galleryitem" id="item_{{ candidate.pk }}">
-           <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+           <a class="link"><img src="{{ user.photo_url }}"/></a>
            <p>{{ user }}</p>
            {% if state.code == 'V' and ballot %}
              <span class="vote"><p id="item_{{ candidate.pk }}_num">1</p></span>
@@ -285,7 +285,7 @@
         {% for candidate in object.ignored %}
           {% with user=candidate.user %}
             <div class="galleryitem voted" id="item_{{ candidate.pk }}">
-              <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+              <a class="link"><img src="{{ user.photo_url }}"/></a>
               <p><a href="mailto:{{ user.email }}">📧</a> {{ user }}</p>
             </div>
           {% endwith %}
@@ -293,7 +293,7 @@
         {% for candidate in object.rejected %}
           {% with user=candidate.user %}
           <div class="galleryitem unpublished" id="item_{{ candidate.pk }}" title="{% trans "Rejected invitation to be a candidate" %}">
-              <a class="link"><img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static "images/photo.png" %}{% endif %}"/></a>
+              <a class="link"><img src="{{ user.photo_url }}"/></a>
               <p><a href="mailto:{{ user.email }}">📧</a> {{ user }}</p>
             </div>
           {% endwith %}
