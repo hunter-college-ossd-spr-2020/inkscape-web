@@ -181,7 +181,7 @@ class User(AbstractUser):
         """Return the photo url if it exist"""
         if self.photo:
             return self.photo.url
-        default = static('forums/images/user.svg')
+        default = static('images/user.png')
         if self.email:
             emh = hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
             rstr = urllib.parse.urlencode({'d': default, 's': '190'})
