@@ -33,6 +33,18 @@
             {% endif %}
           {% endif %}
         </td>
+        <td class="view-message forum-small-cells text-muted">
+          {% if log.user %}
+            {% if not log.user.is_active %}
+              <span class="glyphicon glyphicon-lock"></span>
+            {% elif log.user.is_admin %}
+              <span class="glyphicon glyphicon-briefcase"></span>
+            {% else %}
+              <span class="glyphicon glyphicon-user"></span>
+            {% endif %}
+            <a href="{{ log.user.get_absolute_url }}">{{ log.user }}</a>
+          {% endif %}
+        </td>
         <td class="view-message text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ log.performed|timetag }}</td>
       </tr>
     {% empty %}
