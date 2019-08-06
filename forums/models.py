@@ -306,6 +306,14 @@ class ForumTopic(Model):
         """Return true if this topic is sticky (shows at the top of forums)"""
         return bool(self.sticky)
 
+    @property
+    def is_moderated(self):
+        """Return true if this topic is being moderated"""
+        if self.post_count == 1:
+            first = self.comments.first()
+            return first and not first.is_public
+        return False
+
     def get_absolute_url(self):
         """Return a link to this topic"""
         if self.slug:
