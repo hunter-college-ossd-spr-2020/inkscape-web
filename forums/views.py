@@ -57,7 +57,7 @@ class ForumList(UserVisit, ForumMixin, TemplateView):
         """Pick up some extra content for the front page"""
         data = super().get_context_data(**kwargs)
         data['recent_topics'] = ForumTopic.objects\
-                .filter(locked=False)\
+                .filter(locked=False, removed=False)\
                 .for_user(self.request.user)\
                 .select_related('forum')\
                 .order_by('-first_posted')[:10]
@@ -82,7 +82,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
     def get_queryset(self):
         qset = super().get_queryset().select_related('forum')
         self.set_context_datum('topic_list', True)
-        qset = qset.for_user(self.request.user)
+        qset = qset.for_user(self.request.user).filter(removed=False)
         if 'count' in self.request.GET:
             try:
                 qset = qset.filter(post_count=int(self.request.GET['count']))

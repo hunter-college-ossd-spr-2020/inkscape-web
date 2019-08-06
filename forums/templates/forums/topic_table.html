@@ -39,7 +39,11 @@
             {% if query %}
               {% highlight_all topic.subject %}
             {% else %}
-              {{ topic.subject }}
+              {% if topic.removed %}
+                <del>{{ topic.subject }}</del>
+              {% else %}
+                {{ topic.subject }}
+              {% endif %}
             {% endif %}
           </a> 
         </td>

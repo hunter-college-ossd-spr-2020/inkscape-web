@@ -56,7 +56,8 @@ class TopicAdmin(ModelAdmin):
     inlines = [CommentInline]
     list_filter = ('forum',)
     search_fields = ('subject',)
-    list_display = ('subject', 'forum', 'last_posted', 'last_username', 'locked', 'sticky')
+    list_display = ('subject', 'forum', 'last_posted', 'last_username',
+                    'locked', 'removed', 'sticky')
     readonly_fields = (
         'post_count', 'last_posted', 'last_posted',
         'first_username', 'last_username', 'has_attachments',

@@ -130,11 +130,16 @@ class Forum(Model):
             object_pk__in=objects.values_list('str_id'),
         )
 
+    @property
+    def public_comments(self):
+        """Like comments, but restricted to non-removed comments"""
+        return self.comments.filter(is_removed=False)
+
     def refresh_meta_data(self, last=None):
         """Refresh all the meta-data fields"""
         if last is None:
             last = self.comments.last()
-            self.post_count = self.comments.count()
+            self.post_count = self.public_comments.count()
         else:
             self.post_count += 1
         if last:
@@ -228,6 +233,7 @@ class ForumTopic(Model):
                     'list. Higher numbers appear nearer the top. Same numbers '
                     'will appear together, sorted by date.'))
     locked = BooleanField(default=False, help_text=_('Topic is locked by moderator.'))
+    removed = BooleanField(default=False, help_text=_('Topic deleted by moderator.'))
 
     objects = TopicQuerySet.as_manager()
 
@@ -269,6 +275,11 @@ class ForumTopic(Model):
         return Comment.objects.filter(object_pk=obj.pk, content_type=ctype)
 
     @property
+    def public_comments(self):
+        """Like comments, but restricted to non-removed comments"""
+        return self.comments.filter(is_removed=False)
+
+    @property
     def object_template(self):
         """Returns a custom template if needed for this item."""
         custom_template = None
@@ -307,7 +318,7 @@ class ForumTopic(Model):
             first = self.comments.first()
         if last is None:
             last = self.comments.last()
-            self.post_count = self.comments.count()
+            self.post_count = self.public_comments.count()
         else:
             self.post_count += 1
 
@@ -319,9 +330,12 @@ class ForumTopic(Model):
             self.last_posted = last.submit_date
             self.last_username = last.user.username
 
+        if not self.post_count:
+            self.removed = True
+
         self.has_attachments = self.comments.filter(attachments__isnull=False).count()
         self.save(update_fields=['post_count', 'first_posted', 'last_posted',
-                                 'first_username', 'last_username'])
+                                 'first_username', 'last_username', 'removed'])
 
     def save(self, **kw):
         """Save this topic and generate a slug if needed"""
