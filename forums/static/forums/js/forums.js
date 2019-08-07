@@ -94,9 +94,19 @@ $(document).ready(function() {
      has seen this item. Once seen, the date and the counts are recorded
      for use in listings of this item. */
   $(".haveseen").each(function() {
-    primary_key = 'seen-' + $(this).data('pk');
-    localStorage.setItem(primary_key + '-date', +new Date);
-    localStorage.setItem(primary_key + '-count', $(this).data('count'));
+    var mark_all = $(this).data('mark-all');
+    if(mark_all) {
+        var model = $(this).data('model');
+        $('.new[data-model="'+model+'"]').each(function() {
+            primary_key = 'seen-' + $(this).data('pk');
+            localStorage.setItem(primary_key + '-date', +new Date);
+            localStorage.setItem(primary_key + '-count', $(this).data('count'));
+        });
+    } else {
+        primary_key = 'seen-' + $(this).data('pk');
+        localStorage.setItem(primary_key + '-date', +new Date);
+        localStorage.setItem(primary_key + '-count', $(this).data('count'));
+    }
   });
 
   $(".new").each(function() { have_you_seen_this(this); });
@@ -480,10 +490,11 @@ function clean_emoji(index, elem) {
    items. All things are unread/new by default, unless the user hasseen
    the ahove element that contains the date/counts contained in this listing */
 function have_you_seen_this(elem) {
+    var model = $(elem).data('model');
     var primary_key = 'seen-' + $(elem).data('pk');
     var this_changed = new Date($(elem).data('changed'));
     var this_count = parseInt($(elem).data('count'));
-    var seen_mode = $('#seenconf').data($(elem).data('model'));
+    var seen_mode = $('#seenconf').data(model);
 
     // Should we downgrade the visual apperence of the item because we've seen everything?
     var last_seen = new Date(parseInt(localStorage.getItem(primary_key + '-date')));

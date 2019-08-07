@@ -122,6 +122,7 @@ class UnreadTopicList(TopicList):
 
     def get_queryset(self):
         qset = super().get_queryset()
+        self.set_context_datum('read_all', True)
         return qset[:100]
 
 class TopicDetail(UserVisit, DetailView):

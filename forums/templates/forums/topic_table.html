@@ -1,12 +1,14 @@
 {% load i18n static inkscape search_tools %}
-  <table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" data-pk="forum-{{ forum.pk }}" data-model="forum">
+<table class="table table-forum table-hover haveseen" data-changed="{{ forum.last_posted.isoformat }}" data-count="{{ forum.post_count }}" {% if read_all %}data-mark-all="true"{% else %}data-pk="forum-{{ forum.pk }}"{% endif %} data-model="forum">
     <thead>
+      <tr>
         <th scope="col" title="{% trans "Topic Status" %}"></th>
         <th scope="col">{% trans "Topic Title" %}</th>
         <th scope="col" title="{% trans "Has Attachments" %}"></th>
         <th scope="col" title="{% trans "Comment Count" %}"></th>
         <th scope="col" colspan="2" class="text-center">{% trans "Created by" %}</th>
         <th scope="col" colspan="2" class="text-center">{% trans "Latest post" %}</th>
+      </tr>
     </thead>
     <tbody>
     {% for topic in topic_list %}
