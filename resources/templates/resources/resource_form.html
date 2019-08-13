@@ -50,6 +50,9 @@
 	{% endif %}
       {% endif %}
       <p class="coc-note">{% blocktrans %}Make sure you read the <a href="/community/coc/">code of conduct</a> for rules on posting content.{% endblocktrans %}</p>
+      {% if object.id %}
+        <a href="{% url "delete_resource" object.id %}" class="btn btn-danger">Delete Upload</a>
+      {% endif %}
     </div>
 
   {% if object and not object.category and object.next %}
@@ -110,10 +113,9 @@
 
     {% if form.link_mode %}
       <button type="button" class="btn btn-warning" onclick="checkLink();">{% trans "Get Link Info" %}</button>
-      {% endif %}
+    {% endif %}
   </div>
+
 	<div id="video-data-1"></div>
   </div>
 {% endblock %}
-
-

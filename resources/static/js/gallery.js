@@ -107,22 +107,25 @@ function setupUpload() {
   // file slot and have it refused by the form.
   $('.uploader #id_download').on('change', function() {
       var file = this.files[0];
-      var icon = get_mime_icon(file.type);
-      if(icon != 'image' || is_svg(file.type)) {
-          $('.uploader label[for="id_rendering"]').show();
+      if(file) {
+          var icon = get_mime_icon(file.type);
+          if(icon != 'image' || is_svg(file.type)) {
+              $('.uploader label[for="id_rendering"]').show();
+          }
       }
   });
-  $('.uploader label[for="id_rendering"]').hide();
+  //$('.uploader label[for="id_rendering"]').hide();
 
   $('.uploader input[type=file]').each(function() {
     var input = $(this);
     var clear = $('input[name=' + input.attr('name') + '-clear]');
     var label = $('label[for='+this.id+']');
     var x = $('<strong class="clear"></strong>');
-     x.click(function(e) {
+     x.click(function(event) {
       $(this).hide();
       input.val(null);
       input.change();
+      event.stopPropagation();
       return false;
     }).appendTo(label);
     if(clear.length == 0) { x.hide(); }

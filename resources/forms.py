@@ -124,6 +124,7 @@ class GalleryMoveForm(ModelForm):
 class ResourceFileInput(ClearableFileInput):
     template_with_initial = '%(input)s %(clear_template)s'
     template_with_clear = '%(clear)s'
+    template_name = 'widgets/resource_file_input.html'
 
 
 class ResourceBaseForm(ModelForm):
@@ -136,10 +137,11 @@ class ResourceBaseForm(ModelForm):
 
     class Media:
         js = ('js/jquery.validate.js', 'js/additional.validate.js', 'js/resource.validate.js')
+
+    class Meta:
         widgets = {
             'download': ResourceFileInput(),
             'rendering': ResourceFileInput(),
-            'signature': ResourceFileInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -371,7 +373,7 @@ class ResourceForm(ResourceBaseForm):
     published = BooleanField(label=_('Publicly Visible'), required=False)
     is_valid_form = classmethod(lambda cls,obj: True)
 
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Resource
         fields = ['name', 'desc', 'tags', 'link', 'category', 'license',
                   'owner', 'owner_name', 'rendering', 'signature', 'published',
@@ -385,7 +387,7 @@ class ResourceLinkForm(ResourceBaseForm):
     form_priority = 5
     link_mode = True
 
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Resource
         fields = ['name', 'desc', 'tags', 'link', 'category', 'license', 'rendering']
         required = ['name', 'category', 'license']
@@ -407,6 +409,11 @@ class ResourcePasteForm(ResourceBaseForm):
     media_type = ChoiceField(label=_('Text Format'), choices=ALL_TEXT_TYPES)
     download = CharField(label=_('Pasted Text'), widget=Textarea, required=False)
     paste_mode = True
+
+    class Meta(ResourceBaseForm.Meta):
+        model = Resource
+        fields = ['name', 'desc', 'tags', 'media_type', 'license', 'link', 'download']
+        required = ['name', 'license']
 
     def __init__(self, data=None, *args, **kwargs):
         # These are shown items values, for default values see save()
@@ -445,10 +452,6 @@ class ResourcePasteForm(ResourceBaseForm):
             obj.save()
         return obj
 
-    class Meta:
-        model = Resource
-        fields = ['name', 'desc', 'tags', 'media_type', 'license', 'link', 'download']
-        required = ['name', 'license']
 
 
 class ResourceEditPasteForm(ResourcePasteForm):
@@ -473,7 +476,7 @@ class ResourceEditPasteForm(ResourcePasteForm):
 
 class ResourceAddForm(ResourceBaseForm):
     """Form used when adding a new resource"""
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Resource
         fields = ['download', 'name']
 

@@ -82,7 +82,7 @@ class ResourceReleaseForm(ResourceBaseForm):
             rp.save()
         return obj
 
-    class Meta:
+    class Meta(ResourceBaseForm.Meta):
         model = Resource
         fields = ['name', 'desc', 'tags', 'release', 'platform', 'license',
                   'link', 'signature', 'download', 'rendering', 'published']
