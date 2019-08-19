@@ -25,7 +25,6 @@ It converts all the weird and wacky mime types out there into more simple
 and segregated forms and provides a way to get icons for them.
 """
 
-import re
 import os
 import mimetypes
 
@@ -192,7 +191,7 @@ def hash_verify(sig_type, sig, data):
     import hashlib
     sig.file.open()
     sig.file.seek(0)
-    digest = str(sig.file.read()).split(' ')[0].strip()
+    digest = sig.file.read().split(b' ')[0].strip().decode('ascii')
     hasher = getattr(hashlib, sig_type, hashlib.sha1)()
     for chunk in data.chunks():
         hasher.update(chunk)
