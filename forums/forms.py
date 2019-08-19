@@ -111,14 +111,19 @@ class AttachmentMixin(object):
 
         return EMOJI.sub(r'<span class="emoji">\1</span>', comment)
 
+    def clean_attachments(self):
+        """Make sure we can save attachments"""
+        from resources.models import Category
+        try:
+            self.fat = Category.objects.get(slug='fat')
+        except Category.DoesNotExist:
+            raise ValidationError("Category for forum attachments doesn't exist, refusing to"\
+                " allow forum attachments! (please ask the website admin to enable attachments)")
+        return self.cleaned_data['attachments']
+
     def save_attachments(self, comment):
         """Save attachments to the given comment"""
-        from resources.models import Category, Resource
-
-        fat = Category.objects.get_or_create(slug='fat', defaults={
-            'name': 'Forum Attachment', 'desc': 'Attached to a forum only.',
-            'selectable': False, 'filterable': False,
-        })[0]
+        from resources.models import Resource
 
         # Collect the attachments and inlines
         attachments = self.cleaned_data['attachments']
@@ -128,7 +133,7 @@ class AttachmentMixin(object):
         to_delete = comment.attachments.exclude(resource__in=attachments)\
                                        .exclude(resource__in=inlines)
         # Remove any resource objects that still have a Forum Attachments category
-        Resource.objects.filter(category=fat, pk__in=to_delete.values_list('resource_id'))
+        Resource.objects.filter(category=self.fat, pk__in=to_delete.values_list('resource_id'))
         # Delete any links to resources, this only deletes attachments that are not
         # Forum Attachment categorised because those links were removed in the cascade
         to_delete.delete()
@@ -136,6 +141,9 @@ class AttachmentMixin(object):
         for inline, qset in enumerate([attachments, inlines]):
             # inline is 0 for first item and 1 for second item
             for resource in qset:
+                # Update any blank categories with the forum category
+                if resource.category is None:
+                    Resource.objects.filter(pk=resource.pk).update(category=self.fat)
                 comment.attachments.update_or_create(resource=resource,
                                                      defaults={'inline': inline})
 

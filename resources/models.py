@@ -127,7 +127,8 @@ class Category(Model):
         return self.name
 
     def save(self, **kwargs):
-        set_slug(self)
+        if self.slug is None:
+            set_slug(self)
         super(Category, self).save(**kwargs)
 
     @property

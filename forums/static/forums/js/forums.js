@@ -256,6 +256,9 @@ $(document).ready(function() {
   // Hide input boxes (inface entire input groups)
   $('.group-id_attachments').hide();
   $('.group-id_inlines').hide();
+  $('.group-id_attachments.has-error').show();
+  $('.group-id_inlines.has-error').show();
+
 
   $('[data-toggle="tooltip"]').tooltip();
   $('[data-toggle="emojitip"]').tooltip(
