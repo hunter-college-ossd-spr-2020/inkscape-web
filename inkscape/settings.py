@@ -244,6 +244,9 @@ MODERATED_MODELS = (
     ('django_comments.comment', _('User Comment')),
 )
 
+ALERTS_MESSAGE_PERMISSION = 'forums.can_post_topic'
+ALERTS_MESSAGE_DENIED = _('You must post to the forum before you can send personal messages.')
+
 AUTH_USER_MODEL = 'person.User'
 
 # activate automatically filled menues and deactivate redirection to English
