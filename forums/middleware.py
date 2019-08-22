@@ -39,6 +39,12 @@ class RecentUsersMiddleware(object):
     """
     cache = caches[settings.CACHE_MIDDLEWARE_ALIAS]
 
+# django 2.0 code
+#    def __init__(self, handler=None):
+#        self.get_response = handler
+#    def __call__(self, request):
+#        return self.get_response(request)
+
     def set_visitor(self, user, at_time):
         """Record a user as visiting at this time"""
         visitors = self.get_visitors()
@@ -60,16 +66,16 @@ class RecentUsersMiddleware(object):
                            for pk, visitor in self.cache.get('visitors', [])[-20:]
                            if now() - visitor['last_seen'] < VISITOR_AGE)
 
-    def process_template_response(self, view, response):
+    def process_template_response(self, request, response):
         """Add visiting user data into context"""
-        if hasattr(view.request, 'user') and view.request.user.is_authenticated:
+        if hasattr(request, 'user') and request.user.is_authenticated:
             if getattr(settings, 'FORUM_DEBUG_ONLINE', False):
                 # Add some test users when in debug mode
                 user_qset = User.objects.exclude(photo__isnull=True).exclude(photo='')
                 for user in user_qset.order_by('?')[:3]:
                     self.set_visitor(user, now())
 
-            response.context_data['visitors'] = self.set_visitor(view.request.user, now())
+            response.context_data['visitors'] = self.set_visitor(request.user, now())
         elif hasattr(response, 'context_data'):
             response.context_data['visitors'] = self.get_visitors()
 

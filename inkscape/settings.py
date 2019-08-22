@@ -144,6 +144,7 @@ MIDDLEWARE_CLASSES = (
     'cmsplugin_diff.middleware.EditCommentMiddleware',
     'person.middleware.SetLastVisitMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'forums.middleware.RecentUsersMiddleware'
 )
 
 # ===== CACHING ===== #
