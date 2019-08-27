@@ -1,9 +1,0 @@
-{% load static %}
-<div class="team_list large">
-{% for member in members %}
-<a href="{% if member.user.website %}{{ member.user.website }}{% else %}{{ member.user.get_absolute_url }}{% endif %}" title="{{ member.user }}" rel="nofollow">
-  <img src="{{ member.user.photo_url }}" alt="{{ member.user }}" title="{{ member.user }}"/>
-</a>
-&nbsp;
-{% endfor %}
-</div>

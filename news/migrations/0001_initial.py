@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('limit', models.PositiveIntegerField(help_text='Limits the number of items that will be displayed', verbose_name='Number of news items to show')),
             ],
             options={
+                'db_table': 'cmsplugin_news_latestnewsplugin',
                 'abstract': False,
             },
             bases=('cms.cmsplugin',),
@@ -49,6 +50,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'News',
                 'verbose_name_plural': 'News',
                 'permissions': (('translate', 'Translate News'),),
+                'db_table': 'cmsplugin_news_news',
             },
             bases=(models.Model,),
         ),

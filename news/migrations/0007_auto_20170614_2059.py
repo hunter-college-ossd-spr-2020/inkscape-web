@@ -19,6 +19,9 @@ class Migration(migrations.Migration):
                 ('url', models.URLField()),
                 ('delibrate', models.BooleanField(default=True, help_text='Was this post done by a known contributor?')),
             ],
+            options={
+                'db_table': 'cmsplugin_news_newsbacklink',
+            },
         ),
         migrations.CreateModel(
             name='SocialMediaType',
@@ -27,6 +30,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('icon', models.ImageField(upload_to='news/icons')),
             ],
+            options={
+                'db_table': 'cmsplugin_news_socialmediatype',
+            },
         ),
         migrations.AddField(
             model_name='latestnewsplugin',

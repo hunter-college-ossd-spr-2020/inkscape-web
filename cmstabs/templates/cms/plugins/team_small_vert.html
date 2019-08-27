@@ -1,8 +1,0 @@
-{% load static %}
-<ul>
-{% for member in members %}
-  <li>
-    <a href="{% if member.user.website %}{{ member.user.website }}{% else %}{{ member.user.get_absolute_url }}{% endif %}" title="{{ member.user }}" rel="nofollow"><strong>{{ member.user }}</strong></a>&nbsp;
-  </li>
-{% endfor %}
-</ul>
