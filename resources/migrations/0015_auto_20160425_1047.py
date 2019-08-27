@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gallery',
             name='thumbnail',
-            field=models.ForeignKey(blank=True, to='resources.Resource', help_text='Which resource should be the thumbnail for this gallery', null=True),
+            field=models.ForeignKey(blank=True, to='resources.Resource', help_text='Which resource should be the thumbnail for this gallery', null=True, on_delete=models.CASCADE),
         ),
     ]

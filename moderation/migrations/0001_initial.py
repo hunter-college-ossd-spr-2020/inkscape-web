@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
                 ('object_id', models.PositiveIntegerField(null=True, blank=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('resolution', models.NullBooleanField(default=None, choices=[(None, 'Pending Moderator Action'), (True, 'Object is Retained'), (False, 'Object is Deleted')])),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('object_owner', models.ForeignKey(related_name='flagged', verbose_name='Owning User', to=settings.AUTH_USER_MODEL)),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE)),
+                ('object_owner', models.ForeignKey(related_name='flagged', verbose_name='Owning User', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -33,8 +33,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date Flagged', db_index=True)),
                 ('weight', models.IntegerField(default=1)),
                 ('notes', models.TextField(blank=True, null=True, validators=[django.core.validators.MaxLengthValidator(1024)])),
-                ('moderator', models.ForeignKey(related_name='flags', to=settings.AUTH_USER_MODEL)),
-                ('target', models.ForeignKey(related_name='votes', to='moderation.FlagObject')),
+                ('moderator', models.ForeignKey(related_name='flags', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('target', models.ForeignKey(related_name='votes', to='moderation.FlagObject', on_delete=models.CASCADE)),
             ],
             options={
                 'get_latest_by': 'created',

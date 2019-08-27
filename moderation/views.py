@@ -22,9 +22,9 @@ from django.utils import timezone
 from datetime import timedelta
 
 from django.db import utils
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, ListView
-from django.core.urlresolvers import reverse
 
 from .models import *
 from .mixins import *

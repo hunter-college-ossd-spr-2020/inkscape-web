@@ -25,6 +25,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='release',
             name='status',
-            field=models.ForeignKey(blank=True, to='releases.ReleaseStatus', null=True),
+            field=models.ForeignKey(blank=True, to='releases.ReleaseStatus', null=True, on_delete=models.CASCADE),
         ),
     ]

@@ -67,7 +67,7 @@ class ArchiveIndexView(PublishedNewsMixin, ListView):
     ListView.
     """
     paginate_by = ARCHIVE_PAGE_SIZE
-    template_name = 'cmsplugin_news/news_archive.html'
+    template_name = 'news/news_archive.html'
     include_yearlist = True
     title = _("Latest News")
 
@@ -81,7 +81,7 @@ class ArchiveIndexView(PublishedNewsMixin, ListView):
 
 
 class DetailView(PublishedNewsMixin, DateDetailView):
-    template_name = 'cmsplugin_news/news_detail.html'
+    template_name = 'news/news_detail.html'
     allow_future = True
 
     def get(self, request, *args, **kwargs):
@@ -107,12 +107,12 @@ class DetailView(PublishedNewsMixin, DateDetailView):
 
 
 class YearArchiveView(PublishedNewsMixin, YearArchiveView):
-    template_name = 'cmsplugin_news/news_archive_year.html'
+    template_name = 'news/news_archive_year.html'
     make_object_list = True
 
 class MonthArchiveView(PublishedNewsMixin, MonthArchiveView):
-    template_name = 'cmsplugin_news/news_archive_month.html'
+    template_name = 'news/news_archive_month.html'
 
 class DayArchiveView(PublishedNewsMixin, DayArchiveView):
-    template_name = 'cmsplugin_news/news_archive_day.html'
+    template_name = 'news/news_archive_day.html'
 

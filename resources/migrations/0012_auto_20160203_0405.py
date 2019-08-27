@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quota',
             name='group',
-            field=models.OneToOneField(related_name='quotas', null=True, blank=True, to='auth.Group'),
+            field=models.OneToOneField(related_name='quotas', null=True, blank=True, to='auth.Group', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='resource',

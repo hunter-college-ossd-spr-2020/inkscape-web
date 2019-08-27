@@ -32,11 +32,11 @@ from django.db.models import (
 )
 from django.conf import settings
 
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
 from django.core.cache import caches
-from django.core.urlresolvers import reverse
 
 from inkscape.fields import ResizedImageField
 from inkscape.templatetags.i18n_fields import OTHER_LANGS, translate_field

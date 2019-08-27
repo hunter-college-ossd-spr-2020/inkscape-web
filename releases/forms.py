@@ -26,8 +26,7 @@ from django.forms import (
     ModelForm, ModelChoiceField, ValidationError, inlineformset_factory
 )
 
-# This dependance is fairly harsh, replace if possible.
-from djangocms_text_ckeditor.widgets import TextEditorWidget
+from inkscape.widgets import TextEditorWidget
 
 # This is used to add a custom form to resources when editing
 # an Inkscape Release upload.

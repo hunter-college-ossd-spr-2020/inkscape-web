@@ -13,12 +13,10 @@ class TextEditorWidget(Textarea):
     """
     class Media:
         js = (
-            'forums/ckeditor/ckeditor.js',
+            'widgets/ckeditor/ckeditor.js',
         )
         css = {
-            'all': {
-                #'forums/ckeditor/contents.css',
-            }
+            'all': { 'widgets/ckeditor/contents.css', }
         }
 
     def __init__(self, attrs=None, installed_plugins=None, pk=None,

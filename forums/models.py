@@ -24,8 +24,6 @@ shouldn't be much functionality contained within this app.
 
 import json
 
-from unidecode import unidecode
-
 from django.apps import apps
 from django.db.models.functions import Cast
 from django.db.models import (
@@ -36,8 +34,8 @@ from django.db.models import (
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 
+from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.conf import settings
 
@@ -64,7 +62,7 @@ class ForumGroup(Model):
 
 class Forum(Model):
     """A collection of topics for discussion"""
-    group = ForeignKey(ForumGroup, related_name='forums')
+    group = ForeignKey(ForumGroup, related_name='forums', on_delete=CASCADE)
     sort = IntegerField(default=0, null=True, blank=True)
 
     name = CharField(max_length=128, unique=True)
@@ -75,10 +73,10 @@ class Forum(Model):
 
     lang = CharField(max_length=8, null=True, blank=True,\
         help_text=_('Set this ONLY if you want this forum restricted to this language'))
-    team = ForeignKey(Team, null=True, blank=True,\
+    team = ForeignKey(Team, null=True, blank=True, on_delete=SET_NULL,\
         help_text=_('Set this ONLY if you want this forum restricted to this team.'))
 
-    content_type = ForeignKey(ContentType, verbose_name=_('Fixed Content From'),\
+    content_type = ForeignKey(ContentType, verbose_name=_('Fixed Content From'), on_delete=CASCADE,\
         help_text=_("When fixed content is set, new topics can not be created. Instead, "
                     "commented items are automatically posted as topics."), null=True, blank=True)
     sync = CharField(max_length=64, choices=APP.sync_choices, verbose_name=_('Sync From'),\
@@ -111,7 +109,7 @@ class Forum(Model):
     def save(self, **kwargs):
         """Save and add a slug if not yet created"""
         if not self.slug:
-            self.slug = slugify(unidecode(self.name))
+            self.slug = slugify(str(self.name))
         return super(Forum, self).save(**kwargs)
 
     @property
@@ -213,7 +211,7 @@ class Forum(Model):
 
 class ForumTopic(Model):
     """When a forum allows free standing topics (without connection to an object)"""
-    forum = ForeignKey(Forum, related_name='topics')
+    forum = ForeignKey(Forum, related_name='topics', on_delete=CASCADE)
     object_pk = PositiveIntegerField(null=True, blank=True)
     subject = CharField(max_length=128)
     slug = SlugField(max_length=128, unique=True)
@@ -350,7 +348,7 @@ class ForumTopic(Model):
         self.subject = self.subject[:120]
 
         if not self.slug:
-            original = slugify(unidecode(self.subject))
+            original = slugify(str(self.subject))
             self.slug = original
             while ForumTopic.objects.filter(slug=self.slug).count():
                 self.slug = original + '_' + get_random_string(length=5)
@@ -387,7 +385,8 @@ class ModerationLog(Model):
     Record each moderation action, what was done and any other details.
     """
     action = CharField(max_length=128)
-    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="forum_moderation_actions")
+    moderator = ForeignKey(settings.AUTH_USER_MODEL, null=True,\
+        related_name="forum_moderation_actions", on_delete=SET_NULL)
     performed = DateTimeField(auto_now=True, db_index=True)
 
     user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL)
@@ -441,7 +440,7 @@ class UserFlag(Model):
 
 class CommentLink(Model):
     """We extend our comment model with links to sync'd or imported comments"""
-    comment = OneToOneField(Comment, related_name='link')
+    comment = OneToOneField(Comment, related_name='link', on_delete=CASCADE)
 
     message_id = CharField(max_length=255, db_index=True, unique=True,
                            help_text="A unique identifier for this message")

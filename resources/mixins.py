@@ -24,10 +24,10 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404
 

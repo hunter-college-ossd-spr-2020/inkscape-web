@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='release',
             name='parent',
-            field=models.ForeignKey(related_name='children', blank=True, to='releases.Release', null=True),
+            field=models.ForeignKey(related_name='children', blank=True, to='releases.Release', null=True, on_delete=models.CASCADE),
         ),
     ]

@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gallery',
             name='category',
-            field=models.ForeignKey(related_name='galleries', blank=True, to='resources.Category', null=True),
+            field=models.ForeignKey(related_name='galleries', blank=True, to='resources.Category', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='gallery',

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('channel', models.CharField(max_length=64, verbose_name='IRC Chatroom Name')),
                 ('language', models.CharField(default='en', max_length=5, choices=[('en', 'English'), ('de', 'German'), ('da', 'Danish'), ('fr', 'French'), ('nl', 'Dutch'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Chinese'), ('zh-hant', 'Simplified Chinese'), ('ko', 'Korean')])),
-                ('admin', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('admin', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
         ),
         migrations.RemoveField(
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='teamchatroom',
             name='team',
-            field=models.ForeignKey(related_name='ircrooms', to='person.Team'),
+            field=models.ForeignKey(related_name='ircrooms', to='person.Team', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='teamchatroom',

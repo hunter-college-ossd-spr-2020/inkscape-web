@@ -37,7 +37,7 @@ for n in list(globals())[:]:
             continue
         if v and v[0] != '/':
             continue
-        if not os.path.isdir(v):
+        if v and not os.path.isdir(v):
             try:
                 sys.stderr.write("INFO: Making directory: %s for %s\n" % (v, n))
                 os.makedirs(v)

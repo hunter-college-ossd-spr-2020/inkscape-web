@@ -23,12 +23,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='resource',
             name='category',
-            field=models.ForeignKey(related_name='items', verbose_name='Category', blank=True, to='resources.Category', null=True),
+            field=models.ForeignKey(related_name='items', verbose_name='Category', blank=True, to='resources.Category', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='resource',
             name='license',
-            field=models.ForeignKey(verbose_name='License', blank=True, to='resources.License', null=True),
+            field=models.ForeignKey(verbose_name='License', blank=True, to='resources.License', null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='resource',

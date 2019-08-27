@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('desc', models.CharField(max_length=255, verbose_name='Description')),
                 ('icon', inkscape.fields.ResizedImageField(format='PNG', upload_to='release/icons', max_width=32, min_height=0, max_height=32, blank=True, min_width=0, null=True, verbose_name='Icon (32x32)')),
                 ('image', inkscape.fields.ResizedImageField(format='PNG', upload_to='release/icons', max_width=256, min_height=0, max_height=256, blank=True, min_width=0, null=True, verbose_name='Logo (256x256)')),
-                ('manager', models.ForeignKey(verbose_name='Platform Manager', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
-                ('parent', models.ForeignKey(related_name='children', verbose_name='Parent Platform', blank=True, to='releases.Platform', null=True)),
+                ('manager', models.ForeignKey(verbose_name='Platform Manager', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
+                ('parent', models.ForeignKey(related_name='children', verbose_name='Parent Platform', blank=True, to='releases.Platform', null=True, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -38,8 +38,8 @@ class Migration(migrations.Migration):
                 ('release_date', models.DateField(null=True, verbose_name='Release date', blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='Date created', db_index=True)),
                 ('edited', models.DateTimeField(auto_now=True, verbose_name='Last edited')),
-                ('manager', models.ForeignKey(related_name='manages_releases', verbose_name='Release Manager', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
-                ('reviewer', models.ForeignKey(related_name='reviews_releases', verbose_name='Release Reviewer', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('manager', models.ForeignKey(related_name='manages_releases', verbose_name='Release Manager', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
+                ('reviewer', models.ForeignKey(related_name='reviews_releases', verbose_name='Release Reviewer', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-version',),
@@ -54,8 +54,8 @@ class Migration(migrations.Migration):
                 ('more_info', models.URLField(null=True, verbose_name='More Info Link', blank=True)),
                 ('howto', models.URLField(null=True, verbose_name='Instructions Link', blank=True)),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='Date created', db_index=True)),
-                ('platform', models.ForeignKey(related_name='releases', verbose_name='Release Platform', to='releases.Platform')),
-                ('release', models.ForeignKey(related_name='platforms', verbose_name='Release', to='releases.Release')),
+                ('platform', models.ForeignKey(related_name='releases', verbose_name='Release Platform', to='releases.Platform', on_delete=models.CASCADE)),
+                ('release', models.ForeignKey(related_name='platforms', verbose_name='Release', to='releases.Release', on_delete=models.CASCADE)),
             ],
             options={
             },

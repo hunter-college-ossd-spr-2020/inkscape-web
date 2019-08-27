@@ -1,7 +1,7 @@
 #
 # Copyright 2017, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ Moderation is achieved using a generic flagging model and some further
  healthy community atmosphere.
 """
 
-null = dict(blank=True, null=True)
 from django.db.models import *
 from django.apps import apps
 
@@ -38,6 +37,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 
 flag_created = Signal(providing_args=["instance", "flag", "mod"])
+NULL = dict(blank=True, null=True)
 
 class ObjectQuery(QuerySet):
     """Manage how flagged objects are dealt with."""
@@ -89,10 +89,10 @@ class FlagObject(Model):
 
     object_owner = ForeignKey(settings.AUTH_USER_MODEL,
             verbose_name=_('Owning User'), related_name="flagged",
-            on_delete=SET_NULL, **null)
+            on_delete=SET_NULL, **NULL)
 
-    content_type = ForeignKey(ContentType)
-    object_id = PositiveIntegerField(**null)
+    content_type = ForeignKey(ContentType, on_delete=CASCADE)
+    object_id = PositiveIntegerField(**NULL)
     updated = DateTimeField(auto_now=True)
     resolution = NullBooleanField(default=None, choices=(
         (None, _('Pending Moderator Action')),
@@ -216,11 +216,11 @@ class FlagVote(Model):
     automatically by the system. When the weight reaches the threshold.
     """
     created = DateTimeField(_('Date Flagged'), default=now, db_index=True)
-    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="flags")
+    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="flags", on_delete=CASCADE)
 
-    target = ForeignKey(FlagObject, related_name="votes")
+    target = ForeignKey(FlagObject, related_name="votes", on_delete=CASCADE)
     weight = IntegerField(default=1)
-    notes = TextField(validators=[MaxLengthValidator(1024)], **null)
+    notes = TextField(validators=[MaxLengthValidator(1024)], **NULL)
 
     objects = FlagManager()
 

@@ -18,7 +18,7 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 """
-Tests for the cmsplugin_news app
+Tests for the news app
 """
 
 from datetime import timedelta

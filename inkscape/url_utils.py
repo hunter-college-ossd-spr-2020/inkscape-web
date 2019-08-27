@@ -27,8 +27,8 @@ import logging
 
 from string import ascii_uppercase, ascii_lowercase, digits
 
+from django.urls import reverse
 from django.conf.urls import url, include
-from django.core.urlresolvers import reverse
 from django.utils.text import slugify
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView

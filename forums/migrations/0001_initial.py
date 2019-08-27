@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('icon', models.FileField(null=True, upload_to='forum/icon', blank=True)),
                 ('lang', models.CharField(help_text='Set this ONLY if you want this forum restricted to this language', max_length=8, null=True, blank=True)),
                 ('last_posted', models.DateTimeField(db_index=True, null=True, verbose_name='Last Posted', blank=True)),
-                ('content_type', models.ForeignKey(verbose_name='Fixed Content From', blank=True, to='contenttypes.ContentType', null=True)),
+                ('content_type', models.ForeignKey(verbose_name='Fixed Content From', blank=True, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-sort',),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('subject', models.CharField(max_length=128)),
                 ('slug', models.SlugField(unique=True, max_length=128)),
                 ('last_posted', models.DateTimeField(db_index=True, null=True, verbose_name='Last Posted', blank=True)),
-                ('forum', models.ForeignKey(related_name='topics', to='forums.Forum')),
+                ('forum', models.ForeignKey(related_name='topics', to='forums.Forum', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-last_posted',),
@@ -55,6 +55,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='forum',
             name='group',
-            field=models.ForeignKey(related_name='forums', to='forums.ForumGroup'),
+            field=models.ForeignKey(related_name='forums', to='forums.ForumGroup', on_delete=models.CASCADE),
         ),
     ]

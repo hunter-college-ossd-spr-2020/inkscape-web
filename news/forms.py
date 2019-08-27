@@ -26,7 +26,7 @@ from __future__ import absolute_import
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm
 
-from djangocms_text_ckeditor.widgets import TextEditorWidget
+from inkscape.widgets import TextEditorWidget
 
 from .models import News
 

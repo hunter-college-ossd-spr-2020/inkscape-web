@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='new_checked_by',
-            field=models.ForeignKey(related_name='new_resource_checks', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='new_resource_checks', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='resource',
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='new_license',
-            field=models.ForeignKey(blank=True, to='resources.License', null=True),
+            field=models.ForeignKey(blank=True, to='resources.License', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='resource',
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='resourcerevision',
             name='resource',
-            field=models.ForeignKey(related_name='revisions', to='resources.Resource'),
+            field=models.ForeignKey(related_name='revisions', to='resources.Resource', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='tagcategory',

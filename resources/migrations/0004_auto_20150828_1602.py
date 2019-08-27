@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tag',
             name='parent',
-            field=models.ForeignKey(related_name='children', blank=True, to='resources.Tag', null=True),
+            field=models.ForeignKey(related_name='children', blank=True, to='resources.Tag', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

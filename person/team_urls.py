@@ -40,7 +40,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^membership/$', MembershipRequestView.as_view(), name='team.membership'),
     url(r'^membership/(?P<pk>\d+)/$', MembershipRequestView.as_view(), name='team.membership'),
     url(r'^charter/$', TeamCharter.as_view(), name='team.charter'),
-    url(r'^elections/', include('elections.urls', namespace='elections')),
+    #url(r'^elections/', include('elections.urls', namespace='elections')),
 
     url(r'^chat/$', ChatWithTeam.as_view(), name='team.chat'),
     url(r'^chat/logs/$', ChatLogs.as_view(), name='team.chatlogs'),

@@ -44,6 +44,7 @@ user_urls.urlpatterns += [
     url(r'^topics/rss/$', ForumTopicFeed(), name='topic_feed'),
 ]
 
+app_name = 'forums'
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ForumList.as_view(), name="list"),
     url(r'^log/$', ModerationList.as_view(), name="log"),
@@ -63,7 +64,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^search/posts/$', CommentSearch(), name='search.posts'),
     url(r'^topics/$', TopicList.as_view(), name="topic_list"),
     url(r'^subscriptions/$', Subscriptions.as_view(), name="topic_subs"),
-    url(r'^phpbb/', include('forums.plugins.phpbb.urls', namespace='phpbb')),
+    #url(r'^phpbb/', include('forums.plugins.phpbb.urls', namespace='phpbb')),
     url(r'^~(?P<username>[^\/]+)/rss/$', ForumTopicFeed(), name='topic_feed'),
     url_tree(
         r'^c(?P<pk>\d+)/',

@@ -26,8 +26,8 @@ import os
 import sys
 import json
 
+from django.urls import reverse
 from django.contrib.auth.models import Permission, Group
-from django.core.urlresolvers import reverse
 from extratest.base import ExtraTestCase, MultipleFailureTestCase
 
 from inkscape.middleware import AutoBreadcrumbMiddleware, TrackCacheMiddleware

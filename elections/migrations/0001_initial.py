@@ -45,9 +45,9 @@ class Migration(migrations.Migration):
                 ('places', models.PositiveIntegerField(default=1)),
                 ('notes', models.TextField(help_text='Any notes about this election, why it was called or why new people are needed. Message is sent to constituents during the invitation and voting periods.', null=True, blank=True)),
                 ('log', models.TextField(null=True, blank=True)),
-                ('called_by', models.ForeignKey(help_text='You, the responsible person for this election.', to=settings.AUTH_USER_MODEL)),
-                ('constituents', models.ForeignKey(related_name='election_votes', to='person.Team', help_text='People allowed to vote.')),
-                ('for_team', models.ForeignKey(related_name='elections', to='person.Team', help_text='The team wanting new members.')),
+                ('called_by', models.ForeignKey(help_text='You, the responsible person for this election.', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('constituents', models.ForeignKey(related_name='election_votes', to='person.Team', help_text='People allowed to vote.', on_delete=models.CASCADE)),
+                ('for_team', models.ForeignKey(related_name='elections', to='person.Team', help_text='The team wanting new members.', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -55,8 +55,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('rank', models.PositiveIntegerField(null=True, blank=True)),
-                ('ballot', models.ForeignKey(related_name='votes', to='elections.Ballot')),
-                ('candidate', models.ForeignKey(to='elections.Candidate')),
+                ('ballot', models.ForeignKey(related_name='votes', to='elections.Ballot', on_delete=models.CASCADE)),
+                ('candidate', models.ForeignKey(to='elections.Candidate', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('rank',),
@@ -65,27 +65,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='candidate',
             name='election',
-            field=models.ForeignKey(related_name='_candidates', to='elections.Election'),
+            field=models.ForeignKey(related_name='_candidates', to='elections.Election', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='candidate',
             name='invitor',
-            field=models.ForeignKey(related_name='election_invitation', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='election_invitation', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='candidate',
             name='user',
-            field=models.ForeignKey(related_name='election_stump', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='election_stump', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='ballot',
             name='election',
-            field=models.ForeignKey(related_name='ballots', to='elections.Election'),
+            field=models.ForeignKey(related_name='ballots', to='elections.Election', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='ballot',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='vote',

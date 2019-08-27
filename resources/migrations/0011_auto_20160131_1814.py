@@ -28,15 +28,7 @@ class Migration(migrations.Migration):
             table=None,
         ),
         migrations.AlterModelTable(
-            name='categoryplugin',
-            table=None,
-        ),
-        migrations.AlterModelTable(
             name='gallery',
-            table=None,
-        ),
-        migrations.AlterModelTable(
-            name='galleryplugin',
             table=None,
         ),
         migrations.AlterModelTable(

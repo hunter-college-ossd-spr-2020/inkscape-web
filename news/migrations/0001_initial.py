@@ -4,29 +4,15 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import django.utils.timezone
 from django.conf import settings
-import cms.utils.permissions
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cms', '0011_auto_20150419_1006'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='LatestNewsPlugin',
-            fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('limit', models.PositiveIntegerField(help_text='Limits the number of items that will be displayed', verbose_name='Number of news items to show')),
-            ],
-            options={
-                'db_table': 'cmsplugin_news_latestnewsplugin',
-                'abstract': False,
-            },
-            bases=('cms.cmsplugin',),
-        ),
         migrations.CreateModel(
             name='News',
             fields=[
@@ -41,9 +27,9 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('link', models.URLField(help_text='This link will be used a absolute url for this item and replaces the view logic. <br />Note that by default this only applies for items with an empty "content" field.', null=True, verbose_name='Link', blank=True)),
                 ('language', models.CharField(help_text='Translated version of another news item.', max_length=5, verbose_name='Language', choices=[('de', 'German'), ('da', 'Danish'), ('fr', 'French'), ('nl', 'Dutch'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Chinese'), ('zh-tw', 'Simplified Chinese'), ('ko', 'Korean')])),
-                ('creator', models.ForeignKey(related_name='created_news', default=cms.utils.permissions.get_current_user, to=settings.AUTH_USER_MODEL)),
-                ('editor', models.ForeignKey(related_name='edited_news', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
-                ('translation_of', models.ForeignKey(related_name='translations', blank=True, to='cmsplugin_news.News', null=True)),
+                ('creator', models.ForeignKey(related_name='created_news', default=None, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('editor', models.ForeignKey(related_name='edited_news', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
+                ('translation_of', models.ForeignKey(related_name='translations', blank=True, to='news.News', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-pub_date',),

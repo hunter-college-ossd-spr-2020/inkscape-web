@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import inkscape.fields
-import cms.utils.permissions
 import django.utils.timezone
 from django.conf import settings
 import django.core.validators
@@ -15,7 +14,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ('auth', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cms', '0002_auto_20140816_1918'),
     ]
 
     operations = [
@@ -30,39 +28,13 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='CategoryPlugin',
-            fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('limit', models.PositiveIntegerField(verbose_name='Number of items per page')),
-                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[('list', 'Gallery List'), ('rows', 'Gallery Rows')])),
-                ('source', models.ForeignKey(to='resources.Category')),
-            ],
-            options={
-                'abstract': False,
-            },
-            bases=('cms.cmsplugin',),
-        ),
-        migrations.CreateModel(
             name='Gallery',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=64)),
-                ('group', models.ForeignKey(related_name='galleries', blank=True, to='auth.Group', null=True)),
+                ('group', models.ForeignKey(related_name='galleries', blank=True, to='auth.Group', null=True, on_delete=models.CASCADE)),
             ],
             bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='GalleryPlugin',
-            fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('limit', models.PositiveIntegerField(verbose_name='Number of items per page')),
-                ('display', models.CharField(blank=True, max_length=32, null=True, verbose_name='Display Style', choices=[('list', 'Gallery List'), ('rows', 'Gallery Rows')])),
-                ('source', models.ForeignKey(to='resources.Gallery')),
-            ],
-            options={
-                'abstract': False,
-            },
-            bases=('cms.cmsplugin',),
         ),
         migrations.CreateModel(
             name='License',
@@ -78,7 +50,7 @@ class Migration(migrations.Migration):
                 ('nc', models.BooleanField(default=False, verbose_name='Non-Commercial')),
                 ('nd', models.BooleanField(default=False, verbose_name='Non-Derivitive')),
                 ('visible', models.BooleanField(default=True)),
-                ('replaced', models.ForeignKey(verbose_name='Replaced by', blank=True, to='resources.License', null=True)),
+                ('replaced', models.ForeignKey(verbose_name='Replaced by', blank=True, to='resources.License', null=True, on_delete=models.CASCADE)),
             ],
             bases=(models.Model,),
         ),
@@ -87,7 +59,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('size', models.IntegerField(default=1024, verbose_name='Quota Size (KiB)')),
-                ('group', models.ForeignKey(related_name='quotas', null=True, blank=True, to='auth.Group', unique=True)),
+                ('group', models.ForeignKey(related_name='quotas', null=True, blank=True, to='auth.Group', unique=True, on_delete=models.CASCADE)),
             ],
             bases=(models.Model,),
         ),
@@ -113,13 +85,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ResourceFile',
             fields=[
-                ('resource_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='resources.Resource')),
+                ('resource_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='resources.Resource', on_delete=models.CASCADE)),
                 ('download', models.FileField(upload_to='resources/file', verbose_name='Consumable File')),
                 ('owner', models.BooleanField(default=True, verbose_name='Permission', choices=[(None, 'No permission'), (True, 'I own the work'), (False, 'I have permission')])),
                 ('signature', models.FileField(upload_to='resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
                 ('verified', models.BooleanField(default=False)),
                 ('mirror', models.BooleanField(default=False)),
-                ('license', models.ForeignKey(blank=True, to='resources.License', null=True)),
+                ('license', models.ForeignKey(blank=True, to='resources.License', null=True, on_delete=models.CASCADE)),
             ],
             bases=('resources.resource',),
         ),
@@ -136,7 +108,7 @@ class Migration(migrations.Migration):
                 ('sync_count', models.PositiveIntegerField(default=0)),
                 ('chk_time', models.DateTimeField(null=True, verbose_name='Check Time Date', blank=True)),
                 ('chk_return', models.IntegerField(null=True, verbose_name='Check Returned HTTP Code', blank=True)),
-                ('manager', models.ForeignKey(default=cms.utils.permissions.get_current_user, to=settings.AUTH_USER_MODEL)),
+                ('manager', models.ForeignKey(default=None, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             bases=(models.Model,),
         ),
@@ -145,7 +117,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=16)),
-                ('parent', models.ForeignKey(blank=True, to='resources.Tag', null=True)),
+                ('parent', models.ForeignKey(blank=True, to='resources.Tag', null=True, on_delete=models.CASCADE)),
             ],
             bases=(models.Model,),
         ),
@@ -153,8 +125,8 @@ class Migration(migrations.Migration):
             name='Vote',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('resource', models.ForeignKey(related_name='votes', to='resources.Resource')),
-                ('voter', models.ForeignKey(related_name='favorites', to=settings.AUTH_USER_MODEL)),
+                ('resource', models.ForeignKey(related_name='votes', to='resources.Resource', on_delete=models.CASCADE)),
+                ('voter', models.ForeignKey(related_name='favorites', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
                 ('vote', models.BooleanField(default=True)),
             ],
             bases=(models.Model,),
@@ -162,7 +134,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='category',
-            field=models.ForeignKey(related_name='items', blank=True, to='resources.Category', null=True),
+            field=models.ForeignKey(related_name='items', blank=True, to='resources.Category', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -174,7 +146,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resource',
             name='user',
-            field=models.ForeignKey(related_name='resources', default=cms.utils.permissions.get_current_user, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='resources', default=None, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -186,7 +158,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gallery',
             name='user',
-            field=models.ForeignKey(related_name='galleries', default=cms.utils.permissions.get_current_user, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='galleries', default=None, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

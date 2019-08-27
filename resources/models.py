@@ -21,17 +21,19 @@
 Models for resource system, provides license, categories and resource downloads.
 """
 
-__all__ = ('License', 'Category', 'Resource', 'ResourceMirror',
-           'Gallery', 'Vote', 'Quota', 'GalleryPlugin', 'CategoryPlugin',
-           'Tag', 'TagCategory')
-
 import os
 
-from django.db.models import *
+from django.db.models import (
+    Model, Manager, QuerySet, Q, Count, Sum,
+    ForeignKey, ManyToManyField, OneToOneField, CharField, SlugField, TextField, BooleanField,
+    URLField, FileField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField,
+    DateTimeField, DateField,
+    SET_NULL, CASCADE,
+)
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -41,74 +43,65 @@ from inkscape.fields import ResizedImageField
 
 from .storage import resource_storage
 from .slugify import set_slug
-from .utils import *
+from .utils import upto, MimeType, static, cached
 from .video_url import video_detect
 
-from uuid import uuid4
-
-# Thread-safe current user middleware getter.
-from cms.utils.permissions import get_current_user as get_user
-
-null = dict(null=True, blank=True)
+NULL = dict(null=True, blank=True)
 
 OWNS = (
-  (None, _('No permission')),
-  (True, _('I own the work')),
-  (False, _('I have permission')),
+    (None, _('No permission')),
+    (True, _('I own the work')),
+    (False, _('I have permission')),
 )
 
 DOMAINS = {
-  'inkscape.org': 'Inkscape Website',
-  'launchpad.net': 'Launchpad',
-  'deviantart.com': 'deviantArt',
-  'openclipart.org': 'OpenClipart (OCAL)',
+    'inkscape.org': 'Inkscape Website',
+    'launchpad.net': 'Launchpad',
+    'deviantart.com': 'deviantArt',
+    'openclipart.org': 'OpenClipart (OCAL)',
 }
 
 class License(Model):
-    name    = CharField(max_length=64)
-    code    = CharField(max_length=16)
-    link    = URLField(**null)
-    banner  = FileField(_('License Banner (svg:80x15)'), **upto('banner', 'license'))
-    icon    = FileField(_('License Icon (svg:100x40)'), **upto('icon', 'license'))
+    """A set license for a resource"""
+    name = CharField(max_length=64)
+    code = CharField(max_length=16)
+    link = URLField(**NULL)
+    banner = FileField(_('License Banner (svg:80x15)'), **upto('banner', 'license'))
+    icon = FileField(_('License Icon (svg:100x40)'), **upto('icon', 'license'))
 
-    at  = BooleanField(_('Attribution'), default=True)
-    sa  = BooleanField(_('Copyleft (Share Alike)'), default=False)
-    nc  = BooleanField(_('Non-Commercial'), default=False)
-    nd  = BooleanField(_('Non-Derivative'), default=False)
+    at = BooleanField(_('Attribution'), default=True) # pylint: disable=invalid-name
+    sa = BooleanField(_('Copyleft (Share Alike)'), default=False) # pylint: disable=invalid-name
+    nc = BooleanField(_('Non-Commercial'), default=False) # pylint: disable=invalid-name
+    nd = BooleanField(_('Non-Derivative'), default=False) # pylint: disable=invalid-name
 
-    selectable = BooleanField(default=True,
+    selectable = BooleanField(default=True,\
         help_text=_("This license can be selected by all users when uploading."))
-    filterable = BooleanField(default=True,
+    filterable = BooleanField(default=True,\
         help_text=_("This license can be used as a filter in gallery indexes."))
 
-    replaced = ForeignKey("License", verbose_name=_('Replaced by'), on_delete=SET_NULL, **null)
+    replaced = ForeignKey("License", verbose_name=_('Replaced by'), on_delete=SET_NULL, **NULL)
 
-    @property
-    def value(self):
-        return self.code
-
-    def is_free(self):
-        return not self.nc and not self.nd
-
-    def is_all_rights(self):
-        return self.nc and self.nd and not self.at
+    value = property(lambda self: self.code)
+    is_free = lambda self: not self.nc and not self.nd
+    is_all_rights = lambda self: self.nc and self.nd and not self.at
 
     def __str__(self):
-        return "%s (%s)" % (self.name, self.code)
+        return f"{self.name} ({self.code})"
 
 
 class Category(Model):
-    name   = CharField(max_length=128)
-    slug   = SlugField(max_length=128, unique=True)
-    desc   = TextField(validators=[MaxLengthValidator(1024)], **null)
+    """A category for a resource (type of thing)"""
+    name = CharField(max_length=128)
+    slug = SlugField(max_length=128, unique=True)
+    desc = TextField(validators=[MaxLengthValidator(1024)], **NULL)
     symbol = FileField(_('Category Icon (svg:128x128)'), **upto('icon', 'category'))
-    groups = ManyToManyField(Group, blank=True,
+    groups = ManyToManyField(Group, blank=True,\
         help_text=_("The category is restricted to these groups only."))
 
-    selectable = BooleanField(default=True,
+    selectable = BooleanField(default=True,\
         help_text=_("This category is not private/hidden from all users."))
 
-    filterable = BooleanField(default=True,
+    filterable = BooleanField(default=True,\
         help_text=_("This category can be used as a filter in gallery indexes."))
 
     acceptable_licenses = ManyToManyField(License, db_table='resource_category_acceptable_licenses')
@@ -120,24 +113,24 @@ class Category(Model):
 
     order = IntegerField(default=0)
 
-    class Meta:
-        ordering = 'order',
+    class Meta: # pylint: disable=too-few-public-methods,missing-docstring
+        ordering = ('order',)
+
+    value = property(lambda self: self.slug)
 
     def __str__(self):
         return self.name
 
-    def save(self, **kwargs):
-        if self.slug is None:
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not update_fields and self.slug is None:
             set_slug(self)
-        super(Category, self).save(**kwargs)
+        super().save(force_insert=force_insert, force_update=force_update,
+                     using=using, update_fields=update_fields)
 
     @property
     def parent(self):
+        """Try and get the categories's parent (resources queryset)"""
         return getattr(self, '_parent', Resource.objects.all())
-
-    @property
-    def value(self):
-        return self.slug
 
     @property
     def icon(self):
@@ -171,7 +164,7 @@ class TagQuerySet(QuerySet):
 
 class Tag(Model):
     name     = CharField(max_length=16, unique=True)
-    category = ForeignKey('TagCategory', related_name='tags', **null)
+    category = ForeignKey('TagCategory', related_name='tags', on_delete=SET_NULL, **NULL)
 
     objects  = TagQuerySet.as_manager()
 
@@ -222,25 +215,28 @@ class ResourceQuerySet(QuerySet):
             return reverse('resources', kwargs={'team': obj.team.slug})
         return reverse('resources')
 
-    def visible(self):
+    def visible(self, for_user):
         """Returns only visible items (or items owned by the user)"""
-        return self.filter(Q(user_id=get_user().pk) | (Q(published=True) & Q(is_removed=False)))
+        return self.filter(Q(user_id=for_user.pk) | (Q(published=True) & Q(is_removed=False)))
 
     def four(self):
         """Returns the latest four items"""
         return self[:4]
 
 class ResourceManager(Manager):
+    """Manages access to resource queries"""
     def get_queryset(self):
-        qs = ResourceQuerySet(self.model, using=self._db)
-        qs.query.select_related = True
-        return qs
+        """Get resources, but manage their related sets"""
+        qset = ResourceQuerySet(self.model, using=self._db)
+        qset.query.select_related = True
+        return qset
 
     def for_user(self, user):
-        qs = self.get_queryset().filter(Q(user=user.id) | Q(published=True))
+        """Return a set of items for the given user (visible to)"""
+        qset = self.get_queryset().filter(Q(user=user.id) | Q(published=True))
         if not user.has_perm('moderation.can_moderate'):
-            qs = qs.exclude(is_removed=True)
-        return qs
+            qset = qset.exclude(is_removed=True)
+        return qset
 
     def subscriptions(self):
         """Returns a queryset of users who get alerts for new resources"""
@@ -250,47 +246,57 @@ class ResourceManager(Manager):
         return subs.all()
 
     def downloads(self):
+        """Get the number of downloads"""
         return list(self.get_queryset().aggregate(Sum('downed')).values())[0]
 
     def views(self):
+        """Get the number of views"""
         return list(self.get_queryset().aggregate(Sum('viewed')).values())[0]
 
     def likes(self):
+        """Get the number of favs"""
         return list(self.get_queryset().aggregate(Sum('liked')).values())[0]
 
     def new(self):
+        """Return all the new items (no category)"""
         return self.get_queryset().filter(category__isnull=True)
 
     def trash(self):
-        return self.get_queryset().filter(gallery__isnull=True).exclude(category=Category.objects.get(pk=1))
+        """Return all items in the 'trash'"""
+        return self.get_queryset().filter(gallery__isnull=True)\
+            .exclude(category=Category.objects.get(pk=1))
 
     def pastes(self):
+        """Return all items in the paste-bin"""
         return self.get_queryset().filter(category=Category.objects.get(pk=1))
 
     def disk_usage(self):
+        """Return the amount of space taken by all the files"""
         # This could be done better by storing the file sizes
-        return sum(resource.download.size
-            for resource in Resource.objects.filter(pk__in=self.get_queryset())
+        return sum(resource.download.size\
+            for resource in Resource.objects.filter(pk__in=self.get_queryset())\
             if resource.download and os.path.exists(resource.download.path))
 
     def latest(self, column=None):
+        """Get the latest items"""
         if column:
-            return super(ResourceManager, self).latest(column)
-        return self.exclude(category=Category.objects.get(pk=1)).filter(published=True, is_removed=False).order_by('-created')[:4]
+            return super().latest(column)
+        return self.exclude(category=Category.objects.get(pk=1))\
+                   .filter(published=True, is_removed=False).order_by('-created')[:4]
 
 
 class GroupGalleryManager(Manager):
+    """Manage a gallery owned by a group"""
+    parent = property(lambda self: self.instance)
+
     def __init__(self, instance):
         super(GroupGalleryManager, self).__init__()
         self.instance = instance
 
     def get_queryset(self):
-        qs = super(GroupGalleryManager, self).get_queryset()
-        return qs.filter(galleries__group=self.instance)
-
-    @property
-    def parent(self):
-        return self.instance
+        """Get the queryset used for this gallery"""
+        qset = super().get_queryset()
+        return qset.filter(galleries__group=self.instance)
 
 Group.resources = property(lambda self: GroupGalleryManager(self))
 
@@ -309,61 +315,63 @@ class Resource(Model):
     CONTEST_RUNNER_UP = 2
     CONTEST_CONSIDER = 3
     EXTRA_CHOICES = (
-      (None, _('No extra status')),
-      (CONTEST_WINNER, _('Winner')),
-      (CONTEST_RUNNER_UP, _('Runner Up')),
-      (CONTEST_CONSIDER, _('Next Round')),
+        (None, _('No extra status')),
+        (CONTEST_WINNER, _('Winner')),
+        (CONTEST_RUNNER_UP, _('Runner Up')),
+        (CONTEST_CONSIDER, _('Next Round')),
     )
     EXTRA_CSS = ['', 'ribbon winner', 'ribbon runnerup', 'ribbon consider']
 
-    user      = ForeignKey(settings.AUTH_USER_MODEL, related_name='resources', default=get_user)
-    name      = CharField(max_length=64)
-    slug      = SlugField(max_length=70, unique=True)
-    desc      = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **null)
-    category  = ForeignKey(Category, verbose_name=_("Category"), related_name='items', **null)
-    tags      = ManyToManyField(Tag, verbose_name=_("Tags"), related_name='resources', blank=True)
+    user = ForeignKey(settings.AUTH_USER_MODEL, related_name='resources', on_delete=CASCADE)
+    name = CharField(max_length=64)
+    slug = SlugField(max_length=70, unique=True)
+    desc = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **NULL)
+    category = ForeignKey(Category, verbose_name=_("Category"),
+                          related_name='items', on_delete=CASCADE, **NULL)
+    tags = ManyToManyField(Tag, verbose_name=_("Tags"), related_name='resources', blank=True)
 
-    created   = DateTimeField(**null)
-    edited    = DateTimeField(**null) # End of copyright, last file-edit/updated.
+    created = DateTimeField(**NULL)
+    edited = DateTimeField(**NULL) # End of copyright, last file-edit/updated.
     published = BooleanField(default=False)
 
     thumbnail = ResizedImageField(_('Thumbnail'), 190, 190, **upto('thumb'))
     rendering = ResizedImageField(_('Rendering'), 780, 600, **upto('render'))
 
-    link      = URLField(_('External Link'), **null)
-    liked     = PositiveIntegerField(default=0)
-    viewed    = PositiveIntegerField(default=0)
-    downed    = PositiveIntegerField(_('Downloaded'), default=0)
-    fullview  = PositiveIntegerField(_('Full Views'), default=0)
+    link = URLField(_('External Link'), **NULL)
+    liked = PositiveIntegerField(default=0)
+    viewed = PositiveIntegerField(default=0)
+    downed = PositiveIntegerField(_('Downloaded'), default=0)
+    fullview = PositiveIntegerField(_('Full Views'), default=0)
 
-    media_type = CharField(_('File Type'), max_length=128, **null)
-    media_x    = IntegerField(**null)
-    media_y    = IntegerField(**null)
+    media_type = CharField(_('File Type'), max_length=128, **NULL)
+    media_x = IntegerField(**NULL)
+    media_y = IntegerField(**NULL)
 
-    extra_status = PositiveSmallIntegerField(choices=EXTRA_CHOICES, **null)
+    extra_status = PositiveSmallIntegerField(choices=EXTRA_CHOICES, **NULL)
     extra_css = property(lambda self: self.EXTRA_CSS[self.extra_status or 0])
 
     # ======== ITEMS FROM RESOURCEFILE =========== #
-    download   = FileField(_('Consumable File'), storage=resource_storage,
-            **upto('file', blank=True))
+    download = FileField(_('Consumable File'), storage=resource_storage,
+                         **upto('file', blank=True))
 
-    license    = ForeignKey(License, verbose_name=_("License"), on_delete=SET_NULL, **null)
-    owner      = BooleanField(_('Permission'), choices=OWNS, default=True)
-    owner_name = CharField(_('Owner\'s Name'), max_length=128, **null)
+    license = ForeignKey(License, verbose_name=_("License"), on_delete=SET_NULL, **NULL)
+    owner = BooleanField(_('Permission'), choices=OWNS, default=True)
+    owner_name = CharField(_('Owner\'s Name'), max_length=128, **NULL)
 
-    signature  = FileField(_('Signature/Checksum'), **upto('sigs'))
-    verified   = BooleanField(default=False)
-    mirror     = BooleanField(default=False)
-    embed      = BooleanField(default=False)
+    signature = FileField(_('Signature/Checksum'), **upto('sigs'))
+    verified = BooleanField(default=False)
+    mirror = BooleanField(default=False)
+    embed = BooleanField(default=False)
 
-    checked_by = ForeignKey(settings.AUTH_USER_MODEL, related_name='resource_checks', **null)
+    checked_by = ForeignKey(settings.AUTH_USER_MODEL, related_name='resource_checks',
+                            on_delete=SET_NULL, **NULL)
     checked_sig = FileField(_('Counter Signature'), **upto('sigs'))
-    is_removed = BooleanField(default=False,
+    is_removed = BooleanField(default=False,\
         help_text=_('When checked, resource is removed from view by moderator.'))
 
     objects = ResourceManager()
 
-    class Meta:
+    class Meta: # pylint: disable=too-few-public-methods,missing-docstring
         get_latest_by = 'created'
         permissions = (
             ("can_curate", "User can curate resources."),
@@ -633,11 +641,11 @@ class Resource(Model):
 
 class ResourceRevision(Model):
     """When a resource gets edited and the file is changed, the old file ends up here."""
-    resource   = ForeignKey(Resource, related_name='revisions')
-    download   = FileField(_('Consumable File'), **upto('file', blank=False))
-    signature  = FileField(_('Signature/Checksum'), **upto('sigs'))
-    created    = DateTimeField(auto_now=True)
-    version    = IntegerField(default=0)
+    resource = ForeignKey(Resource, related_name='revisions', on_delete=CASCADE)
+    download = FileField(_('Consumable File'), **upto('file', blank=False))
+    signature = FileField(_('Signature/Checksum'), **upto('sigs'))
+    created = DateTimeField(auto_now=True)
+    version = IntegerField(default=0)
 
     def __str__(self):
         return "Version %d" % self.version
@@ -655,81 +663,6 @@ class ResourceRevision(Model):
             obj = cls(**kw)
             obj.save()
             return obj
-
-
-class MirrorQuerySet(QuerySet):
-    def select_mirror(self, update=None):
-        """Selects the next best mirror randomly from the mirror pool"""
-        qs = self.filter(chk_return=200)
-        if update:
-            qs = qs.filter(sync_time__gte=update)
-        # Attempt to weight the mirrors (needs CS review)
-        import random
-        total = sum(mirror.capacity for mirror in qs)
-        compare = random.uniform(0, total)
-        upto = 0
-        for mirror in qs:
-            if upto + mirror.capacity > compare:
-                return mirror
-            upto += mirror.capacity
-        return None
-
-    def breadcrumb_name(self):
-        return _("Download Mirrors")
-
-    def get_absolute_url(self):
-        return reverse('mirror')
-
-
-class ResourceMirror(Model):
-    uuid     = CharField(_("Unique Identifier"), max_length=64, default=uuid4)
-    name     = CharField(max_length=64)
-    manager  = ForeignKey(settings.AUTH_USER_MODEL, default=get_user)
-    url      = URLField(_("Full Base URL"))
-    capacity = PositiveIntegerField(_("Capacity (MB/s)"))
-    created  = DateTimeField(default=now)
-
-    sync_time  = DateTimeField(**null)
-    sync_count = PositiveIntegerField(default=0)
-
-    chk_time   = DateTimeField(_("Check Time Date"), **null)
-    chk_return = IntegerField(_("Check Returned HTTP Code"), **null)
-
-    objects = MirrorQuerySet.as_manager()
-
-    @property
-    def host(self):
-        return self.url.split('/')[2]
-
-    def get_absolute_url(self):
-        return reverse('mirror', kwargs={'slug': self.uuid})
-
-    @staticmethod
-    def resources():
-        """List of all mirrored resources"""
-        return Resource.objects.filter(mirror=True)
-
-    @property
-    def parent(self):
-        return ResourceMirror.objects.all()
-
-    def do_sync(self):
-        self.sync_time = now()
-        self.sync_count += 1
-        return self.save()
-
-    def do_check(self):
-        raise NotImplementedError("Mirror Checking Not available yet.")
-        self.chk_return = 200
-        self.chk_time   = now()
-        self.save()
-
-    def get_url(self, item):
-        filename = os.path.basename(item.download.name)
-        return os.path.join(self.url, 'file', filename)
-
-    def __str__(self):
-        return "Mirror '%s' from '%s'" % (self.name, self.host)
 
 
 class GalleryQuerySet(QuerySet):
@@ -757,42 +690,47 @@ class GalleryQuerySet(QuerySet):
 
 
 class Gallery(Model):
+    """A collection of resources"""
     GALLERY_STATUSES = (
-      (None, 'No Status'),
-      (' ', 'Casual Wish'),
-      ('1', 'Draft'),
-      ('2', 'Proposal'),
-      ('3', 'Reviewed Proposal'),
-      ('+', 'Under Development'),
-      ('=', 'Complete'),
-      ('-', 'Rejected'),
+        (None, 'No Status'),
+        (' ', 'Casual Wish'),
+        ('1', 'Draft'),
+        ('2', 'Proposal'),
+        ('3', 'Reviewed Proposal'),
+        ('+', 'Under Development'),
+        ('=', 'Complete'),
+        ('-', 'Rejected'),
     )
-    user = ForeignKey(settings.AUTH_USER_MODEL, related_name='galleries', default=get_user)
-    group = ForeignKey(Group, related_name='galleries', **null)
-    category = ForeignKey(Category, related_name='galleries', **null)
+    user = ForeignKey(settings.AUTH_USER_MODEL, related_name='galleries', on_delete=CASCADE)
+    group = ForeignKey(Group, related_name='galleries', on_delete=SET_NULL, **NULL)
+    category = ForeignKey(Category, related_name='galleries', on_delete=CASCADE, **NULL)
 
     name = CharField(max_length=64)
     slug = SlugField(max_length=70, unique=True)
-    desc = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **null)
+    desc = TextField(_('Description'), validators=[MaxLengthValidator(50192)], **NULL)
     thumbnail = ResizedImageField(_('Thumbnail'), 190, 190, **upto('thumb'))
-    status = CharField(max_length=1, db_index=True, choices=GALLERY_STATUSES, **null)
+    status = CharField(max_length=1, db_index=True, choices=GALLERY_STATUSES, **NULL)
 
     items = ManyToManyField(Resource, related_name='galleries', blank=True)
 
-    contest_submit = DateField(help_text=_('Start a contest in this gallery on this date (UTC).'), **null)
-    contest_voting = DateField(help_text=_('Finish the submissions and start voting (UTC).'), **null)
-    contest_count  = DateField(help_text=_('Voting is finished, but the votes are being counted.'), **null)
-    contest_finish = DateField(help_text=_('Finish the contest, voting closed, winner announced (UTC).'), **null)
+    contest_submit = DateField(
+        help_text=_('Start a contest in this gallery on this date (UTC).'), **NULL)
+    contest_voting = DateField(
+        help_text=_('Finish the submissions and start voting (UTC).'), **NULL)
+    contest_count = DateField(
+        help_text=_('Voting is finished, but the votes are being counted.'), **NULL)
+    contest_finish = DateField(
+        help_text=_('Finish the contest, voting closed, winner announced (UTC).'), **NULL)
 
-    _is_generic   = lambda self, a, b: a and b and a <= now().date() < b
-    is_contest    = property(lambda self: bool(self.contest_submit))
-    is_pending    = property(lambda self: self.contest_submit and self.contest_submit > now().date())
+    _is_generic = lambda self, a, b: a and b and a <= now().date() < b
+    is_contest = property(lambda self: bool(self.contest_submit))
+    is_pending = property(lambda self: self.contest_submit and self.contest_submit > now().date())
     is_submitting = property(lambda self: self._is_generic(self.contest_submit, self.submitting_to))
-    is_voting     = property(lambda self: self._is_generic(self.contest_voting, self.voting_to))
-    is_counting   = property(lambda self: self._is_generic(self.contest_count, self.contest_finish))
-    is_finished   = property(lambda self: self.contest_finish and self.contest_finish <= now().date())
+    is_voting = property(lambda self: self._is_generic(self.contest_voting, self.voting_to))
+    is_counting = property(lambda self: self._is_generic(self.contest_count, self.contest_finish))
+    is_finished = property(lambda self: self.contest_finish and self.contest_finish <= now().date())
     submitting_to = property(lambda self: self.contest_voting or self.contest_finish)
-    voting_to     = property(lambda self: self.contest_count or self.contest_finish)
+    voting_to = property(lambda self: self.contest_count or self.contest_finish)
 
     objects = GalleryQuerySet.as_manager()
 
@@ -885,6 +823,7 @@ class Gallery(Model):
 
 
 class VoteManager(Manager):
+    """Return vote calculations"""
     def items(self):
         """Turns a Vote selection into a Resource selection, translating the filters"""
         return Resource.objects.filter(published=True,\
@@ -897,39 +836,20 @@ class VoteManager(Manager):
             resource.liked = self.count()
             resource.save()
             return resource
+        return None
 
 class Vote(Model):
     """Vote for a resource in some way"""
-    resource = ForeignKey(Resource, related_name='votes')
-    voter    = ForeignKey(settings.AUTH_USER_MODEL, related_name='favorites')
+    resource = ForeignKey(Resource, related_name='votes', on_delete=CASCADE)
+    voter = ForeignKey(settings.AUTH_USER_MODEL, related_name='favorites', on_delete=CASCADE)
 
     objects = VoteManager()
 
 
 class Quota(Model):
-    group    = OneToOneField(Group, related_name='quotas', **null)
-    size     = IntegerField(_("Quota Size (KiB)"), default=1024)
+    """An amount of space a user is allowed to take up on the server with resource files"""
+    group = OneToOneField(Group, related_name='quotas', on_delete=SET_NULL, **NULL)
+    size = IntegerField(_("Quota Size (KiB)"), default=1024)
 
     def __str__(self):
         return str(self.group)
-
-# ------------- CMS ------------ #
-
-from cms.models import CMSPlugin
-
-DISPLAYS = (
-  ('icons', _("Gallery Icons")),
-  ('rows', _("Gallery Rows")),
-)
-
-class GalleryPlugin(CMSPlugin):
-    limit    = PositiveIntegerField(_('Number of items per page'))
-    source   = ForeignKey(Gallery)
-    display  = CharField(_("Display Style"), max_length=32, choices=DISPLAYS, **null)
-
-
-class CategoryPlugin(CMSPlugin):
-    limit    = PositiveIntegerField(_('Number of items per page'))
-    source   = ForeignKey(Category)
-    display  = CharField(_("Display Style"), max_length=32, choices=DISPLAYS, **null)
-

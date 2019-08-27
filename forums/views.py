@@ -27,12 +27,12 @@ from django.utils.timezone import make_aware
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
-from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
 
 from django_comments.models import CommentFlag
 

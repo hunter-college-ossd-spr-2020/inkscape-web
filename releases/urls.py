@@ -34,6 +34,7 @@ version_urls = url_tree( # pylint: disable=invalid-name
     url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
 )
 
+app_name = 'releases'
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', DownloadRedirect.as_view(), name="download"),
     url_tree(

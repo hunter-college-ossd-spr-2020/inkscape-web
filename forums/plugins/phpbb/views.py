@@ -32,7 +32,7 @@ New forum sites can be added to the settings.py as in this example:
 from django.views.generic import TemplateView
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 from ...mixins import ModeratorRequired

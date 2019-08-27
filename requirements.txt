@@ -4,6 +4,7 @@ python-dateutil==2.7.3
 pygments==2.2.0
 xapian-haystack==2.1.1
 psycopg2-binary==2.7.5
+pillow==6.1.0
 
 # Django pieces.
 django==2.1

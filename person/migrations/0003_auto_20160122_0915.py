@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             name='Friendship',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('from_user', models.ForeignKey(related_name='friends', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(related_name='from_friends', to=settings.AUTH_USER_MODEL)),
+                ('from_user', models.ForeignKey(related_name='friends', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(related_name='from_friends', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='admin',
-            field=models.ForeignKey(related_name='admin_teams', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='admin_teams', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='mailman',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='group',
-            field=models.OneToOneField(related_name='team', default=1, to='auth.Group'),
+            field=models.OneToOneField(related_name='team', default=1, to='auth.Group', on_delete=models.CASCADE),
             preserve_default=False,
         ),
         migrations.AlterField(

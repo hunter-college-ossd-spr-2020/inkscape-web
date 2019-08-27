@@ -26,6 +26,7 @@ from django.conf import settings
 
 from django.db.models import (
     Model, Manager, CharField, IntegerField, ForeignKey, SlugField,
+    CASCADE, SET_NULL
 )
 
 MENU_TYPES = (
@@ -45,8 +46,8 @@ class MenuRoot(Model):
 
 class MenuItem(Model):
     """A collection menus"""
-    root = ForeignKey(MenuRoot, related_name='items')
-    parent = ForeignKey('self', null=True, blank=True, related_name='children')
+    root = ForeignKey(MenuRoot, related_name='items', on_delete=CASCADE)
+    parent = ForeignKey('self', null=True, blank=True, related_name='children', on_delete=SET_NULL)
     category = SlugField(max_length=12, choices=MENU_TYPES, null=True, blank=True)
     # This must NOT be a URLField as a URLField is restricted to external
     # fully qualified urls and doesn't accept local page URLs.
@@ -54,10 +55,6 @@ class MenuItem(Model):
     name = CharField(max_length=128)
     title = CharField(max_length=255, null=True, blank=True)
     order = IntegerField(default=0)
-
-    cms_id = IntegerField('Content ID', null=True, blank=True,\
-        help_text="A content id (sometimes the CMS ID) which can link pages"\
-        " in different languages together.")
 
     class Meta:
         ordering = ('order',)

@@ -27,15 +27,16 @@ from string import ascii_letters
 
 from py3votecore.stv import STV
 
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 
 from django.conf import settings
 from django.db.models import (
     Manager, Model, QuerySet, SlugField, ForeignKey, CharField, DateTimeField,
-    DateField, PositiveIntegerField, TextField, BooleanField
+    DateField, PositiveIntegerField, TextField, BooleanField,
+    SET_NULL, CASCADE, PROTECT,
 )
 
 from person.models import Team
@@ -79,13 +80,13 @@ class Election(Model):
     slug = SlugField(max_length=32,\
          help_text=_('Unique name used to identify this election in urls.'))
 
-    for_team = ForeignKey(Team, related_name='elections',\
+    for_team = ForeignKey(Team, related_name='elections', on_delete=PROTECT,\
         help_text=_('The team wanting new members.'))
     for_role = CharField(max_length=128, null=True, blank=True,\
         help_text=_('The role the elected members will have in the team.'))
-    constituents = ForeignKey(Team, related_name='election_votes',\
+    constituents = ForeignKey(Team, related_name='election_votes', on_delete=PROTECT,\
         help_text=_('People allowed to vote.'))
-    called_by = ForeignKey(User,\
+    called_by = ForeignKey(User, on_delete=PROTECT,\
         help_text=_('You, the responsible person for this election.'))
     called_on = DateTimeField(auto_now=True)
 
@@ -316,9 +317,9 @@ class Candidate(Model):
     """Each candidate who is standing for an election"""
     slug = SlugField(default=get_hash)
 
-    election = ForeignKey(Election, related_name='_candidates')
-    invitor = ForeignKey(User, related_name='election_invitation')
-    user = ForeignKey(User, related_name='election_stump')
+    election = ForeignKey(Election, related_name='_candidates', on_delete=PROTECT)
+    invitor = ForeignKey(User, related_name='election_invitation', on_delete=PROTECT)
+    user = ForeignKey(User, related_name='election_stump', on_delete=PROTECT)
 
     responded = BooleanField(default=False)
     accepted = BooleanField(default=False)
@@ -337,13 +338,13 @@ class BallotManager(Manager):
         """Collect votes and save to log"""
         for ballot in self.get_queryset():
             yield {
-              'user_id': ballot.user.pk,
-              'first_name': ballot.user.first_name,
-              'last_name': ballot.user.last_name,
-              'username': ballot.user.username,
-              'email': ballot.user.email,
-              'responded': ballot.responded,
-              'paper': list(ballot.get_vote()),
+                'user_id': ballot.user.pk,
+                'first_name': ballot.user.first_name,
+                'last_name': ballot.user.last_name,
+                'username': ballot.user.username,
+                'email': ballot.user.email,
+                'responded': ballot.responded,
+                'paper': list(ballot.get_vote()),
             }
 
     def get_votes(self):
@@ -363,8 +364,8 @@ class Ballot(Model):
     A vote is any user's capacity to vote on an election. 
     """
     slug = SlugField(default=get_hash, unique=True)
-    user = ForeignKey(User, related_name='ballots')
-    election = ForeignKey(Election, related_name='ballots')
+    user = ForeignKey(User, related_name='ballots', on_delete=CASCADE)
+    election = ForeignKey(Election, related_name='ballots', on_delete=CASCADE)
     responded = BooleanField(default=False)
 
     objects = BallotManager()
@@ -396,11 +397,10 @@ class Vote(Model):
     """
     A ranked vote for a specific candidate
     """
-    ballot = ForeignKey(Ballot, related_name='votes')
-    candidate = ForeignKey(Candidate)
+    ballot = ForeignKey(Ballot, related_name='votes', on_delete=CASCADE)
+    candidate = ForeignKey(Candidate, on_delete=PROTECT)
     rank = PositiveIntegerField(**null)
 
     class Meta:
         unique_together = (('ballot', 'rank'), ('ballot', 'candidate'))
         ordering = ('rank',)
-

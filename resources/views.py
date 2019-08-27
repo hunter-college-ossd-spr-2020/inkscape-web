@@ -22,12 +22,12 @@
 """
 Views for resource system, adding items, entering new categories for widgets etc
 """
+from django.urls import reverse
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.views.generic import DetailView, ListView, DeleteView, CreateView, UpdateView, View

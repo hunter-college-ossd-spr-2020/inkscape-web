@@ -24,8 +24,8 @@ Core middleware for the inkscape website.
 import logging
 from inspect import isclass
 
+from django.urls import reverse
 from django.core.cache import caches
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_text
 

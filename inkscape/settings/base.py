@@ -58,9 +58,7 @@ EXTRA_APPS = []
 SESSION_COOKIE_AGE = 1209600 # Two weeks
 ENABLE_CACHING = False
 ENABLE_DEBUG_TOOLBAR = False
-ENABLE_DESIGN_TOOLBAR = False
 ENABLE_PROFILER_TOOLBAR = False
-ENABLE_PYMPLER_TOOLBAR = False
 CACHE_PAGE_SETTING = 3600
 
 DEBUG = False
@@ -76,19 +74,37 @@ HAYSTACK_SIGNAL_PROCESSOR = 'inkscape.search.LimitedSignalProcessor'
 HAYSTACK_REALTIME_MODELS = ['forums.forumtopic', 'django_comments.comment']
 HAYSTACK_ROUTERS = ['forums.routers.ForumRouter']
 HAYSTACK_CONNECTIONS = {
-      'default': {
-          'ENGINE': 'xapian_backend.XapianEngine',
-          'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
-          'FLAGS': (
-              xapian.QueryParser.FLAG_PHRASE |
-              xapian.QueryParser.FLAG_BOOLEAN |
-              xapian.QueryParser.FLAG_LOVEHATE |
-              xapian.QueryParser.FLAG_WILDCARD |
-              xapian.QueryParser.FLAG_PURE_NOT |
-              xapian.QueryParser.FLAG_CJK_NGRAM
-          )
-      },
-  }
+    'default': {
+        'ENGINE': 'xapian_backend.XapianEngine',
+        'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian', 'website'),
+        'EXCLUDED_INDEXES': ['forums.search_indexes.TopicIndex',
+                             'forums.search_indexes.CommentIndex'],
+        'FLAGS': (
+            xapian.QueryParser.FLAG_PHRASE |
+            xapian.QueryParser.FLAG_BOOLEAN |
+            xapian.QueryParser.FLAG_LOVEHATE |
+            xapian.QueryParser.FLAG_WILDCARD |
+            xapian.QueryParser.FLAG_PURE_NOT |
+            xapian.QueryParser.FLAG_CJK_NGRAM
+        )
+    },
+    'forums': {
+        'ENGINE': 'xapian_backend.XapianEngine',
+        'PATH': os.path.join(PROJECT_PATH, 'data', 'xpaian', 'forums'),
+        'EXCLUDED_INDEXES': [
+            'resources.search_indexes.ResourcesIndex',
+            'news.search_indexes.NewsIndex',
+        ],
+        'FLAGS': (
+            xapian.QueryParser.FLAG_PHRASE |
+            xapian.QueryParser.FLAG_BOOLEAN |
+            xapian.QueryParser.FLAG_LOVEHATE |
+            xapian.QueryParser.FLAG_WILDCARD |
+            xapian.QueryParser.FLAG_PURE_NOT |
+            xapian.QueryParser.FLAG_CJK_NGRAM
+        )
+    },
+}
 
 HOST_ROOT = SITE_ADDRESS
 SITE_ROOT = "http://%s" % SITE_ADDRESS
@@ -96,7 +112,6 @@ SITE_ROOT = "http://%s" % SITE_ADDRESS
 # Place where files can be uploaded
 # Place where media can be served from in development mode
 LOGBOOK_ROOT = os.path.join(PROJECT_PATH, 'data', 'logs')
-DESIGN_ROOT = os.path.join(PROJECT_PATH, 'data', 'static', 'design')
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'data', 'media', '')
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'data', 'static')
 FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'data', 'fixtures'),)
@@ -108,10 +123,8 @@ LOCALE_PATHS = (
 
 TEMPLATES = [{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [DESIGN_ROOT],
     'OPTIONS': {
         'loaders': [
-            'optional_design.template_loaders.OptionalDesign',
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         ],
@@ -126,16 +139,11 @@ TEMPLATES = [{
             'django.template.context_processors.request',
             'django.template.context_processors.media',
             'django.template.context_processors.static',
-            'cms.context_processors.cms_settings',
-            'sekizai.context_processors.sekizai',
         )
     }
 }]
 
 MIDDLEWARE_CLASSES = (
-    'cog.middleware.UserOnErrorMiddleware',
-    'optional_design.middleware.OptionalDesignMiddleware',
-    #'inkscape.middleware.AutoBreadcrumbMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,25 +152,15 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cmsplugin_diff.middleware.EditCommentMiddleware',
     'person.middleware.SetLastVisitMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'forums.middleware.RecentUsersMiddleware'
+    #'forums.middleware.RecentUsersMiddleware'
 )
 
 # ===== CACHING ===== #
 
 if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
-    CMS_CACHE_DURATIONS = {
-        'content': CACHE_PAGE_SETTING,
-        'permissions': 1800, # Half an hour for page permissions
-        'menus': 0,
-    }
-
     MIDDLEWARE_CLASSES = \
       ('django.middleware.cache.UpdateCacheMiddleware',) + \
       MIDDLEWARE_CLASSES + \
@@ -179,6 +177,7 @@ ROOT_URLCONF = 'inkscape.urls'
 INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
+    'alerts',
     'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
@@ -198,33 +197,12 @@ INSTALLED_APPS = (
     'haystack',
     'el_menu',
     'docs',
-    #'resources',
+    'resources',
     #'moderation',
     #'releases',
-    #'forums',
-    #'django_comments',
-    #'alerts',
-    #'markdown_deux',
-)
-
-TRANSLATED_APPS = (
-    'alerts',
-    'cmstabs',
-    'cmsplugin_alerts',
-    'cmsplugin_diff',
-    'cmsplugin_image',
-    'cmsplugin_news',
-    'cmsplugin_search',
-    'cmsplugin_toc',
-    'docs',
     'forums',
-    'haystack',
-    'inkscape',
-    'moderation',
-    'person',
-    'elections',
-    'releases',
-    'resources',
+    'django_comments',
+    #'markdown_deux',
 )
 
 COMMENTS_APP = 'forums'
@@ -240,49 +218,6 @@ ALERTS_MESSAGE_PERMISSION = 'forums.can_post_topic'
 ALERTS_MESSAGE_DENIED = _('You must post to the forum before you can send personal messages.')
 
 AUTH_USER_MODEL = 'person.User'
-
-# activate automatically filled menues and deactivate redirection to English
-# for non-translated cms pages
-CMS_LANGUAGES = {
-    'default': {
-        'public': True,
-        'fallbacks': ['en'],
-        'hide_untranslated': False, # fill the menu
-        'redirect_on_fallback': False,
-        # stay in the selected language instead of going to /en/ urls
-    }
-}
-
-CMS_TEMPLATES = (
-    ('cms/front.html', _('Three Column Page')),
-    ('cms/super.html', _('Full Screen')),
-    ('cms/normal.html', _('Normal Page')),
-    ('cms/develop.html', _('Developer Page')),
-    ('cms/withside.html', _('Side Bar Page')),
-)
-
-# activate automatic filling-in of contents for non-translated cms pages
-CMS_PLACEHOLDER_CONF = {
-    placeholder : {'language_fallback': True,} for placeholder in [
-        'normal_template_content',
-        'front_body',
-        'column_one',
-        'column_two',
-        'column_three',
-        'sidebar_template_content'
-    ]
-}
-
-CMS_APPLICATIONS_URLS = (
-    ('cmsplugin_news.urls', 'News'),
-)
-CMS_APPHOOKS = (
-    'cmsplugin_news.cms_app.NewsAppHook',
-    'inkscape.cms_app.SearchApphook',
-)
-CMS_NAVIGATION_EXTENDERS = (
-    ('cmsplugin_news.navigation.get_nodes', 'News navigation'),
-)
 
 CKEDITOR_SETTINGS = {
     'disableNativeSpellChecker': False,

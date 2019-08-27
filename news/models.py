@@ -21,15 +21,12 @@
 
 from django.db.models import Model, Manager,\
     CharField, TextField, SlugField, BooleanField, DateTimeField, ForeignKey,\
-    ImageField, URLField, PositiveIntegerField
+    ImageField, URLField, PositiveIntegerField, SET_NULL, CASCADE
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
-
-from cms.models import CMSPlugin
-from cms.utils.permissions import get_current_user as get_user
 
 from .settings import OTHER_LANGS, DEFAULT_LANG, \
     LINK_AS_ABSOLUTE_URL, USE_LINK_ON_EMPTY_CONTENT_ONLY
@@ -70,6 +67,7 @@ class PublishedManager(Manager):
 
 
 class News(Model):
+    """Basic news article"""
     title = CharField(_('Title'), max_length=255)
     slug = SlugField(_('Slug'), unique_for_date='pub_date', null=True,\
            help_text=_('A slug is a short name which provides a unique url.'))
@@ -79,7 +77,7 @@ class News(Model):
 
     is_published = BooleanField(_('Published'), default=False)
     pub_date = DateTimeField(_('Publication date'), default=timezone.now)
-    group = ForeignKey(Group, null=True, blank=True,\
+    group = ForeignKey(Group, null=True, blank=True, on_delete=SET_NULL,\
         help_text=_('News group indicates that this news is exclusive to '\
           'this group only. This usually means it won\'t be visible on '\
           'the main news listings, but instead is listed elsewhere.'))
@@ -87,8 +85,10 @@ class News(Model):
     created = DateTimeField(auto_now_add=True, editable=False)
     updated = DateTimeField(auto_now=True, editable=False)
 
-    creator = ForeignKey(settings.AUTH_USER_MODEL, related_name="created_news", default=get_user)
-    editor = ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="edited_news")
+    creator = ForeignKey(settings.AUTH_USER_MODEL, related_name="created_news",
+                         on_delete=SET_NULL, null=True, blank=True)
+    editor = ForeignKey(settings.AUTH_USER_MODEL, related_name="edited_news",
+                        on_delete=SET_NULL, null=True, blank=True)
 
     link = URLField(_('Link'), blank=True, null=True,\
          help_text=_('This link will be used as absolute url for this item '\
@@ -104,7 +104,8 @@ class News(Model):
     # that generic class.
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS,\
         db_index=True, help_text=_("Translated version of another news item."))
-    translation_of = ForeignKey("self", blank=True, null=True, related_name="translations")
+    translation_of = ForeignKey("self", blank=True, null=True, related_name="translations",
+                                on_delete=SET_NULL)
 
     # django uses the first object manager for reverse lookups.
     # Make sure normal manager is first.
@@ -202,25 +203,10 @@ class NewsBacklink(Model):
     """
     How this news was shared with the world.
     """
-    news = ForeignKey(News, related_name='backlinks')
+    news = ForeignKey(News, related_name='backlinks', on_delete=CASCADE)
     url = URLField()
-    social_media = ForeignKey(SocialMediaType, null=True, blank=True)
-    delibrate = BooleanField(default=True,
-        help_text=_('Was this post done by a known contributor?'))
+    social_media = ForeignKey(SocialMediaType, null=True, blank=True, on_delete=SET_NULL)
+    delibrate = BooleanField(default=True, help_text=_('Was this post by a known contributor?'))
 
     def __str__(self):
         return self.url
-
-
-class LatestNewsPlugin(CMSPlugin):
-    """
-        Model for the settings when using the latest news cms plugin
-    """
-    limit = PositiveIntegerField(_('Number of news items to show'),
-                    help_text=_('Limits the number of items that will be displayed'))
-    group = ForeignKey(Group, blank=True, null=True,
-        help_text=_('Limit this news plugin to this group only. If set to '
-          ' "None" then this plugin will only show news with NO group.'))
-
-
-

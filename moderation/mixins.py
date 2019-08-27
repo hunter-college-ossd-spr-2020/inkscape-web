@@ -21,12 +21,12 @@
 Basic mixin classes for moderators
 """
 
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import DetailView
 from django.http import JsonResponse

@@ -13,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.forms.models import ModelMultipleChoiceField
 from django.forms.widgets import Select, SelectMultiple
 
-from django.core.urlresolvers import reverse
 
 from .validators import Range
 

@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cmsplugin_news', '0003_auto_20160302_0515'),
+        ('news', '0003_auto_20160302_0515'),
     ]
 
     operations = [

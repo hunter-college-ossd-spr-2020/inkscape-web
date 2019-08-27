@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('reply_id', models.CharField(help_text='Either the previous message in the chain, or the parent id', max_length=255, null=True, db_index=True, blank=True)),
                 ('subject', models.CharField(help_text='A matchable subject line for this comment.', max_length=255, null=True, db_index=True, blank=True)),
                 ('extra_data', models.TextField(null=True, blank=True)),
-                ('comment', models.OneToOneField(related_name='link', to='django_comments.Comment')),
+                ('comment', models.OneToOneField(related_name='link', to='django_comments.Comment', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
@@ -36,6 +36,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='forum',
             name='content_type',
-            field=models.ForeignKey(blank=True, to='contenttypes.ContentType', help_text='When fixed content is set, new topics can not be created. Instead, commented items are automatically posted as topics.', null=True, verbose_name='Fixed Content From'),
+            field=models.ForeignKey(blank=True, to='contenttypes.ContentType', help_text='When fixed content is set, new topics can not be created. Instead, commented items are automatically posted as topics.', null=True, verbose_name='Fixed Content From', on_delete=models.CASCADE),
         ),
     ]

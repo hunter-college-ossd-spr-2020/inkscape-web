@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='team',
             name='group',
-            field=inkscape.fields.AutoOneToOneField(related_name='team', to='auth.Group'),
+            field=inkscape.fields.AutoOneToOneField(related_name='team', to='auth.Group', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='user',
@@ -45,22 +45,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='teammembership',
             name='added_by',
-            field=models.ForeignKey(related_name='has_added_users', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='has_added_users', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='teammembership',
             name='removed_by',
-            field=models.ForeignKey(related_name='has_removed_users', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='has_removed_users', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='teammembership',
             name='team',
-            field=models.ForeignKey(related_name='memberships', to='person.Team'),
+            field=models.ForeignKey(related_name='memberships', to='person.Team', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='teammembership',
             name='user',
-            field=models.ForeignKey(related_name='memberships', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='memberships', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='teammembership',

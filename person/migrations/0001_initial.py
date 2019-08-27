@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=32, verbose_name='User Team')),
                 ('icon', models.ImageField(upload_to='teams', verbose_name='Display Icon')),
                 ('desc', models.TextField(blank=True, null=True, verbose_name='Full Description', validators=[django.core.validators.MaxLengthValidator(10240)])),
-                ('group', models.OneToOneField(related_name='team', null=True, blank=True, to='auth.Group')),
+                ('group', models.OneToOneField(related_name='team', null=True, blank=True, to='auth.Group', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'person_userroll',
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('gpg_key', models.TextField(blank=True, null=True, verbose_name='GPG Public Key', validators=[django.core.validators.MaxLengthValidator(262144)])),
                 ('last_seen', models.DateTimeField(null=True, blank=True)),
                 ('visits', models.IntegerField(default=0)),
-                ('user', models.OneToOneField(related_name='details', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='details', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },

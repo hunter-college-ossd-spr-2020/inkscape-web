@@ -23,9 +23,8 @@ from django.utils.translation import ungettext
 from django.contrib.admin import site, ModelAdmin, TabularInline
 from django.contrib.auth import get_permission_codename
 
-from cms.utils import get_language_from_request as get_lang
-from cmsplugin_news.forms import NewsAdminForm, TranslationForm
-from cmsplugin_news.models import News, NewsBacklink, SocialMediaType
+from .forms import NewsAdminForm, TranslationForm
+from .models import News, NewsBacklink, SocialMediaType
 
 site.register(SocialMediaType)
 
@@ -71,6 +70,7 @@ class NewsAdmin(ModelAdmin):
 
         class _Form(TranslationForm):
             def __init__(self, *args, **kwargs):
+                raise NotImplementedError("Get request language")
                 super(_Form, self).__init__(get_lang(request), *args, **kwargs)
 
         if request.resolver_match.url_name.endswith('_translate'):

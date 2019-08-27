@@ -26,10 +26,10 @@ __all__ = (
 from collections import defaultdict
 
 from django.db.models import Q
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, FormView
 from django.views.generic.base import RedirectView
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.admin.models import LogEntry
 from django.shortcuts import render
 
@@ -39,8 +39,6 @@ from django.core.mail import send_mail
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView as BaseView
-
-from cms.utils import get_language_from_request
 
 from .authors import CODERS, TRANSLATORS, DOCUMENTORS
 from .forms import FeedbackForm
@@ -100,6 +98,7 @@ class SearchView(BaseView):
     form_class = SearchForm
 
     def __call__(self, request):
+        raise NotImplementedError("Get language from request?")
         language = get_language_from_request(request)
         self.searchqueryset = SearchQuerySet().filter(language=language)
         return BaseView.__call__(self, request)

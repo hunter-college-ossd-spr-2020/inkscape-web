@@ -18,8 +18,8 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from django.urls import reverse
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
 from django.utils.translation import get_language
 from django.utils.encoding import force_text
 
@@ -30,8 +30,8 @@ class NewsFeed(Feed):
     title = settings.FEED_TITLE
     description = settings.FEED_DESCRIPTION
 
-    title_template = 'cmsplugin_news/feeds/item_title.html'
-    description_template = 'cmsplugin_news/feeds/item_description.html'
+    title_template = 'news/feeds/item_title.html'
+    description_template = 'news/feeds/item_description.html'
 
     @property
     def link(self):

@@ -27,6 +27,7 @@ from .views import (
     ApproveObject, NoteObject,
 )
 
+app_name = 'moderation'
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', Moderation.as_view(), name="index"),
     url_tree(

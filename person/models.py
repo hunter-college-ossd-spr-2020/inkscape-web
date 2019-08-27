@@ -30,15 +30,15 @@ from django.db.models.signals import post_save
 from django.db.models import (
     F, Q, Max, Model, Manager, TextField, CharField, URLField,
     DateTimeField, BooleanField, IntegerField, ForeignKey, SlugField,
-    ImageField,
+    ImageField, SET_NULL, CASCADE,
 )
 from django.utils.timezone import now
 from django.dispatch import receiver
 
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _, get_language
-from django.core.urlresolvers import reverse
 from django.core.validators import MaxLengthValidator
 from django.contrib.sessions.models import Session
 from django.contrib.auth import SESSION_KEY
@@ -283,8 +283,8 @@ class TwilightSparkle(Manager):
 
 class Friendship(Model):
     """A single instance of friendship"""
-    from_user = ForeignKey(User, related_name='friends')
-    user = ForeignKey(User, related_name='from_friends')
+    from_user = ForeignKey(User, related_name='friends', on_delete=CASCADE)
+    user = ForeignKey(User, related_name='from_friends', on_delete=CASCADE)
 
     objects = TwilightSparkle()
 
@@ -293,8 +293,8 @@ class Friendship(Model):
 
 class TeamChatRoom(Model):
     """An ChatRoom for a team"""
-    team = ForeignKey('Team', related_name='ircrooms')
-    admin = ForeignKey(User, **null)
+    team = ForeignKey('Team', related_name='ircrooms', on_delete=CASCADE)
+    admin = ForeignKey(User, on_delete=SET_NULL, **null)
     channel = CharField(_('Chatroom Name'), max_length=64)
     language = CharField(max_length=5, default='en', choices=settings.LANGUAGES)
 
@@ -335,10 +335,10 @@ class MembershipRole(Model):
     style = CharField(_("Role Style"), max_length=64, choices=ROLE_STYLES, **null)
     number = IntegerField(_("Maximum number"), default=0,\
         help_text="If greater than zero, will limit the number of this role to this count.")
-    public = BooleanField(_("Publically Choosable"), default=True,
+    public = BooleanField(_("Publically Choosable"), default=True,\
         help_text="If set to false, this role can only be selected by team admins.")
 
-    team = ForeignKey("Team", related_name='mtypes')
+    team = ForeignKey("Team", related_name='mtypes', on_delete=CASCADE)
 
     def __str__(self):
         return self.title
@@ -357,19 +357,19 @@ class TeamMembership(Model):
     Leaving a team (manually or automatically) sets the 'expired' datetime
     which tags this user as being a 'past' member.
     """
-    team = ForeignKey('Team', related_name='memberships')
-    user = ForeignKey(User, related_name='memberships')
+    team = ForeignKey('Team', related_name='memberships', on_delete=CASCADE)
+    user = ForeignKey(User, related_name='memberships', on_delete=CASCADE)
 
     requested = DateTimeField(**null)
     joined = DateTimeField(**null)
     expired = DateTimeField(**null)
 
-    added_by = ForeignKey(User, related_name='has_added_users', **null)
-    removed_by = ForeignKey(User, related_name='has_removed_users', **null)
+    added_by = ForeignKey(User, related_name='has_added_users', on_delete=SET_NULL, **null)
+    removed_by = ForeignKey(User, related_name='has_removed_users', on_delete=SET_NULL, **null)
 
     title = CharField(_('Custom Role Title'), max_length=128, **null)
     style = CharField(_('Custom Role Style'), max_length=64, choices=ROLE_STYLES, **null)
-    role = ForeignKey(MembershipRole, related_name="memberships", **null)
+    role = ForeignKey(MembershipRole, related_name="memberships", on_delete=CASCADE, **null)
 
     @property
     def is_watcher(self):
@@ -434,8 +434,8 @@ class Team(Model):
     )
     ICON = os.path.join(settings.STATIC_URL, 'images', 'team.svg')
 
-    admin = ForeignKey(User, related_name='admin_teams', **null)
-    group = AutoOneToOneField(Group, related_name='team')
+    admin = ForeignKey(User, related_name='admin_teams', on_delete=SET_NULL, **null)
+    group = AutoOneToOneField(Group, related_name='team', on_delete=CASCADE)
     email = CharField(max_length=256, **null)
 
     name = CharField(_('Team Name'), max_length=32)

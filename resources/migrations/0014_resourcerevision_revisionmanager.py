@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('signature', models.FileField(upload_to='resources/sigs', null=True, verbose_name='Signature/Checksum', blank=True)),
                 ('created', models.DateTimeField(auto_now=True)),
                 ('version', models.IntegerField(default=0)),
-                ('resource', models.ForeignKey(related_name='revisions', to='resources.ResourceFile')),
+                ('resource', models.ForeignKey(related_name='revisions', to='resources.ResourceFile', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(

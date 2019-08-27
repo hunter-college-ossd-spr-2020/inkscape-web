@@ -74,8 +74,8 @@ All View classes don't need as_view() and can be created directly from urls.
 """
 __all__ = ('CategoryListView')
 
+from django.urls import reverse, get_resolver, NoReverseMatch
 from django.views.generic.list import MultipleObjectMixin
-from django.core.urlresolvers import reverse, get_resolver, NoReverseMatch
 from django.utils.functional import cached_property
 from django.views.generic.base import TemplateView as View
 from django.utils.translation import ugettext_lazy as _

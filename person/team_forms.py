@@ -25,7 +25,7 @@ from typing import List
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from djangocms_text_ckeditor.widgets import TextEditorWidget
+from inkscape.widgets import TextEditorWidget
 
 from .models import Team, TeamMembership
 

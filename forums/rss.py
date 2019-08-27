@@ -22,9 +22,9 @@
 All views required to show a list of forum topics.
 """
 
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
 
 from .models import Forum, ForumTopic
 

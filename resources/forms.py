@@ -20,10 +20,6 @@
 """
 Forms for the gallery system
 """
-__all__ = ('GalleryForm', 'GalleryMoveForm', 'ResourceForm',
-           'ResourceEditPasteForm', 'ResourcePasteForm', 'ResourceAddForm',
-           'MirrorAddForm', 'ResourceLinkForm', 'ResourceBaseForm')
-
 from io import StringIO
 
 from django.forms import (
@@ -38,10 +34,9 @@ from django.db.models import Q
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # Thread-safe current user middleware getter.
-from cms.utils.permissions import get_current_user as get_user
 from inkscape.middleware import TrackCacheMiddleware
 
-from .models import Gallery, Resource, Tag, Category, ResourceMirror
+from .models import Gallery, Resource, Tag, Category
 from .validators import Range, CsvList
 from .utils import FileEx, MimeType, ALL_TEXT_TYPES
 from .fields import FilterSelect, DisabledSelect, CategorySelect, TagsChoiceField
@@ -487,11 +482,3 @@ class ResourceAddForm(ResourceBaseForm):
             self.cleaned_data['name'] = name[1:].rsplit('.', 1)[0].title()[:64]\
                                                 .replace('_', ' ').replace('-', ' ')
         return self.cleaned_data['name']
-
-
-
-class MirrorAddForm(ModelForm):
-    class Meta:
-        model  = ResourceMirror
-        fields = ['name', 'url', 'capacity']
-
