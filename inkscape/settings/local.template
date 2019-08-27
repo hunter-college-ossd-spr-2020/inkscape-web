@@ -1,15 +1,11 @@
+"""
+Local settings (generated)
+"""
 
-import os
-
-CODE_PATH = os.path.dirname(os.path.abspath(__file__))
-PROJECT_PATH = os.path.abspath(os.path.join(CODE_PATH, ".."))
+from .base import * #pylint: disable=wildcard-import,unused-wildcard-import
 
 SITE_ADDRESS = 'localhost:8000'
 SITE_NAME = 'inkscape-website-dev'
-
-# Enable this line to use django-autotest-command package
-# during your development process (it's useful!)
-# EXTRA_APPS = ['autotest']
 
 DATABASES = {
     'default': {
@@ -23,49 +19,30 @@ DATABASES = {
 }
 
 ENABLE_CACHING = False
-
-if ENABLE_CACHING:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': '127.0.0.1:11211',
-            'TIMEOUT': 3600, # One hour
-        }
+CACHE_MIDDLEWARE_SECONDS = 120
+CMS_CACHE_DURATIONS = {
+    'content': 120,
+    'menus': 3600, # One hour
+    'permissions': 3600,
+}
+CACHES = {
+    'default': {
+        'TIMEOUT': 3600, # One hour
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'prefix1',
+        #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        #'LOCATION': '127.0.0.1:11211',
     }
+}
 
+FASTLY_CACHE_API_KEY = ''
+FASTLY_CACHE_SERVICE = ''
 GOOGLE_ANID = 'UA-XXXXXX-X'
 YOUTUBE_API_KEY = ''
 
-# >= haystack 2.0
-# Enable realtime models if you have xapian
-#HAYSTACK_SIGNAL_PROCESSOR = 'inkscape.search.LimitedSignalProcessor'
-#HAYSTACK_REALTIME_MODELS = ['forums.forumtopic', 'django_comments.comment']
-# This router only really works for indexing single items
-HAYSTACK_ROUTERS = ['forums.routers.ForumRouter']
+SECRET_KEY = 'XXX'
 
-HAYSTACK_CONNECTIONS = { 
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(PROJECT_PATH, 'data', 'woosh_search'),
-        'EXCLUDED_INDEXES': ['forums.search_indexes.TopicIndex',
-                             'forums.search_indexes.CommentIndex'],
-    },
-    'forums': {
-        # Forums want to have very up-to-date indexes, but Whoosh
-        # is VERY slow because it reindexes the whole database.
-        # only ENABLE the ENGINE line if you have installed Xapain using
-        # the script in utils, otherwise leave commented out.
-        #'ENGINE': 'xapian_backend.XapianEngine',
-        'PATH': os.path.join(PROJECT_PATH, 'data', 'xapian_index'),
-        'EXCLUDED_INDEXES': ['cmsplugin_news.search_indexes.NewsIndex',
-                             'resources.search_indexes.ResourcesIndex',
-                             'cmsplugin_search.search_indexes.PageIndex'],
-    },
-}
-
-SECRET_KEY = 'iccj=*n_h03lm!)53e^ze&qudzcyoc+qi8s=$+fj6khix-w&*e'
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'inkscape.org', 'localhost:8000']
 DEBUG = True
 # To enable the debug toolbar, make sure you install the debug-toolbar modules
 # Using these commands:
@@ -74,8 +51,6 @@ DEBUG = True
 # ./pythonenv/bin/pip install django-debug-toolbar-line-profiler==0.6.1
 #
 ENABLE_DEBUG_TOOLBAR = False
-ENABLE_DESIGN_TOOLBAR = False
-# Profiler can cause issues for admin, cms, ajax and other things.
 ENABLE_PROFILER_TOOLBAR = False
 
 
@@ -88,15 +63,19 @@ NORECAPTCHA_SITE_KEY = '6Ldd6OsSAAAAAOOu3QVFc2_pBazt7H8Fuks7hBC3'
 NORECAPTCHA_SECRET_KEY = '6Ldd6OsSAAAAANDyM9FbuAne2b2NKHkkpMWP3wIY'
 
 # Localhost registration for oauth ONLY (not for use live)
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '112239585184-nuu42abso85v2f5t2nqstt1stmkqa6u6.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '112239585184-nuu42abso85v2f5t2nqstt1s'\
+                                'tmkqa6u6.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'eUHvEyHNfXJWOnbM_H26ZA9W'
+
+MAILING_LIST_DIR = os.path.join(PROJECT_PATH, 'data', 'static', 'mailinglists')
+GOOGLE_DEVELOPER_KEY = 'NOPE'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'social_core.auth_backends.OpenIdBackend',
-    'social_core.auth_backends.TwitterBackend',
-    'social_core.auth_backends.FacebookBackend',
-    'social_core.auth_backends.LinkedInBackend',
+    'socialauth.auth_backends.OpenIdBackend',
+    'socialauth.auth_backends.TwitterBackend',
+    'socialauth.auth_backends.FacebookBackend',
+    'socialauth.auth_backends.LinkedInBackend',
 )
 
 # Server Email settings
@@ -110,6 +89,21 @@ EMAIL_HOST_PASSWORD  = 'Nothing'
 EMAIL_PORT           = 587
 EMAIL_USE_TLS        = True
 
-IS_TEST = False
-
 FILE_UPLOAD_PERMISSIONS = 0o644
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    }
+}

@@ -18,3 +18,4 @@ logs
 .autotest.conf
 .vscode
 .project
+inkscape/settings/local.py
