@@ -6,7 +6,6 @@ import sys
 import os
 
 from django.utils.translation import ugettext_lazy as _
-from django.conf import global_settings
 
 gettext = lambda s: s
 
@@ -180,15 +179,7 @@ ROOT_URLCONF = 'inkscape.urls'
 INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
-    'optional_design',
-    'stopforumspam',
-    'elections',
-    'easy_thumbnails',
     'django.contrib.sites',
-    'django.contrib.auth',
-    'django_registration',
-    'social_django',
-    'filer',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
     'django.contrib.messages',
@@ -197,30 +188,23 @@ INSTALLED_APPS = (
     'django.contrib.redirects',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.auth',
+    'django_registration',
+    'social_django',
+    #'stopforumspam',
+    #'elections',
+    #'easy_thumbnails',
+    #'filer',
     'haystack',
-    'treebeard',
-    'cmsplugin_diff',
-    'cms',
-    'cog',
-    'menus',
     'el_menu',
-    'sekizai',
-    'djangocms_text_ckeditor',
-    'djangocms_file',
-    'cmsplugin_toc',
-    'cmsplugin_search',
-    'cmsplugin_news',
-    'cmsplugin_image',
-    'cmsplugin_alerts',
-    'cmstabs',
     'docs',
-    'resources',
-    'moderation',
-    'releases',
-    'forums',
-    'django_comments',
-    'alerts',
-    'markdown_deux',
+    #'resources',
+    #'moderation',
+    #'releases',
+    #'forums',
+    #'django_comments',
+    #'alerts',
+    #'markdown_deux',
 )
 
 TRANSLATED_APPS = (
