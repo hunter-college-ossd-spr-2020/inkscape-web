@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n extras cms_tags static el_menu menu_tags %}
+{% load i18n extras static el_menu %}
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <title>{% block alltitle %}{% block title %}{{ title|default:"Draw Freely" }}{% endblock %} | Inkscape{% endblock %}</title>
@@ -12,10 +12,11 @@
       <link rel="stylesheet" type="text/css" href="{% static "css/text.css" %}"/>
       <link rel="stylesheet" type="text/css" href="{% static "css/gallery.css" %}"/>
       <link rel="stylesheet" type="text/css" href="{% static "css/ink.css" %}"/>
+      <link rel="stylesheet" type="text/css" href="{% static "css/shield.css" %}"/>
     {% endblock %}
 
     {% for language in LANGUAGES %}
-      <link rel="alternate" hreflang="{{ language.0 }}" href="{% page_language_url language.0 %}">
+      <link rel="alternate" hreflang="{{ language.0 }}" href="FIXME">
     {% endfor %}
 
     <link rel="alternate"   type="application/rss+xml" title="{% trans "News Feed" %}" href="{% url "news:rss" %}"/>
@@ -28,9 +29,6 @@
       <script type="text/javascript" src="{% static "js/js.cookie.js" %}"></script>
       <script type="text/javascript" src="{% static "js/inkscape.js" %}"></script>
     {% endblock %}
-
-    <!-- Sekizai blocks are deprecated, when django-cms stops using them, remove -->
-    {% load sekizai_tags %}{% render_block "css" %}{% render_block "js" %}
 
     {% if form %}{{ form.media }}{% endif %}
     {% if formset %}{{ formset.media }}{% endif %}
@@ -45,7 +43,7 @@
   </head>
 
 <body id="page-{% block body-pageid %}{{ PAGE_ID }}{% endblock %}" class="{% if LANGUAGE_BIDI %}rtl {% endif %}{% block body-classes %}{% endblock %}">
-  {% cms_toolbar %}
+    {% block "preheader" %}{% endblock %}
 
   <div class="header">
     <div id="cleartop">
@@ -66,7 +64,7 @@
           </li>
           {% endif %}
 
-          {% language_chooser "languages.html" %}
+          {# language_chooser "languages.html" #}
 
           {% if not request.user.is_authenticated %}
             <li id="tab_login">
