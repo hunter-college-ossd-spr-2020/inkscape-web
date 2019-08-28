@@ -127,6 +127,8 @@ class UnreadTopicList(TopicList):
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
+    model = ForumTopic
+
     def dispatch(self, request, *args, **kwargs):
         """Catch jump to request"""
         ret = super().dispatch(request, *args, **kwargs)
@@ -147,9 +149,16 @@ class TopicDetail(UserVisit, DetailView):
         return ret
 
     def get_queryset(self):
-        return ForumTopic.objects\
-            .filter(forum__slug=self.kwargs['forum'])\
+        """Add forum and forum group information to topic query"""
+        return super(TopicDetail, self).get_queryset()\
             .select_related('forum', 'forum__group')
+
+    def get_template_names(self):
+        """Return a moved message if the forum is different"""
+        obj = self.get_object()
+        if obj.forum.slug != self.kwargs['forum']:
+            return 'forums/forumtopic_moved.html'
+        return super(TopicDetail, self).get_template_names()
 
 class CommentList(UserVisit, ForumMixin, ListView):
     """List comments, all of them or for a specific user"""
