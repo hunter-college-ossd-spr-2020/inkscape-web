@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""News app which is intergrated into the django-cms system"""
+"""News app for inkscape website"""
 
 from django.conf.urls import url
 from inkscape.url_utils import url_tree

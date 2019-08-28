@@ -33,33 +33,4 @@ class InkscapeConfig(AppConfig):
     cache = caches['default']
 
     def ready(self):
-        self.patch_cms()
         MultipleObjectMixin.paginator_class = InkscapePaginator
-
-    def patch_cms(self):
-        """Patch away some aweful django-cms code"""
-        from cms.models import Page as CmsPage
-        from cms.utils.i18n import get_current_language
-
-        slow_url = CmsPage.get_absolute_url
-        def fast_url(self, language=None, fallback=True):
-            """Replacement get_absolute_url functon"""
-            if language is None:
-                language = get_current_language()
-
-            if not self.pk or not language:
-                return slow_url(self, language=language, fallback=fallback)
-
-            key = "{:d}:{:s}".format(self.pk, language)
-            result = InkscapeConfig.cache.get(key)
-            if not result:
-                result = slow_url(self, language, fallback)
-                InkscapeConfig.cache.set(key, result, 7 * 24 * 60 * 60)
-            return result
-
-        # We replace the url generator with a cached version (7 days!)
-        CmsPage.get_absolute_url = fast_url
-
-        # We don't like this toolbar, remove.
-        from cms import cms_toolbars
-        cms_toolbars.BasicToolbar.add_language_menu = lambda self: None

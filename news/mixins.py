@@ -49,7 +49,7 @@ class PublishedNewsMixin(object):
 
     def get_queryset(self):
         return News.published.with_language(self.get_language(),
-            is_staff=self.request.user.has_perm('cmsplugin_news.change_news'))
+            is_staff=self.request.user.has_perm('news.change_news'))
 
     def get_breadcrumb_root(self):
         result = []

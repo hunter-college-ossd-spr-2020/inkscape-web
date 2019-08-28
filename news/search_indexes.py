@@ -20,7 +20,7 @@
 
 import datetime
 from haystack.indexes import *
-from cmsplugin_news.models import News
+from news.models import News
 
 class NewsIndex(SearchIndex, Indexable):
     text     = CharField(document=True, use_template=True)

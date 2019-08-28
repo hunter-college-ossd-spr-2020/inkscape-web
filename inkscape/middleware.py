@@ -299,13 +299,6 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
         title = self.get(data, 'title')
         parent = self.get(data, 'parent')
         obj = self.get(data, 'object')
-        page = self.get(data, 'current_page')
-        if not obj and page:
-            # django-cms pages already have Home
-            obj = page
-        else:
-            yield (reverse('pages-root'), _('Home'))
-
         root = self.get(data, 'breadcrumb_root')
         if root:
             if isinstance(root, list):

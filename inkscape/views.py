@@ -119,17 +119,14 @@ class SearchJson(SearchView):
 class Authors(TemplateView):
     """Show a list of authors for the website"""
     template_name = 'authors.html'
-    content_apps = \
-      Q(content_type__app_label__startswith='djangocms') | \
-      Q(content_type__app_label__startswith='cmsplugin') | \
-      Q(content_type__app_label__in=['cmstabs', 'cms'])
 
-    def cms_authors(self):
+    def website_authors(self):
         """Get a list of CMS authors"""
         result = defaultdict(lambda: dict(count=0, start=3000, end=0))
 
-        authors = LogEntry.objects.filter(self.content_apps)\
-                     .values_list('user__username', 'action_time')
+        authors = []
+        #LogEntry.objects.filter(self.content_apps)\
+        #             .values_list('user__username', 'action_time')
 
         for author, dt in authors:
             result[author]['name'] = author
@@ -145,7 +142,7 @@ class Authors(TemplateView):
         data = super(Authors, self).get_context_data(*args, **kwargs)
         data['title'] = _('Author Credits')
         data['authors'] = [
-            {'name': _('Managed Content'), 'desc': _('Licensed GPLv2 or Later and CC-BY-SA'), 'people': self.cms_authors()},
+            {'name': _('Managed Content'), 'desc': _('Licensed GPLv2 or Later and CC-BY-SA'), 'people': self.website_authors()},
             {'name': _('Website Programmers'), 'desc': _('Licensed AGPLv3'), 'people': CODERS},
             {'name': _('Translations'), 'desc': _('Contributed to po files'), 'people': TRANSLATORS},
             {'name': _('Documentation'), 'desc': _('Contributors to Inkscape-docs team'), 'people': DOCUMENTORS},
