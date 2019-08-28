@@ -127,6 +127,8 @@ class UnreadTopicList(TopicList):
 
 class TopicDetail(UserVisit, DetailView):
     """A single topic view"""
+    model = ForumTopic
+
     def dispatch(self, request, *args, **kwargs):
         """Catch jump to request"""
         ret = super().dispatch(request, *args, **kwargs)

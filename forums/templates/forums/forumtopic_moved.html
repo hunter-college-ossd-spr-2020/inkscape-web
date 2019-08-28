@@ -14,11 +14,9 @@
 {% block "aside" %}{% endblock %}
 
 {% block "content" %}
-    <div class="panel-footer">
-        <h5 class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "Moderators have moved this thread to a different forum!" %}</h5>
-    </div>
+    <h5 class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "Moderators have moved this thread to a different forum!" %}</h5>
 
-    <h1><a href="{{ object.get_absolute_url }}">{% trans "Go to new location" %}</a></h1>
+    <h2><a class="btn btn-primary" href="{{ object.get_absolute_url }}">{% trans "Go to new location" %}</a></h2>
 
 {% endblock %}
 
