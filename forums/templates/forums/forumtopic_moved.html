@@ -1,0 +1,24 @@
+{% extends "forums/base.html" %}
+{% load i18n static inkscape %}
+
+{% block "wrapper" %}
+<div class="container-flex forums-app forums-topic-detail">
+{% endblock "wrapper" %}
+
+{% block "forumheader" %}
+  <div class="forum-sub-header">
+    {% include "forums/forumtopic_subheader.html" %}
+  </div>
+{% endblock %}
+
+{% block "aside" %}{% endblock %}
+
+{% block "content" %}
+    <div class="panel-footer">
+        <h5 class="text-danger"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "Moderators have moved this thread to a different forum!" %}</h5>
+    </div>
+
+    <h1><a href="{{ object.get_absolute_url }}">{% trans "Go to new location" %}</a></h1>
+
+{% endblock %}
+
