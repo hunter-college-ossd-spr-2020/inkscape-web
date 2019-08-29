@@ -1,5 +1,6 @@
 {% extends "forums/modal.html" %}
 {% load i18n static extras inkscape %}
+{% block title %}{% trans "Make Moderator Decision" %}{% endblock %}
 
 {% block "dialog-title" %}
   <a href="{{ object.get_absolute_url }}" class="close" data-dismiss="modal" aria-label="Close">

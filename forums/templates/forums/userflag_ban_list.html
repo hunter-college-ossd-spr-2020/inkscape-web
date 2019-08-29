@@ -1,5 +1,6 @@
 {% extends "forums/userflag_list.html" %}
 {% load i18n static inkscape %}
+{% block title %}{% trans "Banned Users" %}{% endblock %}
 
 {% block "content" %}
 <form method="GET" action="{% url "forums:ban_user" %}">

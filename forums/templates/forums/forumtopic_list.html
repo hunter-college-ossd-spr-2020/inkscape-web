@@ -1,8 +1,12 @@
 {% extends "forums/base.html" %}
 {% load i18n static forum_comments %}
+
+{% block title %}{{ forum }}{% endblock %}
+
 {% block "wrapper" %}
 <div class="container-flex forums-app forums-topic-list">
 {% endblock "wrapper" %}
+
 {% block "forumheader" %}
   {% if forum %}
   <div class="forum-sub-header">

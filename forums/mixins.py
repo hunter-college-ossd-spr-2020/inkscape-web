@@ -99,21 +99,22 @@ class ModeratorLogged(object):
             if obj is None:
                 obj = self.get_object()
             if isinstance(obj, Comment):
-                self._record_action(obj.user, obj.get_topic(), obj, **data)
+                topic = obj.get_topic()
+                self._record_action(obj.user, topic.forum, topic, obj, **data)
             elif isinstance(obj, ForumTopic):
                 comment = obj.comments.first()
                 if comment:
-                    self._record_action(comment.user, obj, comment, **data)
+                    self._record_action(comment.user, obj.forum, obj, comment, **data)
             elif isinstance(obj, get_user_model()):
-                self._record_action(obj, None, None, **data)
+                self._record_action(obj, None, None, None, **data)
 
-    def _record_action(self, user, topic, comment, **data):
+    def _record_action(self, user, forum, topic, comment, **data):
         """Record the action taken against a comment"""
         if user != self.request.user:
             self.moderation_action = \
                 self.request.user.forum_moderation_actions.create(
                     action=type(self).__name__,
-                    user=user, topic=topic, comment=comment,
+                    user=user, forum=forum, topic=topic, comment=comment,
                     detail=json.dumps(self.log_details(**data)))
 
     def form_valid(self, form):

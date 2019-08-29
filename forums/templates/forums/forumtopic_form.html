@@ -1,6 +1,7 @@
 {% extends "forums/modal.html" %}
 {% load i18n static extras inkscape %}
 
+{% block title %}{% trans "New Topic" %} - {{ forum }}{% endblock %}
 {% block "css" %}{{ block.super }}
 <style>
   h3 { margin-top: 0px; }

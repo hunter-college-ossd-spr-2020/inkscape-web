@@ -1,5 +1,6 @@
 {% extends "forums/modal.html" %}
 {% load i18n static extras inkscape %}
+{% block title %}{% trans "New Comment" %} - {{ forum.target_object }} - {{ forum }}{% endblock %}
 
 {% block "css" %}{{ block.super }}
 <style>

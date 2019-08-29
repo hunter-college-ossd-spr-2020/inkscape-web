@@ -1152,6 +1152,23 @@ h3 small.label {
   width: 32px;
 }
 
+.table tr.moved {
+  color: #aaa;
+  background-color: #fff;
+}
+
+.table tr.moved:hover {
+  background-color: #fff;
+}
+
+.table tr.moved .icon span {
+  color: #ddd;
+}
+
+.table tr.moved a {
+  color: #aaa;
+}
+
 .table tr.locked {
   color: #888;
   background-color: #eee;
@@ -1161,7 +1178,7 @@ h3 small.label {
   background-color: #eee;
 }
 
-.table tr.locked .icon {
+.table tr.locked .icon span {
   color: #ccc;
 }
 
@@ -1179,7 +1196,7 @@ h3 small.label {
 }
 
 .table tr.announce a,
-.table tr.announce .icon {
+.table tr.announce .icon span {
   color: #603c76;
 }
 
@@ -1196,7 +1213,7 @@ h3 small.label {
   color: #3c763d;
 }
 
-.table tr.sticky .icon {
+.table tr.sticky .icon span {
   color: #3c763d;
 }
 
