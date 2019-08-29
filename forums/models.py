@@ -23,7 +23,7 @@ shouldn't be much functionality contained within this app.
 """
 
 import json
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 
 from unidecode import unidecode
 
@@ -44,6 +44,7 @@ from django.conf import settings
 
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import make_aware
 from django.utils.encoding import force_text
 from django.utils.text import slugify
 from django_comments.models import Comment
@@ -387,7 +388,7 @@ class ModerationManager(Manager):
     """A logging manager"""
     def get_last(self, days=7):
         """Return the last number of days of logs"""
-        scale = date.today() - timedelta(days=days)
+        scale = make_aware(datetime.now() - timedelta(days=days), None)
         return self.filter(performed__gte=scale)
 
 
