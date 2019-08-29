@@ -12,11 +12,14 @@
     </thead>
     <tbody>
     {% for topic in topic_list %}
-      <tr class="{% cycle 'odd' 'even' %} new{% if topic.locked and topic.sticky %} announce{% elif topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}" data-model="topic">
+    <tr class="{% cycle 'odd' 'even' %} new{% if forum and forum.pk != topic.forum_id %} moved{% elif topic.locked and topic.sticky %} announce{% elif topic.locked %} locked{% elif topic.sticky %} sticky{% endif %}" data-changed="{{ topic.last_posted.isoformat }}" data-count="{{ topic.post_count }}" data-pk="topic-{{ topic.pk }}" data-model="topic">
         {% if show_forum %}
         <td class="forum-small-cells avatar"><img src="{{ topic.forum.icon.url }}" title="{{ topic.forum }}"/></td>
         {% else %}
         <td class="icon forum-small-cells">
+          {% if forum and forum.pk != topic.forum_id %}
+            <a title="{% trans "Moved!" %}"><span class="glyphicon glyphicon-export"></span></a>
+          {% else %}
           <a {% if request.user.is_authenticated %}
                {% if not topic.is_subscribed %}
                  href="{% url "alert.subscribe" "forums.forum_topic_alert" topic.pk %}?next={{ request.path }}&post=1" title="{% trans "Subscribe" %}"
@@ -36,6 +39,7 @@
                 <span class="glyphicon glyphicon-{% if topic.sticky %}bookmark{% elif topic.is_subscribed %}heart text-danger{% elif request.user.is_authenticated %}heart-empty{% else %}star-empty{% endif %}"></span>
               {% endif %}
           </a>
+          {% endif %}
           {% endif %}
         </td>
         <td class="topic-item">

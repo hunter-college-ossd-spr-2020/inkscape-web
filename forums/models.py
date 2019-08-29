@@ -23,6 +23,7 @@ shouldn't be much functionality contained within this app.
 """
 
 import json
+from datetime import date, timedelta
 
 from unidecode import unidecode
 
@@ -382,6 +383,14 @@ class CommentAttachment(Model):
     def __str__(self):
         return "{} attached to comment in the forum.".format(self.resource)
 
+class ModerationManager(Manager):
+    """A logging manager"""
+    def get_last(self, days=7):
+        """Return the last number of days of logs"""
+        scale = date.today() - timedelta(days=days)
+        return self.filter(performed__gte=scale)
+
+
 class ModerationLog(Model):
     """
     Record each moderation action, what was done and any other details.
@@ -391,10 +400,15 @@ class ModerationLog(Model):
     performed = DateTimeField(auto_now=True, db_index=True)
 
     user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL)
-    comment = ForeignKey(Comment, null=True, blank=True, on_delete=SET_NULL)
-    topic = ForeignKey(ForumTopic, null=True, blank=True, on_delete=SET_NULL)
+    comment = ForeignKey(Comment, null=True, blank=True,
+                         on_delete=SET_NULL, related_name='mlog')
+    topic = ForeignKey(ForumTopic, null=True, blank=True,
+                       on_delete=SET_NULL, related_name='mlog')
+    forum = ForeignKey(Forum, null=True, blank=True,
+                       on_delete=SET_NULL, related_name='mlog')
 
     detail = TextField(null=True, blank=True)
+    objects = ModerationManager()
 
     class Meta:
         ordering = ('performed',)

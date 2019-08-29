@@ -23,14 +23,15 @@ Forum views, show topics, comments and link to apps.
 """
 
 from datetime import datetime, timedelta
-from django.utils.timezone import make_aware
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.views.generic import (
     ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
 )
+from django.db.models import Q
 from django.contrib.auth import get_user_model
-from django.http import Http404, JsonResponse, HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Permission
+from django.utils.translation import ugettext_lazy as _
+from django.utils.timezone import make_aware
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 
@@ -90,7 +91,8 @@ class TopicList(UserVisit, ForumMixin, ListView):
                 pass
         if 'slug' in self.kwargs:
             forum = get_object_or_404(Forum, slug=self.kwargs['slug'])
-            qset = qset.filter(forum_id=forum.pk)
+            pks = self.get_moved_topics(forum)
+            qset = qset.filter(Q(forum_id=forum.pk) | Q(pk__in=pks))
             self.set_context_datum('forum', forum)
         if 'username' in self.kwargs:
             user = get_object_or_404(get_user_model(), username=self.kwargs['username'])
@@ -101,6 +103,15 @@ class TopicList(UserVisit, ForumMixin, ListView):
         if self.kwargs:
             self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))
         return qset
+
+    def get_moved_topics(self, forum):
+        """
+        Return a queryset of topics that have been
+        moved out of this forum in the last week.
+        """
+        qset = ModerationLog.objects.get_last(days=7)\
+                .filter(forum_id=forum.pk, action='TopicMove', topic__isnull=False)
+        return qset.values_list('topic')
 
 class UserTopicList(TopicList):
     """A list of topics that the user has posted themselves"""
