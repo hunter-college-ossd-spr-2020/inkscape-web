@@ -3,33 +3,6 @@ body {
   width: 100%;
 }
 
-div.cms .cms-toolbar,
-div.cms .cms-toolbar-trigger {
-  position: absolute;
-  top: -5px;
-}
-div.cms .cms-toolbar {
-  min-width: 600px;
-  min-height: 135px;
-}
-div.cms .cms-toolbar:not([style*="margin-top: 0px;"]) {
-  display: none;
-}
-div.cms .cms-toolbar .cms-toolbar-right {
-  top: 82px;
-  left: 0;
-  z-index: 1;
-  padding: 0 0 0 15px;
-}
-div.cms .cms-toolbar .cms-toolbar-item-navigation {
-  clear: left;
-  margin: -5px 0 0 -10px;
-}
-div.cms .cms-toolbar-trigger {
-  border: 0;
-  outline: 1px solid #ddd;
-}
-
 #logo {
   margin: 20px 0 0 8px;
 }
@@ -65,11 +38,12 @@ div.cms .cms-toolbar-trigger {
   float: left;
 }
 #menu li ul {
-  top: 39px;
+  top: 38px;
 }
 #menu > li > a {
   padding: 10px 15px;
   border: 0;
+  background: none;
   font-size: 13px;
 }
 #menu > li.selected > a,
@@ -373,6 +347,7 @@ div.toc,
   }
   #menu > li {
     float: none;
+    margin: 0;
   }
   #menu > li > a {
     padding: 8px 12px;
@@ -396,10 +371,10 @@ div.toc,
   #menu > li.ancestor > a {
     background-image: linear-gradient(to right, #333333, #4d4d4d);
   }
-  #menu > li.activated > a,
-  #menu > li:hover > a,
+  #menu > li.activated > a:link,
+  #menu > li:hover > a:link,
   #menu > li > a:focus {
-    background: rgba(0, 0, 0, .5);
+    background: #222;
   }
   #menu li ul {
     position: static;
