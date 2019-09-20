@@ -631,6 +631,9 @@ div.toc ol,
   text-align: right;
   z-index: 5;
   position: relative;
+  background: #4d4d4d;
+  background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
+  border-radius: 10px 10px 0 0;
 }
 #menu-toggle {
   display: none;
@@ -670,23 +673,14 @@ div.toc ol,
 #menu > li {
   margin: 0 -3px 0 0;
 }
-#menu :link,
-#menu :link:hover,
-#menu :link:active,
-#menu :visited,
-#menu :visited:hover,
-#menu :visited:active {
-  border-bottom: 1px solid #262626;
-  color: white;
-  text-decoration: none;
-}
 #menu a {
   display: block;
-  
   padding: 8px 10px;
   outline: 0;
+  color: white;
   font-size: 13px;
   line-height: 18px;
+  text-decoration: none;
 }
 #menu > li {
   display: inline-block;
@@ -695,13 +689,11 @@ div.toc ol,
 #menu > li > a {
   background: #4d4d4d;
   background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
-  border-radius: 10px;
   padding: 17px 8px;
   white-space: nowrap;
   border-left: 1px solid #5a5a5a;
   border-right: 1px solid #333333;
   font-size: 14px;
-  margin: 0 3px 3px 0;
   text-transform: uppercase;
   text-align: center;
 }
@@ -709,10 +701,10 @@ div.toc ol,
 #menu > li.ancestor > a,
 #menu > li > a:focus {
   background: #333333;
-  background-image: linear-gradient(to bottom, #111, #444);
+  background-image: linear-gradient(to bottom, #333, #444, #333);
 }
-#menu > li:hover > a,
-#menu > li.activated > a {
+#menu > li:hover > a:link,
+#menu > li.activated > a:link {
   background: #333333;
   background-image: linear-gradient(to bottom, #333, #4d4d4d);
 }
@@ -721,11 +713,9 @@ div.toc ol,
 }
 #menu > li:last-child > a {
   border-right: 0;
-  border-top-right-radius: 10px;
 }
 #menu > li:first-child > a {
   border-left: 0;
-  border-top-left-radius: 10px;
 }
 #menu li ul {
   display: none;
@@ -736,13 +726,15 @@ div.toc ol,
   margin: 0;
   padding: 0;
   width: 155px;
-  border-top: 1px solid #141414;
   background: #4d4d4d;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
 }
 #menu li:hover:not(.clicked) > ul,
 #menu li.activated > ul {
   display: block;
+}
+#menu li li:not(:last-child) a {
+  border-bottom: 1px solid #262626;
 }
 #menu li li.main > a {
   font-size: inherit;
@@ -758,26 +750,6 @@ div.toc ol,
   top: 0;
   left: 100%;
   border-top: 0;
-}
-
-/* Adjust navigation on wider screens */
-@media (min-width: 959px) and (min-width: 41em) {
-  .header .nav {
-    background: #4d4d4d;
-    background-image: linear-gradient(to bottom, #4d4d4d 0%, #1a1a1a 100%);
-    border-radius: 10px 10px 0 0;
-    border-bottom: 1px solid #262626;
-  }
-  #menu > li > a {
-    border-radius: 0;
-    margin: 0;
-  }
-  #menu > li.selected > a,
-  #menu > li.ancestor > a,
-  #menu > li > a:focus {
-    background: #333333;
-    background-image: linear-gradient(to bottom, #333, #444, #333);
-  }
 }
 
 /* Content wrappers */
@@ -933,8 +905,18 @@ p#final-footer #dev-stamp:hover {
 }
 
 /* 2 columns */
+#left-column {
+  float: left;
+  width: 71%;
+  padding: 0 2% 0 0;
+}
 .page #left-column > h2:first-child {
   margin-top: 24px;
+}
+#right-sidebar {
+  float: right;
+  width: 21%;
+  padding: 0 0 20px 2%;
 }
 #right-sidebar .search input {
   width: 100%;
@@ -979,20 +961,6 @@ p#final-footer #dev-stamp:hover {
   border: 0;
   height: 1px;
   width: 100%;
-}
-
-/* 2-Column layout on wider screens */
-@media (min-width: 699px) and (min-width: 30em) {
-  #left-column {
-    float: left;
-    width: 71%;
-    padding: 0 2% 0 0;
-  }
-  #right-sidebar {
-    float: right;
-    width: 21%;
-    padding: 0 0 20px 2%;
-  }
 }
 
 /*= Specific elements */

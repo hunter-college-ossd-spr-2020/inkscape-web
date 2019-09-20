@@ -238,16 +238,12 @@ function setupMenu() {
       if($(this).hasClass('selected')) ancestorDuplicate.addClass('selected');
       $(this).children("ul").prepend(ancestorDuplicate);
     })
-    .mouseleave(function() {
-      $(this).removeClass('clicked');
-    })
     .children("a").click(function(event) {
       event.preventDefault();
-      $("#menu .clicked").removeClass('clicked');
-      $(this).parent().toggleClass('activated').addClass('clicked');
+      $(this).parent().toggleClass('activated');
     });
   $(window).click(function() {
-    $("#menu .activated:not(.clicked)").removeClass('activated');
+    $("#menu .activated:not(:hover)").removeClass('activated');
   });
 
   if(screen.width >= 960) {
