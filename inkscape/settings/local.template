@@ -67,10 +67,11 @@ GOOGLE_DEVELOPER_KEY = 'NOPE'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'socialauth.auth_backends.OpenIdBackend',
-    'socialauth.auth_backends.TwitterBackend',
-    'socialauth.auth_backends.FacebookBackend',
-    'socialauth.auth_backends.LinkedInBackend',
+    'social_core.backends.open_id.OpenIdBackend',
+    'social_core.backends.fedora.FedoraOpenId',
+    'social_core.backends.twitter.TwitterBackend',
+    'social_core.backends.facebook.FacebookBackend',
+    'social_core.backends.gitlab.GitLabOAuth2',
 )
 
 # Server Email settings

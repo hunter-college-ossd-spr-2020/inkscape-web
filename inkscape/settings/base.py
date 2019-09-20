@@ -143,28 +143,28 @@ TEMPLATES = [{
     }
 }]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
-    'person.middleware.SetLastVisitMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+    # TO UPGRADE TO DJANGO 1.10 STYLE MIDDLEWARE
+    #'person.middleware.SetLastVisitMiddleware',
     #'forums.middleware.RecentUsersMiddleware'
-)
+]
 
 # ===== CACHING ===== #
 
 if ENABLE_CACHING or IS_TEST:
     # Caching Middleware caches whole pages, can cause issues
-    MIDDLEWARE_CLASSES = \
-      ('django.middleware.cache.UpdateCacheMiddleware',) + \
-      MIDDLEWARE_CLASSES + \
-      ('django.middleware.cache.FetchFromCacheMiddleware',)
+    MIDDLEWARE = \
+      ['django.middleware.cache.UpdateCacheMiddleware'] + \
+      MIDDLEWARE + \
+      ['django.middleware.cache.FetchFromCacheMiddleware',]
 
     # Template caching allows quicker fetches
     TEMPLATES[0]['OPTIONS']['loaders'] = [(
