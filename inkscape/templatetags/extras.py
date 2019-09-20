@@ -27,8 +27,6 @@ from django.utils.timezone import is_aware, utc
 from django.template import Library
 from django.forms import widgets
 
-from cms.models.pagemodel import Page
-
 register = Library() # pylint: disable=invalid-name
 
 CHUNKS_AGO = (
@@ -142,17 +140,3 @@ def add_form_control(bound_field):
 def is_checkbox_field(bound_field):
     """Returns true if the form field object is a checkbox"""
     return type(bound_field.field.widget).__name__ == 'CheckboxInput'
-
-@register.filter("root_nudge")
-def root_nudge(root, page):
-    """
-    django cms has a serious flaw with how it manages the 'root' of menus.
-    This is because cms attempts to manage the root sent to menu via
-    checking in_navigation options. this conflicts with the menus.NavigationNode
-    system which controls the system via the templates.
-
-    This tag stops django-cms interfering by correcting menus input when needed.
-    """
-    is_draft = page.publisher_is_draft if page else False
-    for child_page in Page.objects.filter(is_home=True, publisher_is_draft=is_draft):
-        return root + int(child_page.in_navigation)

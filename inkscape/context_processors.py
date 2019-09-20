@@ -35,16 +35,7 @@ def tracker_data(request):
     }
 
 PATH = settings.PROJECT_PATH
-WEBSITE_VERSION = ''
-WEBSITE_REVISION = ''
-DONATE_NOW = False
-
-VERSION_FILE = os.path.join(PATH, 'version')
-if os.path.isfile(VERSION_FILE):
-    MSG = email.message_from_file(open(VERSION_FILE))
-    WEBSITE_VERSION = str(MSG["version"])
-    DONATE_NOW = bool(MSG.get("donate", False))
-    DONATE_MSG = MSG.get("donate", "Support Inkscape")
+WEBSITE_REVISION = 'Unknown'
 
 REVISION_FILE = os.path.join(PATH, 'data', 'revision')
 if os.path.isfile(REVISION_FILE):
@@ -55,10 +46,11 @@ def version(request):
     """Return useful version information to templates"""
     return {
         'RENDER_TIME': now(),
-        'DONATE_NOW': DONATE_NOW,
-        'DONATE_MSG': DONATE_MSG,
         'WEBSITE_REVISION': WEBSITE_REVISION,
-        'WEBSITE_VERSION': WEBSITE_VERSION,
         'DJANGO_VERSION': django.get_version(),
         'PYTHON_VERSION': sys.version.split()[0]
     }
+
+
+
+

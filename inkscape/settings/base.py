@@ -139,6 +139,7 @@ TEMPLATES = [{
             'django.template.context_processors.request',
             'django.template.context_processors.media',
             'django.template.context_processors.static',
+            'constance.context_processors.config',
         )
     }
 }]
@@ -178,6 +179,8 @@ INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
     'alerts',
+    'constance',
+    'constance.backends.database',
     'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
@@ -197,6 +200,7 @@ INSTALLED_APPS = (
     'haystack',
     'el_menu',
     'docs',
+    'news',
     'resources',
     #'moderation',
     #'releases',
@@ -403,3 +407,23 @@ for name, value in locals().copy().items():
         if not os.path.exists(value):
             os.makedirs(value)
             logging.warning("Making {}: {}".format(name, value))
+
+
+
+
+#from .constance import LazyQueryset  
+#CONSTANCE_ADDITIONAL_FIELDS = { 
+#    'user': ['django.forms.models.ModelChoiceField', {
+#        'widget': 'django.forms.Select',
+#        'queryset': LazyQueryset('people', 'User'),
+#    }], 
+#}
+  
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_CONFIG = { 
+    'WEBSITE_VERSION': ("2.0", "Version of the website to advertise"),
+
+    'DONATE_NOW': (False, "Enable Donate Now tab"),
+    'DONATE_MSG': ("Support Inkscape", "Donation Now text (English)"),
+}
+

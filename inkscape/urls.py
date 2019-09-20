@@ -57,7 +57,7 @@ urlpatterns += [
     path('alerts/', include('alerts.urls')),
     path('comments/', include('django_comments.urls')),
     #path('moderation/', include('moderation.urls')),
-    #path('news/', include('news.urls')),
+    path('news/', include('news.urls')),
 
     # User related urls
     url(r'^~(?P<username>[^\/]+)/', include('person.user_urls')),

@@ -234,7 +234,7 @@ class CategoryListView(View, MultipleObjectMixin):
     @staticmethod
     def get_possible_args(view_name):
         """Returns a generator with all possible kwargs for this view name"""
-        for poss, _, _ in get_resolver(None).reverse_dict.getlist(view_name):
+        for poss, _, _, _ in get_resolver(None).reverse_dict.getlist(view_name):
             for _, params in poss:
                 for param in params:
                     # Remove non-keyword arguments

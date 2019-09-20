@@ -28,6 +28,7 @@ from .views import (
     DetailView, DetailNews,
 )
 
+app_name = 'news'
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', ArchiveIndexView.as_view(), name='archive_index'),
     url(r'^unpublished/(?P<pk>\d+)/$', DetailNews.as_view(), name="item"),
