@@ -53,7 +53,7 @@ urlpatterns += [
     url(r'^(?P<lang>[\w\-\_]{2,10})/doc/', include('docs.urls')),
 
     path('forums/', include('forums.urls')),
-    #url(r'^releases?/', include('releases.urls')),
+    url(r'^releases?/', include('releases.urls')),
     path('alerts/', include('alerts.urls')),
     path('comments/', include('django_comments.urls')),
     #path('moderation/', include('moderation.urls')),
