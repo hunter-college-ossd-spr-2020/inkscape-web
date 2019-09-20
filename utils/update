@@ -29,6 +29,10 @@ if [ ! -e $PIP ]; then
     virtualenv pythonenv -p /usr/bin/python3
     touch -d '+1 minute' $PIP
     touch -d '+2 minute' $REQUIRES
+
+    echo "Installing XAPIAN search indexer..."
+    . ./pythonenv/bin/activate
+    ./utils/install_xapian.sh
 fi
 
 if [ $REQUIRES -nt $PIP ]; then

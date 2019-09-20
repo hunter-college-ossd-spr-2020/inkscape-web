@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-set -e
+#
+# Script taken from xapian-haystack.git (GPLv2) David Sauve
+#
+# first argument of the script is Xapian version (e.g. 1.2.19)
+VERSION=1.4.12
 
-VERSION="1.4.9"
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/..
-
-. $DIR/pythonenv/bin/activate
+: "${VIRTUAL_ENV?Need to enable pythonenv first}"
 
 # prepare
 mkdir $VIRTUAL_ENV/packages && cd $VIRTUAL_ENV/packages
