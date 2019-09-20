@@ -38,5 +38,5 @@ class TeamMemberMixin(RestrictedMixin):
     def is_allowed(self, user):
         """Test this user is a constituent of this election (voter)"""
         team = self.get_object().constituents
-        return user.is_authenticated() and team.has_member(user)
+        return user.is_authenticated and team.has_member(user)
 

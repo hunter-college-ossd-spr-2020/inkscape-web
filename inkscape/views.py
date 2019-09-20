@@ -61,7 +61,7 @@ class ContactUs(FormView):
 
     def get_initial(self):
         ret = {'subject': self.request.GET.get('subject', "Website Feedback")}
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             ret['email'] = self.request.user.email
         return ret
 
@@ -74,7 +74,7 @@ class ContactUs(FormView):
         return super(ContactUs, self).form_valid(form) 
 
     def get_sender(self, email):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             user = self.request.user
             if not user.first_name:
                 return email

@@ -41,7 +41,7 @@ class ForumQuerySet(QuerySet):
 
     def for_user(self, user):
         """Filter out un-needed forums"""
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             teams = user.teams.all()
             return self.filter(Q(team__isnull=True) | Q(team__in=teams))
         return self.filter(team__isnull=True)
@@ -63,7 +63,7 @@ class TopicQuerySet(QuerySet):
 
     def for_user(self, user):
         """Set the user and filter out un-needed topics"""
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             teams = user.teams.all()
             return self.filter(Q(forum__team__isnull=True) | Q(forum__team__in=teams))
         return self.filter(forum__team__isnull=True)

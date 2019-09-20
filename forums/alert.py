@@ -99,7 +99,7 @@ class ForumTopicAlert(BaseAlert):
     @classmethod
     def subscriptions_for(cls, user):
         """Return a list of subscriptions for this user"""
-        if user is not None and user.is_authenticated():
+        if user is not None and user.is_authenticated:
             return user.alert_subscriptions.filter(alert__slug=cls.slug)
         return AlertSubscription.objects.none()
 

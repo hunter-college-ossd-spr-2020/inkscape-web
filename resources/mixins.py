@@ -82,7 +82,7 @@ class OwnerUpdateMixin(object):
     def dispatch(self, request, *args, **kwargs):
         """ Making sure that only authors can update stories """
         if not self.is_allowed():
-            if not request.user.is_authenticated() and request.method == 'GET':
+            if not request.user.is_authenticated and request.method == 'GET':
                 return redirect_to_login(request.build_absolute_uri())
             raise PermissionDenied()
 
@@ -123,7 +123,7 @@ class OwnerUpdateMixin(object):
 class OwnerCreateMixin(OwnerUpdateMixin):
     """Who is allowed to create things"""
     def is_allowed(self):
-        return self.request.user.is_authenticated()
+        return self.request.user.is_authenticated
 
     def get_context_data(self, **kwargs):
         data = super(OwnerCreateMixin, self).get_context_data(**kwargs)

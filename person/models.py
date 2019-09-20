@@ -238,7 +238,7 @@ class User(AbstractUser):
 
     def viewer_is_subscribed(self, user):
         """Returns true if the calling user is subscribed to this user's resources."""
-        if user.is_authenticated():
+        if user.is_authenticated:
             try:
                 return bool(self.resources.subscriptions().get(user=user.pk))
             except AlertSubscription.DoesNotExist:
@@ -272,7 +272,7 @@ class TwilightSparkle(Manager):
     def i_added(self, user):
         """Return true if I have added this friend before"""
         try:
-            return user.is_authenticated() and bool(self.get(from_user=user.pk))
+            return user.is_authenticated and bool(self.get(from_user=user.pk))
         except Friendship.DoesNotExist:
             return False
 

@@ -30,7 +30,7 @@ register = Library() # pylint: disable=invalid-name
 @register.filter()
 def is_subscribed(this_user, that_user):
     """Returns true if that_user is subscribed to this_user"""
-    if this_user.is_authenticated():
+    if this_user.is_authenticated:
         return this_user.viewer_is_subscribed(that_user)
     return False
 

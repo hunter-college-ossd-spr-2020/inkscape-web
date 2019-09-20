@@ -98,7 +98,7 @@ class TopicList(UserVisit, ForumMixin, ListView):
             user = get_object_or_404(get_user_model(), username=self.kwargs['username'])
             qset = qset.filter(first_username=self.kwargs['username'])
             self.set_context_datum('forum_user', user)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             qset.set_user(self.request.user)
         if self.kwargs:
             self.set_context_datum('rss', reverse("forums:topic_feed", kwargs=self.kwargs))

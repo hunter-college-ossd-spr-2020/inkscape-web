@@ -29,7 +29,7 @@ class SetLastVisitMiddleware(object):
     """
     def process_request(self, request):
         """Process request happens before page view"""
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             request.user.last_seen = now()
             request.user.save(update_fields=['last_seen'])
 

@@ -189,7 +189,7 @@ class QuotaJson(View):
     """Returns a Json snippet with information about a user's quota"""
     def get(self, request):
         context = {'user': 'unknown', 'quota': 0, 'used': 0}
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             context.update({
                 'user': request.user.username,
                 'used': request.user.resources.disk_usage(),
@@ -262,7 +262,7 @@ class ResourcesJson(View):
                       and match_v['type'] == is_video['type']:
                     return str(match.pk)
 
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 # Create a new video object in our resource database.
                 details = video_detect(query, True)
                 ret = Resource(
@@ -282,7 +282,7 @@ class ResourcesJson(View):
             for match in Resource.objects.filter(link=query):
                 return str(match.pk)
 
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 # Create a new image link object in our resource database.
                 ret = Resource(
                     user=self.request.user,
@@ -456,7 +456,7 @@ class UnpublishedGallery(ListView):
 
     def get_queryset(self):
         qset = super().get_queryset()
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             qset = qset.filter(published=False, is_removed=False, user=self.request.user)
         else:
             qset = qset.none()
@@ -518,7 +518,7 @@ class ResourceList(CategoryListView):
     def in_team(self):
         """Returns True if the user is in a team"""
         if not hasattr(self.request, 'my_in_team'):
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 teams = self.request.user.teams
             else:
                 teams = Team.objects.none()

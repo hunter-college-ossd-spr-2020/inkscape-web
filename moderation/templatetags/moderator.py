@@ -47,7 +47,7 @@ def flag_url(context, obj=None):
 
 @register.filter
 def is_flagged(obj, user):
-    if user and user.is_authenticated():
+    if user and user.is_authenticated:
         ct = ContentType.objects.get_for_model(obj)
         return FlagVote.objects.filter(
             moderator_id=user.pk,
