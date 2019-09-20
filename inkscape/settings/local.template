@@ -20,11 +20,6 @@ DATABASES = {
 
 ENABLE_CACHING = False
 CACHE_MIDDLEWARE_SECONDS = 120
-CMS_CACHE_DURATIONS = {
-    'content': 120,
-    'menus': 3600, # One hour
-    'permissions': 3600,
-}
 CACHES = {
     'default': {
         'TIMEOUT': 3600, # One hour

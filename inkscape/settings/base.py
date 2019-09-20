@@ -392,9 +392,9 @@ if ENABLE_DEBUG_TOOLBAR:
         INSTALLED_APPS += ('debug_toolbar_line_profiler',)
         DEBUG_TOOLBAR_PANELS += ('debug_toolbar_line_profiler.panel.ProfilingPanel',)
 
-    if ENABLE_PYMPLER_TOOLBAR:
-        INSTALLED_APPS += ('pympler',)
-        DEBUG_TOOLBAR_PANELS += ('pympler.panels.MemoryPanel',)
+    #if ENABLE_PYMPLER_TOOLBAR:
+    #    INSTALLED_APPS += ('pympler',)
+    #    DEBUG_TOOLBAR_PANELS += ('pympler.panels.MemoryPanel',)
 
 
 import logging
