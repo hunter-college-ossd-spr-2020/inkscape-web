@@ -203,7 +203,7 @@ INSTALLED_APPS = (
     'news',
     'resources',
     #'moderation',
-    #'releases',
+    'releases',
     'forums',
     'django_comments',
     #'markdown_deux',

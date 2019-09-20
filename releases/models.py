@@ -28,7 +28,7 @@ from django.db.models import (
     Model, SlugField, CharField, TextField, ForeignKey,
     BooleanField, IntegerField, PositiveIntegerField,
     DateField, DateTimeField, URLField,
-    QuerySet, Q
+    QuerySet, Q, CASCADE, SET_NULL
 )
 from django.conf import settings
 
@@ -97,8 +97,8 @@ class ReleaseQuerySet(QuerySet):
 
 class Release(Model):
     """A release of inkscape"""
-    project = ForeignKey(Project, related_name='releases', **null)
-    parent = ForeignKey('self', related_name='children', **null)
+    project = ForeignKey(Project, related_name='releases', on_delete=CASCADE, **null)
+    parent = ForeignKey('self', related_name='children', on_delete=CASCADE, **null)
     version = CharField(_('Version'), max_length=16, db_index=True)
     is_prerelease = BooleanField(_('is Pre-Release'), default=False, \
         help_text=_("If set, will indicate that this is a testing "
@@ -113,7 +113,7 @@ class Release(Model):
                     "oon as this is released, it will take over the defau"
                     "lt redirection and users will start downloading this"
                     " release."), **null)
-    status = ForeignKey(ReleaseStatus, \
+    status = ForeignKey(ReleaseStatus, on_delete=SET_NULL,\
         help_text=_("When release isn't finalised, document if we are in f"
                     "reezing, etc, useful for development."), **null)
 
@@ -121,13 +121,13 @@ class Release(Model):
     created = DateTimeField(_('Date created'), auto_now_add=True, db_index=True)
     background = ResizedImageField(**upload_to('background', 960, 360))
 
-    manager = ForeignKey(User, verbose_name=_("Manager"), related_name='releases', \
+    manager = ForeignKey(User, verbose_name=_("Manager"), related_name='releases', on_delete=SET_NULL,\
         help_text=_("Looks after the release schedule and release meetings."), **null)
-    reviewer = ForeignKey(User, verbose_name=_("Reviewer"), related_name='rev_releases', \
+    reviewer = ForeignKey(User, verbose_name=_("Reviewer"), related_name='rev_releases', on_delete=SET_NULL,\
         help_text=_("Reviewers help to make sure the release is working."), **null)
-    bug_manager = ForeignKey(User, verbose_name=_("Bug Manager"), related_name='bug_releases', \
+    bug_manager = ForeignKey(User, verbose_name=_("Bug Manager"), related_name='bug_releases', on_delete=SET_NULL,\
         help_text=_("Manages critical bugs and decides what needs fixing."), **null)
-    translation_manager = ForeignKey(User, verbose_name=_("Translation Manager"), \
+    translation_manager = ForeignKey(User, verbose_name=_("Translation Manager"), on_delete=SET_NULL,\
         help_text=_("Translation managers look after all translations for the release."), \
         related_name='tr_releases', **null)
 
@@ -174,7 +174,7 @@ class Release(Model):
 
 class ReleaseTranslation(Model):
     """A translation of a Release"""
-    release = ForeignKey(Release, related_name='translations')
+    release = ForeignKey(Release, related_name='translations', on_delete=CASCADE)
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
 
@@ -191,8 +191,8 @@ class Platform(Model):
     name = CharField(_('Name'), max_length=64)
     desc = CharField(_('Description'), max_length=255)
     keywords = CharField(_('HTML Keywords'), max_length=255, **null)
-    parent = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), **null)
-    manager = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
+    parent = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), on_delete=CASCADE, **null)
+    manager = ForeignKey(User, verbose_name=_("Platform Manager"), on_delete=SET_NULL, **null)
     codename = CharField(max_length=255, **null)
     order = PositiveIntegerField(default=0)
     instruct = TextField(_('Instructions'), blank=True, null=True,\
@@ -272,7 +272,7 @@ class Platform(Model):
 
 class PlatformTranslation(Model):
     """A translation of a Platform"""
-    platform = ForeignKey(Platform, related_name='translations')
+    platform = ForeignKey(Platform, related_name='translations', on_delete=CASCADE)
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
 
@@ -329,10 +329,10 @@ class PlatformQuerySet(QuerySet):
 
 
 class ReleasePlatform(Model):
-    release = ForeignKey(Release, verbose_name=_("Release"), related_name='platforms')
-    platform = ForeignKey(Platform, verbose_name=_("Release Platform"), related_name='releases')
+    release = ForeignKey(Release, verbose_name=_("Release"), related_name='platforms', on_delete=CASCADE)
+    platform = ForeignKey(Platform, verbose_name=_("Release Platform"), related_name='releases', on_delete=CASCADE)
     download = URLField(_('Download Link'), **null)
-    resource = ForeignKey("resources.Resource", related_name='releases', **null)
+    resource = ForeignKey("resources.Resource", related_name='releases', on_delete=SET_NULL, **null)
     howto = URLField(_('Instructions Link'), **null)
     info = TextField(_('Release Platform Information'), **null)
 
@@ -386,7 +386,7 @@ class ReleasePlatform(Model):
 
 
 class ReleasePlatformTranslation(Model):
-    release_platform = ForeignKey(ReleasePlatform, related_name='translations')
+    release_platform = ForeignKey(ReleasePlatform, related_name='translations', on_delete=CASCADE)
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
                          help_text=_("Which language is this translated into."))
 
