@@ -84,6 +84,7 @@ urlpatterns = [ # pylint: disable=invalid-name
         url_tree(
             r'^(?P<gallery_id>\d+)/',
             # We should move these to galleries/
+            url(r'^$', GalleryView.as_view(), name='resources'),
             url(r'^del/$', DeleteGallery.as_view(), name='gallery.delete'),
             url(r'^link/$', LinkToResource.as_view(), name='resource.link'),
             url(r'^edit/$', EditGallery.as_view(), name='gallery.edit'),
