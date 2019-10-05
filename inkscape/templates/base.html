@@ -60,9 +60,9 @@
       <div id="header-right">
         <ul id="tabs">
           <!--Remove this header when hackfest is over-->
-          {% if DONATE_NOW %}
-          <li id="tab_hackfest" class="link">
-              <p><a href="/support-us/hackfests/">{{ DONATE_MSG }} <span class="ico heart"></span></a></p>
+          {% if DONATE_NOW and DONATE_IN %}
+          <li id="tab_hackfest" class="link" title="{{ DONATE_START }} - {{ DONATE_END }}">
+              <p><a href="{{ DONATE_URL }}">{{ DONATE_MSG }} <span class="ico heart"></span></a></p>
           </li>
           {% endif %}
 
