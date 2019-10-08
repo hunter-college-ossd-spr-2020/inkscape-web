@@ -100,6 +100,8 @@ class Release(Model):
     project = ForeignKey(Project, related_name='releases', **null)
     parent = ForeignKey('self', related_name='children', **null)
     version = CharField(_('Version'), max_length=16, db_index=True)
+    version_name = CharField(_('Version Name'), max_length=64, null=True, blank=True,\
+        help_text=_("If set, uses this string for the version in the display."))
     is_prerelease = BooleanField(_('is Pre-Release'), default=False, \
         help_text=_("If set, will indicate that this is a testing "
                     "pre-release and should not be given to users."))
@@ -139,9 +141,10 @@ class Release(Model):
         unique_together = ('project', 'version')
 
     def __str__(self):
+        name = self.version_name or self.version
         if self.project:
-            return "{} {}".format(self.project.name, self.version)
-        return self.version
+            return "{} {}".format(self.project.name, name)
+        return name
 
     def get_absolute_url(self):
         """Return a specific url for this release"""
