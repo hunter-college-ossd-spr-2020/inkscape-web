@@ -228,7 +228,7 @@ class Platform(Model):
         ordering = '-order', 'codename'
 
     def save(self, **kwargs):
-        codename = "/".join([self.uuid() for anc in self.ancestors()][::-1])
+        codename = "/".join([anc.uuid() for anc in self.ancestors()][::-1])
         if self.codename != codename:
             self.codename = codename
             if self.pk:
