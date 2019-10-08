@@ -100,6 +100,8 @@ class Release(Model):
     project = ForeignKey(Project, related_name='releases', on_delete=CASCADE, **null)
     parent = ForeignKey('self', related_name='children', on_delete=CASCADE, **null)
     version = CharField(_('Version'), max_length=16, db_index=True)
+    version_name = CharField(_('Version Name'), max_length=64, null=True, blank=True,\
+        help_text=_("If set, uses this string for the version in the display."))
     is_prerelease = BooleanField(_('is Pre-Release'), default=False, \
         help_text=_("If set, will indicate that this is a testing "
                     "pre-release and should not be given to users."))
@@ -140,8 +142,11 @@ class Release(Model):
 
     def __str__(self):
         if self.project:
-            return "{} {}".format(self.project.name, self.version)
-        return self.version
+            return "{} {}".format(self.project.name, self.get_version_name())
+        return self.get_version_name()
+
+    def get_version_name(self):
+        return self.version_name or self.version
 
     def get_absolute_url(self):
         """Return a specific url for this release"""
@@ -193,7 +198,10 @@ class Platform(Model):
     keywords = CharField(_('HTML Keywords'), max_length=255, **null)
     parent = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), on_delete=CASCADE, **null)
     manager = ForeignKey(User, verbose_name=_("Platform Manager"), on_delete=SET_NULL, **null)
-    codename = CharField(max_length=255, **null)
+    codename = CharField(max_length=255, db_index=True, **null)
+    codebit = CharField(_('Code Bit Override'), max_length=64, null=True, blank=True,\
+        help_text="Use this Code Name instead of the Name field "
+                  "(when renaming but keeping the urls the same)")
     order = PositiveIntegerField(default=0)
     instruct = TextField(_('Instructions'), blank=True, null=True,\
         help_text=_("If supplied, this text will appear after the tabs,"
@@ -211,7 +219,7 @@ class Platform(Model):
     icon = ResizedImageField(**upload_to('icons', 32, 32))
     image = ResizedImageField(**upload_to('icons', 256, 256))
 
-    uuid = lambda self: slugify(self.name)
+    uuid = lambda self: slugify(self.codebit or self.name)
     tab_name = lambda self: self.name
     tab_text = lambda self: self.desc
     tab_cat = lambda self: {'icon': self.icon}
@@ -222,7 +230,7 @@ class Platform(Model):
         ordering = '-order', 'codename'
 
     def save(self, **kwargs):
-        codename = "/".join([slugify(anc.name) for anc in self.ancestors()][::-1])
+        codename = "/".join([anc.uuid() for anc in self.ancestors()][::-1])
         if self.codename != codename:
             self.codename = codename
             if self.pk:
@@ -267,7 +275,7 @@ class Platform(Model):
         return " : ".join([translate_field(anc, 'name') for anc in self.ancestors()][::-1])
 
     def __str__(self):
-        return self.codename.replace('/', ' : ').replace('_', ' ').title()
+        return self.full_name
 
 
 class PlatformTranslation(Model):

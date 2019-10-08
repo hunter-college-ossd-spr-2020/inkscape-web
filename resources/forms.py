@@ -85,7 +85,7 @@ class GalleryMoveForm(ModelForm):
 
         # Resources can be moved between galleries in the same group by a
         # user who is not the owner (but who is in the group).
-        if self.source and self.source.group:
+        if self.source is not None and self.source.group:
             query |= Q(group=self.source.group)
 
         # Limit to the same category if category is set on the Gallery
@@ -157,7 +157,7 @@ class ResourceBaseForm(ModelForm):
 
         # The view will protect the form from being used by people who don't
         # have permission to edit, but this will help protect different fields
-        if self.instance and self.instance.user != self.user:
+        if self.instance is not None and self.instance.user != self.user:
             self.is_curated = True
             self.fields.pop('name', None)
             self.fields.pop('desc', None)
@@ -175,9 +175,12 @@ class ResourceBaseForm(ModelForm):
             field = self.fields['category']
             # Limit any resources submitted to a pre-defined gallery to the
             # gallery's selected category if one is set.
-            if self.gallery and self.gallery.category:
+            if self.gallery is not None and self.gallery.category:
                 field.initial = self.gallery.category.pk
                 field.queryset = Category.objects.filter(pk=field.initial)
+                if self.gallery.category.acceptable_licenses:
+                    field = self.fields['license']
+                    field.queryset = self.gallery.category.acceptable_licenses
             else:
                 # Filter out any categories we're not allowed to see because
                 # we are not in the required groups to see them.
@@ -226,7 +229,7 @@ class ResourceBaseForm(ModelForm):
     def clean_category(self):
         """Make sure the category voting rules are followed"""
         category = self.cleaned_data['category']
-        if self.gallery and self.gallery.category:
+        if self.gallery is not None and self.gallery.category:
             if self.gallery.category != category:
                 raise ValidationError(_("Gallery only allows one category type."))
         return category
@@ -234,7 +237,7 @@ class ResourceBaseForm(ModelForm):
     def clean_mirror(self):
         """Update the edited time/date if mirror flag changed"""
         ret = self.cleaned_data['mirror']
-        if self.instance and ret != self.instance.mirror:
+        if self.instance is not None and ret != self.instance.mirror:
             self.instance.edited = now()
         return ret
 
