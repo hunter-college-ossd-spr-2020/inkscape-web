@@ -193,7 +193,10 @@ class Platform(Model):
     keywords = CharField(_('HTML Keywords'), max_length=255, **null)
     parent = ForeignKey('self', related_name='children', verbose_name=_("Parent Platform"), **null)
     manager = ForeignKey(User, verbose_name=_("Platform Manager"), **null)
-    codename = CharField(max_length=255, **null)
+    codename = CharField(max_length=255, db_index=True, **null)
+    codebit = CharField(_('Code Bit Override'), max_length=64, null=True, blank=True,\
+        help_text="Use this Code Name instead of the Name field "
+                  "(when renaming but keeping the urls the same)")
     order = PositiveIntegerField(default=0)
     instruct = TextField(_('Instructions'), blank=True, null=True,\
         help_text=_("If supplied, this text will appear after the tabs,"
@@ -211,7 +214,7 @@ class Platform(Model):
     icon = ResizedImageField(**upload_to('icons', 32, 32))
     image = ResizedImageField(**upload_to('icons', 256, 256))
 
-    uuid = lambda self: slugify(self.name)
+    uuid = lambda self: slugify(self.codebit or self.name)
     tab_name = lambda self: self.name
     tab_text = lambda self: self.desc
     tab_cat = lambda self: {'icon': self.icon}
@@ -222,7 +225,7 @@ class Platform(Model):
         ordering = '-order', 'codename'
 
     def save(self, **kwargs):
-        codename = "/".join([slugify(anc.name) for anc in self.ancestors()][::-1])
+        codename = "/".join([self.uuid() for anc in self.ancestors()][::-1])
         if self.codename != codename:
             self.codename = codename
             if self.pk:
@@ -267,7 +270,7 @@ class Platform(Model):
         return " : ".join([translate_field(anc, 'name') for anc in self.ancestors()][::-1])
 
     def __str__(self):
-        return self.codename.replace('/', ' : ').replace('_', ' ').title()
+        return self.full_name
 
 
 class PlatformTranslation(Model):
