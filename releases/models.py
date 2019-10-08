@@ -141,10 +141,12 @@ class Release(Model):
         unique_together = ('project', 'version')
 
     def __str__(self):
-        name = self.version_name or self.version
         if self.project:
-            return "{} {}".format(self.project.name, name)
-        return name
+            return "{} {}".format(self.project.name, self.get_version_name())
+        return self.get_version_name()
+
+    def get_version_name(self):
+        return self.version_name or self.version
 
     def get_absolute_url(self):
         """Return a specific url for this release"""

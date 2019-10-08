@@ -75,7 +75,7 @@
               <li class="subtle{% if release.hide %} hide{% endif %}">
                 <a href="{{ release.get_absolute_url }}{% if latest %}?latest=1{% endif %}">
 	    {% endif %}
-	    <label>{{ release.codename|default:release }}</label>
+	    <label>{{ release.codename|default:release.get_version_name }}</label>
 	    {% if release.release_date %}
 	      <span>{{ release.release_date.year }}</span>
 	    {% endif %}
