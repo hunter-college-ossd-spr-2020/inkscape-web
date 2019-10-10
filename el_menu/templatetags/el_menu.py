@@ -43,7 +43,7 @@ def cache_key(lang, cat='menu'):
 def generate_menu(lang, category=None):
     """Generate the menu tree"""
     root_menu = []
-    lang_qset = MenuItem.objects.filter(lang=lang)\
+    lang_qset = MenuItem.objects.filter(lang__in=(lang, 'all'))\
         .filter(category=category)\
         .order_by('order')
     all_qset = MenuTranslation.objects.filter(language=lang)\
