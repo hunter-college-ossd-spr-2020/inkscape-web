@@ -23,24 +23,19 @@ Administration of menu items.
 """
 
 from django.contrib.admin import ModelAdmin, TabularInline, site
-from .models import MenuItem, MenuRoot
+from .models import MenuItem, MenuTranslation
 
-class MenuItemsInline(TabularInline):
+class TranslationsInline(TabularInline):
     """Show MenuItems in a stacked tab interface"""
-    raw_id_fields = ('parent',)
-    model = MenuItem
+    model = MenuTranslation
     extra = 1
 
-class MenuRootAdmin(ModelAdmin):
-    """Customise the root menu in the admin interface"""
-    inlines = (MenuItemsInline,)
-
-site.register(MenuRoot, MenuRootAdmin)
-
 class MenuItemAdmin(ModelAdmin):
-    list_display = ('name', 'url', 'parent', 'root', 'category', 'title', 'cms_id')
+    """Each menu item in the admin interface"""
+    list_display = ('name', 'url', 'parent', 'lang', 'category', 'title', 'cms_id')
     search_fields = ('name', 'url', 'title', 'cms_id')
-    list_filter = ('root', 'category')
+    list_filter = ('lang', 'category')
     raw_id_fields = ('parent',)
+    inlines = (TranslationsInline,)
 
 site.register(MenuItem, MenuItemAdmin)

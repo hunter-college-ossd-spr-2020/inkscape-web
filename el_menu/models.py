@@ -25,27 +25,19 @@ Basic menu are a custom app to show inkscape menu.
 from django.conf import settings
 
 from django.db.models import (
-    Model, Manager, CharField, IntegerField, ForeignKey, SlugField,
+    Model, CharField, IntegerField, ForeignKey, SlugField,
 )
 
 MENU_TYPES = (
     (None, 'Main Menu'),
     ('foot', 'Footer'),
+    ('hidden', 'Hidden'),
 )
 
 LANGS = [('all', 'All Languages')] + list(settings.LANGUAGES)
 
-class MenuRoot(Model):
-    """A whole menu for a language"""
-    language = CharField(max_length=12, choices=LANGS, primary_key=True)
-
-    def __str__(self):
-        return self.get_language_display()
-
-
 class MenuItem(Model):
     """A collection menus"""
-    root = ForeignKey(MenuRoot, related_name='items')
     parent = ForeignKey('self', null=True, blank=True, related_name='children')
     category = SlugField(max_length=12, choices=MENU_TYPES, null=True, blank=True)
     # This must NOT be a URLField as a URLField is restricted to external
@@ -54,6 +46,11 @@ class MenuItem(Model):
     name = CharField(max_length=128)
     title = CharField(max_length=255, null=True, blank=True)
     order = IntegerField(default=0)
+
+    lang = CharField(max_length=12, choices=LANGS, default='all',
+                     db_index=True, db_column='root_id',\
+        help_text="If set, this menu will only be available to this language. "
+                  "DO NOT use this for translations!")
 
     cms_id = IntegerField('Content ID', null=True, blank=True,\
         help_text="A content id (sometimes the CMS ID) which can link pages"\
@@ -68,3 +65,17 @@ class MenuItem(Model):
     def get_absolute_url(self):
         """Return the linked content as this items url"""
         return self.url
+
+
+class MenuTranslation(Model):
+    item = ForeignKey(MenuItem, related_name='translations')
+    language = CharField(max_length=12, choices=LANGS[1:], db_index=True)
+
+    url = CharField(max_length=255, null=True, blank=True)
+    name = CharField(max_length=128, null=True, blank=True)
+    title = CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('item', 'language')
+        ordering = ('language',)
+
