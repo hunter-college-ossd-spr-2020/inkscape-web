@@ -26,6 +26,10 @@
 import os
 import sys
 
+if sys.version_info[0] != 3:
+    sys.stderr.write("Wrong version of python!\n")
+    sys.exit(2)
+
 from distutils import sysconfig as s;
 
 inc_dir = s.get_config_vars()['INCLUDEPY']
