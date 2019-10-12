@@ -28,7 +28,7 @@ from django.conf import settings
 
 from django.template import Library
 
-from ..models import MenuItem
+from ..models import MenuItem, MenuTranslation
 
 register = Library() # pylint: disable=invalid-name
 
@@ -40,17 +40,34 @@ def cache_key(lang, cat='menu'):
     prefix = getattr(settings, key, cat)
     return '%s_%s' % (prefix, lang)
 
-def generate_menu(lang):
+def generate_menu(lang, category=None):
     """Generate the menu tree"""
     root_menu = []
-    qset = MenuItem.objects.filter(Q(root_id=lang) | Q(root_id='all'))\
-        .filter(category__isnull=True)
+    lang_qset = MenuItem.objects.filter(lang__in=(lang, 'all'))\
+        .filter(category=category)\
+        .order_by('order')
+    all_qset = MenuTranslation.objects.filter(language=lang)\
+        .select_related('item')\
+        .filter(item__category=category)\
+        .order_by('item__order')
+
     items = dict((item['pk'], {'item': item, 'submenu': []})
-                 for item in qset.values('pk', 'parent', 'name', 'url', 'title'))
+                 for item in lang_qset.values('pk', 'parent', 'name', 'url', 'title'))
+    items.update((item['item__pk'], {'item': {
+        'pk': item['item__pk'],
+        'parent': item['item__parent'],
+        'name': item['name'] or item['item__name'],
+        'url': item['url'] or item['item__url'],
+        'title': item['title'] or item['item__title'],
+    }, 'submenu': []}) for item in all_qset.values(
+        'item__pk', 'item__parent', 'item__name', 'item__url', 'item__title',
+        'name', 'url', 'title'))
+
     items[None] = {'submenu': root_menu}
 
     for datum in items.values():
-        if 'item' in datum:
+        # This will stop any
+        if 'item' in datum and datum['item']['parent'] in items:
             items[datum['item']['parent']]['submenu'].append(datum)
 
     return root_menu
@@ -71,11 +88,6 @@ def render_foot(lang='en'):
     ckey = cache_key(lang, 'foot')
     root_foot = cache.get(ckey, None)
     if root_foot is None:
-        root_foot = {
-            'foot_items': MenuItem.objects\
-                .filter(Q(root_id=lang) | Q(root_id='all'))\
-                .filter(category='foot')\
-                .values('pk', 'name', 'url', 'title'),
-        }
+        root_foot = generate_menu(lang, 'foot')
         cache.set(ckey, root_foot, DURATION)
-    return root_foot
+    return {'foot_items': root_foot}

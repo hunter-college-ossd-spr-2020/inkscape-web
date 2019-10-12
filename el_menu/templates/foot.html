@@ -1,3 +1,3 @@
-{% for item in foot_items %}
-    <a href="{{ item.url }}" title="{{ item.title }}">{{ item.name }}</a>
+{% for menu in foot_items %}
+    <a href="{{ menu.item.url }}" title="{{ menu.item.title }}">{{ menu.item.name }}</a>
 {% endfor %}
