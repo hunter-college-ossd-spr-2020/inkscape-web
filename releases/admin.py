@@ -21,6 +21,7 @@
 Administration for releases app
 """
 
+from django.utils.translation import get_language
 from django.contrib.admin import site, ModelAdmin, StackedInline
 
 from .forms import (
@@ -56,8 +57,14 @@ class ReleaseAdmin(ModelAdmin):
     form = ReleaseForm
     inlines = (PlatformInline, TranslationsInline)
     list_display = ('version', 'is_prerelease', 'project', 'parent',
-                    'release_date', 'manager', 'keywords', 'html_desc')
+                    'release_date', 'manager', 'is_translated')
     list_filter = ('project', 'version', 'status', 'is_prerelease')
+
+    def is_translated(self, obj):
+        """Returns true if this is translated into one's selected language"""
+        return self and bool(obj.translations.filter(language=get_language()))
+    is_translated.boolean = True
+    is_translated.short_description = get_language
 
 
 class PlatformTranslationsInline(StackedInline):
@@ -72,8 +79,14 @@ class PlatformAdmin(ModelAdmin):
     """Platform editing in the admin interface"""
     raw_id_fields = ('manager',)
     form = PlatformForm
-    list_display = ('__str__', 'codename', 'desc', 'keywords', 'manager')
+    list_display = ('__str__', 'codename', 'desc', 'keywords', 'manager', 'is_translated')
     inlines = (PlatformTranslationsInline,)
+
+    def is_translated(self, obj):
+        """Returns true if this is translated into one's selected language"""
+        return self and bool(obj.translations.filter(language=get_language()))
+    is_translated.boolean = True
+    is_translated.short_description = get_language
 
 
 class ReleasePlatformTranslationsInline(StackedInline):
@@ -87,8 +100,15 @@ class ReleasePlatformTranslationsInline(StackedInline):
 class ReleasePlatformAdmin(ModelAdmin):
     """Customised release-platform administration editing"""
     form = ReleasePlatformForm
+    list_display = ('__str__', 'download', 'resource', 'is_translated')
     list_filter = ('release', 'release__status')
     inlines = (ReleasePlatformTranslationsInline,)
+
+    def is_translated(self, obj):
+        """Returns true if this is translated into one's selected language"""
+        return self and bool(obj.translations.filter(language=get_language()))
+    is_translated.boolean = True
+    is_translated.short_description = get_language
 
 site.register(Project)
 site.register(Release, ReleaseAdmin)
