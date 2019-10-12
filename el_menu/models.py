@@ -53,10 +53,6 @@ class MenuItem(Model):
         help_text="If set, this menu will only be available to this language. "
                   "DO NOT use this for translations!")
 
-    cms_id = IntegerField('Content ID', null=True, blank=True,\
-        help_text="A content id (sometimes the CMS ID) which can link pages"\
-        " in different languages together.")
-
     class Meta:
         ordering = ('order',)
 

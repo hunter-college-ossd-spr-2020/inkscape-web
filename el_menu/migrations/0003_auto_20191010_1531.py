@@ -54,4 +54,22 @@ class Migration(migrations.Migration):
             name='menutranslation',
             unique_together=set([('item', 'language')]),
         ),
+        migrations.RemoveField(
+            model_name='menuitem',
+            name='cms_id',
+        ),
+        migrations.AlterModelOptions(
+            name='menutranslation',
+            options={'ordering': ('language',)},
+        ),
+        migrations.AlterField(
+            model_name='menuitem',
+            name='parent',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='children', to='el_menu.MenuItem'),
+        ),
+        migrations.AlterField(
+            model_name='menuitem',
+            name='category',
+            field=models.SlugField(blank=True, choices=[(None, 'Main Menu'), ('foot', 'Footer'), ('hidden', 'Hidden')], max_length=12, null=True),
+        ),
     ]
