@@ -31,6 +31,7 @@ from django.db.models import (
 MENU_TYPES = (
     (None, 'Main Menu'),
     ('foot', 'Footer'),
+    ('tab', 'Tab'),
     ('hidden', 'Hidden'),
 )
 
@@ -66,6 +67,11 @@ class MenuItem(Model):
         """Return the linked content as this items url"""
         return self.url
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from .templatetags.el_menu import clear_cache
+        for lang, _ in settings.LANGUAGES:
+            clear_cache(lang, self.category)
 
 class MenuTranslation(Model):
     item = ForeignKey(MenuItem, related_name='translations')
@@ -78,4 +84,3 @@ class MenuTranslation(Model):
     class Meta:
         unique_together = ('item', 'language')
         ordering = ('language',)
-

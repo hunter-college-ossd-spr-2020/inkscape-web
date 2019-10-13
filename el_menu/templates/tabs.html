@@ -1,0 +1,5 @@
+{% for menu in menu_items %}
+  <li id="tab_hackfest" class="link" title="{{ menu.item.title }}">
+    <p><a href="{{ menu.item.url }}">{{ menu.item.name }}</a></p>
+  </li>
+{% endfor %}
