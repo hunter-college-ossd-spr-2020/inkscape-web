@@ -129,7 +129,7 @@ TEMPLATES = [{
 MIDDLEWARE_CLASSES = (
     'cog.middleware.UserOnErrorMiddleware',
     'optional_design.middleware.OptionalDesignMiddleware',
-    #'inkscape.middleware.AutoBreadcrumbMiddleware',
+    'inkscape.middleware.AutoBreadcrumbMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
