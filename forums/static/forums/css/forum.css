@@ -1045,22 +1045,28 @@ h3 small.label {
 
 #users-online li a.me {
   border-bottom: 1px solid #aaa;
+  border-radius: 0px;
   display: block;
   height: initial;
   width: initial;
-  padding-bottom: 8px;
   margin-bottom: 5px;
+}
+#users-online li a.me img {
+  border-width: 0px;
+  border-radius: 0px;
 }
 
 #users-online li a {
   display: inline-block;
-  padding: 4px;
+  padding: 0px;
   height: 48px;
   width: 48px;
+  border-radius: 6px;
 }
 
 #users-online li img {
   border: 1px solid #eee;
+  padding: 4px;
   max-width: 48px;
   max-height: 48px;
   border-radius: 6px;
