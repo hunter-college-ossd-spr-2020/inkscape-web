@@ -98,6 +98,28 @@ class EditResource(OwnerUpdateMixin, UpdateView):
         return self.request.POST.get('next', self.object.get_absolute_url())
 
 
+class CheckResource(SingleObjectMixin, RedirectView):
+    model = Resource
+
+    def get_redirect_url(self, *args, **kwargs):
+        return self.request.GET.get(
+            'next', self.get_object().get_absolute_url())
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        gallery = obj.gallery
+
+        if not request.user.is_authenticated() and gallery.user != request.user and \
+                (gallery.group not in request.user.groups.all()):
+            raise PermissionDenied()
+
+        if obj.checked_by:
+            obj.checked_by = None
+        else:
+            obj.checked_by = request.user
+        obj.save()
+        return super(CheckResource, self).get(request, obj=obj)
+
 class PublishResource(OwnerUpdateMixin, DetailView):
     """Any ownerof a resource can publish it"""
     model = Resource
