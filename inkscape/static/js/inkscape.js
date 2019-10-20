@@ -234,9 +234,11 @@ function setupMenu() {
   });
   $("#menu li").has("ul")
     .each(function() {
-      var ancestorDuplicate = $("<li>").addClass('child main').append($(this).children("a").clone());
-      if($(this).hasClass('selected')) ancestorDuplicate.addClass('selected');
-      $(this).children("ul").prepend(ancestorDuplicate);
+      if($(this).children("a").attr('href')) {
+        var ancestorDuplicate = $("<li>").addClass('child main').append($(this).children("a").clone());
+        if($(this).hasClass('selected')) ancestorDuplicate.addClass('selected');
+        $(this).children("ul").prepend(ancestorDuplicate);
+      }
     })
     .children("a").click(function(event) {
       event.preventDefault();

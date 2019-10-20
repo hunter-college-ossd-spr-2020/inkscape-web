@@ -43,7 +43,7 @@ class MenuItem(Model):
     category = SlugField(max_length=12, choices=MENU_TYPES, null=True, blank=True)
     # This must NOT be a URLField as a URLField is restricted to external
     # fully qualified urls and doesn't accept local page URLs.
-    url = CharField(max_length=255, help_text="Location of content.")
+    url = CharField(max_length=255, help_text="Location of content.", null=True, blank=True)
     name = CharField(max_length=128)
     title = CharField(max_length=255, null=True, blank=True)
     order = IntegerField(default=0)
