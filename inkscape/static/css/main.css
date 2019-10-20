@@ -696,6 +696,7 @@ div.toc ol,
   font-size: 14px;
   text-transform: uppercase;
   text-align: center;
+  cursor: pointer;
 }
 #menu > li.selected > a,
 #menu > li.ancestor > a,
