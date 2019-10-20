@@ -1,9 +1,7 @@
     <ul id="menu">
       {% for menu in menu_items %}
         <li>
-            {% if menu.item.url %}
-              <a href="{{ menu.item.url }}" title="{{ menu.item.title|default:'' }}">{{ menu.item.name }}</a>
-            {% endif %}
+            <a {% if menu.item.url %}href="{{ menu.item.url }}"{% endif %} title="{{ menu.item.title|default:'' }}">{{ menu.item.name }}</a>
             {% if menu.submenu != None %}
                 <ul>
                 {% for sub_menu_item in menu.submenu %}
