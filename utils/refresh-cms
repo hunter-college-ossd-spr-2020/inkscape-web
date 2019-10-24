@@ -50,6 +50,3 @@ echo "Loading new cms data..."
 
 ./utils/manage loaddata live_content
 
-echo "Generating a new menu"
-
-./utils/manage generate_menu
