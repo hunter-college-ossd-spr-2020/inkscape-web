@@ -14,14 +14,24 @@
           {% include "ribbon.html" %}
         {% endwith %}
       {% endif %}
-      {% if request.user.is_authenticated and object.is_contest and object.is_voting %}
-        {% if item.voted %}
-          <a href="{% url "resource.like" item.pk "-" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Remove vote" %}"><span class="votebox remove">●</span></a>
+      {% if object.is_contest %}
+        {% if request.user.is_authenticated and object.is_voting %}
+          {% if item.voted %}
+            <a href="{% url "resource.like" item.pk "-" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Remove vote" %}"><span class="votebox remove">●</span></a>
+          {% else %}
+            <a href="{% url "resource.like" item.pk "+" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Vote for this" %}"><span class="votebox add">●</span></a>
+          {% endif %}
+          {% if object.user == request.user or object.group in request.user.groups.all %}
+            <span class="blank">{{ item.liked }}</span>
+          {% endif %}
         {% else %}
-          <a href="{% url "resource.like" item.pk "+" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Vote for this" %}"><span class="votebox add">●</span></a>
-        {% endif %}
-        {% if object.user == request.user %}
-          <span class="blank">{{ item.liked }}</span>
+          {% if object.user == request.user or object.group in request.user.groups.all %}
+            {% if item.checked_by %}
+              <img src="{% static "mime/banner/ok.svg" %}" title="{% trans "Checked OK." %}">
+            {% else %}
+              <img src="{% static "mime/banner/delete.svg" %}" title="{% trans "Not Checked or Not OK." %}">
+            {% endif %}
+          {% endif %}
         {% endif %}
       {% elif not object.is_contest and item.user == request.user %}
         {% if gallery %}

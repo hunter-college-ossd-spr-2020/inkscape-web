@@ -22,7 +22,6 @@
 Basic menu template tag
 """
 
-from django.db.models import Q
 from django.core.cache import cache
 from django.conf import settings
 
@@ -34,14 +33,16 @@ register = Library() # pylint: disable=invalid-name
 
 DURATION = getattr(settings, 'MENU_CACHE_DURATION', 300)
 
-def cache_key(lang, cat='menu'):
+def cache_key(lang, category='menu'):
     """Generate a caching key"""
-    key = cat.upper() + '_CACHE_PREFIX'
-    prefix = getattr(settings, key, cat)
+    key = category.upper() + '_CACHE_PREFIX'
+    prefix = getattr(settings, key, category)
     return '%s_%s' % (prefix, lang)
 
 def generate_menu(lang, category=None):
     """Generate the menu tree"""
+    if category == 'menu':
+        category = None
     root_menu = []
     lang_qset = MenuItem.objects.filter(lang__in=(lang, 'all'))\
         .filter(category=category)\
@@ -72,22 +73,33 @@ def generate_menu(lang, category=None):
 
     return root_menu
 
+def render_or_cache(lang, category):
+    """Generates any menu"""
+    ckey = cache_key(lang, category)
+    root_foot = cache.get(ckey, None)
+    if root_foot is None:
+        root_foot = generate_menu(lang, category)
+        cache.set(ckey, root_foot, DURATION)
+    return {'menu_items': root_foot}
+
+def clear_cache(lang, category):
+    """Clears the category"""
+    if category is None:
+        category = 'menu'
+    ckey = cache_key(lang, category)
+    return cache.delete(ckey)
+
 @register.inclusion_tag('menu.html')
 def render_menu(lang='en'):
     """Generates the menu as a list of dictionaries and submenu lists"""
-    ckey = cache_key(lang)
-    root_menu = cache.get(ckey, None)
-    if root_menu is None:
-        root_menu = generate_menu(lang)
-        cache.set(ckey, root_menu, DURATION)
-    return {'menu_items': root_menu}
+    return render_or_cache(lang, 'menu')
 
 @register.inclusion_tag('foot.html')
 def render_foot(lang='en'):
     """Generates the footer as a list of dictionaries and submenu lists"""
-    ckey = cache_key(lang, 'foot')
-    root_foot = cache.get(ckey, None)
-    if root_foot is None:
-        root_foot = generate_menu(lang, 'foot')
-        cache.set(ckey, root_foot, DURATION)
-    return {'foot_items': root_foot}
+    return render_or_cache(lang, 'foot')
+
+@register.inclusion_tag('tabs.html')
+def render_tabs(lang='en'):
+    """Generates the extra tabs as a list of dictionaries and submenu lists"""
+    return render_or_cache(lang, 'tab')

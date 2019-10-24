@@ -156,6 +156,7 @@ MIDDLEWARE = [
     # TO UPGRADE TO DJANGO 1.10 STYLE MIDDLEWARE
     #'person.middleware.SetLastVisitMiddleware',
     #'forums.middleware.RecentUsersMiddleware'
+    #'inkscape.middleware.AutoBreadcrumbMiddleware',
 ]
 
 # ===== CACHING ===== #

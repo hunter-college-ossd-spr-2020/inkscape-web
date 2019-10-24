@@ -696,6 +696,7 @@ div.toc ol,
   font-size: 14px;
   text-transform: uppercase;
   text-align: center;
+  cursor: pointer;
 }
 #menu > li.selected > a,
 #menu > li.ancestor > a,
@@ -703,8 +704,8 @@ div.toc ol,
   background: #333333;
   background-image: linear-gradient(to bottom, #333, #444, #333);
 }
-#menu > li:hover > a:link,
-#menu > li.activated > a:link {
+#menu > li:hover > a,
+#menu > li.activated > a {
   background: #333333;
   background-image: linear-gradient(to bottom, #333, #4d4d4d);
 }
@@ -1496,6 +1497,7 @@ div.pagination {
   display: inline-block;
   margin: 10px 2px 20px;
   padding: 0;
+  width:100%;
 }
 ul.pagination li,
 div.pagination span,

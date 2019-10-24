@@ -114,6 +114,8 @@
              <img src="{% static "images/endorse/broken.svg" %}" title="{% trans "Broken Signature or Hash!" %}"/>
            {% endif %}
          </a>
+      {% elif object.gallery.is_contest and object.checked_by %}
+        <img src="{% static "images/endorse/contest.svg" %}" title="{% blocktrans with name=object.checked_by.name %}Checked by {{ name }}!{% endblocktrans %}"/>
       {% endif %}
 
       {% if object.link and not object.is_video %}
@@ -147,7 +149,18 @@
             <form action="{% url "resource.copy" object.id %}">
               <button id="editSide" class="start" type="submit">{% trans "Add to Gallery" %}</button>
             </form>
+        {% endif %}
+        {% if object.gallery.is_contest %}
+          {% if request.user == object.gallery.user or object.gallery.group in request.user.groups.all %}
+            <form action="{% url "resource.check" object.id %}">
+              {% if not object.checked_by %}
+                <button id="editSide" class="start" type="submit">{% trans "Entry is Checked" %}</button>
+              {% else %}
+                <button id="editSide" class="start" type="submit">{% trans "Uncheck Entry" %}</button>
+              {% endif %}
+            </form>
           {% endif %}
+        {% endif %}
       </div>
 
   {% with object as comment_subject %}

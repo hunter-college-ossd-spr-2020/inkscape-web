@@ -25,7 +25,7 @@ from datetime import date
 
 import django
 from django.conf import settings
-from django.utils.timezone import now, make_aware
+from django.utils.timezone import now
 
 def tracker_data(request):
     """Add tracker data for Piwik to template"""
@@ -38,8 +38,6 @@ def tracker_data(request):
 PATH = settings.PROJECT_PATH
 WEBSITE_VERSION = ''
 WEBSITE_REVISION = ''
-DONATE_NOW = False
-DONATE_URL = None
 
 def proc_date(d):
     if d and '-' in d and len(d) == 10:
@@ -54,11 +52,6 @@ VERSION_FILE = os.path.join(PATH, 'version')
 if os.path.isfile(VERSION_FILE):
     MSG = email.message_from_file(open(VERSION_FILE))
     WEBSITE_VERSION = str(MSG["version"])
-    DONATE_NOW = bool(MSG.get("donate", False))
-    DONATE_MSG = MSG.get("donate", "Support Inkscape")
-    DONATE_URL = MSG.get("donate-url", "/support-us/hackfests/")
-    DONATE_START = proc_date(MSG.get("donate-start", None))
-    DONATE_END = proc_date(MSG.get("donate-end", None))
 
 REVISION_FILE = os.path.join(PATH, 'data', 'revision')
 if os.path.isfile(REVISION_FILE):
@@ -70,13 +63,6 @@ def version(request):
     today = now().date()
     return {
         'RENDER_TIME': now(),
-        'DONATE_NOW': DONATE_NOW,
-        'DONATE_MSG': DONATE_MSG,
-        'DONATE_URL': DONATE_URL,
-        'DONATE_START': DONATE_START,
-        'DONATE_END': DONATE_END,
-        'DONATE_IN': (DONATE_START is None or DONATE_START <= today)\
-                     and (DONATE_END is None or DONATE_END >= today),
         'WEBSITE_REVISION': WEBSITE_REVISION,
         'DJANGO_VERSION': django.get_version(),
         'PYTHON_VERSION': sys.version.split()[0]
