@@ -587,3 +587,27 @@ function timeSince(date) {
 function isValidDate(d) {
   return d instanceof Date && !isNaN(d);
 }
+
+
+// warn user about unsubmitted comment before leaving page
+unload_triggered_by_submit = false;
+$(function observe_submit_events() {
+  $('form').submit(function() {
+    unload_triggered_by_submit = true;
+  });
+});
+
+$(function warn_on_unsubmitted_reply() {
+  document.body.onbeforeunload = function(e) {
+    if (unload_triggered_by_submit) {
+      unload_triggered_by_submit = false;
+      return;
+    }
+
+    for(editorName in CKEDITOR.instances) {
+      if (CKEDITOR.instances[editorName].checkDirty()) {
+        return "Unsubmitted comment!"
+      }
+    }
+  }
+});
