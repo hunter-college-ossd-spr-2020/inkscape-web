@@ -757,15 +757,16 @@ class GalleryQuerySet(QuerySet):
 
 
 class Gallery(Model):
+    """A container for many resources"""
     GALLERY_STATUSES = (
-      (None, 'No Status'),
-      (' ', 'Casual Wish'),
-      ('1', 'Draft'),
-      ('2', 'Proposal'),
-      ('3', 'Reviewed Proposal'),
-      ('+', 'Under Development'),
-      ('=', 'Complete'),
-      ('-', 'Rejected'),
+        (None, 'No Status'),
+        (' ', 'Casual Wish'),
+        ('1', 'Draft'),
+        ('2', 'Proposal'),
+        ('3', 'Reviewed Proposal'),
+        ('+', 'Under Development'),
+        ('=', 'Complete'),
+        ('-', 'Rejected'),
     )
     user = ForeignKey(settings.AUTH_USER_MODEL, related_name='galleries', default=get_user)
     group = ForeignKey(Group, related_name='galleries', **null)
@@ -779,20 +780,21 @@ class Gallery(Model):
 
     items = ManyToManyField(Resource, related_name='galleries', blank=True)
 
-    contest_submit = DateField(help_text=_('Start a contest in this gallery on this date (UTC).'), **null)
-    contest_voting = DateField(help_text=_('Finish the submissions and start voting (UTC).'), **null)
-    contest_count  = DateField(help_text=_('Voting is finished, but the votes are being counted.'), **null)
-    contest_finish = DateField(help_text=_('Finish the contest, voting closed, winner announced (UTC).'), **null)
+    contest_submit = DateField(help_text=_('Open submissions for contest (UTC).'), **null)
+    contest_voting = DateField(help_text=_('Finish the submissions, start voting (UTC).'), **null)
+    contest_count = DateField(help_text=_('Voting is finished, votes counted (UTC)'), **null)
+    contest_finish = DateField(help_text=_('Finish contest, voting closed (UTC)'), **null)
+    contest_checks = BooleanField(default=False, help_text=_('Contest entries require checking.'))
 
-    _is_generic   = lambda self, a, b: a and b and a <= now().date() < b
-    is_contest    = property(lambda self: bool(self.contest_submit))
-    is_pending    = property(lambda self: self.contest_submit and self.contest_submit > now().date())
+    _is_generic = lambda self, a, b: a and b and a <= now().date() < b
+    is_contest = property(lambda self: bool(self.contest_submit))
+    is_pending = property(lambda self: self.contest_submit and self.contest_submit > now().date())
     is_submitting = property(lambda self: self._is_generic(self.contest_submit, self.submitting_to))
-    is_voting     = property(lambda self: self._is_generic(self.contest_voting, self.voting_to))
-    is_counting   = property(lambda self: self._is_generic(self.contest_count, self.contest_finish))
-    is_finished   = property(lambda self: self.contest_finish and self.contest_finish <= now().date())
+    is_voting = property(lambda self: self._is_generic(self.contest_voting, self.voting_to))
+    is_counting = property(lambda self: self._is_generic(self.contest_count, self.contest_finish))
+    is_finished = property(lambda self: self.contest_finish and self.contest_finish <= now().date())
     submitting_to = property(lambda self: self.contest_voting or self.contest_finish)
-    voting_to     = property(lambda self: self.contest_count or self.contest_finish)
+    voting_to = property(lambda self: self.contest_count or self.contest_finish)
 
     objects = GalleryQuerySet.as_manager()
 

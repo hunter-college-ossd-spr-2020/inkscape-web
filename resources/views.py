@@ -380,6 +380,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
         'prev': _('Your previous vote has been replaced by a vote for this item.'),
         'done': _('Thank you for your vote!'),
         'ended': _('You may not vote after the contest ends.'),
+        'disquo': _('You may not vote for disqualified entrires.'),
         '!begun': _('You may not vote until the contest begins.'),
         '!ready': _('You may not vote in a contest open for submissions.'),
     }
@@ -418,7 +419,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
         messages.info(self.request, msg)
 
     def contest_vote(self, item):
-        """Attemptto vote on the item, but fail if the contest isn't running"""
+        """Attempt to vote on the item, but fail if the contest isn't running"""
         gallery = item.gallery
         today = now().date()
         # Some different rules for contest galleries
@@ -428,6 +429,8 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
             raise PermissionDenied(self.msg['!ready'])
         elif gallery.contest_finish and gallery.contest_finish < today:
             raise PermissionDenied(self.msg['ended'])
+        elif gallery.contest_checks and not item.checked_by:
+            raise PermissionDenied(self.msg['disquo'])
         return item.gallery.votes.filter(voter_id=self.request.user.pk)
 
 class DownloadReadme(ViewResource):

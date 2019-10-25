@@ -3,7 +3,7 @@
 {% if item.is_visible %}
   {% track_object item %}
   <div class="galleryitem{% if item.is_removed %} removed{% elif not item.published %} unpublished{% endif %} {{ item.extra_css }}{% if object.is_voting %}{% if item.voted %} voted{% else %} notvoted{% endif %}{% endif %}" 
-    title="{{ item.summary_string }}">
+     title="{{ item.summary_string }}" {% if object.is_voting and object.contest_checks and not item.checked_by %}style="opacity: 0.5;"{% endif %}>
     <a class="link" href="{{ item.get_absolute_url }}">
       <img src="{{ item.thumbnail_url }}"/>
     </a>
@@ -18,8 +18,10 @@
         {% if request.user.is_authenticated and object.is_voting %}
           {% if item.voted %}
             <a href="{% url "resource.like" item.pk "-" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Remove vote" %}"><span class="votebox remove">●</span></a>
-          {% else %}
+          {% elif not object.contest_checks or item.checked_by %}
             <a href="{% url "resource.like" item.pk "+" %}?next={{ request.path|urlencode }}" class="blank" title="{% trans "Vote for this" %}"><span class="votebox add">●</span></a>
+          {% else %}
+            <a href="#no-vote" class="blank" title="{% trans "Disqualified Entry" %}"><span class="votebox remove">●</span></a>
           {% endif %}
           {% if object.user == request.user or object.group in request.user.groups.all %}
             <span class="blank">{{ item.liked }}</span>
