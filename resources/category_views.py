@@ -372,9 +372,17 @@ class CategoryListView(View, MultipleObjectMixin):
 
     def get_orders(self):
         """Returns ordering information, column names and '-' prefixes"""
-        order = self.get_value('order', self.order or self.orders[0][0])
+        order = self.get_value('order', self.order or self.orders[0][0]).rstrip('-')
+        active = order[1:] if order[0] == '-' else order
+        # Stop anyone entering ordering against what is programmed
+        if active not in [odr.strip('-') for (odr, label) in self.orders]:
+            order = self.orders[0][0]
+            active = self.orders[0][0].strip('-')
+
         for (odr, label) in self.orders:
-            yield {'id': odr, 'name': label, 'down': (order or '*')[0] == '-',
-                   'active': order.strip('-') == odr.strip('-'),
+            yield {'id': odr, 'name': label,
+                   'down': (order or '*')[0] == '-',
+                   'active': active == odr.strip('-'),
                    'order': order,
-                   'url': self.get_url('order', reverse_order(odr, odr == order))}
+                   'url': self.get_url('order', reverse_order(odr, odr == order))
+                  }
