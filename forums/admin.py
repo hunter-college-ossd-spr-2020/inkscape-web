@@ -24,26 +24,35 @@ Admin interfaces for comments and forums.
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 
-from django.contrib.admin import ModelAdmin, site, TabularInline
+from django.utils.text import mark_safe
+from django.contrib.admin import ModelAdmin, register, TabularInline
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django_comments.models import Comment
 
 from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag
 
+@register(UserFlag)
 class UserFlagAdmin(ModelAdmin):
     raw_id_fields = ('user',)
     list_filter = ('flag',)
 
-site.register(UserFlag, UserFlagAdmin)
-site.register(ForumGroup)
 
+@register(ForumGroup)
+class ForumGroupAdmin(ModelAdmin):
+    list_display = ('name', 'sort', 'forum_list')
+
+    def forum_list(self, obj):
+        return mark_safe('' + ' '.join([
+            "<a class='errornote' href='{}'>{}</a>".format(item.get_absolute_url(), item.name) for item in obj.forums.all()
+        ]) + '')
+
+@register(Forum)
 class ForumAdmin(ModelAdmin):
     list_filter = ('group', 'team')
     search_fields = ('name', 'desc')
     list_display = ('name', 'desc', 'group', 'team', 'lang', 'post_count', 'last_posted')
     readonly_fields = ('post_count', 'last_posted')
 
-site.register(Forum, ForumAdmin)
 
 class CommentInline(GenericTabularInline):
     model = Comment
@@ -52,6 +61,7 @@ class CommentInline(GenericTabularInline):
     raw_id_fields = ('user',)
     readonly_fields = ('site', 'ip_address', 'submit_date', 'user_url')
 
+@register(ForumTopic)
 class TopicAdmin(ModelAdmin):
     inlines = [CommentInline]
     list_filter = ('forum',)
@@ -62,8 +72,6 @@ class TopicAdmin(ModelAdmin):
         'post_count', 'last_posted', 'last_posted',
         'first_username', 'last_username', 'has_attachments',
     )
-
-site.register(ForumTopic, TopicAdmin)
 
 class FlagInline(TabularInline):
     raw_id_fields = ('user',)

@@ -58,8 +58,12 @@ APP = apps.get_app_config('forums')
 
 class ForumGroup(Model):
     name = CharField(max_length=128, unique=True)
+    sort = IntegerField(default=0, null=True, blank=True)
 
     parent = property(lambda self: self.forums.all().parent)
+
+    class Meta:
+        ordering = ('-sort',)
 
     def __str__(self):
         return self.name

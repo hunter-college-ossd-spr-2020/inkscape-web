@@ -29,7 +29,7 @@ class ForumQuerySet(QuerySet):
     def groups(self):
         """Batch each forum into groups by their name"""
         ret = OrderedDict()
-        for item in self:
+        for item in self.order_by('-group__sort', '-sort'):
             if item.group.name not in ret:
                 ret[item.group.name] = []
             ret[item.group.name].append(item)
