@@ -3,6 +3,8 @@
  */
 var emojis = ['1f600', '1f602', '1f607', '1f608', '1f609', '1f613', '1f623', '1f621', '270b', '270a', '270c', '1f918', '261d', '270d', '2764', '2605', '2618', '2714', '2716', '2754', '2755', '26f0', '270e', '1f58c', '1f58d', '1f58a', '1f588', '1f525', '1f527', '1f528', '1f427', '1f426', '1f431', '1f433', '1f438',];
 
+var EMOJI = {};
+
 function refresh_render_time() {
   $(".render-time").each(function() {
     var time = new Date($(this).attr('title'));
@@ -19,6 +21,16 @@ function refresh_render_time() {
 window.setInterval(refresh_render_time, 60000);
 
 $(document).ready(function() {
+  // Prepare emoji bank
+  var static_dir = $('body').data('static');
+  $.getJSON(static_dir + "forums/ckeditor/plugins/emoji/emoji.json", function(json) {
+    for (var i in json) {
+        EMOJI[json[i].symbol] = json[i].id;
+    }
+    /* Page Emojis */
+    $('span.emoji').each(clean_emoji);
+  });
+
   refresh_render_time();
   
   /**
@@ -159,9 +171,6 @@ $(document).ready(function() {
           return true;
       });
   });
-
-  /* Page Emojis */
-  $('span.emoji').each(clean_emoji);
 
   /* Attachments */
   $('.check-dropdown .dropdown-menu').each(function() {
@@ -477,9 +486,15 @@ function clean_emoji(index, elem) {
             $(elem).remove();
         } else {
             // Create a new emoji of the right kind
+            var title = EMOJI[emoji];
+            if(!title) {
+                console.error("Can't find: " + emoji);
+            } else {
+                console.log("Found: " + emoji)
+            }
             $(elem).addClass('code-'+code);
             $(elem).append($('<img src="' + static_dir + 'emoji/48/'
-                + code+'.png" alt="'+emoji+'" class="emoji">'));
+                + code+'.png" alt="'+emoji+'" class="emoji" title="'+title+'">'));
             if($(elem).data('owner')) {
                 $(elem).data('count', 1);
                 $(elem).append($('<i class="count" style="display: none;">1</i>'));
@@ -604,9 +619,12 @@ $(function warn_on_unsubmitted_reply() {
       return;
     }
 
-    for(editorName in CKEDITOR.instances) {
-      if (CKEDITOR.instances[editorName].checkDirty()) {
-        return "Unsubmitted comment!"
+    // Editor is not always on page, if for example the post is locked.
+    if(typeof CKEDITOR !== 'undefined') {
+      for(editorName in CKEDITOR.instances) {
+        if (CKEDITOR.instances[editorName].checkDirty()) {
+          return "Unsubmitted comment!"
+        }
       }
     }
   }
