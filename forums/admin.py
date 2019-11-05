@@ -33,7 +33,7 @@ from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag, 
 @register(ModerationLog)
 class ModerationLogAdmin(ModelAdmin):
     list_display = ('action', 'moderator', 'performed', 'comment')
-    list_filter = ('action', 'moderator')
+    list_filter = ('action',)
     raw_id_fields = ('moderator', 'user', 'comment', 'topic', 'forum')
 
 @register(UserFlag)
