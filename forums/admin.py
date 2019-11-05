@@ -21,15 +21,20 @@
 Admin interfaces for comments and forums.
 """
 
-from django_comments.models import CommentFlag
+from django_comments.models import CommentFlag, Comment
 from django_comments.admin import CommentsAdmin
 
 from django.utils.text import mark_safe
 from django.contrib.admin import ModelAdmin, register, TabularInline
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django_comments.models import Comment
 
-from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag
+from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag, ModerationLog
+
+@register(ModerationLog)
+class ModerationLogAdmin(ModelAdmin):
+    list_display = ('action', 'moderator', 'performed', 'comment')
+    list_filter = ('action', 'moderator')
+    raw_id_fields = ('moderator', 'user', 'comment', 'topic', 'forum')
 
 @register(UserFlag)
 class UserFlagAdmin(ModelAdmin):
