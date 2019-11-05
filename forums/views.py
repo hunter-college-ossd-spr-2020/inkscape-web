@@ -314,6 +314,14 @@ class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     """Allow a topic to be deleted by a moderator"""
     context_title = _('Delete Topic')
 
+    def delete(self, request, *args, **kwargs):
+        """Delete the topic by marking it as deleted"""
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.removed = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
     def get_success_url(self):
         self.record_action(subject=self.object.subject)
         return self.object.forum.get_absolute_url()
