@@ -241,10 +241,10 @@ class ResourcesJson(View):
                         qey = self.parse_url(qey)
                     except ValueError as err:
                         context['error'] = str(err)
-                        qey = None
+                        qey = ''
                     except RemoteError as err:
                         context['error'] = "Remote server error! {}".format(str(err))
-                        qey = None
+                        qey = ''
 
                 max_num += 2
                 if qey.isnumeric():

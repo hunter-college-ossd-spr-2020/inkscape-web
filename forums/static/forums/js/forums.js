@@ -243,6 +243,8 @@ $(document).ready(function() {
   // Click on the "Add Existing Upload" option
   $('#resource_add').click(function() {
       var query = $('#resource_search').val();
+      $('#attachment_error').hide();
+      $('#attachment_not_found').hide();
       if(query) {
           add_attachments({'q': query}, {'update': 1});
       }
@@ -409,11 +411,11 @@ function remove_embedded(pk, datum) {
 function add_attachments(query, options) {
     $.getJSON('/json/resources.json', query, function(data) {
         $('#resource_search').val('');
-        if(!data.resources.length && query.q) {
+        if(data.error) {
+          $('#attachment_error').show();
+          $('#attachment_error i').text(data.error);
+        } else if(!data.resources.length && query.q) {
             $('#attachment_not_found').show();
-        } else if(data.error) {
-            $('#attachment_error').show();
-            $('#attachment_error i').text(data.error);
         }
         $.each(data.resources, function(index, datum) {
             add_attachment(datum, options);
