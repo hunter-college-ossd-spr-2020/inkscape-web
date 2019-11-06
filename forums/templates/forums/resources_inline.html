@@ -21,10 +21,12 @@
             <a href="{{ object.download_url }}"><img src="{{ object.icon_url }}" alt="{{ object }}"></a>
           </div>
         {% endif %}
-      {% elif object.link and object.thumbnail %}
+      {% elif object.link %}
         <div class="inline image link" data-toggle="tooltip" title="{{ object }}">
           <a href="{{ object.link }}"><img src="{{ object.thumbnail_url }}" alt="{{ object }}"></a>
         </div>
+      {% else %}
+        <!--G: {{ object.pk }}: OBJ:{{ object }}: DOWN:{{ object.download }}: AVAIL:{{ object.is_available }}-->
       {% endif %}
     {% endwith %}
   {% endif %}
