@@ -298,6 +298,9 @@ class FileEx(object):
             num_chars += len(line)
         return (num_lines, num_words)
 
+class RemoteError(IOError):
+    """Remote server didn't respond as expected"""
+
 def url_filefield(url, filename=None):
     """
     Download the given url and return it as a file field
@@ -309,7 +312,9 @@ def url_filefield(url, filename=None):
     import requests
     resp = requests.get(url)
     if resp.status_code != 200:
-        return None
+        if resp.status_code == 404:
+            raise RemoteError("File Not Found")
+        raise RemoteError("Server Error")
     bhl = BytesIO()
     bhl.write(resp.content)
     if filename is None:

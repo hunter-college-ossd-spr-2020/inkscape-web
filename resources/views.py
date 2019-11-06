@@ -38,7 +38,7 @@ from django.db.models import Q
 
 from person.models import User, Team
 
-from .utils import url_filefield
+from .utils import url_filefield, RemoteError
 from .video_url import video_detect
 from .category_views import CategoryListView
 from .mixins import (
@@ -241,6 +241,9 @@ class ResourcesJson(View):
                         qey = self.parse_url(qey)
                     except ValueError as err:
                         context['error'] = str(err)
+                        qey = None
+                    except RemoteError as err:
+                        context['error'] = "Remote server error! {}".format(str(err))
                         qey = None
 
                 max_num += 2
