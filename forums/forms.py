@@ -133,8 +133,6 @@ class AttachmentMixin(object):
         attachments = self.cleaned_data['attachments']
         galleries = self.cleaned_data['galleries']
         embedded = self.cleaned_data['embedded']
-        comment.comment = clean_comment(comment)
-        comment.save()
 
         # collect all existing attachments that are being removed
         to_delete = comment.attachments.exclude(resource__in=attachments)\
@@ -214,6 +212,7 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         self.cleaned_data['url'] = ''
 
         comment = self.get_comment_object()
+        comment.comment = clean_comment(comment)
         comment.user = self.user
         comment.ip_address = self.ip_address
         comment.is_public = self.user.has_perm('forums.can_post_comment')
@@ -253,6 +252,7 @@ class EditCommentForm(AttachmentMixin, ModelForm):
         if self.errors:
             super().save(commit=commit)
         if commit:
+            self.instance.comment = clean_comment(self.instance)
             self.instance.save(update_fields=('comment',))
             self.save_attachments(self.instance)
             # Flag this comment as edited (by this user)
@@ -327,6 +327,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         self.cleaned_data['url'] = ''
 
         comment = self.get_comment_object()
+        comment.comment = clean_comment(comment)
         comment.user = self.user
         comment.ip_address = self.ip_address
         comment.is_public = can_post
