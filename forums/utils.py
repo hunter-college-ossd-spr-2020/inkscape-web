@@ -31,7 +31,7 @@ def clean_comment(comment):
     embedded_pks = comment.attachments.embedded_pks()
     soup = BeautifulSoup(comment.comment, 'html5lib')
     # Remove some bad tags we don't want
-    for tag in soup(['iframe', 'script']):
+    for tag in soup(['iframe', 'script', 'object', 'embed']):
         tag.extract()
     # Check html for image tags.
     external_image = static('forums/images/external_image.png')
