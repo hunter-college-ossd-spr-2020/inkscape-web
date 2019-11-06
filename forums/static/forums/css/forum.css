@@ -986,10 +986,6 @@ h3 small.label {
   height: 100%;
 }
 
-.inline-attachments .inline img {
-  max-width: 100%;
-}
-
 .inline-attachments .inline:focus, .inline-attachments .inline:hover {
   border-color: #ffc199;
 }
@@ -1005,7 +1001,7 @@ h3 small.label {
 
 .inline-attachments .inline img {
   max-width: 100%;
-  max-height: 600px;
+  max-height: 90px;
 }
 
 .inline-attachments {

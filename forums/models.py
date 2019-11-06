@@ -365,22 +365,20 @@ class ForumTopic(Model):
 
 class AttachmentManager(Manager):
     """Add some management functions for templates to show presentations"""
-    def is_presentation(self):
-        """Return true if there is one single inline attachment"""
-        return len(self.inlines()) == 1
-
-    def inlines(self):
-        """Return the queryset just inlines"""
-        ret = []
-        for item in self.get_queryset():
-            ret.append(item.inline)
-        return ret
+    def embedded_pks(self):
+        return self.filter(inline=2).values_list('pk', flat=True)
 
 class CommentAttachment(Model):
     """A single attachment on a comment"""
     resource = ForeignKey(Resource, related_name='comment_hosts', on_delete=CASCADE)
     comment = ForeignKey(Comment, related_name='attachments', on_delete=CASCADE)
-    inline = BooleanField(default=False)
+    inline = IntegerField(
+        default=0,
+        choices=[
+            (0, _('Attachment')), # Shown as a paperclip
+            (1, _('Gallery')), # Shown as a gallery of items
+            (2, _('Embeded')), # Linked into the html
+        ])
 
     desc = CharField(max_length=128, null=True, blank=True)
     objects = AttachmentManager()

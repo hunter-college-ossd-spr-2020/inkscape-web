@@ -1,30 +1,24 @@
 {% load i18n %}
-<div class="modal-footer" id="attachment-draw" style="display: none;">
-  <div class="card-pf-body" id="quota">
-    <div class="progress-container progress-description-left progress-label-right">
-      <div class="progress-description">Quota <span><strong>0 of 0.</strong> MB</span></div>
-      <div class="progress">
-        <div class="progress-bar progress-bar-striped" style="width: 0%;" data-toggle="tooltip" title="0% Used">
-        </div>
-      </div>
-    </div>
-  </div>
-  <table class="table table-striped" id="file_box">
+<div class="modal-footer" id="attachment-draw" style="display: none; border-top: 0px solid red; padding-top: 0px;">
+  <table class="table table-striped" id="file_box" style="margin-bottom: 0px;">
     <tbody>
       <tr class="file row" id="file_template" style="display: none;">
-        <th scope="row">
+        <th scope="row" style="border-top: 0px solid red;">
           <span class="glyphicon glyphicon-paperclip"></span> <span class="fn">$_filename</span>
         </th>
-        <td>
+        <td style="border-top: 0px solid red;">
+          <div class="btn-group inline-mode">
+              <a href="#" class="btn btn-sm btn-default attachment" title="{% trans "Attachment Mode" %}"><span class="glyphicon glyphicon-paperclip"></span></a>
+              <a href="#" class="btn btn-sm btn-default gallery" title="{% trans "Gallery Mode" %}"><span class="glyphicon glyphicon-picture"></span></a>
+              <a href="#" class="btn btn-sm btn-default embedded" title="{% trans "Embed into HTML" %}"><span class="glyphicon glyphicon-comment"></span></a>
+          </div>
           <div class="btn-group">
-              <a href="#" class="btn btn-sm btn-default inline" title="{% trans "Toggle inline/attachment mode" %}"><span class="glyphicon"></span></a>
               <a href="#" class="btn btn-sm btn-danger delete" title="{% trans "Remove attachment" %}"><span class="glyphicon glyphicon-trash"></span></a>
           </div>
         </td>
       </tr>
     </tbody>
   </table>
-  <hr/>
   <div class="alert alert-danger" id="attachment_not_found" style="display: none; text-align: left;">
     <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing found!</strong> Searching yielded no results. Please try again!
   </div>
@@ -33,12 +27,24 @@
   </div>
   <div class="row">
     <div class="input-group pull-left">
+      <span class="input-group-btn">
+          <a id="quota_btn" href="#" class="btn btn-sm" title="{% trans "Upload Quota" %}"></a>
+      </span>
       <input type="text" class="input-sm form-control" placeholder="{% trans "Search for Existing Resource or Video URL" %}" id="resource_search">
       <span class="input-group-btn">
         <button id="resource_add" class="btn btn-sm btn-default" type="button"><span class="glyphicon glyphicon-search"></button>
         <input type="file" id="file_add" style="display: none;">
         <label for="file_add" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-upload"></span> {% trans "Upload File" %}</label>
       </span>
+    </div>
+  </div>
+  <div class="card-pf-body" id="quota" style="display: none;">
+    <div class="progress-container progress-description-left progress-label-right">
+      <div class="progress-description">{% trans "Upload Quota" %} <span><strong>0 of 0.</strong> MB</span></div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped" style="width: 0%;" data-toggle="tooltip" title="0% Used">
+        </div>
+      </div>
     </div>
   </div>
 </div>

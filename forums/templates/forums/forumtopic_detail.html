@@ -117,16 +117,20 @@
               {{ comment_form.attachments.label_tag }}
               {{ comment_form.attachments }}
             </div>
-            <div class="row group-id_inlines">
-              {{ comment_form.inlines.label_tag }}
-              {{ comment_form.inlines }}
+            <div class="row group-id_galleries">
+              {{ comment_form.galleries.label_tag }}
+              {{ comment_form.galleries }}
+            </div>
+            <div class="row group-id_embedded">
+              {{ comment_form.embedded.label_tag }}
+              {{ comment_form.embedded }}
             </div>
 
             {% include "forums/attachment_draw.html" %}
             <div class="row forum-topic-actions">
 
      <span class="btn-group pull-left" title="{% trans "Add attachments to topic" %}">
-      <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon   glyphicon-paperclip"></span></a>
+      <a id="add_attachments" class="btn btn-default btn-sm" style="display: none;"> <span class="glyphicon glyphicon-paperclip"></span></a>
     </span>
     <span class="btn-group pull-right">
       {% if perms.forums.can_post_topic %}

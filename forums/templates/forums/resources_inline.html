@@ -1,7 +1,7 @@
 {% load i18n static svg %}
 
 {% for attachment in attachment_list %}
-  {% if attachment.inline %}
+  {% if attachment.inline == 1 %}
     {% with attachment.resource as object %}
       {% if object.is_video %}
         <div class="inline video">
