@@ -1,4 +1,5 @@
-{% load i18n static timers %}
+{% load i18n static timers galleries %}
+
 
   {% if object.contest_submit and object.category %}
   <div id="sidecategory">
@@ -151,5 +152,12 @@
         {% endif %}
       {% endif %}
     {% endfor %}
+    {% if galleries %}
+    {% if request.user|is_gallery_subscribed:galleries %}
+      <a class="btn btn-danger" href="{% url "alert.unsubscribe" "resources.gallery_alert" galleries.pk %}">{% trans "Unsubscribe from Gallery" %}</a></li>
+    {% else %}
+      <a class="btn btn-primary" href="{% url "alert.subscribe" "resources.gallery_alert" galleries.pk %}">{% trans "Subscribe to Gallery" %}</a></li>
+    {% endif %}
+    {% endif %}
   </div>
 

@@ -331,7 +331,10 @@ class AutoBreadcrumbMiddleware(BaseMiddleware):
 
     def get_ancestors(self, obj, parent=None):
         if hasattr(obj, 'breadcrumb_parent'):
-            parent = obj.breadcrumb_parent()
+            try:
+                parent = obj.breadcrumb_parent()
+            except TypeError:
+                pass
         elif hasattr(obj, 'parent_page'):
             parent = getattr(obj, 'parent_page', parent)
         else:
