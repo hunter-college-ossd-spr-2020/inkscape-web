@@ -87,6 +87,7 @@ class GalleryAlert(AddedAlert):
     subscribe_all = False
     subscribe_any = True
     subscribe_own = False
+    instance_type = Gallery
 
     @property
     def m2m_sender(self):
