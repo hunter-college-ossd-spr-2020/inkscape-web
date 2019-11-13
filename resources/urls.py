@@ -30,7 +30,7 @@ from .views import (
     PasteInResource, UploadResource, DropResource, LinkToResource,
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
-    UploadJson, TagsJson, QuotaJson, ResourcesJson, UnpublishedGallery,
+    UploadJson, TagsJson, QuotaJson, ResourcesJson, GalleryJson, UnpublishedGallery,
     CheckResource,
 )
 
@@ -54,7 +54,7 @@ owner_patterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^galleries/',
         url(r'^$', GalleryList.as_view(), name='galleries'),
-        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView, feed=GalleryFeed)),
+        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView, feed=GalleryFeed, json=GalleryJson)),
     ),
     url_tree(r'^resources/', *resource_search()),
 ]
@@ -110,7 +110,7 @@ urlpatterns = [ # pylint: disable=invalid-name
         *resource_search(
             url(r'^(?P<galleries>[^\/]+)/$', GalleryView.as_view(), name='resources'),
             url(r'^(?P<galleries>[^\/]+)/rss/$', GalleryFeed(), name='resources_rss'),
-            url(r'^(?P<galleries>[^\/]+)/json/$', ResourceJson.as_view(), name='resources_json'),
+            url(r'^(?P<galleries>[^\/]+)/json/$', GalleryJson.as_view(), name='resources_json'),
         )
     ),
 ]

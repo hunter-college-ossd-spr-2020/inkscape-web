@@ -721,3 +721,8 @@ class ResourceJson(ResourceList):
     """Take any list of resources, and produce json output"""
     def render_to_response(self, context, **_):
         return JsonResponse(context, encoder=ResourceJSONEncoder)
+
+class GalleryJson(GalleryView):
+    """Special version of resourcejson but for galleries"""
+    def render_to_response(self, context, **_):
+        return JsonResponse(context, encoder=ResourceJSONEncoder)
