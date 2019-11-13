@@ -186,7 +186,11 @@ class CommentList(UserVisit, ForumMixin, ListView):
     def get_queryset(self):
         qset = super().get_queryset()
         if 'username' in self.kwargs:
-            user = get_user_model().objects.get(username=self.kwargs['username'])
+            User = get_user_model()
+            try:
+                user = User.objects.get(username=self.kwargs['username'])
+            except User.DoesNotExist:
+                raise Http404("User not found")
             qset = qset.filter(user_id=user.pk)
             self.set_context_datum('forum_user', user)
         return qset.order_by('-submit_date')
