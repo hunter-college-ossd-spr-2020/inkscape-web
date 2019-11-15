@@ -633,11 +633,11 @@ class Resource(Model):
 
 class ResourceRevision(Model):
     """When a resource gets edited and the file is changed, the old file ends up here."""
-    resource   = ForeignKey(Resource, related_name='revisions')
-    download   = FileField(_('Consumable File'), **upto('file', blank=False))
-    signature  = FileField(_('Signature/Checksum'), **upto('sigs'))
-    created    = DateTimeField(auto_now=True)
-    version    = IntegerField(default=0)
+    resource = ForeignKey(Resource, related_name='revisions')
+    download = FileField(_('Consumable File'), **upto('file', blank=False))
+    signature = FileField(_('Signature/Checksum'), **upto('sigs'))
+    created = DateTimeField(auto_now=True)
+    version = IntegerField(default=0)
 
     def __str__(self):
         return "Version %d" % self.version

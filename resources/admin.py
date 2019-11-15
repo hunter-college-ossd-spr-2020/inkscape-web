@@ -20,9 +20,12 @@
 
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.admin import ModelAdmin, site
+from django.contrib.admin import ModelAdmin, site, StackedInline
 
-from .models import License, Category, Resource, Vote, TagCategory, Tag, Quota, Gallery
+from .models import (
+    License, Category, Resource, ResourceRevision,
+    Vote, TagCategory, Tag, Quota, Gallery
+)
 
 class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'filterable', 'selectable', 'restricted_to_groups', 'item_count', 'order')
@@ -38,13 +41,21 @@ class CategoryAdmin(ModelAdmin):
 site.register(License)
 site.register(Category, CategoryAdmin)
 
+class RevisionInline(StackedInline):
+    """Inline stack of tabs for a shield"""
+    model = ResourceRevision
+    extra = 0
+
 class ResourceAdmin(ModelAdmin):
-    list_display = ('name', 'user', 'category', 'gallery')
+    list_display = ('name', 'user', 'category', 'gallery', 'revision_count')
     list_filter = ('published', 'category')
     search_fields = ('name', 'user__username', 'galleries__name')
     readonly_fields = ('slug','liked','viewed','downed','fullview')
     raw_id_fields = ('user', 'checked_by')
+    inlines = [RevisionInline]
 
+    def revision_count(self, obj):
+        return obj.revisions.count()
 
 site.register(Resource, ResourceAdmin)
 site.register(Vote)

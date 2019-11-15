@@ -89,6 +89,11 @@
           <dt>{% trans "Linked From" %}</dt><dd>{{ object.link_from }}</dd>
         {% endif %}
         <dt>{% trans "Created" %}</dt><dd>{{ object.created|timetag }}</dd>
+        {% with object.revisions.count as revisions %}
+          {% if revisions > 0 %}
+            <dt>{% trans "Revisions" %}</dt><dd>{{ revisions|add:1 }}</dd>
+          {% endif %}
+        {% endwith %}
         <dt>{% trans "Type" %}</dt><dd title="{{ object.media_type }}">{{ object.media_type|truncatechars:16 }}</dd>
       </dl>
 
