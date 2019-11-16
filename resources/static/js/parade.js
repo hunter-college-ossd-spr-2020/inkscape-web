@@ -1,0 +1,34 @@
+var prevpos = 0;
+
+$("body").on("click", ".sendcomment", function (e) {
+    e.preventDefault();
+    var win = window.open($(this).attr("href"), '_blank');
+    win.focus();
+})
+
+$("body").on("click", ".tooltip", function () {
+  if (!$("#wrapper").hasClass("insensitive")) {
+    prevpos = $("html").scrollTop();
+    $("html").scrollTop(0);
+    var factor = 750/625;
+    $("#wrapper").css("height",$(window).height() - 40);
+    $("#wrapper").addClass("insensitive");
+    $("body").addClass("open");
+    $("#grid").css("opacity", "0");
+    $("html").css("background-color","#fff");
+    $("#wrapper").css("background-image","url(" + $(this).prev().attr("src") + ")");
+  } 
+});
+
+$("body").on("click", ".insensitive", function () {
+  $("html").scrollTop(prevpos);
+  var factor = 750/625;
+  $("#wrapper").css("min-height",$(window).height() - 40);
+  //$("#wrapper").css("min-height",$("body").height() / factor);
+  $("#wrapper").removeClass("insensitive");
+  $("body").removeClass("open");
+  $("#grid").css("opacity", "1");
+  $("html").css("background-color","#000");
+  $("#wrapper").css("background-image","none");
+  $("#wrapper").css("height","auto");
+});

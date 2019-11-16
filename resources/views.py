@@ -497,6 +497,7 @@ class ResourceList(CategoryListView):
     RSS feed generator.
     """
     rss_view = 'resources_rss'
+    parade_view = 'resources_parade'
     model = Resource
     opts = ( # type: ignore
         ('username', 'user__username'),
@@ -631,6 +632,9 @@ class ResourceList(CategoryListView):
         data['limit'] = getattr(self, 'limit', 20)
         return data
 
+class ResourceParade(ResourceList):
+    def get_template_names(self):
+        return ['resources/resourcegallery_parade.html']
 
 class GalleryView(ResourceList):
     """Allow for a special version of the resource display for galleries"""
@@ -672,6 +676,9 @@ class GalleryView(ResourceList):
             )
         return super(GalleryView, self).orders
 
+class GalleryParade(GalleryView):
+    def get_template_names(self):
+        return ['resources/resourcegallery_parade.html']
 
 class ResourcePick(ResourceList):
     """A loadable picker that allows an item to be choosen"""
