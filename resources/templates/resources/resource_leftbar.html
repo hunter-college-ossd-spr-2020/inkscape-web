@@ -46,7 +46,11 @@
   <h2>
     <a href="{{ rss_url }}"><img src="{% static "images/rss.png" %}" title="{% trans "RSS Feed" %}"></a>
     <a href="{{ parade_url }}"><img src="{% static "images/parade.svg" %}" title="{% trans "Gallery Parade" %}"></a>
-    {% blocktrans count counter=paginator.count %}Found {{ counter }} Item{% plural %}Found {{ counter }} Items{% endblocktrans %}
+    {% if limit > 0 %}
+      {% blocktrans count counter=paginator.count %}Found {{ counter }} Item{% plural %}Found {{ counter }} Items{% endblocktrans %}
+    {% else %}
+      {% trans "Showing All" %}
+    {% endif %}
   </h2>
   
   {% if object_list or query %}

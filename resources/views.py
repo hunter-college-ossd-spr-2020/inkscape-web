@@ -629,10 +629,11 @@ class ResourceList(CategoryListView):
             data['upload_url'] = reverse("resource.upload", kwargs=k)
             data['upload_drop'] = reverse("resource.drop", kwargs=k)
 
-        data['limit'] = getattr(self, 'limit', 20)
+        data['limit'] = self.paginate_by
         return data
 
 class ResourceParade(ResourceList):
+    paginate_by = 200
     def get_template_names(self):
         return ['resources/resourcegallery_parade.html']
 
@@ -640,10 +641,6 @@ class GalleryView(ResourceList):
     """Allow for a special version of the resource display for galleries"""
     opts = ResourceList.opts + (('galleries', 'galleries__slug', False),) # type: ignore
     cats = (('category', _("Media Category"), 'get_categories'),) # type: ignore
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.limit = 20
 
     def get_gallery(self):
         """Get the Gallery in context object"""
@@ -668,7 +665,6 @@ class GalleryView(ResourceList):
             if gallery.is_submitting:
                 return (('-created', _('Created Date')),)
             elif gallery.is_voting:
-                self.limit = 0
                 return (('?', _('Random Order')),)
             return (
                 ('-liked', _('Most Votes')),
@@ -676,9 +672,16 @@ class GalleryView(ResourceList):
             )
         return super(GalleryView, self).orders
 
-class GalleryParade(GalleryView):
-    limit = 0
+    @property
+    def paginate_by(self):
+        """Turn off pagination when voting"""
+        gallery = self.get_gallery()
+        if gallery.is_contest and gallery.is_voting:
+            return 0
+        return 20
 
+class GalleryParade(GalleryView):
+    paginate_by = 200
     def get_template_names(self):
         return ['resources/resourcegallery_parade.html']
 
