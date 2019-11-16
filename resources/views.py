@@ -677,6 +677,8 @@ class GalleryView(ResourceList):
         return super(GalleryView, self).orders
 
 class GalleryParade(GalleryView):
+    limit = 0
+
     def get_template_names(self):
         return ['resources/resourcegallery_parade.html']
 
