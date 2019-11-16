@@ -25,8 +25,8 @@
       <div class="tooltip">
         <h1><img src="{{ item.user.photo_url }}" alt="{{ item.user }}" />{{ item.name }}</h1>
         <h2>{{ item.user }}</h2>
-        <p>{{ item.desc|default:'...' }}</p>
-        <a class="sendcomment" href="{{ item.absolute_url }}">Comment here...</a>
+        <p>{{ item.desc|default:'...' }}</p><br/>
+        <a class="sendcomment" href="{{ item.get_absolute_url }}">Comment here...</a>
       </div>
     </div>
   {% endif %}

@@ -15,6 +15,39 @@ body.open{
     line-height:0;
     background-repeat:no-repeat;
     overflow:hidden;
+    position: relative;
+}
+
+#wrapper.insensitive:before{
+    content: "X";
+    top:12px;
+    right:16px;
+    color:#000;
+    font-size:25px;
+    font-family:sans-serif;
+    opacity:0.4;
+    position:absolute;
+}
+
+#wrapper.insensitive:hover:before{
+    opacity:0.6;
+}
+
+#wrapper.insensitive.loading:before {
+    position:fixed;
+    content: " ";
+    z-index:0;
+    top:50%;
+    left:50%;
+    border: 1px dashed #333;
+    border-top: 1px dashed #333;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin-left:-30px;
+    margin-top:-30px;
+    display:block;
+    animation: spin 3s linear infinite;
 }
 
 #wrapper.insensitive:hover{
@@ -41,21 +74,25 @@ body.open{
 }
 
 #grid  .tooltip  img{
-    width:60px !important;
+    max-height:40px !important;
+    max-width:40px !important;
     float:right;
+    border-radius:50%;
+    margin:-2px -3px 0 3px;
+    background-color:#fff;
 }
 
 #grid  .tooltip a{
    color:#333;
    opacity:0.8;
    font-size: 0.7rem;
-
+   display:block;
    text-decoration:none;
    background-color:#fff; 
-   display: inline-block;
    margin: 0 0 10px 0;
    padding: 12px;
    font-weight: normal;
+    width:100px;
 }
 
 #grid  .tooltip a:hover{
@@ -69,6 +106,7 @@ body.open{
     flex-basis: 190px;
     font-size:0;
     line-height:0;
+    margin-bottom:-1px;
 }
 
 #grid img {
@@ -109,21 +147,21 @@ body.open{
 }
 
 .tooltip h1{
-    font-size:1rem;
+    font-size:0.8rem;
     display:block;
     line-height:1.2;
     margin:0;
     padding:8px;
-    background-color:rgba(255,175,28,0.7);
+    background-color:rgba(255,137,0,0.9);
 }
 
 .tooltip h2{
-    font-size:0.8rem;
+    font-size:0.65rem;
     line-height:1.2;
     display:block;
     margin:0;
     padding: 6px 8px;
-    color:rgba(255,175,28,0.7);
+    color:rgba(255,137,0,0.9);
     background-color:rgba(0,0,0,0.5);
 }
 
