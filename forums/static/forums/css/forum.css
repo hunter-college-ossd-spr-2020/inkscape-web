@@ -261,8 +261,13 @@ body {
 }
 
 .comment-text {
+  max-width: 100%;
   clear: both;
   padding: 1em 0;
+}
+
+.comment-text pre {
+  overflow: scroll;
 }
 
 /*
