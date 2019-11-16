@@ -105,6 +105,10 @@ def page(request, url, lang=None):
             .replace('src="', 'src="%s/' % os.path.join(settings.MEDIA_URL,
               'doc', *uri.split('/')[:-1]))\
             .replace('|src|', 'src="http')
+        content = content.replace('data="http','|data|')\
+            .replace('data="', 'data="%s/' % os.path.join(settings.MEDIA_URL,
+              'doc', *uri.split('/')[:-1]))\
+            .replace('|data|', 'data="http')
     context = {
         'path': path,
         'lang': lang,
