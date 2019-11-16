@@ -16,7 +16,12 @@ $("body").on("click", ".tooltip", function () {
     $("body").addClass("open");
     $("#grid").css("opacity", "0");
     $("html").css("background-color","#fff");
-    $("#wrapper").css("background-image","url(" + $(this).prev().attr("src") + ")");
+    $("#wrapper").css("background-image","none");
+    var downloadimage = $('<img>');
+    downloadimage.on("load", function () {
+      $("#wrapper").css("background-image","url(" + $(this).attr("src") + ")");
+    });
+    downloadimage.attr("src", $(this).prev().data("rendering"));
   } 
 });
 
