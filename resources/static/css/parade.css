@@ -59,7 +59,9 @@ body.open{
     cursor:pointer;
     background-size:contain;
     background-position:center center;
-    max-height:625px;
+    max-height:625px !important;
+    min-height:625px !important;
+    height:625px !important;
 }
 
 #grid {
