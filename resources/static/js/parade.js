@@ -24,9 +24,13 @@ $("body").on("click", ".resource, .tooltip", function () {
       $("#wrapper").css("background-image","url(" + $(this).attr("src") + ")");
       $("#wrapper").removeClass("loading");
     });
-    downloadimage.attr("src", $(this).prev().data("rendering"));
+    if ($(this).hasClass("tooltip")) {
+        downloadimage.attr("src", $(this).parent().prev().data("rendering"));
+    } else {
+        downloadimage.attr("src", $(this).data("rendering"));
+    }
   } 
-});
+}); 
 
 $("body").on("click", ".insensitive", function () {
   $("html").scrollTop(prevpos);
