@@ -15,18 +15,21 @@
 {% for item in object_list %}
   {% if not object.is_contest or item.checked_by %}
     <div>
-      <img id="entry_{{ forloop.counter0 }}" class="contest"
+      <img id="entry_{{ forloop.counter0 }}" class="resource"
         title="{{ item.name }}"
         alt="{{ item }}"
         src="{{ item.thumbnail_url }}"
         data-date="{{ item.created }}"
         data-rendering="{{ item.rendering_url }}"
       />
-      <div class="tooltip">
-        <h1><img src="{{ item.user.photo_url }}" alt="{{ item.user }}" />{{ item.name }}</h1>
-        <h2>{{ item.user }}</h2>
-        <p>{{ item.desc|default:'...' }}</p><br/>
-        <a class="sendcomment" href="{{ item.get_absolute_url }}">Comment here...</a>
+      <div class="info">
+        <span>i</span>
+        <div class="tooltip">
+          <h1><img src="{{ item.user.photo_url }}" alt="{{ item.user }}" />{{ item.name }}</h1>
+          <h2>{{ item.user }}</h2>
+          <p>{{ item.desc|default:'...' }}</p><br/>
+          <a class="sendcomment" href="{{ item.get_absolute_url }}">Comment here...</a>
+        </div>
       </div>
     </div>
   {% endif %}
