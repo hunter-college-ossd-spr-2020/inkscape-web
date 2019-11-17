@@ -52,8 +52,6 @@ body.open{
 
 #wrapper.insensitive:hover{
     cursor:pointer;
-    background-size:contain;
-    background-position:center center;
 }
 
 #wrapper.insensitive, #wrapper.insensitive:hover{
@@ -61,6 +59,7 @@ body.open{
     cursor:pointer;
     background-size:contain;
     background-position:center center;
+    max-height:625px;
 }
 
 #grid {
