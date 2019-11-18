@@ -99,6 +99,8 @@ def clean_dict(target, translate=None):
 
 def reverse_order(target, active=True):
     """Appends '-' to column ordering arguments"""
+    if target in ('?', '-?'):
+        return '?'
     if not active:
         return target
     if target[0] == '-':
