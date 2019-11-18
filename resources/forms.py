@@ -344,7 +344,8 @@ class ResourceBaseForm(ModelForm):
 
         # Turn the rendering into a thumbnail for gallery display
         if not obj.thumbnail.name and obj.rendering.name:
-            obj.thumbnail.save(obj.rendering.name, obj.rendering)
+            name = obj.rendering.name.split('/')[-1]
+            obj.thumbnail.save(name, obj.rendering)
         elif obj.thumbnail.name and not obj.rendering.name:
             obj.thumbnail.delete(False)
 
