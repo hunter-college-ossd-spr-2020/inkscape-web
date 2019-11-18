@@ -209,6 +209,8 @@ class CategoryListView(View, MultipleObjectMixin):
         qset = queryset.filter(**clean_dict(filters, {'True':True, 'False':False}))
 
         for order in self.get_orders():
+            if self.query and '?' in order['order']:
+                continue
             if order['active']:
                 return qset.order_by(order['order'])
         return qset
