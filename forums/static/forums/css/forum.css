@@ -58,19 +58,24 @@ body {
 }
 
 .forum-box {
+  display: -ms-grid;
   display: grid;
   grid-template-areas: "header header" "data data" "footer footer";
-  grid-template-columns: fit-content(22em) 1fr;
+  -ms-grid-columns: fit-content(22em) 1fr;
+      grid-template-columns: fit-content(22em) 1fr;
 }
 
 .forums-header {
+  display: -ms-grid;
   display: grid;
   grid-area: header;
-  grid-template-columns: 1fr fit-content(8em);
+  -ms-grid-columns: 1fr fit-content(8em);
+      grid-template-columns: 1fr fit-content(8em);
   grid-template-areas: "branding   branding" "usermenu  search" "breadcrumb breadcrumb";
 }
 
 .forum-data {
+  display: -ms-grid;
   display: grid;
   grid-area: data;
   grid-template-areas: "content" "sidebar";
@@ -143,7 +148,9 @@ body {
 }
 
 .forum-sub-header a {
-  align-items: center;
+  -ms-flex-align: center;
+      align-items: center;
+  display: -ms-flexbox;
   display: flex;
   line-height: 1.1;
 }
@@ -261,13 +268,8 @@ body {
 }
 
 .comment-text {
-  max-width: 100%;
   clear: both;
   padding: 1em 0;
-}
-
-.comment-text pre {
-  overflow: scroll;
 }
 
 /*
@@ -297,17 +299,13 @@ body {
   float: left;
   margin: 0 10px 0 0;
   height: 80px;
-  -webkit-transform: scale(1);
-          transform: scale(1);
-  transition: -webkit-transform 1s ease 0s;
+  transform: scale(1);
   transition: transform 1s ease 0s;
-  transition: transform 1s ease 0s, -webkit-transform 1s ease 0s;
 }
 
 .forums-logo:focus img,
 .forums-logo:hover img {
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .forums-name {
@@ -406,7 +404,9 @@ body {
 }
 
 .forum-description {
-  align-self: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
   color: #44b3ff;
   cursor: help;
   display: block;
@@ -466,11 +466,8 @@ body {
   font: normal 1.4em/1 'Glyphicons Halflings';
   position: relative;
   top: 0.2em;
-  -webkit-transform: rotateZ(0) scale(1);
-          transform: rotateZ(0) scale(1);
-  transition: -webkit-transform .3s ease 0s;
+  transform: rotateZ(0) scale(1);
   transition: transform .3s ease 0s;
-  transition: transform .3s ease 0s, -webkit-transform .3s ease 0s;
 }
 
 .topic-jump-unread:focus, .topic-jump-unread:hover {
@@ -480,8 +477,7 @@ body {
 
 .topic-jump-unread:focus::before, .topic-jump-unread:hover::before {
   left: -.2em;
-  -webkit-transform: rotateZ(100deg) scale(1.3);
-          transform: rotateZ(100deg) scale(1.3);
+  transform: rotateZ(100deg) scale(1.3);
 }
 
 .forum-topic-actions {
@@ -565,27 +561,10 @@ ul.forum-nav li a {
 }
 
 .forum-list .forum-item img {
-  width: 22px;
-  margin: -2px 2px 0px 0px;
-}
-
-/*
-ul.forum-nav li a i {
-  color: #6a6a6a;
-  font-size: 16px;
-  padding-right: 10px;
-}
-
-ul.forum-nav li a span.label {
-  margin-top: 13px;
-}
-*/
-ul.labels-info {
-  /*
-  i {
-    padding-right: 10px;
-  }
-  */
+  -ms-flex: 0 0 2em;
+      flex: 0 0 2em;
+  margin: 0 .4em 0 0;
+  width: 2em;
 }
 
 ul.labels-info h4 {
@@ -600,6 +579,14 @@ ul.labels-info h4 {
 ul.labels-info a {
   border-radius: 0;
   color: #6a6a6a;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: row nowrap;
+      flex-flow: row nowrap;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-align: center;
+      align-items: center;
 }
 
 ul.labels-info a:focus, ul.labels-info a:hover {
@@ -607,14 +594,10 @@ ul.labels-info a:focus, ul.labels-info a:hover {
   color: #6a6a6a;
 }
 
-/*
-.nav.nav-pills.nav-stacked.labels-info p {
-  color: #9d9f9e;
-  font-size: 11px;
-  margin-bottom: 0;
-  padding: 0 22px;
+ul.labels-info .counter {
+  margin-left: auto;
 }
-*/
+
 .table-forum .search-context td {
   border-top: 1px solid #eeeeee;
   color: #999;
@@ -823,8 +806,7 @@ ul.forum-pagination li {
   position: absolute;
   right: 0;
   top: 0;
-  -webkit-transform: translate(-300px, 0px) scale(4);
-          transform: translate(-300px, 0px) scale(4);
+  transform: translate(-300px, 0px) scale(4);
 }
 
 .fileupload-buttonbar .btn, .fileupload-buttonbar .toggle {
@@ -970,8 +952,11 @@ h3 small.label {
 }
 
 /* -------------------- 4.3 Attachments --------------------- */
-.inline-attachments,
-.comment-attachments {
+.inline-attachments {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
   padding-top: 0px;
   margin-bottom: 15px;
   padding-bottom: 5px;
@@ -981,14 +966,19 @@ h3 small.label {
   display: inline-block;
   border: 1px #eee solid;
   padding: 3px;
-  margin: 5px 10px 5px 0;
-  flex: 0 1 auto;
+  margin: 5px 10px 2% 0;
+  -ms-flex: 0 1 auto;
+      flex: 0 1 auto;
 }
 
 .inline-attachments .inline a {
   background-color: #eee;
   display: block;
   height: 100%;
+}
+
+.inline-attachments .inline img {
+  max-width: 100%;
 }
 
 .inline-attachments .inline:focus, .inline-attachments .inline:hover {
@@ -999,44 +989,13 @@ h3 small.label {
   background-color: #ffc199;
 }
 
-.inline-attachments .inline:first-child,
-.presentation.image:first-child {
+.inline-attachments .inline:first-child {
   margin-left: 0;
 }
 
 .inline-attachments .inline img {
   max-width: 100%;
   max-height: 90px;
-}
-
-.inline-attachments {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.presentation.image {
-  border: 1px #eee solid;
-  display: inline-block;
-  margin: 5px;
-  padding: 3px;
-}
-
-.presentation.image a {
-  background-color: #eee;
-  display: inline-block;
-  height: 100%;
-}
-
-.presentation.image img {
-  max-width: 100%;
-}
-
-.presentation.image:focus, .presentation.image:hover {
-  border-color: #ffc199;
-}
-
-.presentation.image:focus a, .presentation.image:hover a {
-  background-color: #ffc199;
 }
 
 /* -------------------- 4.4 Users online palette ----------------- */
@@ -1052,6 +1011,7 @@ h3 small.label {
   width: initial;
   margin-bottom: 5px;
 }
+
 #users-online li a.me img {
   border-width: 0px;
   border-radius: 0px;
@@ -1067,10 +1027,10 @@ h3 small.label {
 
 #users-online li img {
   border: 1px solid #eee;
-  padding: 4px;
   max-width: 48px;
   max-height: 48px;
   border-radius: 6px;
+  padding: 4px;
 }
 
 .group-id_honeypot {
@@ -1315,6 +1275,15 @@ a:active {
   display: block;
 }
 
+.slick-lightbox-slick-item-inner {
+  max-width: 86%;
+}
+
+.slick-lightbox-slick-img {
+  max-height: 100%;
+  max-width: 100%;
+}
+
 /*
  *   6. Wider screen layout -----------------------------------------
  */
@@ -1336,7 +1305,8 @@ a:active {
   /* -------------------- main layout ------------------------ */
   .forum-data {
     grid-template-areas: "sidebar content";
-    grid-template-columns: fit-content(22em) 1fr;
+    -ms-grid-columns: fit-content(22em) 1fr;
+        grid-template-columns: fit-content(22em) 1fr;
   }
   .forums-branding {
     grid-area: branding;
@@ -1344,7 +1314,8 @@ a:active {
     height: 70px;
   }
   .forums-header {
-    grid-template-columns: 1fr fit-content(22em);
+    -ms-grid-columns: 1fr fit-content(22em);
+        grid-template-columns: 1fr fit-content(22em);
     grid-template-areas: "branding  search" "branding  usermenu" "breadcrumb breadcrumb";
   }
   .forum-content {
@@ -1375,15 +1346,18 @@ a:active {
     margin-top: 0px;
   }
   .forum-sub-header {
-    align-items: center;
+    -ms-flex-align: center;
+        align-items: center;
     border-top: 1px solid #444;
+    display: -ms-flexbox;
     display: flex;
     grid-area: breadcrumb;
     margin: 0 1vw;
     padding-bottom: 1vw;
   }
   .forum-sub-header img {
-    align-self: flex-start;
+    -ms-flex-item-align: start;
+        align-self: flex-start;
     margin-left: 0;
   }
   .forum-sub-header .glyphicon {
@@ -1391,12 +1365,13 @@ a:active {
   }
   /* -------------------- comment layout --------------------- */
   .comment {
+    display: -ms-grid;
     display: grid;
     /* .comment-count | .comment-header-group SPANS 3 | .buttons-group SPANS 3 */
-    grid-template-columns: -webkit-min-content 120px 1fr 1fr -webkit-max-content -webkit-max-content -webkit-max-content;
-    grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
-    grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em -webkit-min-content -webkit-min-content -webkit-min-content;
-    grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
+    -ms-grid-columns: min-content 120px 1fr 1fr max-content max-content max-content;
+        grid-template-columns: min-content 120px 1fr 1fr max-content max-content max-content;
+    -ms-grid-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
+        grid-template-rows: 1.8em calc(120px - 3.6em) 1.8em min-content min-content min-content;
   }
   .buttons-group {
     top: 0;
@@ -1415,28 +1390,40 @@ a:active {
     top: -.5em;
   }
   .comment-text {
-    grid-column-start: 3;
-    grid-column-end: span 5;
-    grid-row-start: 2;
-    grid-row-end: span 4;
+    -ms-grid-column: 3;
+        grid-column-start: 3;
+    -ms-grid-column-span: 5;
+        grid-column-end: span 5;
+    -ms-grid-row: 2;
+        grid-row-start: 2;
+    -ms-grid-row-span: 4;
+        grid-row-end: span 4;
     padding: 1.6em 2.4vw .6em;
     z-index: 5;
     /* more than .comment-header-group */
   }
   .comment-attachments {
-    grid-column-start: 3;
-    grid-column-end: span 5;
-    grid-row-start: 6;
-    grid-row-end: span 1;
+    -ms-grid-column: 3;
+        grid-column-start: 3;
+    -ms-grid-column-span: 5;
+        grid-column-end: span 5;
+    -ms-grid-row: 6;
+        grid-row-start: 6;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
     margin: 0;
     padding: 0 2.4vw;
   }
   .comment-header-group {
     background: none;
-    grid-column-start: 2;
-    grid-column-end: span 3;
-    grid-row-start: 1;
-    grid-row-end: span 3;
+    -ms-grid-column: 2;
+        grid-column-start: 2;
+    -ms-grid-column-span: 3;
+        grid-column-end: span 3;
+    -ms-grid-row: 1;
+        grid-row-start: 1;
+    -ms-grid-row-span: 3;
+        grid-row-end: span 3;
     width: auto;
     /* override mobile */
     z-index: 1;
@@ -1466,48 +1453,76 @@ a:active {
     float: right !important;
   }
   .buttons-group {
-    grid-column-start: 5;
-    grid-column-end: span 3;
-    grid-row-start: 1;
-    grid-row-end: span 1;
+    -ms-grid-column: 5;
+        grid-column-start: 5;
+    -ms-grid-column-span: 3;
+        grid-column-end: span 3;
+    -ms-grid-row: 1;
+        grid-row-start: 1;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
     margin-top: 0;
   }
   .comment-count {
-    grid-column-start: 1;
-    grid-column-end: span 1;
-    grid-row-start: 1;
-    grid-row-end: span 1;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    -ms-grid-column-span: 1;
+        grid-column-end: span 1;
+    -ms-grid-row: 1;
+        grid-row-start: 1;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
     justify-self: start;
   }
   .comment-footer {
-    grid-column-start: 1;
-    grid-column-end: span 2;
-    grid-row-start: 3;
-    grid-row-end: span 1;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    -ms-grid-column-span: 2;
+        grid-column-end: span 2;
+    -ms-grid-row: 3;
+        grid-row-start: 3;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
   }
   .emoji-selector {
-    grid-column-start: 1;
-    grid-column-end: span 1;
-    grid-row-start: 3;
-    grid-row-end: span 1;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    -ms-grid-column-span: 1;
+        grid-column-end: span 1;
+    -ms-grid-row: 3;
+        grid-row-start: 3;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
   }
   .emoji-bar {
-    grid-column-start: 1;
-    grid-column-end: span 2;
-    grid-row-start: 4;
-    grid-row-end: span 1;
-    align-self: start;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    -ms-grid-column-span: 2;
+        grid-column-end: span 2;
+    -ms-grid-row: 4;
+        grid-row-start: 4;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
+    -ms-flex-item-align: start;
+        -ms-grid-row-align: start;
+        align-self: start;
     justify-self: end;
     text-align: right;
   }
   /* Attachments dropdown */
   .check-dropdown {
-    grid-column-start: 1;
-    grid-column-end: span 2;
-    grid-row-start: 5;
-    grid-row-end: span 1;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    -ms-grid-column-span: 2;
+        grid-column-end: span 2;
+    -ms-grid-row: 5;
+        grid-row-start: 5;
+    -ms-grid-row-span: 1;
+        grid-row-end: span 1;
     justify-self: center;
-    align-self: center;
+    -ms-flex-item-align: center;
+        -ms-grid-row-align: center;
+        align-self: center;
   }
 }
 

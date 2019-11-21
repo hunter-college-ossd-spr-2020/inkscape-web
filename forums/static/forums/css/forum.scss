@@ -645,23 +645,10 @@ ul.forum-nav li a {
 }
 
 .forum-list .forum-item img {
-  width: 22px;
-  margin: -2px 2px 0px 0px;
+  flex: 0 0 2em;
+  margin: 0 .4em 0 0;
+  width: 2em;
 }
-
-/////////////////////////////////////////  redundant?
-/*
-ul.forum-nav li a i {
-  color: #6a6a6a;
-  font-size: 16px;
-  padding-right: 10px;
-}
-
-ul.forum-nav li a span.label {
-  margin-top: 13px;
-}
-*/
-///////////////////////////////////////// end redundant?
 
 // Keep ul in selector because of bootstrap specificity
 ul.labels-info {
@@ -677,6 +664,11 @@ ul.labels-info {
   a {
     border-radius: 0;
     color: #6a6a6a;
+    // position icon, forum title, and message counter in one row
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
     
     &:focus,
     &:hover {
@@ -684,25 +676,11 @@ ul.labels-info {
       color: #6a6a6a;
     }
   }
-  /////////////////////////////////////////  redundant?
-  /*
-  i {
-    padding-right: 10px;
+  
+  .counter {
+    margin-left: auto; // push to the right in flexbox row
   }
-  */
-  ///////////////////////////////////////// end redundant?
 }
-
-/////////////////////////////////////////  redundant?
-/*
-.nav.nav-pills.nav-stacked.labels-info p {
-  color: #9d9f9e;
-  font-size: 11px;
-  margin-bottom: 0;
-  padding: 0 22px;
-}
-*/
-///////////////////////////////////////// end redundant?
 
 .table-forum .search-context td {
   border-top: 1px solid $forum-search-border;
