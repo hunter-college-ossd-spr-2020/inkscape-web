@@ -896,8 +896,8 @@ class VoteManager(Manager):
         """Update the stored count of 'likes' for a resource"""
         if 'resource' in self.core_filters:
             resource = self.core_filters['resource']
-            resource.liked = self.count()
-            resource.save()
+            #resource.liked = self.count()
+            #resource.save()
             return resource
 
 class Vote(Model):
