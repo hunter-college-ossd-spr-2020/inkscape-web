@@ -4,7 +4,7 @@
 {% block "error-msg" %}
   <img src="{% static "images/403.svg" %}" title="403 {{ title }}"/>
   <h1>{% block title %}{% trans "Permission Denied" %}{% endblock %}</h1>
-  <p>{% trans "Sorry, you're not allowed to see this." %}</p>
+  <p>{% if exception %}{{ exception }}{% else %}{% trans "Sorry, you're not allowed to see this." %}{% endif %}</p>
   <hr/>
   <p>{% trans "This website has many features for project management and community involvement. Permissions are needed to access certain functions." %}</p>
 {% endblock %}

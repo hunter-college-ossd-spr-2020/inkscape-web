@@ -386,6 +386,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
         'disquo': _('You may not vote for disqualified entrires.'),
         '!begun': _('You may not vote until the contest begins.'),
         '!ready': _('You may not vote in a contest open for submissions.'),
+        'myown': _('You can\'t vote on your own entry!'),
     }
 
     def get_redirect_url(self, *args, **kwargs):
@@ -395,7 +396,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.user.pk == request.user.pk:
-            raise PermissionDenied()
+            raise PermissionDenied(self.msg['myown'])
         try:
             self.vote_on(obj, kwargs['like'] == '+')
         except PermissionDenied as err:
