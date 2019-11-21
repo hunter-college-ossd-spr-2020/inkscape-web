@@ -61,7 +61,6 @@ class LogEntryAdmin(ModelAdmin):
         ))
 
     list_filter = [
-        'user',
         'content_type',
         'action_flag'
     ]
