@@ -847,13 +847,23 @@ class Gallery(Model):
     def winners(self):
         """Return the resource with the most votes"""
         if self.is_contest and self.is_finished:
+            # Declare a winner if there's no contest_count
             if self.contest_count is None:
+                self.refresh_all()
                 item = self.items.latest('liked')
                 item.extra_status = Resource.CONTEST_WINNER
                 item.save()
                 self.contest_count = self.contest_finish
             return self.items.filter(extra_status=Resource.CONTEST_WINNER)
         return None
+
+    def refresh_all(self):
+        """Calculate final vote counts now it's over"""
+        if self.is_counting or self.is_finished:
+            for item in self.items.filter(liked=-1):
+                # XXX Could calculate vote scoring here if we do multi-voting
+                item.liked = item.votes.count()
+                item.save()
 
     @property
     def value(self):
@@ -896,8 +906,8 @@ class VoteManager(Manager):
         """Update the stored count of 'likes' for a resource"""
         if 'resource' in self.core_filters:
             resource = self.core_filters['resource']
-            #resource.liked = self.count()
-            #resource.save()
+            resource.liked = self.count()
+            resource.save()
             return resource
 
 class Vote(Model):
