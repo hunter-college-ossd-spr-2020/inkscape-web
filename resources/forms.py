@@ -155,7 +155,7 @@ class ResourceBaseForm(ModelForm):
         if not self.user.is_authenticated():
             raise ValueError("Anonymous user can't create or edit resources!")
 
-        if not self.user.has_perm('resource.change_resourcemirror'):
+        if not self.user.has_perm('resources.change_resourcemirror'):
             self.fields.pop('mirror', None)
         if not self.user.gpg_key:
             self.fields.pop('signature', None)

@@ -482,7 +482,7 @@ class Resource(Model):
             self.verified = self._verify(sig_type)
             self.save()
         if self.verified and sig_type == 'sig':
-            if self.user.has_perm('resource.change_resourcemirror'):
+            if self.user.has_perm('resources.change_resourcemirror'):
                 return self.ENDORSE_AUTH
             return self.ENDORSE_SIGN
         return self.verified and self.ENDORSE_HASH or self.ENDORSE_NONE
