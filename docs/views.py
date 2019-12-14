@@ -95,8 +95,22 @@ def page(request, url, lang=None):
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
+
+        # extract <head> from content
+        head = content.split('<head',1)[-1].split('</head',1)[0]
+        head = '<head' + content + '</head>'
         # extract metadata from <head>
-        title = content.split('<title>',1)[-1].split('</title>',1)[0]
+        title = head.split('<title>',1)[-1].split('</title>',1)[0]
+        # extract CSS links from  <head>
+        links = re.findall('(<link.*?/>)', head, re.DOTALL)
+        stylesheet_hrefs = []
+        for link in links:
+            if re.search('rel=[\'"]stylesheet[\'"]', link):
+                match = re.search('href=[\'"](.+?)[\'"]', link)
+                if match:
+                    href = os.path.join(settings.MEDIA_URL, 'doc', *uri.split('/')[:-1], match.group(1))
+                    stylesheet_hrefs.append(href)
+
         # extract <body> as content (and rewrite to <div>)
         content = content.split('<body',1)[-1].split('</body',1)[0]
         content = '<div' + content + '</div>'
@@ -114,5 +128,6 @@ def page(request, url, lang=None):
         'lang': lang,
         'title': title,
         'content': content,
+        'stylesheet_hrefs': stylesheet_hrefs,
     }
     return render(request, 'docs/page.html', context)
