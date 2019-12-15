@@ -99,6 +99,8 @@ def clean_dict(target, translate=None):
 
 def reverse_order(target, active=True):
     """Appends '-' to column ordering arguments"""
+    if target in ('?', '-?'):
+        return '?'
     if not active:
         return target
     if target[0] == '-':
@@ -160,6 +162,7 @@ class CategoryListView(View, MultipleObjectMixin):
     orders = ()
     order = None
     rss_view = ''
+    parade_view = ''
     redirect = False
     using = 'default'
     paginate_by = 20
@@ -206,6 +209,8 @@ class CategoryListView(View, MultipleObjectMixin):
         qset = queryset.filter(**clean_dict(filters, {'True':True, 'False':False}))
 
         for order in self.get_orders():
+            if self.query and '?' in order['order']:
+                continue
             if order['active']:
                 return qset.order_by(order['order'])
         return qset
@@ -367,14 +372,25 @@ class CategoryListView(View, MultipleObjectMixin):
 
         if self.rss_view:
             data['rss_url'] = self.get_url(view=self.rss_view)
+        if self.parade_view:
+            data['parade_url'] = self.get_url(view=self.parade_view)
+        data['parade_url']
         data['clear_url'] = self.get_url(exclude='q')
         return data
 
     def get_orders(self):
         """Returns ordering information, column names and '-' prefixes"""
-        order = self.get_value('order', self.order or self.orders[0][0])
+        order = self.get_value('order', self.order or self.orders[0][0]).rstrip('-')
+        active = order[1:] if order[0] == '-' else order
+        # Stop anyone entering ordering against what is programmed
+        if active not in [odr.strip('-') for (odr, label) in self.orders]:
+            order = self.orders[0][0]
+            active = self.orders[0][0].strip('-')
+
         for (odr, label) in self.orders:
-            yield {'id': odr, 'name': label, 'down': (order or '*')[0] == '-',
-                   'active': order.strip('-') == odr.strip('-'),
+            yield {'id': odr, 'name': label,
+                   'down': (order or '*')[0] == '-',
+                   'active': active == odr.strip('-'),
                    'order': order,
-                   'url': self.get_url('order', reverse_order(odr, odr == order))}
+                   'url': self.get_url('order', reverse_order(odr, odr == order))
+                  }

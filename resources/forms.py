@@ -150,7 +150,7 @@ class ResourceBaseForm(ModelForm):
         if not self.user.is_authenticated:
             raise ValueError("Anonymous user can't create or edit resources!")
 
-        if not self.user.has_perm('resource.change_resourcemirror'):
+        if not self.user.has_perm('resources.change_resourcemirror'):
             self.fields.pop('mirror', None)
         if not self.user.gpg_key:
             self.fields.pop('signature', None)
@@ -339,7 +339,8 @@ class ResourceBaseForm(ModelForm):
 
         # Turn the rendering into a thumbnail for gallery display
         if not obj.thumbnail.name and obj.rendering.name:
-            obj.thumbnail.save(obj.rendering.name, obj.rendering)
+            name = obj.rendering.name.split('/')[-1]
+            obj.thumbnail.save(name, obj.rendering)
         elif obj.thumbnail.name and not obj.rendering.name:
             obj.thumbnail.delete(False)
 

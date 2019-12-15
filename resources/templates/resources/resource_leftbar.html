@@ -1,4 +1,5 @@
-{% load i18n static timers %}
+{% load i18n static timers galleries %}
+
 
   {% if object.contest_submit and object.category %}
   <div id="sidecategory">
@@ -16,7 +17,12 @@
       {% endif %}
     {% elif object.is_voting %}
       <h2>{% trans "Voting for" %} {{ object.contest_count|default:object.contest_finish|timeuntil }}</h2>
+      {% if request.user.is_authenticated %}
       <a class="btn-disabled btn-danger" title="{% trans "This contest is voting, press the check mark inside the item you wish to vote for." %}">{% trans "Voting Open" %}</a>
+      {% else %}
+      <a href="{% url "auth_login" %}?next={{ clear_url }}"
+          class="btn btn-danger" title="{% trans "This contest is voting, click here to login and vote." %}">{% trans "Login to Vote" %}</a>
+      {% endif %}
       <small>{% blocktrans count number_of_votes=object_list.votes %}{{number_of_votes}} vote so far.{% plural %}{{number_of_votes}} votes so far.{% endblocktrans %}</small>
     {% elif object.is_counting %}
       <h2>{% trans "Voting closed" %}</h2>
@@ -44,7 +50,12 @@
 
   <h2>
     <a href="{{ rss_url }}"><img src="{% static "images/rss.png" %}" title="{% trans "RSS Feed" %}"></a>
-    {% blocktrans count counter=paginator.count %}Found {{ counter }} Item{% plural %}Found {{ counter }} Items{% endblocktrans %}
+    <a href="{{ parade_url }}"><img src="{% static "images/parade.svg" %}" title="{% trans "Gallery Parade" %}"></a>
+    {% if limit > 0 %}
+      {% blocktrans count counter=paginator.count %}Found {{ counter }} Item{% plural %}Found {{ counter }} Items{% endblocktrans %}
+    {% else %}
+      {% trans "Showing All" %}
+    {% endif %}
   </h2>
   
   {% if object_list or query %}
@@ -151,5 +162,12 @@
         {% endif %}
       {% endif %}
     {% endfor %}
+    {% if galleries %}
+    {% if request.user|is_gallery_subscribed:galleries %}
+      <a class="btn btn-danger" href="{% url "alert.unsubscribe" "resources.gallery_alert" galleries.pk %}">{% trans "Unsubscribe from Gallery" %}</a></li>
+    {% else %}
+      <a class="btn btn-primary" href="{% url "alert.subscribe" "resources.gallery_alert" galleries.pk %}">{% trans "Subscribe to Gallery" %}</a></li>
+    {% endif %}
+    {% endif %}
   </div>
 

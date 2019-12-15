@@ -154,10 +154,9 @@ class ResourceJSONEncoder(DjangoJSONEncoder):
 
     def url(self, file_obj):
         """Return the full url with domain name"""
-        base = os.path.join(settings.MEDIA_URL, file_obj.url.lstrip('/'))
-        if '://' not in base:
-            return urljoin('https://' + self.domain, base)
-        return base
+        if file_obj:
+            return file_obj.url
+        return None
 
     def default(self, o): # pylint: disable=E0202
         if isinstance(o, QuerySet):

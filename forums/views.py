@@ -186,7 +186,11 @@ class CommentList(UserVisit, ForumMixin, ListView):
     def get_queryset(self):
         qset = super().get_queryset()
         if 'username' in self.kwargs:
-            user = get_user_model().objects.get(username=self.kwargs['username'])
+            User = get_user_model()
+            try:
+                user = User.objects.get(username=self.kwargs['username'])
+            except User.DoesNotExist:
+                raise Http404("User not found")
             qset = qset.filter(user_id=user.pk)
             self.set_context_datum('forum_user', user)
         return qset.order_by('-submit_date')
@@ -313,6 +317,14 @@ class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
 class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     """Allow a topic to be deleted by a moderator"""
     context_title = _('Delete Topic')
+
+    def delete(self, request, *args, **kwargs):
+        """Delete the topic by marking it as deleted"""
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.removed = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
 
     def get_success_url(self):
         self.record_action(subject=self.object.subject)

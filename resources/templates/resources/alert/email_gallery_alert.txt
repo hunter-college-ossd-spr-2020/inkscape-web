@@ -1,0 +1,17 @@
+{% load i18n %}
+{% url "resources" galleries=instance.slug as gallery_link %}
+{% blocktrans with recipient=alert.user %}Dear {{ recipient }},{% endblocktrans %}
+ 
+{% blocktrans %}you are subscribed to the gallery {{ instance }} at {{ site }}{{ gallery_link }}.{% endblocktrans %}
+
+{% for item in items %}{% with item.user as username %} 
+{% blocktrans %}{{ username }} just added the following:{% endblocktrans %}
+
+"{{ item }}"
+-------------------------------------
+{% trans "Category" %}: {{ item.category }}
+{% trans "Licence" %}: {{ item.license }}
+{% trans "Description" %}: {{ item.description }}
+
+{% blocktrans with upload=item %}Visit "{{ upload }}"{% endblocktrans %}: {{ site }}{{ item.get_absolute_url }}
+{% endwith %}{% endfor %}

@@ -38,7 +38,7 @@ from django.db.models import Q
 
 from person.models import User, Team
 
-from .utils import url_filefield
+from .utils import url_filefield, RemoteError
 from .video_url import video_detect
 from .category_views import CategoryListView
 from .mixins import (
@@ -241,7 +241,10 @@ class ResourcesJson(View):
                         qey = self.parse_url(qey)
                     except ValueError as err:
                         context['error'] = str(err)
-                        qey = None
+                        qey = ''
+                    except RemoteError as err:
+                        context['error'] = "Remote server error! {}".format(str(err))
+                        qey = ''
 
                 max_num += 2
                 if qey.isnumeric():
@@ -380,8 +383,10 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
         'prev': _('Your previous vote has been replaced by a vote for this item.'),
         'done': _('Thank you for your vote!'),
         'ended': _('You may not vote after the contest ends.'),
+        'disquo': _('You may not vote for disqualified entrires.'),
         '!begun': _('You may not vote until the contest begins.'),
         '!ready': _('You may not vote in a contest open for submissions.'),
+        'myown': _('You can\'t vote on your own entry!'),
     }
 
     def get_redirect_url(self, *args, **kwargs):
@@ -391,7 +396,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.user.pk == request.user.pk:
-            raise PermissionDenied()
+            raise PermissionDenied(self.msg['myown'])
         try:
             self.vote_on(obj, kwargs['like'] == '+')
         except PermissionDenied as err:
@@ -418,7 +423,7 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
         messages.info(self.request, msg)
 
     def contest_vote(self, item):
-        """Attemptto vote on the item, but fail if the contest isn't running"""
+        """Attempt to vote on the item, but fail if the contest isn't running"""
         gallery = item.gallery
         today = now().date()
         # Some different rules for contest galleries
@@ -428,6 +433,8 @@ class VoteResource(SingleObjectMixin, OwnerCreateMixin, RedirectView):
             raise PermissionDenied(self.msg['!ready'])
         elif gallery.contest_finish and gallery.contest_finish < today:
             raise PermissionDenied(self.msg['ended'])
+        elif gallery.contest_checks and not item.checked_by:
+            raise PermissionDenied(self.msg['disquo'])
         return item.gallery.votes.filter(voter_id=self.request.user.pk)
 
 class DownloadReadme(ViewResource):
@@ -491,6 +498,7 @@ class ResourceList(CategoryListView):
     RSS feed generator.
     """
     rss_view = 'resources_rss'
+    parade_view = 'resources_parade'
     model = Resource
     opts = ( # type: ignore
         ('username', 'user__username'),
@@ -622,18 +630,18 @@ class ResourceList(CategoryListView):
             data['upload_url'] = reverse("resource.upload", kwargs=k)
             data['upload_drop'] = reverse("resource.drop", kwargs=k)
 
-        data['limit'] = getattr(self, 'limit', 20)
+        data['limit'] = self.paginate_by
         return data
 
+class ResourceParade(ResourceList):
+    paginate_by = 200
+    def get_template_names(self):
+        return ['resources/resourcegallery_parade.html']
 
 class GalleryView(ResourceList):
     """Allow for a special version of the resource display for galleries"""
     opts = ResourceList.opts + (('galleries', 'galleries__slug', False),) # type: ignore
     cats = (('category', _("Media Category"), 'get_categories'),) # type: ignore
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.limit = 20
 
     def get_gallery(self):
         """Get the Gallery in context object"""
@@ -658,7 +666,6 @@ class GalleryView(ResourceList):
             if gallery.is_submitting:
                 return (('-created', _('Created Date')),)
             elif gallery.is_voting:
-                self.limit = 0
                 return (('?', _('Random Order')),)
             return (
                 ('-liked', _('Most Votes')),
@@ -666,6 +673,18 @@ class GalleryView(ResourceList):
             )
         return super(GalleryView, self).orders
 
+    @property
+    def paginate_by(self):
+        """Turn off pagination when voting"""
+        gallery = self.get_gallery()
+        if gallery.is_contest and gallery.is_voting:
+            return 0
+        return 20
+
+class GalleryParade(GalleryView):
+    paginate_by = 200
+    def get_template_names(self):
+        return ['resources/resourcegallery_parade.html']
 
 class ResourcePick(ResourceList):
     """A loadable picker that allows an item to be choosen"""
@@ -713,5 +732,10 @@ class GalleryFeed(ListFeed):
 
 class ResourceJson(ResourceList):
     """Take any list of resources, and produce json output"""
+    def render_to_response(self, context, **_):
+        return JsonResponse(context, encoder=ResourceJSONEncoder)
+
+class GalleryJson(GalleryView):
+    """Special version of resourcejson but for galleries"""
     def render_to_response(self, context, **_):
         return JsonResponse(context, encoder=ResourceJSONEncoder)

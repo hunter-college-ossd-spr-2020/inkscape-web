@@ -13,7 +13,7 @@
           <th><a href="{{ comment.get_absolute_url }}">{% trans "Not a forum post" %}</a></th>
         {% endif %}
         <th class="view-message text-right text-muted"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</th>
-        <th class="forum-small-cells avatar" style="width: 1%;"><img src="{{ comment.user.photo_url }}"/></th>
+        <th class="forum-small-cells avatar" style="width: 1%;"><a href="{{ comment.user.get_absolute_url }}"><img src="{{ comment.user.photo_url }}" title="{{ comment.user }}"/></a></th>
       </tr>
     {% if query or show_comments %}
       <tr class="{% cycle 'odd' 'even' %}" data-changed="{{ comment.submit_date.isoformat }}" data-pk="comment-{{ topic.pk }}">

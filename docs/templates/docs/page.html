@@ -4,7 +4,9 @@
 
 {% block content %}
   {% addtoblock "css" %}
-      <link rel="stylesheet" type="text/css" href="{% get_media_prefix %}doc/docs.css">
+      {% for stylesheet_href in stylesheet_hrefs %}
+      <link rel="stylesheet" type="text/css" href="{{ stylesheet_href|safe }}">
+      {% endfor %}
   {% endaddtoblock %}
 
   <h1>{% block title %}{{ title }}{% endblock %}</h1>

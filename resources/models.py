@@ -490,7 +490,7 @@ class Resource(Model):
             self.verified = self._verify(sig_type)
             self.save()
         if self.verified and sig_type == 'sig':
-            if self.user.has_perm('resource.change_resourcemirror'):
+            if self.user.has_perm('resources.change_resourcemirror'):
                 return self.ENDORSE_AUTH
             return self.ENDORSE_SIGN
         return self.verified and self.ENDORSE_HASH or self.ENDORSE_NONE
@@ -690,7 +690,7 @@ class GalleryQuerySet(QuerySet):
 
 
 class Gallery(Model):
-    """A collection of resources"""
+    """A container for many resources"""
     GALLERY_STATUSES = (
         (None, 'No Status'),
         (' ', 'Casual Wish'),
@@ -721,6 +721,7 @@ class Gallery(Model):
         help_text=_('Voting is finished, but the votes are being counted.'), **NULL)
     contest_finish = DateField(
         help_text=_('Finish the contest, voting closed, winner announced (UTC).'), **NULL)
+    contest_checks = BooleanField(default=False, help_text=_('Contest entries require checking.'))
 
     _is_generic = lambda self, a, b: a and b and a <= now().date() < b
     is_contest = property(lambda self: bool(self.contest_submit))
@@ -783,13 +784,23 @@ class Gallery(Model):
     def winners(self):
         """Return the resource with the most votes"""
         if self.is_contest and self.is_finished:
+            # Declare a winner if there's no contest_count
             if self.contest_count is None:
+                self.refresh_all()
                 item = self.items.latest('liked')
                 item.extra_status = Resource.CONTEST_WINNER
                 item.save()
                 self.contest_count = self.contest_finish
             return self.items.filter(extra_status=Resource.CONTEST_WINNER)
         return None
+
+    def refresh_all(self):
+        """Calculate final vote counts now it's over"""
+        if self.is_counting or self.is_finished:
+            for item in self.items.filter(liked=-1):
+                # XXX Could calculate vote scoring here if we do multi-voting
+                item.liked = item.votes.count()
+                item.save()
 
     @property
     def value(self):

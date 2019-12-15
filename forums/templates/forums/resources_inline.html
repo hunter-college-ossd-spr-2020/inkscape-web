@@ -1,7 +1,7 @@
 {% load i18n static svg %}
 
 {% for attachment in attachment_list %}
-  {% if attachment.inline %}
+  {% if attachment.inline == 1 %}
     {% with attachment.resource as object %}
       {% if object.is_video %}
         <div class="inline video">
@@ -21,10 +21,12 @@
             <a href="{{ object.download_url }}"><img src="{{ object.icon_url }}" alt="{{ object }}"></a>
           </div>
         {% endif %}
-      {% elif object.link and object.thumbnail %}
+      {% elif object.link %}
         <div class="inline image link" data-toggle="tooltip" title="{{ object }}">
           <a href="{{ object.link }}"><img src="{{ object.thumbnail_url }}" alt="{{ object }}"></a>
         </div>
+      {% else %}
+        <!--G: {{ object.pk }}: OBJ:{{ object }}: DOWN:{{ object.download }}: AVAIL:{{ object.is_available }}-->
       {% endif %}
     {% endwith %}
   {% endif %}

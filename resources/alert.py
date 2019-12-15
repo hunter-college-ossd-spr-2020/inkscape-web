@@ -23,10 +23,11 @@ Resource alerts
 from django.utils.translation import ugettext_lazy as _
 from django.dispatch import Signal
 
-from alerts.base import EditedAlert, CreatedAlert
+from alerts.base import EditedAlert, CreatedAlert, AddedAlert
+from alerts.models import AlertSubscription
 from forums.models import Comment
 
-from .models import Resource
+from .models import Resource, Gallery
 
 post_publish = Signal(providing_args=["instance"])
 
@@ -56,9 +57,9 @@ class CommentAlert(CreatedAlert):
     info     = _("When a user comments on one of your gallery uploads, you will receive this alert message.")
     sender   = Comment
 
-    subject       = "{% trans 'New comment:' %} {{ instance }}"
-    email_subject = "{% trans 'New comment:' %} {{ instance }}"
-    object_name   = "{% trans 'Comment on Resource' %}"
+    subject = "{% trans 'New comment:' %} {{ instance }}"
+    email_subject = subject
+    object_name = "{% trans 'Comment on Resource' %}"
     default_email = True
 
     subscribe_all = False
@@ -73,3 +74,28 @@ class CommentAlert(CreatedAlert):
                 return obj.user
 
 
+class GalleryAlert(AddedAlert):
+    name = _("Gallery Addition")
+    desc = _("A new item added to a gallery")
+    info = _("When someone adds an item to a gallery")
+
+    subject = "{% trans 'Item added to gallery:' %} {{ instance }}"
+    email_subject = subject
+    object_name = "{% trans 'Gallery Submission' %}"
+    default_email = True
+
+    subscribe_all = False
+    subscribe_any = True
+    subscribe_own = False
+    instance_type = Gallery
+
+    @property
+    def m2m_sender(self):
+        return Gallery.items
+
+    @classmethod
+    def subscriptions_for(cls, user):
+        """Return a list of subscriptions for this user"""
+        if user is not None and user.is_authenticated():
+            return user.alert_subscriptions.filter(alert__slug=cls.slug)
+        return AlertSubscription.objects.none()

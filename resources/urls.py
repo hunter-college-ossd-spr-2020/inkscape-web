@@ -30,23 +30,25 @@ from .views import (
     PasteInResource, UploadResource, DropResource, LinkToResource,
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
-    UploadJson, TagsJson, QuotaJson, ResourcesJson, UnpublishedGallery,
-    CheckResource,
+    UploadJson, TagsJson, QuotaJson, ResourcesJson, GalleryJson, UnpublishedGallery,
+    CheckResource, ResourceParade, GalleryParade,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
-                    pick=ResourcePick, json=ResourceJson):
+                    pick=ResourcePick, json=ResourceJson, parade=ResourceParade):
     """Generate standard url patterns for resource listing"""
     return [
         url(r'^$', lst.as_view(), name='resources'),
-        url(r'^rss/$', feed(), name='resources_rss'),
         url(r'^pick/$', pick.as_view(), name='resources_pick'),
+        url(r'^rss/$', feed(), name='resources_rss'),
         url(r'^json/$', json.as_view(), name='resources_json'),
+        url(r'^parade/$', parade.as_view(), name='resources_parade'),
         url_tree(
             r'^=(?P<category>[^\/]+)/',
             url(r'^$', lst.as_view(), name='resources'),
             url(r'^rss/$', feed(), name='resources_rss'),
             url(r'^json/$', json.as_view(), name='resources_json'),
+            url(r'^parade/$', parade.as_view(), name='resources_parade'),
             *args)
     ]
 
@@ -54,7 +56,8 @@ owner_patterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^galleries/',
         url(r'^$', GalleryList.as_view(), name='galleries'),
-        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(lst=GalleryView, feed=GalleryFeed)),
+        url_tree(r'^(?P<galleries>[^\/]+)/', *resource_search(
+            lst=GalleryView, feed=GalleryFeed, json=GalleryJson, parade=GalleryParade)),
     ),
     url_tree(r'^resources/', *resource_search()),
 ]
@@ -110,7 +113,8 @@ urlpatterns = [ # pylint: disable=invalid-name
         *resource_search(
             url(r'^(?P<galleries>[^\/]+)/$', GalleryView.as_view(), name='resources'),
             url(r'^(?P<galleries>[^\/]+)/rss/$', GalleryFeed(), name='resources_rss'),
-            url(r'^(?P<galleries>[^\/]+)/json/$', ResourceJson.as_view(), name='resources_json'),
+            url(r'^(?P<galleries>[^\/]+)/json/$', GalleryJson.as_view(), name='resources_json'),
+            url(r'^(?P<galleries>[^\/]+)/parade/$', GalleryParade.as_view(), name='resources_parade'),
         )
     ),
 ]

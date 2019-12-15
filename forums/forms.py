@@ -38,12 +38,14 @@ from django.forms import (
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
 from django_comments.models import Comment, CommentFlag
 
+from resources.models import Resource
 from person.models import Team, User
 
 from .widgets import TextEditorWidget
 from .fields import ResourceList
 from .models import ForumTopic
 from .alert import ForumTopicAlert
+from .utils import clean_comment
 
 EMOJI = re.compile(r'([\u263a-\U0001f645])')
 MENTION = re.compile(r'(^|[^>\w~])@(?P<name>[\w-]+)')
@@ -83,8 +85,10 @@ class AttachmentMixin(object):
     """
     attachments = ResourceList(required=False,\
         help_text=_("A comma seperated list of resource ids to attach as files."))
-    inlines = ResourceList(required=False,\
-        help_text=_("A comma seperated list of resource ids to show inline."))
+    galleries = ResourceList(required=False,\
+        help_text=_("A comma seperated list of resource ids to show in a gallery."))
+    embedded = ResourceList(required=False,\
+        help_text=_("A comma seperated list of resource ids used in the comment html."))
 
     def clean_comment(self):
         """Pick out all emojis and protect against multi-posting"""
@@ -125,20 +129,22 @@ class AttachmentMixin(object):
         """Save attachments to the given comment"""
         from resources.models import Resource
 
-        # Collect the attachments and inlines
+        # Collect the attachments
         attachments = self.cleaned_data['attachments']
-        inlines = self.cleaned_data['inlines']
+        galleries = self.cleaned_data['galleries']
+        embedded = self.cleaned_data['embedded']
 
         # collect all existing attachments that are being removed
         to_delete = comment.attachments.exclude(resource__in=attachments)\
-                                       .exclude(resource__in=inlines)
+                                       .exclude(resource__in=galleries)\
+                                       .exclude(resource__in=embedded)
         # Remove any resource objects that still have a Forum Attachments category
         Resource.objects.filter(category=self.fat, pk__in=to_delete.values_list('resource_id'))
         # Delete any links to resources, this only deletes attachments that are not
         # Forum Attachment categorised because those links were removed in the cascade
         to_delete.delete()
 
-        for inline, qset in enumerate([attachments, inlines]):
+        for inline, qset in enumerate([attachments, galleries, embedded]):
             # inline is 0 for first item and 1 for second item
             for resource in qset:
                 # Update any blank categories with the forum category
@@ -150,8 +156,9 @@ class AttachmentMixin(object):
     @staticmethod
     def initial_attachments(comment):
         """Hack the initial kwarg to set any previous attachments"""
-        yield ('attachments', comment.attachments.filter(inline=False))
-        yield ('inlines', comment.attachments.filter(inline=True))
+        yield ('attachments', comment.attachments.filter(inline=0))
+        yield ('galleries', comment.attachments.filter(inline=1))
+        yield ('embedded', comment.attachments.filter(inline=2))
 
 
 class AddCommentForm(AttachmentMixin, CommentForm):
@@ -159,7 +166,8 @@ class AddCommentForm(AttachmentMixin, CommentForm):
        comment thread locking which is global no matter where the comment is.
     """
     attachments = AttachmentMixin.attachments
-    inlines = AttachmentMixin.inlines
+    galleries = AttachmentMixin.galleries
+    embedded = AttachmentMixin.embedded
 
     # Remove fields from CommentForm, Meta exclude doesn't work
     # because this isn't a ModelForm, but a bog standard Form
@@ -204,6 +212,7 @@ class AddCommentForm(AttachmentMixin, CommentForm):
         self.cleaned_data['url'] = ''
 
         comment = self.get_comment_object()
+        comment.comment = clean_comment(comment)
         comment.user = self.user
         comment.ip_address = self.ip_address
         comment.is_public = self.user.has_perm('forums.can_post_comment')
@@ -219,11 +228,12 @@ class AddCommentForm(AttachmentMixin, CommentForm):
 class EditCommentForm(AttachmentMixin, ModelForm):
     """Edit a comment as a normal django model"""
     attachments = AttachmentMixin.attachments
-    inlines = AttachmentMixin.inlines
+    galleries = AttachmentMixin.galleries
+    embedded = AttachmentMixin.embedded
 
     class Meta:
         model = Comment
-        fields = ('comment', 'attachments', 'inlines')
+        fields = ('comment', 'attachments', 'galleries', 'embedded')
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -242,6 +252,7 @@ class EditCommentForm(AttachmentMixin, ModelForm):
         if self.errors:
             super().save(commit=commit)
         if commit:
+            self.instance.comment = clean_comment(self.instance)
             self.instance.save(update_fields=('comment',))
             self.save_attachments(self.instance)
             # Flag this comment as edited (by this user)
@@ -272,7 +283,8 @@ class NewTopicForm(AttachmentMixin, CommentForm):
     field_order = ('subject', 'comment', 'honeypot')
 
     attachments = AttachmentMixin.attachments
-    inlines = AttachmentMixin.inlines
+    galleries = AttachmentMixin.galleries
+    embedded = AttachmentMixin.embedded
 
     def __init__(self, user, ip_address, *args, **kwargs):
         self.user = user
@@ -293,7 +305,8 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         subject = self.cleaned_data['subject']
 
         att = bool(self.cleaned_data['attachments'])
-        inl = bool(self.cleaned_data['inlines'])
+        gal = bool(self.cleaned_data['galleries'])
+        emb = bool(self.cleaned_data['embedded'])
 
         can_post = self.user.has_perm('forums.can_post_topic')
         locked = self.cleaned_data.get('locked', (not can_post))
@@ -304,7 +317,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
             locked=locked, sticky=sticky,
             first_username=self.user.username,
             last_username=self.user.username,
-            has_attachments=(att or inl))
+            has_attachments=(att or gal or emb))
 
 
         # The comment's target is the topic object
@@ -314,6 +327,7 @@ class NewTopicForm(AttachmentMixin, CommentForm):
         self.cleaned_data['url'] = ''
 
         comment = self.get_comment_object()
+        comment.comment = clean_comment(comment)
         comment.user = self.user
         comment.ip_address = self.ip_address
         comment.is_public = can_post

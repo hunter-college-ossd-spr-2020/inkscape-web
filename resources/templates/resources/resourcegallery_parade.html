@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load i18n static %}
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title>{% trans "Gallery Parade" %}</title>
+        <script src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}" type="text/javascript" ></script>
+        <link rel="stylesheet" href="{% static 'css/parade.css' %}" type='text/css' media='all' />
+    </head>
+    <body>
+      <div id="wrapper">
+        <div id="grid">
+{% for item in object_list %}
+  {% if not object.is_contest or item.checked_by %}
+    <div>
+      <img id="entry_{{ forloop.counter0 }}" class="resource"
+        title="{{ item.name }}"
+        alt="{{ item }}"
+        src="{{ item.thumbnail_url }}"
+        data-date="{{ item.created }}"
+        data-rendering="{{ item.rendering_url }}"
+      />
+      <div class="info">
+        <span>i</span>
+        <div class="tooltip">
+          <h1><img src="{{ item.user.photo_url }}" alt="{{ item.user }}" />{{ item.name }}</h1>
+          <h2>{{ item.user }}</h2>
+          <p>{{ item.desc|default:'...' }}</p><br/>
+          <a class="sendcomment" href="{{ item.get_absolute_url }}">Comment here...</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+        </div>
+      </div>  
+        <script src="{% static 'js/parade.js' %}" type="text/javascript" ></script>
+    </body>
+</html>

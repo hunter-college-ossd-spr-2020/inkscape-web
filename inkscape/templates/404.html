@@ -10,4 +10,13 @@
     <hr/>
     <p>If you've followed a link from our site, or are using a link that used to work before, please tell us <a href="https://gitlab.com/inkscape/inkscape-web/issues">here</a> and we'll fix it.</p>
   {% endblocktrans %} 
+{% if request.user.is_staff %}
+  <!--ERROR:
+REQUEST: {{ request_path }}
+NAME: {{ request.resolver_match.url_name }}
+ARGS: {{ request.resolver_match.args }}
+KWARGS: {{ request.resolver_match.kwargs }}
+EXCEPTION: {{ exception }}
+-->
+{% endif %}
 {% endblock %}

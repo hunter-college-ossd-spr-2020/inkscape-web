@@ -1,4 +1,5 @@
 [
+{"model": "resources.category", "fields": {"slug": "fat", "selectable": false, "filterable": false, "acceptable_licenses": [], "name": "Forum Attachment", "desc": "Things uploaded via the forum."}}
 {
   "model": "forums.forumgroup",
   "pk": 1,
