@@ -102,7 +102,7 @@ def page(request, url, lang=None):
         # extract metadata from <head>
         title = head.split('<title>',1)[-1].split('</title>',1)[0]
         # extract CSS links from  <head>
-        links = re.findall('(<link.*?/>)', head, re.DOTALL)
+        links = re.findall('(<link.*?>)', head, re.DOTALL)
         stylesheet_hrefs = []
         for link in links:
             if re.search('rel=[\'"]stylesheet[\'"]', link):
