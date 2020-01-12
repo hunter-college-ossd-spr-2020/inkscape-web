@@ -21,6 +21,7 @@
 Register users using forms and allow teams and users to edit their data
 """
 
+import re
 from django.forms import (
     ModelForm, Form, CharField, PasswordInput, ValidationError
 )
@@ -33,6 +34,11 @@ from django_registration.forms import RegistrationForm
 from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 from .models import User
+
+# Each pattern is a known spam attack to reject registrations
+SPAM_PATTERNS = [
+    re.compile(r'^\w+\d+[a-zA-Z]\d+$'),
+]
 
 class PasswordForm(PasswordResetForm):
     """Password reset request form with Recapture"""
@@ -48,6 +54,10 @@ class RegisForm(RegistrationForm):
     def clean_username(self):
         """Make sure the username isn't already used by someone else"""
         username = self.cleaned_data['username']
+        for rex in SPAM_PATTERNS:
+            if rex.match(username):
+                # This error is delibrately misleading.
+                raise ValidationError("Invalid IP Address")
         if len(username) > 60:
             raise ValidationError(_("Username too long"))
         if '/' in username:
