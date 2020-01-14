@@ -340,11 +340,13 @@ class ForumTopic(Model):
 
         if first:
             self.first_posted = first.submit_date
-            self.first_username = first.user.username
+            if first.user:
+                self.first_username = first.user.username
 
         if last:
             self.last_posted = last.submit_date
-            self.last_username = last.user.username
+            if last.user:
+                self.last_username = last.user.username
 
         if not self.post_count:
             self.removed = True
