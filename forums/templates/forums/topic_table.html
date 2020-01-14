@@ -44,14 +44,14 @@
         </td>
         <td class="topic-item">
           <a href="{{ topic.get_absolute_url }}" class="add-jump-link">
-            {% if query %}
+            {% if topic.is_moderated %}
+              [{% trans "Topic Under Moderation" %}]
+            {% elif topic.removed %}
+              [{% trans "Topic Removed" %}]
+            {% elif query %}
               {% highlight_all topic.subject %}
             {% else %}
-              {% if topic.removed %}
-                <del>{{ topic.subject }}</del>
-              {% else %}
-                {{ topic.subject }}
-              {% endif %}
+              {{ topic.subject }}
             {% endif %}
           </a> 
         </td>

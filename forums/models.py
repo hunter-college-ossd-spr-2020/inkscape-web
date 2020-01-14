@@ -315,10 +315,12 @@ class ForumTopic(Model):
     @property
     def is_moderated(self):
         """Return true if this topic is being moderated"""
-        if self.post_count == 1:
-            first = self.comments.first()
-            return first and not first.is_public
-        return False
+        if not hasattr(self, '_ismod'):
+            self._ismod = False
+            if self.post_count == 1:
+                first = self.comments.first()
+                self._ismod = first and not first.is_public
+        return self._ismod
 
     def get_absolute_url(self):
         """Return a link to this topic"""
