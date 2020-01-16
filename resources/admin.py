@@ -58,7 +58,12 @@ class ResourceAdmin(ModelAdmin):
         return obj.revisions.count()
 
 site.register(Resource, ResourceAdmin)
-site.register(Vote)
+
+class VoteAdmin(ModelAdmin):
+    list_display = ('resource', 'voter')
+    raw_id_fields = ('voter',)
+
+site.register(Vote, VoteAdmin)
 site.register(TagCategory)
 
 class TagAdmin(ModelAdmin):
