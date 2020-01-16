@@ -61,7 +61,7 @@ site.register(Resource, ResourceAdmin)
 
 class VoteAdmin(ModelAdmin):
     list_display = ('resource', 'voter')
-    raw_id_fields = ('voter',)
+    raw_id_fields = ('resource', 'voter',)
 
 site.register(Vote, VoteAdmin)
 site.register(TagCategory)
