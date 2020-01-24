@@ -31,8 +31,8 @@ from .views import (
     TopicMerge, TopicSplit, UserTopicList, UnreadTopicList,
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
-    UserFlagList, UserModList, UserBanList,
-    UserFlagToggle, UserModToggle, UserBanToggle,
+    UserFlagList, UserModList, UserBanList, WordBanList,
+    UserFlagToggle, UserModToggle, UserBanToggle, WordFlagCreate, WordFlagDelete,
 )
 from .rss import ForumTopicFeed
 
@@ -50,11 +50,14 @@ urlpatterns = [ # pylint: disable=invalid-name
     url_tree(
         r'^users/',
         url(r'^banned/$', UserBanList.as_view(), name='ban_list'),
+        url(r'^words/$', WordBanList.as_view(), name='word_list'),
         url(r'^mods/$', UserModList.as_view(), name='mod_list'),
         url(r'^flags/$', UserFlagList.as_view(), name='flag_list'),
         url(r'^banned/flag/$', UserBanToggle.as_view(), name='ban_user'),
         url(r'^mods/flag/$', UserModToggle.as_view(), name='mod_user'),
         url(r'^flags/flag/$', UserFlagToggle.as_view(), name='flag_user'),
+        url(r'^words/create/$', WordFlagCreate.as_view(), name='create_words'),
+        url(r'^words/delete/(?P<pk>\d+)/$', WordFlagDelete.as_view(), name='delete_words'),
     ),
     url(r'^unread/$', UnreadTopicList.as_view(), name="unread"),
     url(r'^check/$', CommentModList.as_view(), name="check"),

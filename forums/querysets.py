@@ -108,6 +108,11 @@ class UserFlagQuerySet(QuerySet):
         from .models import UserFlag
         return self.filter(flag=UserFlag.FLAG_BANNED)
 
+    def instant_ban(self, user):
+        from .models import UserFlag, ModerationLog
+        ModerationLog.objects.create(moderator=None, action='UserInstantBan', user=user)
+        self.get_or_create(user=user, flag=UserFlag.FLAG_BANNED, title='Instant Ban')
+
     def moderators(self):
         """Filter to only moderator user_flags"""
         from .models import UserFlag

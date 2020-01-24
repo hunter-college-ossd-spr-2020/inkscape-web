@@ -25,7 +25,7 @@ Forum views, show topics, comments and link to apps.
 from datetime import datetime, timedelta
 from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.views.generic import (
-    ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView
+    ListView, DetailView, FormView, TemplateView, UpdateView, DeleteView, CreateView
 )
 from django.db.models import Q
 from django.contrib.auth import get_user_model
@@ -47,7 +47,7 @@ from .mixins import (
     CsrfExempt, UserVisit, ForumMixin, TopicMixin,
     UserRequired, OwnerRequired, ModeratorRequired, ProgressiveContext
 )
-from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag
+from .models import Comment, Forum, ForumTopic, ModerationLog, UserFlag, BannedWords
 from .templatetags.forum_comments import FORUM_PREFETCH, FORUM_DEFER
 
 class ForumList(UserVisit, ForumMixin, TemplateView):
@@ -428,6 +428,36 @@ class UserBanList(UserFlagBase):
 
     def get_queryset(self):
         return super().get_queryset().banned()
+
+class WordBanList(ModeratorRequired, ListView):
+    model = BannedWords
+    paginate_by = 10
+
+    def get_queryset(self):
+        return super().get_queryset().order_by('found_count')
+
+class WordFlagCreate(ModeratorRequired, CreateView):
+    model = BannedWords
+    fields = ('phrase', 'ban_user')
+    template_name = 'modal.html'
+
+    def get_object(self):
+        return self.request.POST.get('phrase')
+
+    def get_success_url(self):
+        return self.request.POST.get('next', reverse("forums:word_list"))
+
+class WordFlagDelete(ModeratorRequired, DeleteView):
+    model = BannedWords
+    template_name = 'modal.html'
+
+    def get_success_url(self):
+        return self.request.GET.get('next', reverse("forums:word_list"))
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['delete'] = True
+        return kwargs
 
 class UserFlagToggle(ModeratorRequired, FlagCreateView):
     """Toggle banning a user"""

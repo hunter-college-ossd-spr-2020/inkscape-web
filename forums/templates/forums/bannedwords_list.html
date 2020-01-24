@@ -1,0 +1,51 @@
+{% extends "forums/userflag_list.html" %}
+{% load i18n static inkscape %}
+{% block title %}{% trans "Banned Users" %}{% endblock %}
+
+{% block "content" %}
+<form method="POST" action="{% url "forums:create_words" %}">
+  <table class="table table-forum table-hover">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">{% trans "Phrase / Words" %}</th>
+        <th scope="col">{% trans "Instant Ban" %}</th>
+        <th scope="col" class="text-right">{% trans "Trigger Count" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for bannedword in page_obj %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td class="text-left"><span class="emoji">🤬</span></td>
+        <td class="user-item">{{ bannedword.phrase }}</td>
+        <td class="text-left text-{% if bannedword.ban_user %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if bannedword.ban_user %}ok{% else %}remove{% endif %}"></span></td>
+        <td class="text-right"><span class="label label-default counter" title="{% trans "Number of comments banned" %}">{{ bannedword.found_count }}</span></td>
+        <td class="text-right"><a href="{% url "forums:delete_words" pk=bannedword.pk %}?next={{ request.path }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="user-item">{% trans "No banned words" %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tbody>
+      <tr class="danger text-danger"><td colspan="6">
+          <span class="glyphicon glyphicon-info-sign"></span> {% trans "Be very careful banning words, these are censored words that can prevent posts or even instantly ban users who post using them." %}
+      </td></tr>
+      <tr class="active">
+        <td>
+            <span class="emoji">🤬</span>
+        </th>
+        <td><input type="text" placeholder="phrase" name="phrase" value=""></th>
+        <td><input type="checkbox" value="1" name="ban_user"></th>
+        <td></th>
+        <td class="text-right"><button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-ban-circle"></span></button></th>
+      </tr>
+    </tbody>
+  </table>
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.path }}"/>
+  <input type="hidden" name="update" value="1"/>
+</form>
+{% endblock %}

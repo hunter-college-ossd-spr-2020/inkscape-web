@@ -403,7 +403,8 @@ class ModerationLog(Model):
     Record each moderation action, what was done and any other details.
     """
     action = CharField(max_length=128)
-    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="forum_moderation_actions")
+    moderator = ForeignKey(settings.AUTH_USER_MODEL, related_name="forum_moderation_actions",
+                           null=True, blank=True)
     performed = DateTimeField(auto_now=True, db_index=True)
 
     user = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL)
@@ -426,7 +427,7 @@ class ModerationLog(Model):
     def details(self):
         try:
             return json.loads(self.detail)
-        except ValueError:
+        except (ValueError, TypeError):
             return {}
 
 
@@ -459,6 +460,23 @@ class UserFlag(Model):
         return "%s flag of forum user %s (%s)" % (
             self.flag, self.user.get_username(), self.title
         )
+
+
+class BannedWords(Model):
+    """
+    If these words/phrases are used, then the poster can be instantly banned.
+    """
+    phrase = CharField(max_length=32, unique=True)
+    ban_user = BooleanField(default=True)
+    found_count = IntegerField(default=0)
+
+    def __str__(self):
+        return self.phrase
+
+    def save(self, *args, **kwargs):
+        self.phrase = self.phrase.lower()
+        return super().save(*args, **kwargs)
+
 
 class CommentLink(Model):
     """We extend our comment model with links to sync'd or imported comments"""

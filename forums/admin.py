@@ -28,7 +28,10 @@ from django.utils.text import mark_safe
 from django.contrib.admin import ModelAdmin, register, TabularInline
 from django.contrib.contenttypes.admin import GenericTabularInline
 
-from .models import ForumGroup, Forum, ForumTopic, CommentAttachment, UserFlag, ModerationLog
+from .models import (
+    ForumGroup, Forum, ForumTopic, CommentAttachment,
+    UserFlag, ModerationLog, BannedWords
+)
 
 @register(ModerationLog)
 class ModerationLogAdmin(ModelAdmin):
@@ -65,6 +68,12 @@ class CommentInline(GenericTabularInline):
     ct_field = 'content_type'
     raw_id_fields = ('user',)
     readonly_fields = ('site', 'ip_address', 'submit_date', 'user_url')
+
+@register(BannedWords)
+class WordsAdmin(ModelAdmin):
+    search_fields = ('phrase',)
+    list_display = ('phrase', 'ban_user', 'found_count')
+    readonly_fields = ('found_count',)
 
 @register(ForumTopic)
 class TopicAdmin(ModelAdmin):

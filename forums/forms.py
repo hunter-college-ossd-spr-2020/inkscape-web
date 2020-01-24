@@ -43,7 +43,7 @@ from person.models import Team, User
 
 from .widgets import TextEditorWidget
 from .fields import ResourceList
-from .models import ForumTopic
+from .models import ForumTopic, BannedWords
 from .alert import ForumTopicAlert
 from .utils import clean_comment
 
@@ -108,12 +108,29 @@ class AttachmentMixin(object):
                 _("You have been banned from posting to this forum!"))
 
         comment = self.cleaned_data['comment']
+        subject = self.cleaned_data.get('subject', '')
+        self.censor_text(comment.lower() + ' ' + subject.lower())
 
         # Add any un-matched references to users and groups
         comment = MENTION.sub(replace_mention, comment)
         comment = MENTION_FIX.sub(fix_mention, comment)
 
         return EMOJI.sub(r'<span class="emoji">\1</span>', comment)
+
+    def censor_text(self, comment):
+        """Check if the comment has been banned"""
+        censor = False
+        for bwd in BannedWords.objects.all():
+            if bwd.phrase in comment:
+                bwd.found_count += 1
+                bwd.save()
+                if bwd.ban_user:
+                    self.user.forum_flags.instant_ban(self.user)
+                    raise ValidationError("Instant ban! Please contact the moderators for help.")
+                censor = True
+        if censor:
+            raise ValidationError(_("Post has been blocked."))
+
 
     def clean_attachments(self):
         """Make sure we can save attachments"""

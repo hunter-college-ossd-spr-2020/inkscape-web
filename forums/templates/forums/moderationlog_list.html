@@ -18,7 +18,7 @@
       <tr class="{% cycle 'odd' 'even' %}">
         <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
         <td class="view-message">{{ log.action }}</td>
-        <td class="view-message">{{ log.moderator }}</td>
+        <td class="view-message">{{ log.moderator|default:"Doctor's ModBot" }}</td>
         <td class="view-message forum-small-cells text-muted">
           {% if log.comment %}
             <span class="glyphicon glyphicon-comment"></span> <a href="{{ log.comment.get_absolute_url }}">#{{ log.comment.pk }}</a>
