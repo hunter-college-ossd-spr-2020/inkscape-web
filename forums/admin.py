@@ -72,8 +72,9 @@ class CommentInline(GenericTabularInline):
 @register(BannedWords)
 class WordsAdmin(ModelAdmin):
     search_fields = ('phrase',)
-    list_display = ('phrase', 'ban_user', 'found_count')
+    list_display = ('phrase', 'in_title', 'in_body', 'new_user', 'ban_user', 'found_count', 'moderator', 'created')
     readonly_fields = ('found_count',)
+    raw_id_fields = ('moderator',)
 
 @register(ForumTopic)
 class TopicAdmin(ModelAdmin):
