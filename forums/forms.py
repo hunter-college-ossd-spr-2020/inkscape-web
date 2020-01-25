@@ -92,6 +92,7 @@ class AttachmentMixin(object):
 
     def clean_comment(self):
         """Pick out all emojis and protect against multi-posting"""
+        new_user = False
         if not self.user.has_perm('forums.can_post_comment'):
             if FORUM_NOT_READY:
                 raise ValidationError("The Forum is not open yet. Please post your question in other parts of the website.")
@@ -102,6 +103,7 @@ class AttachmentMixin(object):
             if unmoderated.count() >= 2:
                 raise ValidationError(
                     _("You can not post more than 2 comments awaiting moderation"))
+            new_user = True
 
         if self.user.forum_flags.banned().count():
             raise ValidationError(
@@ -109,7 +111,7 @@ class AttachmentMixin(object):
 
         comment = self.cleaned_data['comment']
         subject = self.cleaned_data.get('subject', '')
-        self.censor_text(comment.lower() + ' ' + subject.lower())
+        self.censor_text(subject.lower(), comment.lower(), new_user=new_user)
 
         # Add any un-matched references to users and groups
         comment = MENTION.sub(replace_mention, comment)
@@ -117,11 +119,13 @@ class AttachmentMixin(object):
 
         return EMOJI.sub(r'<span class="emoji">\1</span>', comment)
 
-    def censor_text(self, comment):
+    def censor_text(self, title, body, new_user=True):
         """Check if the comment has been banned"""
         censor = False
         for bwd in BannedWords.objects.all():
-            if bwd.phrase in comment:
+            if (new_user or not bwd.new_user) and (
+                    (bwd.in_title and bwd.phrase in title)
+                 or (bwd.in_body and bwd.phrase in body)):
                 bwd.found_count += 1
                 bwd.save()
                 if bwd.ban_user:

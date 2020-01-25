@@ -466,8 +466,17 @@ class BannedWords(Model):
     """
     If these words/phrases are used, then the poster can be instantly banned.
     """
+    moderator = ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    created = DateTimeField(auto_now_add=True, null=True, blank=True)
     phrase = CharField(max_length=32, unique=True)
-    ban_user = BooleanField(default=True)
+    in_title = BooleanField(default=True,\
+        help_text='Apply filter to text in the subject/title of a new topic')
+    in_body = BooleanField(default=True,\
+        help_text='Apply filter to text in the body/comment of any comment or new topic')
+    new_user = BooleanField(default=False,\
+        help_text='Apply only to new users (moderation locked)')
+    ban_user = BooleanField(default=True,\
+        help_text='Ban user if they use this phrase')
     found_count = IntegerField(default=0)
 
     def __str__(self):

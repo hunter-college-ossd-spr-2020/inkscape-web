@@ -436,20 +436,21 @@ class WordBanList(ModeratorRequired, ListView):
     def get_queryset(self):
         return super().get_queryset().order_by('found_count')
 
-class WordFlagCreate(ModeratorRequired, CreateView):
+class WordBanCreate(ModeratorRequired, CreateView):
     model = BannedWords
-    fields = ('phrase', 'ban_user')
+    fields = ('phrase', 'ban_user', 'new_user', 'in_title', 'in_body')
     template_name = 'modal.html'
 
     def get_object(self):
         return self.request.POST.get('phrase')
 
     def get_success_url(self):
+        self.object.moderator = self.request.user
+        self.object.save()
         return self.request.POST.get('next', reverse("forums:word_list"))
 
-class WordFlagDelete(ModeratorRequired, DeleteView):
+class WordBanDelete(ModeratorRequired, DeleteView):
     model = BannedWords
-    template_name = 'modal.html'
 
     def get_success_url(self):
         return self.request.GET.get('next', reverse("forums:word_list"))

@@ -7,18 +7,27 @@
   <table class="table table-forum table-hover">
     <thead>
       <tr>
-        <th scope="col"></th>
         <th scope="col">{% trans "Phrase / Words" %}</th>
-        <th scope="col">{% trans "Instant Ban" %}</th>
-        <th scope="col" class="text-right">{% trans "Trigger Count" %}</th>
+        <th scope="col" title="Filter only title text of new topics">{% trans "In Subject" %}</th>
+        <th scope="col" title="Filter only body text of any comment or new topic">{% trans "In Body" %}</th>
+        <th scope="col" title="Apply only to new users">{% trans "New User" %}</th>
+        <th scope="col" title="Issue an instant and automatic ban (be careful!)">{% trans "Instant Ban" %}</th>
+        <th scope="col" title="Moderator who created the filter">{% trans "Moderator" %}</th>
+        <th scope="col" title="Date/time of creation">{% trans "Created" %}</th>
+        <th scope="col" title="Number of times filter has been used." class="text-right">{% trans "Triggered" %}</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
     {% for bannedword in page_obj %}
     <tr class="{% cycle 'odd' 'even' %}">
-        <td class="text-left"><span class="emoji">🤬</span></td>
         <td class="user-item">{{ bannedword.phrase }}</td>
+        <td class="text-left text-{% if bannedword.in_title %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if bannedword.in_title %}ok{% else %}remove{% endif %}"></span></td>
+        <td class="text-left text-{% if bannedword.in_body %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if bannedword.in_body %}ok{% else %}remove{% endif %}"></span></td>
+        <td class="text-left text-{% if bannedword.new_user %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if bannedword.new_user %}ok{% else %}remove{% endif %}"></span></td>
         <td class="text-left text-{% if bannedword.ban_user %}success{% else %}muted{% endif %}"><span class="glyphicon glyphicon-{% if bannedword.ban_user %}ok{% else %}remove{% endif %}"></span></td>
+        <td class="text-left text-muted">{{ bannedword.moderator|default:'~' }}</td>
+        <td class="text-left text-muted"><span class="glyphicon glyphicon-time"></span> {{ bannedword.created|timetag }}</td>
         <td class="text-right"><span class="label label-default counter" title="{% trans "Number of comments banned" %}">{{ bannedword.found_count }}</span></td>
         <td class="text-right"><a href="{% url "forums:delete_words" pk=bannedword.pk %}?next={{ request.path }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></td>
       </tr>
@@ -30,17 +39,19 @@
     {% endfor %}
     </tbody>
     <tbody>
-      <tr class="danger text-danger"><td colspan="6">
+      <tr class="danger text-danger"><td colspan="9">
           <span class="glyphicon glyphicon-info-sign"></span> {% trans "Be very careful banning words, these are censored words that can prevent posts or even instantly ban users who post using them." %}
       </td></tr>
       <tr class="active">
-        <td>
-            <span class="emoji">🤬</span>
-        </th>
         <td><input type="text" placeholder="phrase" name="phrase" value=""></th>
+        <td><input type="checkbox" value="1" name="in_title" CHECKED></th>
+        <td><input type="checkbox" value="1" name="in_body" CHECKED></th>
+        <td><input type="checkbox" value="1" name="new_user"></th>
         <td><input type="checkbox" value="1" name="ban_user"></th>
         <td></th>
-        <td class="text-right"><button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-ban-circle"></span></button></th>
+        <td></th>
+        <td></th>
+        <td class="text-right"><button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button></th>
       </tr>
     </tbody>
   </table>

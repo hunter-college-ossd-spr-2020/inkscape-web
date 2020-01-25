@@ -32,7 +32,7 @@ from .views import (
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
     CommentModList, CommentModPublic, CommentModRemove,
     UserFlagList, UserModList, UserBanList, WordBanList,
-    UserFlagToggle, UserModToggle, UserBanToggle, WordFlagCreate, WordFlagDelete,
+    UserFlagToggle, UserModToggle, UserBanToggle, WordBanCreate, WordBanDelete,
 )
 from .rss import ForumTopicFeed
 
@@ -56,8 +56,8 @@ urlpatterns = [ # pylint: disable=invalid-name
         url(r'^banned/flag/$', UserBanToggle.as_view(), name='ban_user'),
         url(r'^mods/flag/$', UserModToggle.as_view(), name='mod_user'),
         url(r'^flags/flag/$', UserFlagToggle.as_view(), name='flag_user'),
-        url(r'^words/create/$', WordFlagCreate.as_view(), name='create_words'),
-        url(r'^words/delete/(?P<pk>\d+)/$', WordFlagDelete.as_view(), name='delete_words'),
+        url(r'^words/create/$', WordBanCreate.as_view(), name='create_words'),
+        url(r'^words/delete/(?P<pk>\d+)/$', WordBanDelete.as_view(), name='delete_words'),
     ),
     url(r'^unread/$', UnreadTopicList.as_view(), name="unread"),
     url(r'^check/$', CommentModList.as_view(), name="check"),
