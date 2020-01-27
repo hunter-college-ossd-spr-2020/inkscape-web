@@ -563,7 +563,7 @@ class UserModToggle(UserFlagToggle):
 class UserBanToggle(UserFlagToggle):
     """Toggle the banning of users"""
     log_icon = 'ban-circle'
-    log_names = ['Unbanned', 'Banned', '?']
+    log_names = ['User Unbanned', 'User Banned', '?']
     log_colors = ['default', 'danger', 'default']
 
     def get_flag(self):
