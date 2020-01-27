@@ -424,7 +424,25 @@ class ModerationLog(Model):
     def __str__(self):
         return self.action
 
+    def get_view(self):
+        """Each moderation action usually has a view class assoicated with it"""
+        if not hasattr(self, '_view_action'):
+            from forums import views
+            self._view_action = getattr(views, self.action, None)
+        return self._view_action
+
+    def _get_info(self, attr_name, default):
+        attr = getattr(self.get_view(), attr_name, default)
+        if callable(attr):
+            return attr(self.details())
+        return attr
+
+    get_log_icon = lambda self: self._get_info('log_icon', 'info-sign')
+    get_log_color = lambda self: self._get_info('log_color', 'default')
+    get_log_name = lambda self: self._get_info('log_name', self.action)
+
     def details(self):
+        """Load the assoicated json"""
         try:
             return json.loads(self.detail)
         except (ValueError, TypeError):

@@ -501,6 +501,9 @@ body {
 .nav-pills li:only-child a {
   border-radius: 4px;
 }
+.nav-pills > li > span {
+  margin-right: 5px;
+}
 
 .forum-content {
   background: none repeat scroll 0 0 #fff;

@@ -15,9 +15,9 @@
   <table class="table table-forum" data-pk="forum-{{ forum.pk }}">
     <tbody>
     {% for log in object_list %}
-      <tr class="{% cycle 'odd' 'even' %}">
-        <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
-        <td class="view-message">{{ log.action }}</td>
+      <tr class="{% cycle 'odd' 'even' %} {{ log.get_log_color }}">
+        <td class="subscribed forum-small-cells"><span class="glyphicon glyphicon-{{ log.get_log_icon }}"></span></td>
+        <td class="view-message">{{ log.get_log_name }}</td>
         <td class="view-message">{{ log.moderator|default:"Doctor's ModBot" }}</td>
         <td class="view-message forum-small-cells text-muted">
           {% if log.comment %}
@@ -29,8 +29,8 @@
               <span class="glyphicon glyphicon-list-alt"></span> {{ log.details.subject }}
             {% elif log.details.text %}
               <span class="glyphicon glyphicon-comment"></span> #{{ log.details.comment_id }}
-            {% else %}
-              <span class="glyphicon glyphicon-remove-circle"></span> Deleted
+            {% elif log.details.comment_id %}
+            <span class="glyphicon glyphicon-remove-circle"></span> {{ log.details.comment_id }}
             {% endif %}
           {% endif %}
         </td>

@@ -232,6 +232,10 @@ class CommentEdit(OwnerRequired, UpdateView):
     template_name = "forums/comment_form.html"
     context_title = _('Edit Comment')
 
+    log_icon = 'pencil'
+    log_color = 'info'
+    log_name = 'Comment Edited'
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -248,6 +252,10 @@ class CommentModPublic(ModeratorRequired, FieldUpdateView):
     model = Comment
     field = 'is_public'
     value = '!'
+
+    log_icon = 'ok-circle'
+    log_color = 'success'
+    log_name = 'Made Public'
 
     def field_changed(self, obj, is_public): # pylint: disable=arguments-differ
         """Enable the user for posting if they are approved"""
@@ -284,6 +292,10 @@ class CommentModRemove(ModeratorRequired, FieldUpdateView):
     field = 'is_removed'
     value = '!'
 
+    log_icon = 'remove'
+    log_color = 'danger'
+    log_name = 'Comment Removed'
+
     def field_changed(self, obj, is_removed): # pylint: disable=arguments-differ
         """Record the removal action in the moderators log"""
         self.record_action(instance=obj, field=self.field, value=is_removed)
@@ -305,18 +317,31 @@ class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
     context_title = _('Move Topic')
     fields = ('forum',)
 
+    log_icon = 'export'
+    log_color = 'info'
+    log_name = 'Topic Moved'
+
     def log_details(self, **data):
         """Return the old and new forums"""
-        return {'from_forum': self.get_object().forum.slug}
+        data['from_forum'] = self.get_object().forum.slug
+        return data
 
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
     """Allow a topic to be edited by a moderator (or owner)"""
     context_title = _('Edit Topic')
     fields = ('subject', 'sticky', 'locked')
 
+    log_icon = 'pencil'
+    log_color = 'info'
+    log_name = 'Topic Edited'
+
 class TopicDelete(ModeratorRequired, TopicMixin, DeleteView):
     """Allow a topic to be deleted by a moderator"""
     context_title = _('Delete Topic')
+
+    log_icon = 'remove'
+    log_color = 'danger'
+    log_name = 'Topic Removed'
 
     def delete(self, request, *args, **kwargs):
         """Delete the topic by marking it as deleted"""
@@ -362,6 +387,10 @@ class TopicMerge(ModeratorRequired, ProgressiveContext, FormView):
     form_class = MergeTopics
     context_title = _('Merge Topic')
 
+    log_icon = ' iw-flow-merge'
+    log_color = 'info'
+    log_name = 'Topics Merged'
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['from_topic'] = get_object_or_404(ForumTopic, slug=self.kwargs['slug'])
@@ -374,6 +403,10 @@ class TopicSplit(TopicMerge):
     """Allow moderators to split a topic in half"""
     form_class = SplitTopic
     context_title = _('Split Topic')
+
+    log_icon = ' iw-flow-split'
+    log_color = 'info'
+    log_name = 'Topics Split'
 
 
 class CommentEmote(CsrfExempt, UserRequired, UpdateView):
@@ -466,6 +499,22 @@ class UserFlagToggle(ModeratorRequired, FlagCreateView):
     model = get_user_model()
     field = 'forum_flags'
 
+    log_icons = ['flag', 'flag']
+    log_names = ['Flag Removed', 'Flag Added', '?']
+    log_colors = ['danger', 'success', 'default']
+
+    @classmethod
+    def log_icon(cls, datum):
+        return cls.log_icons[datum.get('added', -1)]
+
+    @classmethod
+    def log_color(cls, datum):
+        return cls.log_colors[datum.get('added', -1)]
+
+    @classmethod
+    def log_name(cls, datum):
+        return cls.log_names[datum.get('added', -1)]
+
     @property
     def filters(self):
         return {'flag': self.get_flag()}
@@ -496,6 +545,9 @@ class UserFlagToggle(ModeratorRequired, FlagCreateView):
 
 class UserModToggle(UserFlagToggle):
     """Toggle on and off the moderator status of a user"""
+    log_icons = [' iw-crown-minus', ' iw-crown-plus']
+    log_names = ['Moderator Removed', 'Moderator Added', '?']
+
     def get_flag(self):
         return UserFlag.FLAG_MODERATOR
 
@@ -510,5 +562,14 @@ class UserModToggle(UserFlagToggle):
 
 class UserBanToggle(UserFlagToggle):
     """Toggle the banning of users"""
+    log_icon = 'ban-circle'
+    log_names = ['Unbanned', 'Banned', '?']
+    log_colors = ['default', 'danger', 'default']
+
     def get_flag(self):
         return UserFlag.FLAG_BANNED
+
+class UserInstantBan(UserBanToggle):
+    """Fake class for moderation log information"""
+    log_name = 'User Instantly Banned'
+    log_color = 'danger'

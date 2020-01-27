@@ -110,6 +110,14 @@ class ModeratorLogged(object):
 
     def _record_action(self, user, forum, topic, comment, **data):
         """Record the action taken against a comment"""
+        # Record some details in case the objects are deleted
+        if user is not None:
+            data['user'] = {'username': user.username, 'id': user.pk}
+        if comment is not None:
+            data['comment'] = {'id': comment.pk}
+        if topic is not None:
+            data['topic'] = {'id': topic.pk}
+
         if user != self.request.user:
             self.moderation_action = \
                 self.request.user.forum_moderation_actions.create(

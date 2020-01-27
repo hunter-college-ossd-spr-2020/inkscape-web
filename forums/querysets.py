@@ -20,6 +20,7 @@
 """
 Specialised querysets
 """
+import json
 from collections import OrderedDict
 
 from django.db.models import QuerySet, Model, Q
@@ -108,10 +109,15 @@ class UserFlagQuerySet(QuerySet):
         from .models import UserFlag
         return self.filter(flag=UserFlag.FLAG_BANNED)
 
-    def instant_ban(self, user):
+    def instant_ban(self, user, words=None):
         from .models import UserFlag, ModerationLog
         ModerationLog.objects.create(moderator=None, action='UserInstantBan', user=user)
-        self.get_or_create(user=user, flag=UserFlag.FLAG_BANNED, title='Instant Ban')
+        self.get_or_create(
+            user=user,
+            title='Instant Ban',
+            flag=UserFlag.FLAG_BANNED,
+            detail=json.dumps({'phrase': words}),
+        )
 
     def moderators(self):
         """Filter to only moderator user_flags"""
