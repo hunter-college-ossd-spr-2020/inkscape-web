@@ -28,9 +28,9 @@
             {% if log.details.subject %}
               <span class="glyphicon glyphicon-list-alt"></span> {{ log.details.subject }}
             {% elif log.details.text %}
-              <span class="glyphicon glyphicon-comment"></span> #{{ log.details.comment_id }}
-            {% elif log.details.comment_id %}
-            <span class="glyphicon glyphicon-remove-circle"></span> {{ log.details.comment_id }}
+              <span class="glyphicon glyphicon-comment"></span> #{{ log.details.comment.id }}
+            {% elif log.details.comment.id %}
+            <span class="glyphicon glyphicon-remove-circle"></span> #{{ log.details.comment.id }}
             {% endif %}
           {% endif %}
         </td>
