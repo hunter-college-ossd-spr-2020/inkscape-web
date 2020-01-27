@@ -21,6 +21,8 @@
 Forum utils.
 """
 
+import re
+from unidecode import unidecode
 from bs4 import BeautifulSoup
 from django.templatetags.static import static
 
@@ -52,3 +54,15 @@ def clean_comment(comment):
             tag['src'] = external_image
     # Remove script and other tags
     return str(soup)
+
+def ascii_whitewash(text):
+    """
+    Remove unicode, symbols and multple spaces to give the cleanest
+    version of any string.
+    """
+    # Convert unicode into nearest ascii/romanised equiv
+    text = unidecode(text)
+    # Remove any remaining symbols and replace with spaces
+    text = re.sub(r'[^0-9a-zA-Z]', ' ', text)
+    # Replace all multiple spaces with one space
+    return re.sub(r'\s+', ' ', text).lower()

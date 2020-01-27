@@ -38,14 +38,13 @@ from django.forms import (
 from django_comments.forms import CommentForm, ContentType, ErrorDict, COMMENT_MAX_LENGTH
 from django_comments.models import Comment, CommentFlag
 
-from resources.models import Resource
 from person.models import Team, User
 
 from .widgets import TextEditorWidget
 from .fields import ResourceList
 from .models import ForumTopic, BannedWords
 from .alert import ForumTopicAlert
-from .utils import clean_comment
+from .utils import clean_comment, ascii_whitewash
 
 EMOJI = re.compile(r'([\u263a-\U0001f645])')
 MENTION = re.compile(r'(^|[^>\w~])@(?P<name>[\w-]+)')
@@ -121,6 +120,8 @@ class AttachmentMixin(object):
 
     def censor_text(self, title, body, new_user=True):
         """Check if the comment has been banned"""
+        # Append a cleaned version of the title to itself (to capture symbol mad items)
+        title = title + ' ' + ascii_whitewash(title)
         censor = False
         for bwd in BannedWords.objects.all():
             if (new_user or not bwd.new_user) and (
