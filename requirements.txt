@@ -1,5 +1,6 @@
 
 # Universal requirements
+unidecode
 python-dateutil==2.7.3
 whoosh==2.7.4
 pygments==2.2.0
