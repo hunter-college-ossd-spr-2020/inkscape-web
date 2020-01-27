@@ -501,7 +501,7 @@ body {
 .nav-pills li:only-child a {
   border-radius: 4px;
 }
-.nav-pills > li > span {
+.nav-pills > li > a > span {
   margin-right: 5px;
 }
 
