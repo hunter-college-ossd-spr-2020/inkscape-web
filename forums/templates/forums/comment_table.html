@@ -42,8 +42,14 @@
       {% endwith %}
     {% empty %}
       <tr>
-        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
-        <td class="topic-item">{% trans "No comments" %}</td>
+        <td class="icon forum-small-cells forum-no-results"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="topic-item forum-no-results" colspan="6">
+          {% if query %}
+            {% blocktrans %}No comments found with search '{{ query }}'{% endblocktrans %}
+          {% else %}
+            {% trans "No comments" %}
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
     </tbody>

@@ -49,7 +49,7 @@
       </tr>
     {% empty %}
       <tr>
-          <td style="text-align: center;"><h1>{% trans "No topics yet" %}</h1></td>
+          <td style="text-align: center;"><h1>{% trans "No topics yet" %}</h1><p><a href="{% url "forums:search.posts" %}?q={{ query }}">Click here</a> to do a comment body search</p></td>
       </tr>
     {% endfor %}
     </tbody>

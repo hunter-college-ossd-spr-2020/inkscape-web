@@ -449,6 +449,12 @@ body {
   font-weight: bold;
 }
 
+.table-forum td.forum-no-results {
+  padding: 10px !important;
+  font-size: 170%;
+  vertical-align: middle;
+}
+
 .topic-jump-unread {
   background-color: #fffaf6;
   border-radius: 2em;

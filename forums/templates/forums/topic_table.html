@@ -71,9 +71,21 @@
       </tr>
     {% empty %}
       <tr>
-        <td class="icon forum-small-cells"><span class="glyphicon glyphicon-info-sign"></span></td>
-        <td class="topic-item">{% trans "No topics" %}</td>
+        <td class="icon forum-small-cells forum-no-results"><span class="glyphicon glyphicon-info-sign"></span></td>
+        <td class="topic-item forum-no-results" colspan="6">
+          {% if query %}
+            {% blocktrans %}No topics found with search '{{ query }}'{% endblocktrans %}
+          {% else %}
+            {% trans "No topics" %}
+          {% endif %}
+        </td>
       </tr>
+      {% if search_name == "TopicSubjectSearch" %}
+        <tr>
+          {% url "forums:search.posts" as search_url %}
+          <td colspan="7" class="">{% blocktrans %}<a href="{{ search_url }}?q={{ query }}">Click here</a> to do a comment body search.{% endblocktrans %}</td>
+        </tr>
+      {% endif %}
     {% endfor %}
     </tbody>
   </table>
