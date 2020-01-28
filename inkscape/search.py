@@ -21,19 +21,55 @@
 Specific haystack controls.
 """
 
+import os
+
 from django.db.models.signals import post_save, post_delete
 from django.apps import apps
 from django.conf import settings
 
 from haystack.signals import BaseSignalProcessor
+from haystack.utils import get_identifier
+
+try:
+    from xapian import DatabaseLockError
+except ImportError:
+    DatabaseLockError = ValueError
 
 class LimitedSignalProcessor(BaseSignalProcessor):
     """
     Half way between the RealtimeSignalProcessor and none, this
     allows you to configure which models should have real time
     haystack full text indexing.
+
+    It also captures xapian locking errors and saves a queue
+    for later processing.
     """
     models = getattr(settings, 'HAYSTACK_REALTIME_MODELS', [])
+    queue_dir = os.path.join(settings.PROJECT_PATH, 'data', '.xapian.queue')
+
+    @classmethod
+    def handle_lock(cls, method, instance):
+        """Queue the instance update for later writing"""
+        path = os.path.join(cls.queue_dir, method)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
+        target = os.path.join(path, get_identifier(instance))
+
+        with open(target, 'a') as fhl:
+            fhl.write('1')
+
+    def handle_save(self, sender, instance, **kwargs):
+        try:
+            super().handle_save(sender, instance, **kwargs)
+        except DatabaseLockError:
+            self.handle_lock('update', instance)
+
+    def handle_delete(self, sender, instance, **kwargs):
+        try:
+            super().handle_delete(sender, instance, **kwargs)
+        except DatabaseLockError:
+            self.handle_lock('remove', instance)
 
     def get_models(self):
         """Yield model classes"""
