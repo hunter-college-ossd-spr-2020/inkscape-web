@@ -769,6 +769,23 @@ ul.forum-pagination li {
   width: 100%;
 }
 
+.forum-pagination input.np-btn {
+  width: 46px;
+  margin-left: 5px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  height: 100%;
+  padding: 5px;
+  color: #9f9f9f;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.forum-pagination input.np-btn::-webkit-inner-spin-button,
+.forum-pagination input.np-btn::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .forum-pagination a.np-btn {
   background: none repeat scroll 0 0 #fcfcfc;
   border: 1px solid #e7e7e7;

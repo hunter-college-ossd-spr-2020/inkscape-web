@@ -123,6 +123,11 @@
                           {% endif %}
                         </li>
                         <li>
+                          <form method="get" action="?{{ get.urlencode }}{{ hashtag }}">
+                            <input class="np-btn" name="page" type="number" min="1" max="{{ page_obj.paginator.num_pages }}" value="{{ page_obj.number }}"/>
+                          </form>
+                        </li>
+                        <li>
                           {% if page_obj.has_next %}
                             <a class="np-btn" href="?page={{ page_obj.next_page_number }}&{{ get.urlencode }}{{ hashtag }}"><span class="glyphicon glyphicon-chevron-right pagination-right"></span></a>
                           {% else %}
