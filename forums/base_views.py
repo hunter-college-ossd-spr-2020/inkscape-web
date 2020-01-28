@@ -133,9 +133,10 @@ class FieldUpdateView(SingleObjectMixin, View):
             return HttpResponseRedirect(request.GET['next'])
         return JsonResponse(data)
 
-    def log_details(self):
+    def log_details(self, objs, data):
         """A brief log returned via json if no next sepcified"""
-        return self._saved
+        data.update(self._saved)
+        return objs, data
 
     @property
     def field(self):

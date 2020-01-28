@@ -321,10 +321,12 @@ class TopicMove(ModeratorRequired, TopicMixin, UpdateView):
     log_color = 'info'
     log_name = 'Topic Moved'
 
-    def log_details(self, **data):
+    def log_details(self, objs, data):
         """Return the old and new forums"""
+        data['to_forum'] = objs['forum'].slug
         data['from_forum'] = self.get_object().forum.slug
-        return data
+        objs['forum'] = self.get_object().forum
+        return objs, data
 
 class TopicEdit(ModeratorRequired, TopicMixin, UpdateView):
     """Allow a topic to be edited by a moderator (or owner)"""

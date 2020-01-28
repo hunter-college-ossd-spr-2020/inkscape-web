@@ -88,9 +88,9 @@ class ModeratorLogged(object):
         super().__init__(*args, **kwargs)
         self.moderation_action = None
 
-    def log_details(self, **data):
+    def log_details(self, objs, data):
         """Return important information about the changes"""
-        return data
+        return objs, data
 
     def record_action(self, **data):
         """Record the action taken here as a moderation action"""
@@ -118,12 +118,22 @@ class ModeratorLogged(object):
         if topic is not None:
             data['topic'] = {'id': topic.pk}
 
+        objs, data = self.log_details({
+            'user': user,
+            'forum': forum,
+            'topic': topic,
+            'comment': comment,
+        }, data)
+
         if user != self.request.user:
             self.moderation_action = \
                 self.request.user.forum_moderation_actions.create(
                     action=type(self).__name__,
-                    user=user, forum=forum, topic=topic, comment=comment,
-                    detail=json.dumps(self.log_details(**data)))
+                    user=objs.get('user', None),
+                    forum=objs.get('forum', None),
+                    topic=objs.get('topic', None),
+                    comment=objs.get('comment', None),
+                    detail=json.dumps(data))
 
     def form_valid(self, form):
         """Record when the form is valid"""
