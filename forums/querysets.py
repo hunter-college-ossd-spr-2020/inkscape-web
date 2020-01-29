@@ -111,12 +111,15 @@ class UserFlagQuerySet(QuerySet):
 
     def instant_ban(self, user, words=None):
         from .models import UserFlag, ModerationLog
-        ModerationLog.objects.create(moderator=None, action='UserInstantBan', user=user)
+        ModerationLog.objects.create(
+            user=user,
+            moderator=None,
+            action='UserInstantBan',
+            detail=json.dumps({'phrase': words}))
         self.get_or_create(
             user=user,
             title='Instant Ban',
             flag=UserFlag.FLAG_BANNED,
-            detail=json.dumps({'phrase': words}),
         )
 
     def moderators(self):
