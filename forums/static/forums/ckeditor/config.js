@@ -18,5 +18,6 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'codesnippet', groups: [ 'codesnippet' ] },
 	];
 
+        config.codeSnippet_theme = 'github';
 	config.removeButtons = 'Undo,Redo,Anchor,Subscript,Superscript';
 };
