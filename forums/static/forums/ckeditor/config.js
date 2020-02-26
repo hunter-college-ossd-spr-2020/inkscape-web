@@ -20,4 +20,6 @@ CKEDITOR.editorConfig = function( config ) {
 
         config.codeSnippet_theme = 'github';
 	config.removeButtons = 'Undo,Redo,Anchor,Subscript,Superscript';
+
+        config.disableNativeSpellChecker = false;
 };
