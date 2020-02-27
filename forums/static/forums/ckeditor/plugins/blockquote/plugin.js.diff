@@ -1,0 +1,39 @@
+--- plugin.ori.js	2020-02-27 19:40:21.000000000 +0100
++++ plugin.js	2020-02-27 19:52:54.611827800 +0100
+@@ -119,7 +119,36 @@
+ 
+ 				// Now we have all the blocks to be included in a new blockquote node.
+ 				var bqBlock = editor.document.createElement( 'blockquote' );
++
++				var quoteBox = undefined;
++				if (paragraphs[0].$.innerText == "\n") {
++						// The quoteBox is a special variable that contains selected text
++						// From anywhere in the forum website.
++						var quoteBox = localStorage.getItem('quoteBox');
++						if (quoteBox) {
++							localStorage.setItem("quoteBox", "");
++							paragraphs[0].$.prepend(quoteBox);
++						}
++				}
+ 				bqBlock.insertBefore( paragraphs[ 0 ] );
++
++				var quoteAuthor = localStorage.getItem('quoteAuthor');
++				var quoteUrl = localStorage.getItem('quoteUrl');
++				if (quoteAuthor) {
++						bqBlock.setAttribute('data-author', quoteAuthor);
++						var cite = editor.document.createElement('cite');
++						if (quoteUrl) {
++								bqBlock.setAttribute('data-cite', quoteUrl);
++								var anchor = editor.document.createElement('a');
++								anchor.setAttribute('href', quoteUrl);
++								anchor.$.prepend(quoteAuthor);
++								cite.append(anchor);
++						} else {
++								cite.$.prepend(quoteAuthor);
++						}
++						bqBlock.append(cite);
++				}
++
+ 				while ( paragraphs.length > 0 ) {
+ 					block = paragraphs.shift();
+ 					bqBlock.append( block );
