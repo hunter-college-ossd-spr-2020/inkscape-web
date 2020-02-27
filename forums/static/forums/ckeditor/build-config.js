@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2018, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/license
  */
 
 /**
@@ -10,13 +10,13 @@
  * If you would like to build CKEditor online again
  * (for example to upgrade), visit one the following links:
  *
- * (1) http://ckeditor.com/builder
+ * (1) https://ckeditor.com/cke4/builder
  *     Visit online builder to build CKEditor from scratch.
  *
- * (2) http://ckeditor.com/builder/54bbf3eb5f7fd93cd7626257323348e9
+ * (2) https://ckeditor.com/cke4/builder/64548eb4ea7892a0c69c31aaaa8d8436
  *     Visit online builder to build CKEditor, starting with the same setup as before.
  *
- * (3) http://ckeditor.com/builder/download/54bbf3eb5f7fd93cd7626257323348e9
+ * (3) https://ckeditor.com/cke4/builder/download/64548eb4ea7892a0c69c31aaaa8d8436
  *     Straight download link to the latest version of CKEditor (Optimized) with the same setup as before.
  *
  * NOTE:
@@ -54,11 +54,10 @@ var CKBUILDER_CONFIG = {
 	plugins : {
 		'autolink' : 1,
 		'basicstyles' : 1,
-		'blockquote' : 1,
 		'clipboard' : 1,
 		'codeTag' : 1,
+		'codesnippet' : 1,
 		'colorbutton' : 1,
-		'emoji' : 1,
 		'enterkey' : 1,
 		'entities' : 1,
 		'floatingspace' : 1,
@@ -70,11 +69,7 @@ var CKBUILDER_CONFIG = {
 		'toolbar' : 1,
 		'undo' : 1,
 		'wysiwygarea' : 1,
-		'youtube' : 1,
-		'codesnippet' : 1,
-		'widget' : 1,
-		'widgetselection' :1,
-		'lineutils' : 1
+		'youtube' : 1
 	},
 	languages : {
 		'af' : 1,

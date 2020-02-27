@@ -1,25 +1,47 @@
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see https://ckeditor.com/legal/ckeditor-oss-license
+ */
+
 CKEDITOR.editorConfig = function( config ) {
-        config.plugins = 'basicstyles,dialogui,dialog,notification,button,toolbar,clipboard,enterkey,entities,floatingspace,wysiwygarea,indent,indentlist,fakeobjects,link,list,undo,youtube,textwatcher,autocomplete,textmatch,xml,ajax,mentions,panelbutton,panel,floatpanel,emoji,listblock,richcombo,format,codeTag,blockquote,colorbutton,autolink,maximize';
-        config.extraPlugins = 'codesnippet';
+	// Define changes to default configuration here.
+	// For complete reference see:
+	// https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html
+
+	// Additional plugins
+	// (most should be included in the optimized version of ckeditor.js where possible, see build-config.js)
+	//
+	// exceptions as they're customized for inkscape.org:
+	// - "blockquote" - direct citing (with backlinks) of highlighted text on forum pages
+	// - "emoji"      - adds a list of recently used emoji
+	config.extraPlugins = 'blockquote,emoji';
+
+	// The toolbar groups arrangement, optimized for a single toolbar row.
 	config.toolbarGroups = [
-		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-		{ name: 'forms', groups: [ 'forms' ] },
+		{ name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
+		{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+		{ name: 'forms' },
 		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-		{ name: 'links', groups: [ 'links' ] },
-		{ name: 'insert', groups: [ 'insert' ] },
-		{ name: 'styles', groups: [ 'styles' ] },
-		{ name: 'colors', groups: [ 'colors' ] },
-		{ name: 'tools', groups: [ 'tools' ] },
-		{ name: 'others', groups: [ 'others' ] },
-		{ name: 'about', groups: [ 'about' ] },
-		{ name: 'codesnippet', groups: [ 'codesnippet' ] },
+		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+		{ name: 'links' },
+		{ name: 'insert' },
+		{ name: 'styles' },
+		{ name: 'colors' },
+		{ name: 'tools' },
+		{ name: 'others' },
+		{ name: 'about' }
 	];
 
-        config.codeSnippet_theme = 'github';
-	config.removeButtons = 'Undo,Redo,Anchor,Subscript,Superscript';
+	// The default plugins included in the basic setup define some buttons that
+	// are not needed in a basic editor. They are removed here.
+	// config.removeButtons = 'Cut,Copy,Paste,Undo,Redo,Anchor,Underline,Strike,Subscript,Superscript';
+	config.removeButtons = 'Anchor';
 
-        config.disableNativeSpellChecker = false;
+	// Dialog windows are also simplified.
+	config.removeDialogTabs = 'link:advanced';
+
+	// More custom config
+	config.disableNativeSpellChecker = false;
+	config.codeSnippet_theme = 'github';
 };
