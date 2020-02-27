@@ -13,8 +13,9 @@ CKEDITOR.editorConfig = function( config ) {
 	//
 	// exceptions as they're customized for inkscape.org:
 	// - "blockquote" - direct citing (with backlinks) of highlighted text on forum pages
+	// - "codeTag"    - better version that properly escapes code
 	// - "emoji"      - adds a list of recently used emoji
-	config.extraPlugins = 'blockquote,emoji';
+	config.extraPlugins = 'blockquote,codeTag,emoji';
 
 	// The toolbar groups arrangement, optimized for a single toolbar row.
 	config.toolbarGroups = [
@@ -42,6 +43,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'link:advanced';
 
 	// More custom config
+	config.disallowedContent = 'a[on*]';
 	config.disableNativeSpellChecker = false;
 	config.codeSnippet_theme = 'github';
 };
