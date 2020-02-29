@@ -1,5 +1,6 @@
 ﻿/**
  * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ *                    (c) 2019, Inkscape-web, Martin Owens, AGPLv3
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
