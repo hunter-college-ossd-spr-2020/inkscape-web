@@ -1,5 +1,6 @@
 ﻿/**
  * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ *                    (c) 2019, Inkscape-web, Martin Owens, AGPLv3
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
@@ -200,7 +201,7 @@
 						imgUrl,
 						useAttr;
 
-					if ( CKEDITOR.env.ie && !CKEDITOR.env.edge ) {
+					if ( true || CKEDITOR.env.ie && !CKEDITOR.env.edge ) {
 						imgUrl = CKEDITOR.getUrl( this.plugin.path + 'assets/iconsall.png' );
 
 						itemTemplate = new CKEDITOR.template(

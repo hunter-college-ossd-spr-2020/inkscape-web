@@ -1,6 +1,13 @@
---- plugin.ori.js	2020-02-27 19:40:21.000000000 +0100
-+++ plugin.js	2020-02-27 19:52:54.611827800 +0100
-@@ -119,7 +119,36 @@
+--- plugin.ori.js	2020-02-29 23:27:08.195407500 +0100
++++ plugin.js	2020-02-29 23:19:59.842964500 +0100
+@@ -1,5 +1,6 @@
+ ﻿/**
+  * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
++ *                    (c) 2019, Inkscape-web, Martin Owens, AGPLv3
+  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+  */
+ 
+@@ -119,7 +120,36 @@
  
  				// Now we have all the blocks to be included in a new blockquote node.
  				var bqBlock = editor.document.createElement( 'blockquote' );

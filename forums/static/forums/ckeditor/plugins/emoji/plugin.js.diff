@@ -1,18 +1,22 @@
-From a0fad0198078584ea8f563e8e50c52de90956215 Mon Sep 17 00:00:00 2001
-From: Patrick Storz <eduard.braun2@gmx.de>
-Date: Thu, 27 Feb 2020 00:56:10 +0100
-Subject: [PATCH] ckeditor: restore emoji plugin customization (recently used
- emojis)
-
----
- .../forums/ckeditor/plugins/emoji/plugin.js   | 29 +++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
-
-diff --git a/forums/static/forums/ckeditor/plugins/emoji/plugin.js b/forums/static/forums/ckeditor/plugins/emoji/plugin.js
-index 39a07ecf..3a9c8bb8 100644
---- a/forums/static/forums/ckeditor/plugins/emoji/plugin.js
-+++ b/forums/static/forums/ckeditor/plugins/emoji/plugin.js
-@@ -312,7 +312,12 @@
+--- plugin.ori.js	2020-02-29 23:25:13.342546900 +0100
++++ plugin.js	2020-02-29 23:21:48.361336300 +0100
+@@ -1,5 +1,6 @@
+ ﻿/**
+  * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
++ *                    (c) 2019, Inkscape-web, Martin Owens, AGPLv3
+  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+  */
+ 
+@@ -200,7 +201,7 @@
+ 						imgUrl,
+ 						useAttr;
+ 
+-					if ( CKEDITOR.env.ie && !CKEDITOR.env.edge ) {
++					if ( true || CKEDITOR.env.ie && !CKEDITOR.env.edge ) {
+ 						imgUrl = CKEDITOR.getUrl( this.plugin.path + 'assets/iconsall.png' );
+ 
+ 						itemTemplate = new CKEDITOR.template(
+@@ -312,7 +313,12 @@
  						event: 'click',
  						listener: function( event ) {
  							if ( event.data.getTarget().data( 'cke-emoji-name' ) ) {
@@ -26,7 +30,7 @@ index 39a07ecf..3a9c8bb8 100644
  							}
  						}
  					} );
-@@ -354,7 +359,7 @@
+@@ -354,7 +360,7 @@
  					}
  				},
  				getEmojiSections: function() {
@@ -35,7 +39,7 @@ index 39a07ecf..3a9c8bb8 100644
  						// If group is empty skip it.
  						if ( !item.items.length ) {
  							return acc;
-@@ -362,6 +367,17 @@
+@@ -362,6 +368,17 @@
  							return acc + this.getEmojiSection( item );
  						}
  					}, '', this );
@@ -53,7 +57,7 @@ index 39a07ecf..3a9c8bb8 100644
  				},
  				getEmojiSection: function( item ) {
  					var groupName = htmlEncode( item.name ),
-@@ -647,6 +663,15 @@
+@@ -647,6 +664,15 @@
  
  			editor.addCommand( 'insertEmoji', {
  				exec: function( editor, data ) {
@@ -69,6 +73,3 @@ index 39a07ecf..3a9c8bb8 100644
  					editor.insertHtml( data.emojiText );
  				}
  			} );
--- 
-2.25.1.windows.1
-
