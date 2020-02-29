@@ -245,6 +245,13 @@ class CommentEdit(OwnerRequired, UpdateView):
         obj = form.save()
         return HttpResponseRedirect(obj.get_absolute_url())
 
+class CommentRaw(ModeratorRequired, DetailView):
+    """
+    Look at a deleted or otherwise inaccessable comment.
+    """
+    model = Comment
+    template_name = 'forums/comment_raw.html'
+
 class CommentModPublic(ModeratorRequired, FieldUpdateView):
     """
     Toggle the public flag of a comment, this can also hide.

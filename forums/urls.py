@@ -30,7 +30,7 @@ from .views import (
     TopicList, TopicDetail, TopicCreate, TopicMove, TopicEdit, TopicDelete,
     TopicMerge, TopicSplit, UserTopicList, UnreadTopicList,
     CommentList, CommentCreate, CommentEdit, CommentEmote, Subscriptions,
-    CommentModList, CommentModPublic, CommentModRemove,
+    CommentModList, CommentModPublic, CommentModRemove, CommentRaw,
     UserFlagList, UserModList, UserBanList, WordBanList,
     UserFlagToggle, UserModToggle, UserBanToggle, WordBanCreate, WordBanDelete,
 )
@@ -70,6 +70,7 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^~(?P<username>[^\/]+)/rss/$', ForumTopicFeed(), name='topic_feed'),
     url_tree(
         r'^c(?P<pk>\d+)/',
+        url(r'^$', CommentRaw.as_view(), name='comment_raw'),
         url(r'^emote/$', CommentEmote.as_view(), name='emote'),
         url(r'^edit/$', CommentEdit.as_view(), name='comment_edit'),
         url(r'^rem/$', CommentModRemove.as_view(), name='comment_remove'),

@@ -1,0 +1,15 @@
+{% extends "forums/modal.html" %}
+
+{% block "dialog-title" %}
+<small>#{{ object.id }}</small> "{{ object.content_object }}" ({{object.submit_date}})
+{% endblock %}
+{% block "dialog-body" %}
+ {{ object.comment|safe }}
+{% endblock %}
+{% block "dialog-buttons" %}
+<ul style="text-align: left;">
+    <li>User: {{ comment.user }}</li>
+    <li>Is Public: {{ comment.is_public }}</li>
+    <li>Is Removed: {{ comment.is_removed }}</li>
+</ul>
+{% endblock %}
