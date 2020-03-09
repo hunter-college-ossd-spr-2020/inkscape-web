@@ -14,8 +14,14 @@
           <a class="pull-left comment-count" title="{% trans "Link" %}" href="{{ request.path }}#c{{ comment.pk }}">#{{ forloop.counter }}</a>
 
             <span class="comment-header-group">
+            {% if comment.user %}
               <address class="comment-author-address" data-user="{{ comment.user.username }}" data-userid="{{ comment.user.id }}">
                   <a class="comment-author" href="{{ profile_url }}"><img src="{{ comment.user.photo_url }}" alt="{{ comment.user }}" class="img-circle" /> {{ comment.user }} {% for flag in comment.user.forum_flags.all %}{% if not flag.modflag or request.user.is_moderator %}<span class="emoji{% if flag.modflag %} modflag{% endif %}" title="{{ flag.title }}">{{ flag.flag }}</span>{% endif %}{% endfor %}</a></address> 
+            {% else %}
+              <address class="comment-author-address" data-user="{{comment.user_name }}">
+                <a class="comment-author"><img src="{% static "forums/images/deleted-user.svg" %}" alt="{% trans "Deleted User" %}" class="img-circle" /> {{ comment.user_name }} <span class="emoji" title="{% trans "Deleted User" %}">🚫</span></a>
+              </address>
+            {% endif %}
               <small class="pull-left text-muted comment-time"><span class="glyphicon glyphicon-time"></span> {{ comment.submit_date|timetag }}</small>
             </span>
       
