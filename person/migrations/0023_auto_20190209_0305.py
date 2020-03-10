@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='teamchatroom',
             name='language',
-            field=models.CharField(choices=[('ar', 'Arabic'), ('en', 'English'), ('de', 'German'), ('fr', 'French'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Simplified Chinese'), ('zh-hant', 'Traditional Chinese'), ('ko', 'Korean')], default='en', max_length=5),
+            field=models.CharField(choices=[('ar', 'Arabic'), ('en', 'English'), ('de', 'German'), ('fr', 'French'), ('hr', 'Croatian'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Simplified Chinese'), ('zh-hant', 'Traditional Chinese'), ('ko', 'Korean')], default='en', max_length=5),
         ),
         migrations.AlterField(
             model_name='teammembership',
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='language',
-            field=models.CharField(blank=True, choices=[('ar', 'Arabic'), ('en', 'English'), ('de', 'German'), ('fr', 'French'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Simplified Chinese'), ('zh-hant', 'Traditional Chinese'), ('ko', 'Korean')], max_length=8, null=True, verbose_name='Default Language'),
+            field=models.CharField(blank=True, choices=[('ar', 'Arabic'), ('en', 'English'), ('de', 'German'), ('fr', 'French'), ('hr', 'Croatian'), ('it', 'Italian'), ('es', 'Spanish'), ('pt', 'Portuguese'), ('pt-br', 'Brazilian Portuguese'), ('cs', 'Czech'), ('ru', 'Russian'), ('ja', 'Japanese'), ('zh', 'Simplified Chinese'), ('zh-hant', 'Traditional Chinese'), ('ko', 'Korean')], max_length=8, null=True, verbose_name='Default Language'),
         ),
         migrations.AlterField(
             model_name='user',
