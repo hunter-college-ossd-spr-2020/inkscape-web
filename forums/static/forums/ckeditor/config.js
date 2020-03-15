@@ -37,7 +37,7 @@ CKEDITOR.editorConfig = function( config ) {
 	// The default plugins included in the basic setup define some buttons that
 	// are not needed in a basic editor. They are removed here.
 	// config.removeButtons = 'Cut,Copy,Paste,Undo,Redo,Anchor,Underline,Strike,Subscript,Superscript';
-	config.removeButtons = 'Anchor';
+	config.removeButtons = 'Anchor,Save';
 
 	// Dialog windows are also simplified.
 	config.removeDialogTabs = 'link:advanced';
@@ -46,4 +46,9 @@ CKEDITOR.editorConfig = function( config ) {
 	config.disallowedContent = 'a[on*]';
 	config.disableNativeSpellChecker = false;
 	config.codeSnippet_theme = 'github';
+
+    // Customized shortcuts
+    config.keystrokes = [
+        [ CKEDITOR.CTRL + 13, 'save' ], // Ctrl+Enter for submitting post
+    ];
 };

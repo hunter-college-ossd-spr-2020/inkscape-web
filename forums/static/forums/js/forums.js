@@ -714,9 +714,17 @@ function isValidDate(d) {
 // warn user about unsubmitted comment before leaving page
 unload_triggered_by_submit = false;
 $(function observe_submit_events() {
+  // handles HTML submit (user clicking button)
   $('form').submit(function() {
     unload_triggered_by_submit = true;
   });
+  // handles javascript submit (javascript calling form.submit())
+  (function (submit) {
+      HTMLFormElement.prototype.submit = function (data) {
+          unload_triggered_by_submit = true;
+          submit.call(this, data);
+      };
+  })(HTMLFormElement.prototype.submit);
 });
 
 $(function warn_on_unsubmitted_reply() {
