@@ -49,11 +49,25 @@ class ContactOk(TemplateView):
     title = _('Contact Inkscape')
     template_name = 'feedback.html'
 
-class RedirectEnglish(RedirectView):
+class RedirectLanguage(RedirectView):
     """Redirect any page to the given url usually prefixed /en/"""
-    def get_redirect_url(self, url): # pylint: disable=arguments-differ
+    lang = None
+
+    def get_redirect_url(self, url, lang=None): # pylint: disable=arguments-differ
         """Redirect to the correct page in English"""
         qset = '?' + self.request.GET.urlencode() if self.request.GET else ''
+        if self.lang == 'en':
+            # Redirect to english in this instance
+            lang = None
+
+        if self.lang is None:
+            lang = lang.replace('_', '-').lower()
+            if lang not in dict(settings.LANGUAGES):
+                lang = None
+
+        # Basic redirect, to whatever language is required.
+        if lang:
+            return f'/{lang}/' + url + qset
         return '/' + url + qset
 
 class ContactUs(FormView):

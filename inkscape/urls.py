@@ -24,9 +24,8 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.contrib import admin
-from django.views.generic import TemplateView
 
-from .views import ContactUs, ContactOk, SearchView, SearchJson, RedirectEnglish, Authors
+from .views import ContactUs, ContactOk, SearchView, SearchJson, RedirectLanguage, Authors
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^social/', include('social_django.urls', namespace='social')),
@@ -60,7 +59,8 @@ urlpatterns += i18n_patterns(
     url(r'^~(?P<username>[^\/]+)/', include('person.user_urls')),
     url(r'^\*(?P<team>[^\/]+)/', include('person.team_urls')),
     url(r'^user/', include('person.urls')),
-    url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectEnglish.as_view()),
+    url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectLanguage.as_view(lang='en')),
+    url(r'^(?P<lang>\w{2}[-_]\w{2})/(?P<url>.*)$', RedirectLanguage.as_view()),
     url(r'^', include('resources.urls')),
     # This URL is Very GREEDY, it must go last!
     url(r'^', include('cms.urls')),
