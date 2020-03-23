@@ -1,1 +1,1 @@
-{% load i18n %}{% trans "Your registration on www.inkscape.org" %}
+{% load i18n %}{% trans "Your registration on inkscape.org" %}

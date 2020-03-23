@@ -1,6 +1,6 @@
 {% load i18n %}{% autoescape off %}{% filter wordwrap:72 %}{% trans "Hi," %}
 
-{% trans "This is an automatic email to help you complete your registration with inkscape.org."%}
+{% trans "Your email address has been updated on inkscape.org and you need to re-activate your account."%}
 
 {% trans "Please open the following link in your web browser. If the link is split over several lines, you may need to copy it in the address bar." %}
 

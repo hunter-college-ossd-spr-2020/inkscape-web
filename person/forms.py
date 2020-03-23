@@ -148,9 +148,4 @@ class UserForm(ModelForm):
         password = self.cleaned_data.get('password', None)
         if password:
             self.instance.set_password(password)
-        if self.cleaned_data.get('email') != self.instance.email:
-            # We update the last_login on email change to prevent change
-            # password attacks which would allow an attacker re-access to
-            # an account. Changing the date here will invalidate any hash.
-            self.instance.last_login = now()
         ModelForm.save(self, **kwargs)

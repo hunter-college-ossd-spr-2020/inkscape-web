@@ -28,11 +28,14 @@ from django.template.response import TemplateResponse
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import ugettext_lazy as _, get_language
 from django.utils.timezone import now
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth.models import Permission
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.http import HttpResponseRedirect, Http404
 from django.urls import translate_url
+
+from django_registration.backends.activation.views import RegistrationView
 
 from .models import User, Team, TeamMembership
 from .forms import UserForm, AgreeToClaForm
@@ -50,9 +53,54 @@ class AgreeToCla(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
     title = _('Contributors License Agreement')
     form_class = AgreeToClaForm
 
+class EmailChangedView(RegistrationView):
+    email_body_template = 'django_registration/reactivation_email_body.txt'
+    email_subject_template = 'django_registration/reactivation_email_subject.txt'
+
+
 class EditProfile(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
     title = _('Edit User Profile')
     form_class = UserForm
+
+    def form_valid(self, form):
+        new_email = form.cleaned_data.get('email')
+        old_email = User.objects.get(pk=self.object.pk).email
+        # Save data before checking email
+        ret = super().form_valid(form)
+        print(f"New {new_email} and old {old_email}")
+        if new_email != old_email:
+            self.email_changed(form.instance, old_email, new_email)
+        return ret
+
+    def email_changed(self, instance, old_email, new_email):
+        """
+        The email address was changed, so reset the active flag and email them.
+        """
+        # We update the last_login on email change to prevent change
+        # password attacks which would allow an attacker re-access to
+        # an account. Changing the date here will invalidate any hash.
+        instance.last_login = now()
+        # Deactivate account and send new confirmation email
+        instance.is_active = False
+        instance.save()
+
+        # send email activation
+        fake_registration = EmailChangedView(request=self.request)
+        fake_registration.send_activation_email(instance)
+
+        messages.warning(self.request,\
+            _("Your email address has changed, we have sent a new confirmation email. "
+              "Please confirm your new email address to log back in."))
+
+        # Send notification email to old email address just in case it's not authorised.
+        send_mail(
+            _("Email Address Changed"),
+            _("Your email address on inkscape.org has changed from %s to %s, "
+              "if this is incorrect, please email the webmaster for assistance."
+             ) % (old_email, new_email),
+            "Inkscape Webmaster <webmaster@inkscape.org>",
+            [old_email])
+
 
 class UserDetail(DetailView):
     template_name  = 'person/user_detail.html'
