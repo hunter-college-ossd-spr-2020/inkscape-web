@@ -33,7 +33,7 @@ except ImportError:
 from .views import ContactUs, ContactOk, SearchView, SearchJson, Authors, RedirectLanguage
 
 urlpatterns = [ # pylint: disable=invalid-name
-    url(r'^(?P<lang>(\w{2}_\w{2})(@\w+)?|zh)/(?P<url>.*)$', RedirectLanguage.as_view()),
+    url(r'^(?P<lang>(\w{2}_\w{2})(@\w+)?|en|zh)/(?P<url>.*)$', RedirectLanguage.as_view()),
     url(r'^social/', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
