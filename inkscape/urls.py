@@ -25,16 +25,21 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.contrib import admin
 
-from .views import ContactUs, ContactOk, SearchView, SearchJson, RedirectLanguage, Authors
+try:
+    import debug_toolbar
+except ImportError:
+    debug_toolbar = None
+
+from .views import ContactUs, ContactOk, SearchView, SearchJson, Authors, RedirectLanguage
 
 urlpatterns = [ # pylint: disable=invalid-name
+    url(r'^(?P<lang>(\w{2}_\w{2})(@\w+)?|zh)/(?P<url>.*)$', RedirectLanguage.as_view()),
     url(r'^social/', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)\
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)\
   + static('/dl/', document_root=settings.MEDIA_ROOT)
 
-if settings.ENABLE_DEBUG_TOOLBAR:
-    import debug_toolbar
+if settings.ENABLE_DEBUG_TOOLBAR and debug_toolbar:
     urlpatterns.append(
         url(r'^__debug__/', include(debug_toolbar.urls)),
     )
@@ -47,8 +52,6 @@ urlpatterns += i18n_patterns(
     url(r'^credits/$', Authors.as_view(), name='authors'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cog/', include('cog.urls', namespace='cog')),
-    url(r'^doc/', include('docs.urls')),
-    url(r'^(?P<lang>[\w\-\_]{2,10})/doc/', include('docs.urls')),
     url(r'^forums/', include('forums.urls', namespace='forums')),
     url(r'^releases?/', include('releases.urls', namespace='releases')),
     url(r'^alerts/', include('alerts.urls')),
@@ -56,11 +59,10 @@ urlpatterns += i18n_patterns(
     url(r'^moderation/', include('moderation.urls', namespace='moderation')),
     url(r'^news/', include('cmsplugin_news.urls', namespace='news')),
     url(r'^diff/', include('cmsplugin_diff.urls', namespace='cmsplugin_diff')),
+    url(r'^doc/', include('docs.urls')),
     url(r'^~(?P<username>[^\/]+)/', include('person.user_urls')),
     url(r'^\*(?P<team>[^\/]+)/', include('person.team_urls')),
     url(r'^user/', include('person.urls')),
-    url(r'^(en|da|nl|pl|sk)/(?P<url>.*)$', RedirectLanguage.as_view(lang='en')),
-    url(r'^(?P<lang>\w{2}[-_]\w{2})/(?P<url>.*)$', RedirectLanguage.as_view()),
     url(r'^', include('resources.urls')),
     # This URL is Very GREEDY, it must go last!
     url(r'^', include('cms.urls')),

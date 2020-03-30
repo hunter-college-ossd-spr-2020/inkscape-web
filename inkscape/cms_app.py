@@ -1,7 +1,7 @@
 #
 # Copyright 2015, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -21,10 +21,13 @@
 from django.conf.urls import url
 from django.utils.translation import ugettext_lazy as _
 
+from haystack.views import search_view_factory
 from cms.app_base import CMSApp
 
+from cms.utils import i18n
+
+from .utils import MonkeyCache
 from .views import SearchView
-from haystack.views import search_view_factory
 
 class SearchApphook(CMSApp):
     name = _("search apphook")
@@ -32,3 +35,4 @@ class SearchApphook(CMSApp):
         url('^$', search_view_factory(SearchView), name='search'),
     ]]
 
+i18n.get_languages = MonkeyCache(i18n.get_languages)

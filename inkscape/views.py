@@ -32,6 +32,7 @@ from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.admin.models import LogEntry
 from django.shortcuts import render
+from django.http import Http404
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -42,6 +43,7 @@ from haystack.views import SearchView as BaseView
 
 from cms.utils import get_language_from_request
 
+from .url_utils import language_alternator
 from .authors import CODERS, TRANSLATORS, DOCUMENTORS
 from .forms import FeedbackForm
 
@@ -51,24 +53,24 @@ class ContactOk(TemplateView):
 
 class RedirectLanguage(RedirectView):
     """Redirect any page to the given url usually prefixed /en/"""
-    lang = None
+    # Django system languages (cms, pot files etc)
+    LANGS = list(dict(settings.LANGUAGES))
+
+    @property
+    def get_qset(self):
+        """Append the query set to the url if it exists"""
+        return '?' + self.request.GET.urlencode() if self.request.GET else ''
 
     def get_redirect_url(self, url, lang=None): # pylint: disable=arguments-differ
         """Redirect to the correct page in English"""
-        qset = '?' + self.request.GET.urlencode() if self.request.GET else ''
-        if self.lang == 'en':
-            # Redirect to english in this instance
-            lang = None
+        for alt in language_alternator(lang):
+            if alt in self.LANGS:
+                if alt == 'en':
+                    return f'/{url}{self.get_qset}'
+                if alt != lang:
+                    return f'/{alt}/{url}{self.get_qset}'
 
-        if self.lang is None:
-            lang = lang.replace('_', '-').lower()
-            if lang not in dict(settings.LANGUAGES):
-                lang = None
-
-        # Basic redirect, to whatever language is required.
-        if lang:
-            return f'/{lang}/' + url + qset
-        return '/' + url + qset
+        raise Http404("Unknown language and unknown redirect (no fallback)")
 
 class ContactUs(FormView):
     title = _('Contact Inkscape Website Administrators')

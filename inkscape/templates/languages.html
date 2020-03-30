@@ -1,15 +1,15 @@
 {% load menu_tags %}
 {% load i18n %}
 <li id="tab_languages" class="dropdown">
-  {% for language in languages %}
-    {% if current_language == language.0 %}
+  {% for language in LANGUAGES %}
+    {% if LANGUAGE_CODE == language.0 %}
     <p>{{ language.1 }}</p>
     {% endif %}
   {% endfor %}
   <div>
-    {% for language in languages %}
+    {% for language in PUBLIC_LANGUAGES %}
       {% language language.0 %}
-      <p><a class="{% ifequal current_language language.0 %}selected{% endifequal %}" href="{% page_language_url language.0 %}">{{ language.1 }}</a></p>
+      <p><a class="{% if LANGUAGE_CODE == language.0 %}selected{% endif %}" href="{% page_language_url language.0 %}">{{ language.1 }}</a></p>
       {% endlanguage %}
     {% endfor %}
   </div>

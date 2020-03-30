@@ -48,6 +48,17 @@ def context_items(context):
         for (key, value) in d.items():
             yield (key, value)
 
+class MonkeyCache(object):
+    """Cache the response from the function perminantly (once per thread)"""
+    def __init__(self, func):
+        self.func = func
+        self.cache = None
+
+    def __call__(self, *args, **kwargs):
+        if self.cache is None:
+            self.cache = self.func(*args, **kwargs)
+        return self.cache
+
 class QuerySetWrapper(object):
     """
     When wrappd around a django QuerySet object using the clone method

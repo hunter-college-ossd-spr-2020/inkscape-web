@@ -2,7 +2,7 @@
 #
 # Copyright 2013, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -25,12 +25,14 @@ import re
 import os
 import codecs
 
-from django.utils.translation import get_language_from_path, get_language_from_request
+from django.utils.translation import get_language_from_path, to_locale
+from django.utils import translation
 
 from django.http import Http404
 from django.shortcuts import render
-
 from django.conf import settings
+
+from inkscape.url_utils import language_alternator
 
 DOC_ROOT = os.path.join(settings.MEDIA_ROOT, 'doc')
 
@@ -63,22 +65,23 @@ def get_path(uri):
     
     raise Http404
 
+def get_languages_for_path(path):
+    """Get a list of available languages for this path"""
+    yield ('en', 'English')
+    for language, name in settings.LANGUAGES:
+        if get_localized_path(path, language)[1]:
+            yield (language, name)
+
 def get_localized_path(path, language):
     # normalize some language names that differ between inkscape-web and docs
-    if language == 'pt-br':
-        language = 'pt_BR'
-    if language == 'zh':
-        language = 'zh_CN'
-    if language == 'zh-hant':
-        language = 'zh_TW'
+    for lang_code in language_alternator(language):
+        localized_path = path[:-4] + to_locale(lang_code) + '.html'
+        if os.path.isfile(localized_path):
+            return localized_path, lang_code
 
-    localized_path = path[:-4] + language + '.html'
-    if os.path.isfile(localized_path):
-        return localized_path
+    return path, None
 
-    return path
-
-def page(request, url, lang=None):
+def page(request, url):
     """
     Try and find the document page.
     """
@@ -86,12 +89,13 @@ def page(request, url, lang=None):
     if os.path.isdir(path) or path[-5:] != '.html':
         raise Http404
 
-    if not lang:
-        lang = get_language_from_path(request.path)
-        if lang in (None, ''):
-            lang = 'en'
+    all_languages = list(get_languages_for_path(path))
 
-    path = get_localized_path(path, lang)
+    lang = get_language_from_path(request.path)
+    if not lang:
+        path, active_lang = (path, 'en')
+    else:
+        path, active_lang = get_localized_path(path, lang)
 
     with codecs.open(path, "r", "utf-8") as fhl:
         content = fhl.read()
@@ -129,5 +133,7 @@ def page(request, url, lang=None):
         'title': title,
         'content': content,
         'stylesheet_hrefs': stylesheet_hrefs,
+        'LANGUAGE_CODE': active_lang,
+        'PUBLIC_LANGUAGES': all_languages,
     }
     return render(request, 'docs/page.html', context)

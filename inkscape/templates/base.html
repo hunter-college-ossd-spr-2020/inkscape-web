@@ -14,9 +14,8 @@
       <link rel="stylesheet" type="text/css" href="{% static "css/ink.css" %}"/>
     {% endblock %}
 
-    {% for language in LANGUAGES %}
-      <link rel="alternate" hreflang="{{ language.0 }}" href="{% page_language_url language.0 %}">
-    {% endfor %}
+    {% for language in PUBLIC_LANGUAGES %}
+      <link rel="alternate" hreflang="{{ language.0 }}" href="{% page_language_url language.0 %}">{% endfor %}
 
     <link rel="alternate"   type="application/rss+xml" title="{% trans "News Feed" %}" href="{% url "news:rss" %}"/>
     {% if rss_url %}
@@ -59,7 +58,7 @@
       </div>
       <div id="header-right">
         <ul id="tabs">
-          {% render_tabs lang=lang %}
+          {% render_tabs lang=LANGUAGE_CODE %}
 
           {% language_chooser "languages.html" %}
 
@@ -103,8 +102,7 @@
     {% block menu %}
       <div class="nav">
         <button id="menu-toggle"><div></div><div></div><div></div></button>
-        {% get_current_language as lang %}
-        {% render_menu lang=lang %}
+        {% render_menu lang=LANGUAGE_CODE %}
       </div>
     {% endblock %}
     {% if messages %}

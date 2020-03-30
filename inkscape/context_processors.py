@@ -1,7 +1,7 @@
 #
 # Copyright 2012, Martin Owens <doctormo@gmail.com>
 #
-# This file is part of the software inkscape-web, consisting of custom 
+# This file is part of the software inkscape-web, consisting of custom
 # code for the Inkscape project's django-based website.
 #
 # inkscape-web is free software: you can redistribute it and/or modify
@@ -26,6 +26,14 @@ from datetime import date
 import django
 from django.conf import settings
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
+
+def public_languages(request):
+    """Return a list of public languages (for the menu)"""
+    lookup = dict(settings.LANGUAGES)
+    return {'PUBLIC_LANGUAGES': [
+        (lang, _(lookup[lang])) for lang in settings.PUBLIC_LANGUAGES
+    ]}
 
 def tracker_data(request):
     """Add tracker data for Piwik to template"""

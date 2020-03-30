@@ -27,23 +27,13 @@ USE_TZ = True
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en'
 
-LANGUAGES = (
-    ('ar', 'Arabic'),
-    ('en', 'English'),
-    ('de', 'German'),
-    ('fr', 'French'),
-    ('hr', 'Croatian'),
-    ('it', 'Italian'),
-    ('es', 'Spanish'),
-    ('pt', 'Portuguese'),
-    ('pt-br', 'Brazilian Portuguese'),
-    ('cs', 'Czech'),
-    ('ru', 'Russian'),
-    ('ja', 'Japanese'),
-    ('zh', 'Simplified Chinese'),
-    ('zh-hant', 'Traditional Chinese'),
-    ('ko', 'Korean'),
-)
+PUBLIC_LANGUAGES = [
+    'en', 'de', 'fr', 'hr', 'it', 'es', 'pt', 'pt-br',
+    'cs', 'ru', 'ar', 'ja', 'zh-hans', 'zh-hant', 'ko'
+]
+LANGUAGE_ALTERNATIVES = {
+    'zh': 'zh-hans',
+}
 
 SITE_ID = 1
 USE_I18N = True
@@ -112,6 +102,7 @@ TEMPLATES = [{
         'context_processors': (
             'inkscape.context_processors.version',
             'inkscape.context_processors.tracker_data',
+            'inkscape.context_processors.public_languages',
             'social_django.context_processors.backends',
             'social_django.context_processors.login_redirect',
             'django.contrib.auth.context_processors.auth',
