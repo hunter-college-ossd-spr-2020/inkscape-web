@@ -26,6 +26,7 @@ from django.core.cache import caches
 from django.views.generic.list import MultipleObjectMixin
 
 from .pages import InkscapePaginator
+from .utils import MonkeyCache
 
 class InkscapeConfig(AppConfig):
     """The basic configuration for inkscape"""
@@ -63,3 +64,9 @@ class InkscapeConfig(AppConfig):
         # We don't like this toolbar, remove.
         from cms import cms_toolbars
         cms_toolbars.BasicToolbar.add_language_menu = lambda self: None
+
+        # This language lookup is HIDEOUSLY slow
+        from cms.utils import i18n
+        i18n.get_languages = MonkeyCache(i18n.get_languages)
+        i18n.get_redirect_on_fallback = lambda language, site_id=None: False 
+        i18n.get_fallback_languages = MonkeyCache(i18n.get_fallback_languages, [0])

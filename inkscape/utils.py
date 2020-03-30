@@ -50,14 +50,25 @@ def context_items(context):
 
 class MonkeyCache(object):
     """Cache the response from the function perminantly (once per thread)"""
-    def __init__(self, func):
+    def __init__(self, func, keys=()):
         self.func = func
-        self.cache = None
+        self.keys = keys
+        self.cache = {}
+
+    @staticmethod
+    def get_key(key, args, kwargs):
+        """Convert args in a crude caching key"""
+        if isinstance(key, int):
+            if key < len(args):
+                return str(args[key])
+            return ''
+        return str(kwargs[str(key)])
 
     def __call__(self, *args, **kwargs):
-        if self.cache is None:
-            self.cache = self.func(*args, **kwargs)
-        return self.cache
+        key = "-".join([self.get_key(key, args, kwargs) for key in self.keys])
+        if key not in self.cache:
+            self.cache[key] = self.func(*args, **kwargs)
+        return self.cache[key]
 
 class QuerySetWrapper(object):
     """

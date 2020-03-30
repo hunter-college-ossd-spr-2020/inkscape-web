@@ -34,6 +34,11 @@ PUBLIC_LANGUAGES = [
 LANGUAGE_ALTERNATIVES = {
     'zh': 'zh-hans',
 }
+CMS_LANGUAGES = {
+    'default': {
+        'redirect_on_fallback': False,
+    }
+}
 
 SITE_ID = 1
 USE_I18N = True

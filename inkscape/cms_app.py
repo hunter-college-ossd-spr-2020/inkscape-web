@@ -24,9 +24,6 @@ from django.utils.translation import ugettext_lazy as _
 from haystack.views import search_view_factory
 from cms.app_base import CMSApp
 
-from cms.utils import i18n
-
-from .utils import MonkeyCache
 from .views import SearchView
 
 class SearchApphook(CMSApp):
@@ -34,5 +31,3 @@ class SearchApphook(CMSApp):
     urls = [[
         url('^$', search_view_factory(SearchView), name='search'),
     ]]
-
-i18n.get_languages = MonkeyCache(i18n.get_languages)
