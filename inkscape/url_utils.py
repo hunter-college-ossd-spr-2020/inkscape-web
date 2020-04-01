@@ -27,7 +27,6 @@ import logging
 
 from string import ascii_uppercase, ascii_lowercase, digits
 
-from django.conf import settings
 from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.utils.text import slugify
@@ -43,24 +42,6 @@ def url_tree(regex, *urls):
     class UrlTwig(object): # pylint: disable=too-few-public-methods, missing-docstring
         urlpatterns = urls
     return url(regex, include(UrlTwig))
-
-def language_alternator(lang_code, translations=None):
-    """
-    Generate a list of language alternatives for the given lang_code, for example es_MX
-    will yield es-mx, es, en.
-
-    translations - A dictionary containing alternatives, in the given example above if
-                   the alternatives is set as {'es-mx': 'es-al', 'es': 'fr'} it will
-                   yield es-al, fr, en instead.
-                   Default: settings.LANGUAGE_ALTERNATIVES
-    """
-    if translations is None:
-        translations = getattr(settings, 'LANGUAGE_ALTERNATIVES', {})
-    lang_name = lang_code.replace('_', '-').lower()
-    lang_prefix = lang_name.split('-', 1)[0]
-    for lang in (translations.get(lang_name, lang_name),
-                 translations.get(lang_prefix, lang_prefix), 'en'):
-        yield lang
 
 class Url(object):
     """Load in a django URL and parse it for information"""

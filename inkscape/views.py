@@ -23,10 +23,12 @@ __all__ = (
     'ContactOk', 'ContactUs',
     'Robots', 'SearchView', 'Authors',
 )
+import re
 from collections import defaultdict
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.views import debug, defaults
 from django.views.generic import TemplateView, FormView
 from django.views.generic.base import RedirectView
 from django.core.urlresolvers import reverse_lazy
@@ -43,9 +45,11 @@ from haystack.views import SearchView as BaseView
 
 from cms.utils import get_language_from_request
 
-from .url_utils import language_alternator
+from .utils import language_alternator
 from .authors import CODERS, TRANSLATORS, DOCUMENTORS
 from .forms import FeedbackForm
+
+LANG_MATCH = re.compile(r'^(?P<lang>\w{2}([_-]\w{2})?(@\w+)?)/(?P<url>.*)$')
 
 class ContactOk(TemplateView):
     title = _('Contact Inkscape')
@@ -61,8 +65,9 @@ class RedirectLanguage(RedirectView):
         """Append the query set to the url if it exists"""
         return '?' + self.request.GET.urlencode() if self.request.GET else ''
 
-    def get_redirect_url(self, url, lang=None): # pylint: disable=arguments-differ
+    def get_redirect_url(self, lang, url): # pylint: disable=arguments-differ
         """Redirect to the correct page in English"""
+        url = url.rstrip('/')
         for alt in language_alternator(lang):
             if alt in self.LANGS:
                 if alt == 'en':
@@ -170,3 +175,19 @@ class Authors(TemplateView):
         return data
 
 
+def catch_bad_language(request, exception):
+    """
+    If someone asks for /xx/about we send them to the English /about page
+    """
+    try:
+        for match in LANG_MATCH.finditer(request.path.lstrip('/')):
+            return RedirectLanguage.as_view()(request, **match.groupdict())
+    except Http404:
+        pass
+    if settings.DEBUG:
+        return _original_technical_404(request, exception)
+    return defaults.page_not_found(request, exception)
+
+# Override debug 404 so we can test redirects
+_original_technical_404 = debug.technical_404_response
+debug.technical_404_response = catch_bad_language

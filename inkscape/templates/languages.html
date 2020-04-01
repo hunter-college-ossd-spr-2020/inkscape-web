@@ -1,11 +1,8 @@
 {% load menu_tags %}
 {% load i18n %}
 <li id="tab_languages" class="dropdown">
-  {% for language in LANGUAGES %}
-    {% if LANGUAGE_CODE == language.0 %}
-    <p>{{ language.1 }}</p>
-    {% endif %}
-  {% endfor %}
+  {% get_language_info for LANGUAGE_CODE as lang %}
+  <p title="{{ lang.name }}">{{ lang.name_local }}</p>
   <div>
     {% for language in PUBLIC_LANGUAGES %}
       {% language language.0 %}

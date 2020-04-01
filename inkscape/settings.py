@@ -33,6 +33,9 @@ PUBLIC_LANGUAGES = [
 ]
 LANGUAGE_ALTERNATIVES = {
     'zh': 'zh-hans',
+    'zh-cn':'zh-hans',
+    'zh-tw':'zh-hant',
+    'ca': 'es',
 }
 CMS_LANGUAGES = {
     'default': {
@@ -89,6 +92,9 @@ DESIGN_ROOT = os.path.join(PROJECT_PATH, 'data', 'static', 'design')
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'data', 'media', '')
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'data', 'static')
 FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'data', 'fixtures'),)
+# Git repository containing the document files
+DOC_ROOT = os.path.join(MEDIA_ROOT, 'doc')
+DOC_CACHE = os.path.join(DOC_ROOT, '.inkweb-cache')
 
 STATICFILES_DIRS = []
 LOCALE_PATHS = (
@@ -100,7 +106,6 @@ TEMPLATES = [{
     'DIRS': [DESIGN_ROOT],
     'OPTIONS': {
         'loaders': [
-            'optional_design.template_loaders.OptionalDesign',
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
         ],
@@ -124,7 +129,6 @@ TEMPLATES = [{
 
 MIDDLEWARE_CLASSES = (
     'cog.middleware.UserOnErrorMiddleware',
-    'optional_design.middleware.OptionalDesignMiddleware',
     'inkscape.middleware.AutoBreadcrumbMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -169,7 +173,6 @@ ROOT_URLCONF = 'inkscape.urls'
 INSTALLED_APPS = (
     'inkscape', # Goes first
     'person', # Goes next
-    'optional_design',
     'stopforumspam',
     'elections',
     'easy_thumbnails',

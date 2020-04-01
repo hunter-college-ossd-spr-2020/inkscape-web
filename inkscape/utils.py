@@ -23,6 +23,7 @@ Some generic utilities for improving caching and other core features
 import urllib
 from io import StringIO
 
+from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.core.files.storage import FileSystemStorage, File
 
@@ -47,6 +48,25 @@ def context_items(context):
     for d in context:
         for (key, value) in d.items():
             yield (key, value)
+
+def language_alternator(lang_code, translations=None):
+    """
+    Generate a list of language alternatives for the given lang_code, for example es_MX
+    will yield es-mx, es, en.
+
+    translations - A dictionary containing alternatives, in the given example above if
+                   the alternatives is set as {'es-mx': 'es-al', 'es': 'fr'} it will
+                   yield es-al, fr, en instead.
+                   Default: settings.LANGUAGE_ALTERNATIVES
+    """
+    if translations is None:
+        translations = getattr(settings, 'LANGUAGE_ALTERNATIVES', {})
+    lang_name = lang_code.replace('_', '-').lower()
+    lang_prefix = lang_name.split('-', 1)[0].split('@')[0]
+    for lang in dict.fromkeys([
+            lang_name, translations.get(lang_name, lang_name),
+            lang_prefix, translations.get(lang_prefix, lang_prefix), 'en']):
+        yield lang
 
 class MonkeyCache(object):
     """Cache the response from the function perminantly (once per thread)"""

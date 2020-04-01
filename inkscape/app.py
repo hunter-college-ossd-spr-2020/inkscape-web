@@ -22,11 +22,12 @@ Set up the inkscape app
 """
 from django.apps import AppConfig
 
+from django.conf import settings
 from django.core.cache import caches
 from django.views.generic.list import MultipleObjectMixin
 
 from .pages import InkscapePaginator
-from .utils import MonkeyCache
+from .utils import MonkeyCache, language_alternator
 
 class InkscapeConfig(AppConfig):
     """The basic configuration for inkscape"""
@@ -35,7 +36,19 @@ class InkscapeConfig(AppConfig):
 
     def ready(self):
         self.patch_cms()
+        self.add_language_fallbacks()
         MultipleObjectMixin.paginator_class = InkscapePaginator
+
+    @staticmethod
+    def add_language_fallbacks():
+        """We have a better idea of languages than django-cms does."""
+        langs = settings.CMS_LANGUAGES.setdefault(1, [])
+        for lang, name in settings.LANGUAGES:
+            langs.append({
+                'name': name,
+                'code': lang,
+                'fallbacks': [alt for alt in language_alternator(lang)],
+            })
 
     def patch_cms(self):
         """Patch away some aweful django-cms code"""
