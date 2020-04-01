@@ -32,7 +32,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 
-from inkscape.url_utils import language_alternator
+from inkscape.utils import language_alternator
 
 DOC_ROOT = os.path.join(settings.MEDIA_ROOT, 'doc')
 
