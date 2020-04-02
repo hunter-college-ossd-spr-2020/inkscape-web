@@ -56,7 +56,7 @@ class ReleaseAdmin(ModelAdmin):
     raw_id_fields = ('manager', 'reviewer', 'bug_manager', 'translation_manager')
     form = ReleaseForm
     inlines = (PlatformInline, TranslationsInline)
-    list_display = ('version', 'is_prerelease', 'project', 'parent',
+    list_display = ('version', 'is_draft', 'is_prerelease', 'project', 'parent',
                     'release_date', 'manager', 'is_translated')
     list_filter = ('project', 'version', 'status', 'is_prerelease')
 

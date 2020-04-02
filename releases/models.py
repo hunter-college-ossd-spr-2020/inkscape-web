@@ -105,6 +105,8 @@ class Release(Model):
     is_prerelease = BooleanField(_('is Pre-Release'), default=False, \
         help_text=_("If set, will indicate that this is a testing "
                     "pre-release and should not be given to users."))
+    is_draft = BooleanField(default=False,\
+        help_text=_("Set to true if this release should not be visible at all in the front end."))
     html_desc = CharField(_('HTML Description'), max_length=255, **null)
     keywords = CharField(_('HTML Keywords'), max_length=255, **null)
 
@@ -160,7 +162,7 @@ class Release(Model):
 
     @property
     def revisions(self):
-        return Release.objects.filter(Q(parent_id=self.pk) | Q(id=self.pk))
+        return Release.objects.filter(Q(parent_id=self.pk) | Q(id=self.pk)).filter(is_draft=False)
 
     @property
     def latest(self):

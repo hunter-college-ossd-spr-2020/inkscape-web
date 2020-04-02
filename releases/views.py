@@ -60,7 +60,7 @@ class DownloadRedirect(RedirectView):
     def get_url(self, project, family, version, bits=None):
         # A selected release MUST have a release date AND must either
         # have no parent at all, or the parent MUST also have a release date
-        qset = Release.objects.filter(release_date__isnull=False)
+        qset = Release.objects.filter(release_date__isnull=False, is_draft=False)
 
         if project is not None:
             qset = qset.filter(project_id=project)
@@ -109,7 +109,7 @@ class DownloadRedirect(RedirectView):
 
 class ReleaseView(DetailView):
     cache_tracks = (Release, Platform)
-    model = Release
+    queryset = Release.objects.filter(is_draft=False)
     slug_field = 'version'
     slug_url_kwarg = 'version'
     template_name = 'releases/release_detail.html'
@@ -135,6 +135,8 @@ class ReleaseView(DetailView):
             (_('In Development'), [], 1),
         ]
         for rel in Release.objects.for_parent(self.object).defer('html_desc', 'release_notes', 'background'):
+            if rel.is_draft:
+                continue
             # The parent id is none, so this must be a top level release
             # Like 0.91 or 0.48 etc. pre-releases and point releases will
             # have a parent_id of their master release.
@@ -232,7 +234,8 @@ class ReleasePlatformView(DetailView):
 
     def get_object(self):
         """Returns the right object given the version, platform and optional projet name"""
-        query = Q(release__version=self.kwargs['version'],
+        query = Q(release__is_draft=False,
+                  release__version=self.kwargs['version'],
                   platform__codename=self.kwargs['platform'])
         if 'project' in self.kwargs:
             query &= Q(release__project_id=self.kwargs['project'])
