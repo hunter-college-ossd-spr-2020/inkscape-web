@@ -129,11 +129,11 @@ def page(request, url):
             .replace('|data|', 'data="http')
     context = {
         'path': path,
-        'lang': lang,
+        'lang': lang or 'en',
         'title': title,
         'content': content,
         'stylesheet_hrefs': stylesheet_hrefs,
-        'LANGUAGE_CODE': active_lang,
+        'LANGUAGE_CODE': active_lang or 'en',
         'PUBLIC_LANGUAGES': all_languages,
     }
     return render(request, 'docs/page.html', context)

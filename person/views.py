@@ -67,7 +67,6 @@ class EditProfile(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
         old_email = User.objects.get(pk=self.object.pk).email
         # Save data before checking email
         ret = super().form_valid(form)
-        print(f"New {new_email} and old {old_email}")
         if new_email != old_email:
             self.email_changed(form.instance, old_email, new_email)
         return ret
@@ -79,7 +78,8 @@ class EditProfile(NeverCacheMixin, NextUrlMixin, UserMixin, UpdateView):
         # We update the last_login on email change to prevent change
         # password attacks which would allow an attacker re-access to
         # an account. Changing the date here will invalidate any hash.
-        instance.last_login = now()
+        #instance.last_login = now()
+        self.request.session.flush()
         # Deactivate account and send new confirmation email
         instance.is_active = False
         instance.save()
