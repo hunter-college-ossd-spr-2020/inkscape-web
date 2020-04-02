@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+from hashlib import md5
+
+def main():
+    """Main"""
+    if len(sys.argv) < 3:
+        print("You must specify the GET/HEAD/POST method and the URL "
+              "(minus the https://) as arguments")
+        sys.exit(1)
+
+    method = sys.argv[1].upper()
+    if method not in ['HEAD', 'GET', 'POST']:
+        print("Not sure about this method: {} (but trying anyway)".format(method))
+
+    url = sys.argv[2].split('://', 1)[-1]
+
+    if not url.startswith('inkscape.org'):
+        url = 'inkscape.org/' + url.lstrip('/')
+        print("Adding inkscape.org/ prefix...")
+
+    cache_id = md5(f"{method}{url}").hexdigest()
+    cache_file = '/var/cache/nginx/{}/{}/{}'.format(cache_id[-1], cache_id[-3:-1], cache_id)
+    print(f"Getting cache for '{method}' 'https://{url}' ({cache_id})")
+
+    if os.path.isfile(cache_file):
+        try:
+            os.unlink(cache_file)
+            print(f"Deleted file: {cache_file}")
+        except (IOError, OSError) as err:
+            print(f"Couldn't delete cache file: {cache_file}: {err}")
+    else:
+        print(f"Cache not found: {cache_file}")
+
+if __name__ == '__main__':
+    main()
