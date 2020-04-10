@@ -16,8 +16,15 @@
   <div id="bread">
     {% include "breadcrumbs.html" %}
   </div>
+  {% if object.release.is_draft %}
+    <ul id="messages">
+      <li class="warning" title="{% trans "Use the admin to publish." %}">{% trans "This release for this platform is in draft mode. It is not visible to the public yet." %}</li>
+    </ul>
+  {% endif %}
   {% if not object %}
-    <h1>{% trans "Platform is misconfigured for release." %}</h1>
+    <ul id="messages">
+      <li class="error">{% trans "Platform is misconfigured for release." %}</li>
+    </ul>
   {% else %}
 
 <div id="shield" class="download">

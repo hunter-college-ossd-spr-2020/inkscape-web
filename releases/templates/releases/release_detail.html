@@ -13,6 +13,11 @@
 	<script type="text/javascript" src="{% static "js/release.js" %}"></script>
 {% endblock %}
 {% block supercontent %}
+  {% if object.is_draft %}
+    <ul id="messages">
+      <li class="warning" title="{% trans "Use the admin to publish." %}">{% trans "This release is in Draft mode. It is not visible to the public yet." %}</li>
+    </ul>
+  {% endif %}
 
 <div id="shield" class="download">
   <div id="banners"

@@ -13,6 +13,15 @@
   {% endif %}
 {% endblock %}
 
+{% block supercontent %}
+  {% if object.release.is_draft %}
+    <ul id="messages">
+      <li class="warning" title="{% trans "Use the admin to publish." %}">{% trans "This release for this platform-release is in draft mode. It is not visible to the public yet." %}</li>
+    </ul>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
 {% block content %}
   <div>
     {% if object.platform.image %}
