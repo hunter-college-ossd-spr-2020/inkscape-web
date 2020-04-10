@@ -109,7 +109,7 @@ class DownloadRedirect(RedirectView):
 
 class ReleaseView(DetailView):
     cache_tracks = (Release, Platform)
-    queryset = Release.objects.filter(is_draft=False)
+    model = Release
     slug_field = 'version'
     slug_url_kwarg = 'version'
     template_name = 'releases/release_detail.html'
@@ -117,6 +117,8 @@ class ReleaseView(DetailView):
     def get_queryset(self):
         from person.models import linked_users_only
         qset = super().get_queryset()
+        if not self.request.user.has_perm('releases.change_release'):
+            qset = qset.filter(is_draft=False)
         if 'project' in self.kwargs:
             qset = qset.filter(project_id=self.kwargs['project'])
         else:
