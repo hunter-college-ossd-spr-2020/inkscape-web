@@ -72,20 +72,25 @@
 	<h2>{{ name }}</h2>
 	<ul class="ellipses-hidden">
 	  {% for release in items %}
+            {% if not release.is_draft or perms.releases.change_release %}
+
 	    {% if release == object %}
 	      <li class="subtle active"><a>
             {% elif latest and object.parent_id == release.pk %}
 	      <li class="subtle active"><a>
 	    {% else %}
-              <li class="subtle{% if release.hide %} hide{% endif %}">
+            <li class="{% if not release.is_draft %}subtle{% endif %}{% if release.hide %} hide{% endif %}">
                 <a href="{{ release.get_absolute_url }}{% if latest %}?latest=1{% endif %}">
 	    {% endif %}
 	    <label>{{ release.codename|default:release.get_version_name }}</label>
-	    {% if release.release_date %}
+            {% if release.is_draft %}
+              <span class="failed">{% trans "DRAFT" %}</span>
+	    {% elif release.release_date %}
 	      <span>{{ release.release_date.year }}</span>
 	    {% endif %}
 	      </a>
 	    </li>
+            {% endif %}
 	  {% endfor %}
           {% if not latest and has_pre_releases %}
             <li class="ellipses-button">{% trans "Show more..." %}</li>

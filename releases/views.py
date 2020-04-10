@@ -117,8 +117,6 @@ class ReleaseView(DetailView):
     def get_queryset(self):
         from person.models import linked_users_only
         qset = super().get_queryset()
-        if not self.request.user.has_perm('releases.change_release'):
-            qset = qset.filter(is_draft=False)
         if 'project' in self.kwargs:
             qset = qset.filter(project_id=self.kwargs['project'])
         else:
@@ -137,8 +135,6 @@ class ReleaseView(DetailView):
             (_('In Development'), [], 1),
         ]
         for rel in Release.objects.for_parent(self.object).defer('html_desc', 'release_notes', 'background'):
-            if rel.is_draft:
-                continue
             # The parent id is none, so this must be a top level release
             # Like 0.91 or 0.48 etc. pre-releases and point releases will
             # have a parent_id of their master release.
@@ -189,8 +185,13 @@ class ReleaseView(DetailView):
                 # This item is the parent/master, all items below are pre.
                 is_released = True
 
-        if self.request.GET.get('latest', False):
+        if self.request.GET.get('latest', '0').lower() in ('1', 'yes', 'true'):
             data['object'] = selected.latest
+
+        # We test this here (instead of get_queryset) so we can properly
+        # test the resulting object after 'latest' has modified it.
+        if not self.request.user.has_perm('releases.change_release') and data['object'].is_draft:
+            raise Http404("Release is in draft mode")
 
         data['projects'] = Project.objects.all()
         data['platforms'] = data['object'].platforms.for_level('')
