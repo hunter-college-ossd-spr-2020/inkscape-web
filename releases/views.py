@@ -116,7 +116,7 @@ class ReleaseView(DetailView):
 
     def get_queryset(self):
         from person.models import linked_users_only
-        qset = super(ReleaseView, self).get_queryset()
+        qset = super().get_queryset()
         if 'project' in self.kwargs:
             qset = qset.filter(project_id=self.kwargs['project'])
         else:
@@ -234,9 +234,10 @@ class ReleasePlatformView(DetailView):
 
     def get_object(self):
         """Returns the right object given the version, platform and optional projet name"""
-        query = Q(release__is_draft=False,
-                  release__version=self.kwargs['version'],
+        query = Q(release__version=self.kwargs['version'],
                   platform__codename=self.kwargs['platform'])
+        if not self.request.user.has_perm('releases.change_release'):
+            query &= Q(release__is_draft=False)
         if 'project' in self.kwargs:
             query &= Q(release__project_id=self.kwargs['project'])
         else:
