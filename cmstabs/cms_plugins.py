@@ -23,6 +23,7 @@ These CMS plugins are designed to work with django-cms 3.5 or later.
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import *
+from django.utils import timezone
 from django.conf import settings
 
 from cms.plugin_base import CMSPluginBase
@@ -119,7 +120,9 @@ class CMSTeamPlugin(CMSPluginBase):
         self.instance = instance
         members = instance.team.memberships.filter(
             joined__isnull=False,
-            expired__isnull=True)
+        ).exclude(
+            expired__lt=timezone.now(),
+        )
         if instance.role is not None:
             members = members.filter(role=instance.role)
 
