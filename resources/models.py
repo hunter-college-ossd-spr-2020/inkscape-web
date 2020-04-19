@@ -52,33 +52,34 @@ from cms.utils.permissions import get_current_user as get_user
 null = dict(null=True, blank=True)
 
 OWNS = (
-  (None, _('No permission')),
-  (True, _('I own the work')),
-  (False, _('I have permission')),
+    (None, _('No permission')),
+    (True, _('I own the work')),
+    (False, _('I have permission')),
 )
 
 DOMAINS = {
-  'inkscape.org': 'Inkscape Website',
-  'launchpad.net': 'Launchpad',
-  'deviantart.com': 'deviantArt',
-  'openclipart.org': 'OpenClipart (OCAL)',
+    'inkscape.org': 'Inkscape Website',
+    'launchpad.net': 'Launchpad',
+    'deviantart.com': 'deviantArt',
+    'openclipart.org': 'OpenClipart (OCAL)',
 }
 
 class License(Model):
-    name    = CharField(max_length=64)
-    code    = CharField(max_length=16)
-    link    = URLField(**null)
-    banner  = FileField(_('License Banner (svg:80x15)'), **upto('banner', 'license'))
-    icon    = FileField(_('License Icon (svg:100x40)'), **upto('icon', 'license'))
+    """A license option for an uploaded file"""
+    name = CharField(max_length=64)
+    code = CharField(max_length=16)
+    link = URLField(**null)
+    banner = FileField(_('License Banner (svg:80x15)'), **upto('banner', 'license'))
+    icon = FileField(_('License Icon (svg:100x40)'), **upto('icon', 'license'))
 
-    at  = BooleanField(_('Attribution'), default=True)
-    sa  = BooleanField(_('Copyleft (Share Alike)'), default=False)
-    nc  = BooleanField(_('Non-Commercial'), default=False)
-    nd  = BooleanField(_('Non-Derivative'), default=False)
+    at = BooleanField(_('Attribution'), default=True)
+    sa = BooleanField(_('Copyleft (Share Alike)'), default=False)
+    nc = BooleanField(_('Non-Commercial'), default=False)
+    nd = BooleanField(_('Non-Derivative'), default=False)
 
-    selectable = BooleanField(default=True,
+    selectable = BooleanField(default=True,\
         help_text=_("This license can be selected by all users when uploading."))
-    filterable = BooleanField(default=True,
+    filterable = BooleanField(default=True,\
         help_text=_("This license can be used as a filter in gallery indexes."))
 
     replaced = ForeignKey("License", verbose_name=_('Replaced by'), on_delete=SET_NULL, **null)
@@ -465,6 +466,14 @@ class Resource(Model):
             mime = MimeType(filename=self.download.path)
             self._fileEx = FileEx(self.download.file, mime)
         return self._fileEx
+
+    @property
+    def aspect(self):
+        """Return an aspect ratio id (str)"""
+        if self.media_x and self.media_y:
+            (ratio, name, label) = get_aspect(self.media_x, self.media_y)
+            return {'ratio': ratio, 'name': name, 'label': label}
+        return None
 
     def signature_type(self):
         return self.signature.name.rsplit('.', 1)[-1]

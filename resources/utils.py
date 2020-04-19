@@ -32,6 +32,7 @@ from pygments import highlight, lexers, formatters
 from pygments.util import ClassNotFound
 
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.files.images import get_image_dimensions
 from django.contrib.staticfiles import finders, storage
@@ -72,6 +73,37 @@ def get_range(text):
     if '-' not in text:
         text = text + '-' + text
     return (force_int(x) for x in text.split('-', 1))
+
+RATIOS = {
+    1.0: ('square', _('Square')),
+    1.414: ('iso216', _('ISO Paper (Landscape)'), _('ISO Paper (Portrait)')),
+    1.618: ('golden', _('Golden Ratio (Landscape)'), _('Golden Ratio (Portrait)')),
+    11 / 8.5: ('us-letter', _('US Letter (Landscape)'), _('US Letter (Portrait)')),
+    4 / 3.0: ('video', _('Standard Definition 4:3'), _('Unusual Definition 3:4')),
+    16 / 9.0: ('widescreen', _('Widescreen 16:9'), _('Tallscreen 9:16')),
+    21 / 9.0: ('ultrawide', _('Ultra-Widescreen 21:9'), _('Ultra-Tallscreen 9:21')),
+    32 / 9.0: ('superwide', _('Super-Widescreen 32:9'), _('Super-Tallscreen 9:32')),
+    16 / 10.0: ('wxga', _('Widescreen Display 16:10'), _('Rotated Widescreen Display 10:16')),
+    3 / 2.0: ('35mm', _('35mm Film'), _('Rotated 35mm Film')),
+    5 / 3.0: ('16mm', _('16mm Film'), _('Rotated 16mm Film')),
+}
+
+def get_aspect(width, height, err=0.02):
+    """
+    Attempt to identify an aspect ration (returns None if none matched)
+
+    Returns (aspect_radio, id_name, label) if found.
+    """
+    try:
+        arr = [float(width), float(height)]
+        asp = max(arr) / min(arr)
+        for otr in RATIOS:
+            if otr - err <= asp <= otr + err:
+                port = -2 if arr[0] > arr[1] else -1
+                return (otr, RATIOS[otr][0], RATIOS[otr][port])
+    except ValueError:
+        pass
+    return None
 
 SCALES = ' KMGT'
 def force_int(text):

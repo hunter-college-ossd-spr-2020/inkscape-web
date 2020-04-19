@@ -76,7 +76,9 @@
         {% if object.download %}    
           {% if object.media_x and object.media_y %}
             {% if object.mime.is_image %}
-              <dt>{% trans "Area" %}</dt><dd> {{ object.media_x }}x{{ object.media_y }}</dd>
+              {% with object.aspect as aspect %}
+                <dt>{% trans "Area" %}</dt><dd title="{{ aspect.label }}"> {{ object.media_x }}x{{ object.media_y }}</dd>
+              {% endwith %}
             {% elif object.mime.is_text %}
               <dt>{% trans "Lines" %}</dt><dd> {{ object.media_x }}</dd>
               <dt>{% trans "Words" %}</dt><dd> {{ object.media_y }}</dd>
