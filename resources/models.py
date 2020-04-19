@@ -471,8 +471,10 @@ class Resource(Model):
     def aspect(self):
         """Return an aspect ratio id (str)"""
         if self.media_x and self.media_y:
-            (ratio, name, label) = get_aspect(self.media_x, self.media_y)
-            return {'ratio': ratio, 'name': name, 'label': label}
+            aspect = get_aspect(self.media_x, self.media_y)
+            if aspect:
+                (ratio, name, label) = aspect
+                return {'ratio': ratio, 'name': name, 'label': label}
         return None
 
     def signature_type(self):
