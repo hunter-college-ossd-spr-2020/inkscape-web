@@ -1,10 +1,29 @@
 {% extends 'resources/resourcegallery_base.html' %}
 {% load i18n static %}
 
-{% block title %}{{ object.name }} - {% trans "InkSpace" %}{% endblock %}
+{% block title %}{{ object.name }} - {% trans "Inkspace the Inkscape Gallery" %}{% endblock %}
+
+{% block "meta" %}
+  {% if object.group %}
+    <meta name="author" content="{{ object.group }}" />
+  {% elif object.user %}
+    <meta name="author" content="{{ object.user }}" />
+  {% endif %}
+
+  {% if object.desc %}
+    <meta name="description" content="{{ object.desc|striptags }}" />
+    <meta property="og:description" content="{{ object.desc }}" />
+  {% endif %}
+
+  {% with object.tag_cloud as cloud %}
+    <meta name="keywords" content="inkscape,gallery,graphics,resources{% if cloud %}{% for tag, size in cloud %},{{ tag }}{% endfor %}{% endif %}" />
+  {% endwith %}
+  <meta property="og:title" content="{{ object.name }} {% trans "on the Inkscape website" %}" />
+  <meta property="og:image" content="{{ object.thumbnail_url }}" />
+{% endblock %}
 
 {% block "css" %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "css/profile.css" %}" >
+  <link rel="stylesheet" type="text/css" href="{% static "css/profile.css" %}" />
 {% endblock %}
 
 {% block supercontent %}

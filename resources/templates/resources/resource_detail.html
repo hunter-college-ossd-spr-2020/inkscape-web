@@ -1,7 +1,20 @@
 {% extends 'resources/resource_base.html' %}
 {% load i18n static inkscape timers moderator %}
 
-{% block headerdesc %}{{ object.name}} {% trans "by" %} {% if object.owner %}{{ object.user }}{% else %}{{ object.owner_name|default:"Unknown author" }}{% endif %}{% if object.description %}: {{ object.description }}{% endif %}{% endblock %}
+{% block title %}{{ object.name }} - {% trans "Inkspace the Inkscape Gallery" %}{% endblock %}
+
+{% block "meta" %}
+  <meta name="author" content="{% if object.owner %}{{ object.user }}{% else %}{{ object.owner_name|default:"Unknown author" }}{% endif %}" />
+  
+  {% if object.description %}
+    <meta name="description" content="{{ object.description|striptags }}" />
+    <meta name="og:description" content="{{ object.description|striptags }}" />
+  {% endif %}
+  
+  <meta name="keywords" content="inkscape,inkspace,graphic,resource{% for tag in object.tags.all %},{{ tag }}{% endfor %}" />
+  <meta property="og:title" content="{{ object.name }} {% trans "on the Inkscape website" %}" />
+  <meta property="og:image" content="{{ object.thumbnail_url }}" />
+{% endblock %}
 
 {% block "description" %}
   <div class="info">
