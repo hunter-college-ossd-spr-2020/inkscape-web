@@ -442,7 +442,7 @@ class ResourcePasteForm(ResourceBaseForm):
             raise ValidationError("Text is too small for the pastebin.")
 
         filename = "pasted-%s.txt" % slugify(self.cleaned_data['name'])
-        buf = StringIO(text.encode('utf-8'))
+        buf = StringIO(text)
         buf.seek(0, 2)
 
         return InMemoryUploadedFile(buf, "text", filename, None, buf.tell(), None)
