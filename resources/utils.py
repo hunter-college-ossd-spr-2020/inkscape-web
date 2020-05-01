@@ -233,19 +233,25 @@ def gpg_verify(user, sig, data):
     """
     You can not verify the same data file with two different signatures twice.
     """
+    import gnupg
+
     if sig.closed:
         if hasattr(sig, 'open'):
             sig.open()
         else:
             raise IOError("Can't verify on closed file handle.")
 
-    # This is python-gnupg and NOT gnupg, make sure you have the right one installed
-    import gnupg
-    gpg = gnupg.GPG(gnupghome=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
-    gpg.import_keys(str(user.gpg_key))
-    result = bool(gpg.verify_file(sig, data.path))
+    with open(os.path.join(settings.LOGBOOK_ROOT, 'gnupg.log'), 'a') as log:
+        log.write("\n=======\n")
+        log.write(f"Verifying signature for file: {data.path} ({user.username})\n")
+        # This is python-gnupg and NOT gnupg, make sure you have the right one installed
+        gpg = gnupg.GPG(gnupghome=os.path.join(settings.MEDIA_ROOT, 'gnupg'))
+        ret = gpg.import_keys(str(user.gpg_key))
+        log.write(f"Import User Key: {ret.stderr}") # pylint: disable=no-member
+        result = gpg.verify_file(sig, data.path)
+        log.write(f"Verify Sig: {result.stderr}") # pylint: disable=no-member
     del gpg
-    return result
+    return bool(result)
 
 
 class FileEx(object):

@@ -30,13 +30,12 @@ import os
 
 from django.conf import settings
 import django.core.management.commands.loaddata
-from django.core.files.storage import default_storage
+from django.core.files.base import File
 import django.core.serializers
 from django.db.models import signals
 from django.db.models.fields.files import FileField
 from django.utils._os import upath
 from django.apps import apps
-
 
 def models_with_filefields():
     for klass in apps.get_models():
@@ -60,6 +59,7 @@ class Command(django.core.management.commands.loaddata.Command):
         not_found = set()
         is_found  = set()
 
+        import sys
         for field in sender._meta.fields:
             if not isinstance(field, FileField):
                 continue
@@ -70,7 +70,10 @@ class Command(django.core.management.commands.loaddata.Command):
                 filepath = os.path.join(fixture_path, path.name)
                 try:
                     with open(filepath, 'rb') as fhl:
-                        default_storage.save(path.name, fhl)
+                        dj_file = File(fhl, path.name)
+                        setattr(instance, field.attname, dj_file)
+                        n = getattr(instance, field.attname)
+                        sys.stderr.write(f"Field: {n.path}\n")
                         is_found.add(path.name)
                         break
                 except FileNotFoundError:
