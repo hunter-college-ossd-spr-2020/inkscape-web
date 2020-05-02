@@ -23,6 +23,7 @@ from collections import defaultdict
 
 from django.http import Http404
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.views.generic import DetailView
@@ -227,11 +228,12 @@ class PlatformView(DetailView):
                     items[key].append(platformrelease)
                     releases[key] = platformrelease.release
 
+        today = now().date()
         data['objects'] = [
             {
                 'release': releases[pk],
                 'platforms': items[pk],
-            } for pk in sorted(items, key=lambda pk: releases[pk].release_date)]
+            } for pk in sorted(items, key=lambda pk: (releases[pk].release_date or today))]
         return data
 
 class ReleasePlatformStage(DetailView):

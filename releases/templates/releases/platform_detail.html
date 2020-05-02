@@ -12,7 +12,7 @@
     {% for item in objects %}
         <tr class="{% cycle "odd" "even" %}">
           <td><a href="{{ item.release.get_absolute_url }}">{{ item.release }}</a></td>
-          <td>{{ item.release.release_date|date:"c" }}</td>
+          <td>{{ item.release.release_date|date:"c"|default:"dev" }}</td>
           <td>
             {% for rp in item.platforms %}
               <a href="{{ rp.get_resource_url }}">{{ rp.platform.name }}</a>
