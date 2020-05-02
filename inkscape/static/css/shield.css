@@ -45,6 +45,13 @@
   font-size: 12px;
   line-height: 0;
 }
+#banners > div > p > a {
+  color: white;
+  mix-blend-mode: difference;
+}
+#banners > div > p > a:active {
+  color: red;
+}
 
 #banners > div > div {
   height: 250px;

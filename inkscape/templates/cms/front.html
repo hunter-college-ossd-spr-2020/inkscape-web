@@ -5,6 +5,13 @@
 
 {% block headerdesc %}{% page_attribute meta_description %}{% endblock %}
 
+{% block "css" %}{{ block.super }}
+  <style>
+    /* hack-fix, disable buggy redirect screen blocker on homepage */
+    .cms-screenblock { display: none !important; }
+  </style>
+{% endblock %}
+
 {% block supercontent %}
   {% placeholder front_body %}
   <div id="columns">

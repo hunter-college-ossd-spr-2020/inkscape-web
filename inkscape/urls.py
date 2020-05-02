@@ -30,7 +30,7 @@ try:
 except ImportError:
     debug_toolbar = None
 
-from .views import ContactUs, ContactOk, SearchView, SearchJson, Authors, RedirectLanguage
+from .views import ContactUs, ContactOk, SearchView, SearchJson, Authors
 
 handler404 = 'inkscape.views.catch_bad_language'
 
