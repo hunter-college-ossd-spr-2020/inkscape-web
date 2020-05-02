@@ -19,6 +19,8 @@
 # along with inkscape-web.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from collections import defaultdict
+
 from django.http import Http404
 from django.utils.text import slugify
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
@@ -205,14 +207,42 @@ class PlatformList(ReleaseView):
     def get_title(self):
         return _('All Platforms for %s') % str(self.object)
 
-
 class PlatformView(DetailView):
+    """A list of all files in this platform, any release"""
     model = Platform
     slug_field = 'codename'
     slug_url_kwarg = 'platform'
 
     def get_context_data(self, **kwargs):
-        data = super(PlatformView, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        items = defaultdict(list)
+        releases = dict()
+
+        # Collate all platform releases together
+        for platform in [obj] + list(obj.descendants()):
+            for platformrelease in platform.releases.all():
+                if platformrelease.download or platformrelease.resource:
+                    key = platformrelease.release_id
+                    items[key].append(platformrelease)
+                    releases[key] = platformrelease.release
+
+        data['objects'] = [
+            {
+                'release': releases[pk],
+                'platforms': items[pk],
+            } for pk in sorted(items, key=lambda pk: releases[pk].release_date)]
+        return data
+
+class ReleasePlatformStage(DetailView):
+    """Midway between release homepage and the releaseplatform download"""
+    model = Platform
+    slug_field = 'codename'
+    slug_url_kwarg = 'platform'
+    template_name = 'releases/releaseplatform_stage.html'
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
         obj = self.object
 
         data['release'] = get_object_or_404(Release, version=self.kwargs['version'])

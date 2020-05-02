@@ -22,7 +22,8 @@
 from django.conf.urls import url
 from inkscape.url_utils import url_tree
 
-from .views import DownloadRedirect, ReleaseView, PlatformList, ReleasePlatformView, PlatformView
+from .views import DownloadRedirect, ReleaseView, PlatformList,\
+                   ReleasePlatformStage, ReleasePlatformView, PlatformView
 
 version_urls = url_tree( # pylint: disable=invalid-name
     r'^(?P<version>[\w\+\.-]+)/',
@@ -31,11 +32,12 @@ version_urls = url_tree( # pylint: disable=invalid-name
 
     # We don't use url_tree here because .+ competes with /dl/
     url('^(?P<platform>.+)/dl/$', ReleasePlatformView.as_view(), name="download"),
-    url('^(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
+    url('^(?P<platform>.+)/$', ReleasePlatformStage.as_view(), name="platform"),
 )
 
 urlpatterns = [ # pylint: disable=invalid-name
     url(r'^$', DownloadRedirect.as_view(), name="download"),
+    url('^all/(?P<platform>.+)/$', PlatformView.as_view(), name="platform"),
     url_tree(
         r'^(?P<project>[\w\-\.]+)-',
         version_urls,

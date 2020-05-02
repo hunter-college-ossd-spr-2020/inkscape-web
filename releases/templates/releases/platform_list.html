@@ -11,7 +11,7 @@
   <table class="alternating" style="width: 100%;">
   {% for rp in object.platforms.all %}
     <tr class="{% cycle "odd" "even" %}">
-      <td>{{ rp.platform.full_name }}</td>
+      <td><a href="{{ rp.platform.get_absolute_url }}">{{ rp.platform.full_name }}</a></td>
       <td>{{ rp.resource.created|default:rp.created }}</td>
       <td>
         {% if rp.download or rp.resource %}

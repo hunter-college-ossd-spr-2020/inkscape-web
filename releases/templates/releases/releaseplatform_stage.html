@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static i18n i18n_fields %}
+
+{% block title %}{{ object }}{% endblock %}
+{% block headerdesc %}{{ object.release|translate_field:"html_desc" }} - {{ object.platform|translate_field:"desc" }}{% endblock %}
+{% block keywords %}download,release,{{ object.release|translate_field:"keywords" }},{{ object.platform|translate_field:"keywords" }}{% endblock %}
+
+{% block "css" %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/shield.css" %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static "css/releases.css" %}"/>
+{% endblock %}
+{% block "js" %}{{ block.super }}
+	<script type="text/javascript" src="{% static "js/release.js" %}"></script>
+{% endblock %}
+{% block supercontent %}
+  <div id="bread">
+    {% include "breadcrumbs.html" %}
+  </div>
+  {% if object.release.is_draft %}
+    <ul id="messages">
+      <li class="warning" title="{% trans "Use the admin to publish." %}">{% trans "This release for this platform is in draft mode. It is not visible to the public yet." %}</li>
+    </ul>
+  {% endif %}
+  {% if not object %}
+    <ul id="messages">
+      <li class="error">{% trans "Platform is misconfigured for release." %}</li>
+    </ul>
+  {% else %}
+
+<div id="shield" class="download">
+  <div id="banners"
+    {% if object.release.background %}
+      style="background-image:url({{ object.release.background.url }})"
+    {% endif %}>
+  </div>
+  <ul class="tabs fixed">
+    {% for platform in platforms %}
+      {% include "releases/platform_tab.html" %}
+    {% endfor %}
+  </ul>
+</div>
+<div id="left-column" style="padding-bottom: 45px;">
+  &nbsp;
+  {% if object.instructions %}
+    {{ object.instructions|safe }}
+  {% endif %}
+</div>
+
+  {% endif %}
+{% endblock %}

@@ -231,6 +231,9 @@ class Platform(Model):
     class Meta:
         ordering = '-order', 'codename'
 
+    def get_absolute_url(self):
+        return reverse('releases:platform', kwargs={'platform': self.codename})
+
     def save(self, **kwargs):
         codename = "/".join([anc.uuid() for anc in self.ancestors()][::-1])
         if self.codename != codename:
@@ -378,6 +381,11 @@ class ReleasePlatform(Model):
                 'fn': self.resource.filename(),
             })
         return self.download
+
+    def get_resource_filename(self):
+        if self.resource and resource.download:
+            return self.resource.download.name
+        return _('Link')
 
     @property
     def parent(self):

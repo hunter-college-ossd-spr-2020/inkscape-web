@@ -1,50 +1,25 @@
 {% extends 'base.html' %}
-{% load static i18n i18n_fields %}
+{% load static i18n %}
 
 {% block title %}{{ object }}{% endblock %}
-{% block headerdesc %}{{ object.release|translate_field:"html_desc" }} - {{ object.platform|translate_field:"desc" }}{% endblock %}
-{% block keywords %}download,release,{{ object.release|translate_field:"keywords" }},{{ object.platform|translate_field:"keywords" }}{% endblock %}
+{% block headerdesc %}{% trans "Full list of all platforms available for this release." %}{% endblock %}
+{% block keywords %}release,platform,list,availability,access{% endblock %}
 
-{% block "css" %}{{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "css/shield.css" %}"/>
-  <link rel="stylesheet" type="text/css" href="{% static "css/releases.css" %}"/>
-{% endblock %}
-{% block "js" %}{{ block.super }}
-	<script type="text/javascript" src="{% static "js/release.js" %}"></script>
-{% endblock %}
-{% block supercontent %}
-  <div id="bread">
-    {% include "breadcrumbs.html" %}
-  </div>
-  {% if object.release.is_draft %}
-    <ul id="messages">
-      <li class="warning" title="{% trans "Use the admin to publish." %}">{% trans "This release for this platform is in draft mode. It is not visible to the public yet." %}</li>
-    </ul>
-  {% endif %}
-  {% if not object %}
-    <ul id="messages">
-      <li class="error">{% trans "Platform is misconfigured for release." %}</li>
-    </ul>
-  {% else %}
+{% block content %}
+  <h1>{{ object }}</h1>
 
-<div id="shield" class="download">
-  <div id="banners"
-    {% if object.release.background %}
-      style="background-image:url({{ object.release.background.url }})"
-    {% endif %}>
-  </div>
-  <ul class="tabs fixed">
-    {% for platform in platforms %}
-      {% include "releases/platform_tab.html" %}
+  <table class="alternating" style="width: 100%;">
+    {% for item in objects %}
+        <tr class="{% cycle "odd" "even" %}">
+          <td><a href="{{ item.release.get_absolute_url }}">{{ item.release }}</a></td>
+          <td>{{ item.release.release_date|date:"c" }}</td>
+          <td>
+            {% for rp in item.platforms %}
+              <a href="{{ rp.get_resource_url }}">{{ rp.platform.name }}</a>
+            {% endfor %}
+          </td>
+        </tr>
     {% endfor %}
-  </ul>
-</div>
-<div id="left-column" style="padding-bottom: 45px;">
-  &nbsp;
-  {% if object.instructions %}
-    {{ object.instructions|safe }}
-  {% endif %}
-</div>
+  </table>
 
-  {% endif %}
 {% endblock %}
