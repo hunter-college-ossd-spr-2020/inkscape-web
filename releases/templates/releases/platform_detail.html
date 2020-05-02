@@ -11,7 +11,7 @@
   <table class="alternating" style="width: 100%;">
     {% for item in objects %}
         <tr class="{% cycle "odd" "even" %}">
-          <td><a href="{{ item.release.get_absolute_url }}">{{ item.release }}</a></td>
+          <td><a href="{{ item.release.get_absolute_url }}">{{ item.release }}{% if item.release.is_draft %} [DRAFT]{% endif %}</a></td>
           <td>{{ item.release.release_date|date:"c"|default:"dev" }}</td>
           <td>
             {% for rp in item.platforms %}

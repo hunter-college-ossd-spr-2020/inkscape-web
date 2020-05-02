@@ -216,13 +216,25 @@ class PlatformView(DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+        can_see_draft = self.request.user.has_perm('releases.change_release')
         obj = self.get_object()
         items = defaultdict(list)
         releases = dict()
+        pre_release = None
+        if 'pre' in self.request.GET:
+            try:
+                pre_release = bool(int(self.request.GET['pre']))
+            except ValueError:
+                pass
 
         # Collate all platform releases together
         for platform in [obj] + list(obj.descendants()):
             for platformrelease in platform.releases.all():
+                if pre_release is not None and pre_release != platformrelease.release.is_prerelease:
+                    continue
+                if not can_see_draft or platformrelease.release.is_draft:
+                    continue
+
                 if platformrelease.download or platformrelease.resource:
                     key = platformrelease.release_id
                     items[key].append(platformrelease)
