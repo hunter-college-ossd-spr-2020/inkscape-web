@@ -49,7 +49,11 @@
           <img src="{% static "mime/banner/edit.svg" %}" title="{% trans "Edit Resource" %}">
         </a>
       {% elif item.published %}
-        <img src="{{ item.mime.banner }}" title="{{ item.mime.subtype }}">
+        {% if item.is_video %}
+          <img src="{% static "mime/banner/video.svg" %}" title="{% trans "Play Video" %}">
+        {% else %}
+          <img src="{{ item.mime.banner }}" title="{{ item.mime.subtype }}">
+        {% endif %}
         {% if item.license and item.license.banner %}
           <img src="{{ item.license.banner.url }}" title="{{ item.license }}">
         {% endif %}

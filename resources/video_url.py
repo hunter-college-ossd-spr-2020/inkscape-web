@@ -22,9 +22,12 @@ Scan for Video URLs and gather together meta data about them.
 """
 
 import re
+import json
 
 from urllib.request import urlopen
 from urllib.parse import parse_qs
+
+from .utils import url_filefield
 
 VIDEO_URLS = {
     'youtube': r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be'
@@ -36,7 +39,7 @@ def noop_data(video):
     """Do nothing"""
     return video
 
-def youtube_data(video):
+def youtube_data(video, debug=False):
     """
     Gather more data about this video from youtube.
 
@@ -46,9 +49,17 @@ def youtube_data(video):
     try:
         response = urlopen(uri)
         data = parse_qs(response.read().decode())
-        for field in ('title', 'author', 'thumbnail_url'):
+        if 'player_response' in data:
+            data = json.loads(data['player_response'][0])['videoDetails']
+            data['thumbnail_url'] = data['thumbnail']['thumbnails'][-1]['url']
+            data['description'] = data['shortDescription']
+        if debug:
+            return data
+
+        for field in ('title', 'author', 'thumbnail_url',
+                      'description', 'lengthSeconds', 'keywords'):
             if field in data:
-                video[field] = data[field][0]
+                video[field] = data[field]
     except Exception: # pylint: disable=broad-except
         pass
     return video
@@ -65,14 +76,73 @@ def video_detect(url, metadata=False):
             match = re.match(regex, url)
             if not match:
                 continue
-            ret = {'type': site_id, 'id': match.group('video_id')}
+            vid = match.group('video_id')
+            ret = {
+                'type': site_id, 'id': vid,
+                'title': f"Video Link {vid}",
+                'author': "Unknown Author",
+                'description': "-",
+                'thumbnail_url': None,
+                'lengthSeconds': None,
+                'keywords': [],
+            }
             if metadata:
                 globals().get(site_id + '_data', noop_data)(ret)
-                if 'title' not in ret:
-                    ret['title'] = "Video Link {id}".format(**ret)
-                if 'author' not in ret:
-                    ret['author'] = "Unknown Author"
-                if 'thumbnail_url' not in ret:
-                    ret['thumbnail_url'] = None
+            return ret
+    return None
+
+
+def parse_any_url(query, user):
+    """
+    We want to parse a given URL and decide if it's a video URL
+    or some other interesting or important URL.
+
+    Returns the Resource object matched / used or None if not found.
+    """
+    from .models import Resource, Tag
+    is_video = video_detect(query)
+    if is_video:
+        # Find an existing video in our resource database that matches.
+        for match in Resource.objects.filter(link__contains=is_video['id']):
+            match_v = match.video
+            if match_v \
+                  and match_v['id'] == is_video['id'] \
+                  and match_v['type'] == is_video['type']:
+                return match
+
+        if user.is_authenticated():
+            # Create a new video object in our resource database.
+            details = video_detect(query, True)
+            obj = Resource(
+                user=user,
+                name=details['title'],
+                desc=details['description'],
+                owner_name=details['author'],
+                media_x=details['lengthSeconds'],
+                rendering=url_filefield(details['thumbnail_url'],
+                                        'video_' + details['id'] + '.png'),
+                link=query, owner=False, published=False)
+            obj.save()
+            for tag in details['keywords']:
+                if len(tag) < 16:
+                    obj.tags.add(Tag.objects.get_or_create(name=tag.lower())[0])
+            return obj
+
+    if query.rsplit('.', 1)[-1] in ('png', 'svg', 'jpeg', 'jpg'):
+        # Linked image on another website
+        filename = query.split('?')[0].split('/')[-1]
+
+        for match in Resource.objects.filter(link=query):
+            return str(match.pk)
+
+        if user.is_authenticated():
+            # Create a new image link object in our resource database.
+            ret = Resource(
+                user=user,
+                name='Linked Image (' + filename + ')',
+                owner_name='Internet',
+                rendering=url_filefield(query, filename),
+                link=query, owner=False, published=False)
+            ret.save()
             return ret
     return None

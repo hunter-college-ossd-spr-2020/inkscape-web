@@ -61,15 +61,10 @@ class DisabledSelect(Select):
 
 class CategorySelect(Select):
     """Provide extra data for validating a resource within the option"""
-    def get_context(self, *args, **kwargs):
-        context = super().get_context(*args, **kwargs)
-        if context['widget']['value']:
-            context['widget']['attrs']['novalue'] = 'true'
-        return context
-
     def create_option(self, name, value, label, selected, *args, **kwargs):
         """Reimplement and generate option tags for this select"""
         context = super().create_option(name, value, label, selected, *args, **kwargs)
+        value = label
         if value and not isinstance(value, (int, str)):
             attrs = context['attrs']
             # CSV list of types, treat as string

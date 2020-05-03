@@ -82,6 +82,8 @@ def percent(x, y):
 @register.filter("placeholder")
 def add_placeholder(bound_field, text=None):
     """Add a placeholder attribute to any form field object"""
+    if not bound_field:
+        return
     if text is None:
         raise ValueError("Placeholder requires text content for widget.")
     if type(bound_field.field).__name__ == 'ReCaptchaField':

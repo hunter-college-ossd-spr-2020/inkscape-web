@@ -275,4 +275,6 @@ div#category_desc {
   margin: 19px 5px 14px;
   display: inline-block;
 }
-
+.bootstrap-tagsinput input {
+  line-height: 1.9em;
+}

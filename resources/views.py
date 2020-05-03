@@ -22,7 +22,7 @@
 """
 Views for resource system, adding items, entering new categories for widgets etc
 """
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
@@ -38,8 +38,8 @@ from django.db.models import Q
 
 from person.models import User, Team
 
-from .utils import url_filefield, RemoteError
-from .video_url import video_detect
+from .utils import RemoteError
+from .video_url import parse_any_url
 from .category_views import CategoryListView
 from .mixins import (
     OwnerDeleteMixin, OwnerCreateMixin, OwnerUpdateMixin,
@@ -48,7 +48,7 @@ from .mixins import (
 from .rss import ListFeed
 from .models import Category, License, Gallery, Resource, Tag
 from .forms import (
-    GalleryForm, GalleryMoveForm,
+    GalleryForm, GalleryMoveForm, AddLinkForm,
     ResourceForm, ResourceBaseForm, ResourceAddForm, ResourcePasteForm, ResourceLinkForm
 )
 
@@ -238,7 +238,7 @@ class ResourcesJson(View):
             for qey in request.GET.getlist('q'):
                 if qey and '://' in qey:
                     try:
-                        qey = self.parse_url(qey)
+                        qey = parse_any_url(qey, self.request.user)
                     except ValueError as err:
                         context['error'] = str(err)
                         qey = ''
@@ -272,59 +272,18 @@ class ResourcesJson(View):
         return JsonResponse(context, safe=False,
                             content_type='application/json; charset=utf-8')
 
-    def parse_url(self, query):
-        """
-        We want to parse a given URL and decide if it's a video URL
-        or some other interesting or important URL.
-        """
-        is_video = video_detect(query)
-        if is_video:
-            # Find an existing video in our resource database that matches.
-            for match in Resource.objects.filter(link__contains=is_video['id']):
-                match_v = match.video
-                if match_v \
-                      and match_v['id'] == is_video['id'] \
-                      and match_v['type'] == is_video['type']:
-                    return str(match.pk)
-
-            if self.request.user.is_authenticated():
-                # Create a new video object in our resource database.
-                details = video_detect(query, True)
-                ret = Resource(
-                    user=self.request.user,
-                    name=details['title'],
-                    owner_name=details['author'],
-                    thumbnail=url_filefield(details['thumbnail_url'],
-                                            'video_' + details['id'] + '.png'),
-                    link=query, owner=False, published=False)
-                ret.save()
-                return str(ret.pk)
-
-        if query.rsplit('.', 1)[-1] in ('png', 'svg', 'jpeg', 'jpg'):
-            # Linked image on another website
-            filename = query.split('?')[0].split('/')[-1]
-
-            for match in Resource.objects.filter(link=query):
-                return str(match.pk)
-
-            if self.request.user.is_authenticated():
-                # Create a new image link object in our resource database.
-                ret = Resource(
-                    user=self.request.user,
-                    name='Linked Image (' + filename + ')',
-                    owner_name='Internet',
-                    rendering=url_filefield(query, filename),
-                    link=query, owner=False, published=False)
-                ret.save()
-                return str(ret.pk)
-
-
-        return query
 
 class LinkToResource(UploadResource):
     """Create a link to a resource instead of an upload"""
-    form_class = ResourceLinkForm
+    form_class = AddLinkForm
     title = _("Link to Video or Resource")
+
+    def form_valid(self, form):
+        """Redirect back to the edit page to finalise the situation"""
+        super().form_valid(form)
+        obj = form.save()
+        url = reverse('edit_resource', kwargs={'pk': obj.pk})
+        return HttpResponseRedirect(url)
 
 class PasteInResource(UploadResource):
     """Create a paste-bin entry instead of an upload"""
