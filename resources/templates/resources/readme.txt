@@ -1,3 +1,3 @@
-{{ item.name }} - README
+{{ object.name }} - README
 
-{{ item.desc }}
+{{ object.desc }}
