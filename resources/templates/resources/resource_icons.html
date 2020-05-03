@@ -12,4 +12,10 @@
         {% endif %}
       </div>
     {% endfor %}
+    {% if gallery and page_obj and page_obj.num_pages > 1 %}
+      <div class="galleryitem" title="">
+        <a class="link" href="{{ gallery.get_absolute_url }}"><img src="{{ gallery.thumbnail_url }}"/></a>
+        <p class="label"><a href="{{ gallery.get_absolute_url }}">{% trans "More..." %}</a></p>
+      </div>
+    {% endif %}
   </div>

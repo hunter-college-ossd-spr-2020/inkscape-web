@@ -20,6 +20,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 from django.conf import settings
 
 from cms.plugin_base import CMSPluginBase
@@ -40,7 +41,7 @@ class GalleryForm(ModelForm):
 class CMSCategoryPlugin(CMSPluginBase):
     cache = False # Plugin cache breaks pagination
     model = CategoryPlugin
-    name  = _('InkSpace Category')
+    name  = _('Inkscape Category Gallery')
     cache = settings.ENABLE_CACHING
 
     def get_render_template(self, context=None, instance=None, placeholder=None):
@@ -48,11 +49,20 @@ class CMSCategoryPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         items = instance.source.items.filter(published=True)
-        context.update({
-            'placeholder': placeholder,
-            'object_list': items.order_by('-edited'),
-            'limit'      : instance.limit,
-        })
+        objects = items.order_by('-edited')
+        if instance.limit:
+            page_obj = Paginator(objects, instance.limit)
+            context.update({
+                'placeholder': placeholder,
+                'page_obj': page_obj,
+                'object_list': page_obj.page(1).object_list,
+                'gallery': instance.source,
+            })
+        else:
+            context.update({
+                'placeholder': placeholder,
+                'object_list': objects,
+            })
         # The two templates take different variable names
         context['resources'] = context['object_list']
         return context
@@ -60,7 +70,7 @@ class CMSCategoryPlugin(CMSPluginBase):
 
 class CMSGalleryPlugin(CMSCategoryPlugin):
     model = GalleryPlugin
-    name  = _('InkSpace Gallery')
+    name  = _('Inkscope Team Gallery')
     form  = GalleryForm
 
 
