@@ -145,6 +145,7 @@ body {
   grid-area: breadcrumb;
   padding: 0;
   margin: 0 1vw 0 4vw;
+  font-size: 16px;
 }
 
 .forum-sub-header a {
