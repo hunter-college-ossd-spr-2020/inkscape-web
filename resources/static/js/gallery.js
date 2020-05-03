@@ -28,9 +28,6 @@ String.prototype.toProperCase = function () {
 $(document).ready(function() {
   setupUpload();
   setupImageFullscreen();
-  $('select[novalue=true]').each(function() {
-    this.selectedIndex = -1;
-  });
 });
 
 function checkLink() {
@@ -180,28 +177,46 @@ function setupUpload() {
     var opt = $('option:selected', category);
     var cats = JSON.parse(opt.attr('data-tagcat'));
     if(cats) {
+      var first_opt = $('<option value="">---</option>');
       var tagbox = $('#id_tags');
       var boxed_tags = tagbox.tagsinput('items');
+      var count = 0;
       $.each(cats, function(index, name) {
         var tags = JSON.parse(opt.attr('data-tagcat-' + index));
         var segment = $('<div class="tagcat"><h2>'+name+'</h2><select></select></div>');
         var select = $('select', segment);
-        $(select).append('<option value="">---</option>');
+        $(select).append(first_opt);
         $.each(tags, function(index, tag) {
           $(select).append('<option value="'+tag+'">'+tag+'</option>');
           if(boxed_tags.includes(tag)) {
             $('option[value="'+tag+'"]', select).attr('disabled', 'disabled');
+            count += 1;
           }
         });
+        var update_first_opt = function() {
+           first_opt[0].innerHTML = count + " Items Selected";
+        }
+        update_first_opt();
         $(select).change(function() {
           tagbox.tagsinput('add', $(this).val());
           select.val('');
+          update_first_opt();
         });
         tagbox.on('beforeItemAdd', function(event) {
-          $('option[value="'+event.item+'"]', select).attr('disabled', 'disabled');
+          var opt = $('option[value="'+event.item+'"]', select);
+          if(opt.length) {
+            opt.attr('disabled', 'disabled');
+            count += 1;
+            update_first_opt();
+          }
         });
         tagbox.on('beforeItemRemove', function(event) {
-          $('option[value="'+event.item+'"]', select).removeAttr('disabled');
+          opt = $('option[value="'+event.item+'"]', select);
+          if(opt.length) {
+            opt.removeAttr('disabled');
+            count -= 1;
+            update_first_opt();
+          }
         });
         $('.info .side').append(segment);
       });

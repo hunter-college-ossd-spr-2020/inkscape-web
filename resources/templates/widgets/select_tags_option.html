@@ -1,2 +1,2 @@
-{% if widget.attrs.items.selected %}
-<option value="{{ widget.value|stringformat:'s' }}"{% include "django/forms/widgets/attrs.html" %}>{{ widget.label }}</option>{% endif %}
+{% if widget.attrs.selected %}
+<option value="{{ widget.label|stringformat:'s' }}"{% include "django/forms/widgets/attrs.html" %}>{{ widget.label }}</option>{% endif %}

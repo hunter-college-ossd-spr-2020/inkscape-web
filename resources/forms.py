@@ -20,17 +20,12 @@
 """
 Forms for the gallery system
 """
-__all__ = ('GalleryForm', 'GalleryMoveForm', 'ResourceForm',
-           'ResourceEditPasteForm', 'ResourcePasteForm', 'ResourceAddForm',
-           'MirrorAddForm', 'ResourceLinkForm', 'ResourceBaseForm')
-
 from io import StringIO
 
 from django.forms import (
     ModelForm, ModelChoiceField, ValidationError, ClearableFileInput,
     ChoiceField, CharField, BooleanField, Textarea
 )
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils.text import slugify
@@ -44,7 +39,8 @@ from inkscape.middleware import TrackCacheMiddleware
 from .models import Gallery, Resource, Tag, Category, ResourceMirror
 from .validators import Range, CsvList
 from .utils import FileEx, MimeType, ALL_TEXT_TYPES
-from .fields import FilterSelect, DisabledSelect, CategorySelect, TagsChoiceField
+from .fields import FilterSelect, CategorySelect, TagsChoiceField
+from .video_url import parse_any_url
 
 TOO_SMALL = [
     "Image is too small for %s category (Minimum %sx%s)",
@@ -194,7 +190,7 @@ class ResourceBaseForm(ModelForm):
                 # This special widget enables javascriptto control what each
                 # category will limit other options (such as licence and tags)
                 field.widget = CategorySelect(field.widget.attrs, field.widget.choices)
-                field.choices = [(o, str(o)) for o in field.queryset]
+                field.choices = [(str(cat.pk), cat) for cat in field.queryset]
 
         if 'license' in self.fields:
             field = self.fields['license']
@@ -385,9 +381,37 @@ class ResourceForm(ResourceBaseForm):
         required = ['name', 'category', 'license', 'owner']
 
 
+class AddLinkForm(ResourceBaseForm):
+    """Creating a new link, detecting the url details and creating an object."""
+    # Override link field (in face override all fields) so we can return an obj
+    link = CharField(label=_('Requested Link'), required=True)
+    auto_fields = ['link']
+    form_priority = 0
+    link_mode = True
+    tags = None
+
+    class Meta(ResourceBaseForm.Meta):
+        model = Resource
+        fields = []
+
+    def clean_link(self):
+        """Clean the link (ensure it's processable)"""
+        obj = parse_any_url(self.cleaned_data['link'], self.user)
+        if obj is None:
+            raise ValidationError("Can't process this type of link, not sure what it is.")
+        if obj.user != self.user:
+            raise ValidationError(f"User {obj.user.username} has already claimed this url.")
+        return obj
+
+    def save(self, **kwargs):
+        # Don't call super(), we got our obj in an non-standard way in clean_link
+        obj = self.cleaned_data['link']
+        obj.save()
+        return obj
+
 class ResourceLinkForm(ResourceBaseForm):
+    """Editing links only, this is used to finalise the above adding"""
     auto_fields = ['name', 'desc', 'tags', 'link', 'rendering']
-    youtube_key = getattr(settings, 'YOUTUBE_API_KEY', 'NO_KEY')
     form_priority = 5
     link_mode = True
 
@@ -408,6 +432,7 @@ class ResourceLinkForm(ResourceBaseForm):
     def is_valid_form(cls, obj):
         """Only show for link type resources"""
         return obj.link and not obj.download
+
 
 class ResourcePasteForm(ResourceBaseForm):
     media_type = ChoiceField(label=_('Text Format'), choices=ALL_TEXT_TYPES)

@@ -29,11 +29,14 @@
       {% endif %}
 
       {% if form.link_mode %}
-	<label for="id_rendering">
-	  <img src="{% static "images/link.svg" %}" alt="{% trans "Click to add screenshot or preview." %}"/>
+	<label for="id_rendering" data-label="{% trans "Choose thumbnail image..." %}">
+            <img src="{% if object.rendering %}{{ object.rendering.url }}{% else %}{% static "images/link.svg" %}{% endif %}" alt="{% trans "Click to add screenshot or preview." %}" data-static="{% static "" %}"/>
 	  <p>{{ form.link.label }}</p>
 	</label>
         <div id="linker">{{ form.link|placeholder:_("Paste your URL here") }}</div>
+        {% if form.link.errors %}
+          <div class="errors">{{ form.link.errors }}</div>
+        {% endif %}
       {% elif form.rendering %}
 	<label for="id_rendering" data-label="{% trans "Choose visible image..." %}">
 	  {% if object.rendering and object.is_resource %}
@@ -51,7 +54,7 @@
       {% endif %}
       <p class="coc-note">{% blocktrans %}Make sure you read the <a href="/community/coc/">code of conduct</a> for rules on posting content.{% endblocktrans %}</p>
       {% if object.id %}
-        <a href="{% url "delete_resource" object.id %}" class="btn btn-danger">Delete Upload</a>
+      <a href="{% url "delete_resource" object.id %}" class="btn btn-danger">{% if form.link_mode %}{% trans "Delete Link" %}{% else %}{% trans "Delete Upload" %}{% endif %}</a>
       {% endif %}
     </div>
 
@@ -60,10 +63,11 @@
     <input type="hidden" name="next" value="{% url "edit_resource" object.next.pk %}"/>
   {% endif %}
 
+  {% if not form.hide_info %}
   <div class="info">
     {% if form.name %}
       <h2>{{ form.name|placeholder:_("Resource Name") }}</h2>
-    {% else %}
+    {% elif not form %}
       <div class="title">
         <h2>{{ object.name }}</h2>
         <span class="by">{% trans "by" %}
@@ -71,15 +75,17 @@
         </span>
       </div>
     {% endif %}
+    {% if form.desc or form.comment %}
     <div class="desc{% if form.desc.errors %} descerr{% endif %}">
       {% if form.desc %}
         {{ form.desc|placeholder:_("Description of your artwork or resource") }}
-      {% else %}
+      {% elif form.comment %}
         {{ object.desc }}
         <hr/>
         {{ form.comment|placeholder:_("Curator's comment about what they changed.") }}
       {% endif %}
     </div>
+    {% endif %}
     <div class="side">
       {% for field in form.auto %}
         <div id="{{ field.name }}_set">
@@ -89,12 +95,15 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <div id="item-footer" class="clearfix">
-    {% if form.tags.errors %}
-      <div class="error">{{ form.tags.errors.as_text }}</div>
+    {% if form.tags %}
+      {% if form.tags.errors %}
+        <div class="error">{{ form.tags.errors.as_text }}</div>
+      {% endif %}
+      {{ form.tags|placeholder:_("Add your tags here, separated by comma") }}
     {% endif %}
-    {{ form.tags|placeholder:_("Add your tags here, separated by comma") }}
 
     {% if object.published or not form.published %}
       <button type="submit" name="published" value="1" class="btn btn-default">{% trans "Save" %}</button>
@@ -110,10 +119,6 @@
     <form method="get" action="{{ cancel }}">
       <button type="submit" name="cancel" value="1" class="btn btn-default">{% trans "Cancel" %}</button>
     </form>
-
-    {% if form.link_mode %}
-      <button type="button" class="btn btn-warning" onclick="checkLink();">{% trans "Get Link Info" %}</button>
-    {% endif %}
   </div>
 
 	<div id="video-data-1"></div>

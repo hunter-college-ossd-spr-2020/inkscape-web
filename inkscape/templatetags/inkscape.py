@@ -147,6 +147,10 @@ def timetag_filter(value, arg=None):
     return mark_safe("<time datetime=\"%s\" title=\"%s\">%s</time>" % (
         date(value, 'Y-m-d\\TH:i:sO'), date(localtime(value), 'Y-m-d H:i:sO'), label))
 
+@register.filter("int2timedelta", is_safe=True)
+def timedelta_filter(value):
+    """Format seconds count as a timedelta"""
+    return timedelta(seconds=int(value))
 
 @register.filter("is_recent", is_safe=True)
 def time_isrecent(value, arg=None):

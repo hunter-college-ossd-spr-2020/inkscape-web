@@ -86,7 +86,7 @@
         <a class="link" href="{{ object.link }}"><img src="{% static "images/link_to.svg" %}" alt="{% trans "Link"%}" title="{% trans "Follow Link (external site)" %}"/></a>
       {% endif %}
       <dl>
-        {% if object.download %}    
+        {% if object.download %}
           {% if object.media_x and object.media_y %}
             {% if object.mime.is_image %}
               {% with object.aspect as aspect %}
@@ -102,6 +102,9 @@
           {% endif %}
         {% else %}
           <dt>{% trans "Linked From" %}</dt><dd>{{ object.link_from }}</dd>
+          {% if object.is_video and object.media_x %}
+            <dt>{% trans "Duration" %}</dt><dd>{{ object.media_x|int2timedelta }}</dd>
+          {% endif %}
         {% endif %}
         <dt>{% trans "Created" %}</dt><dd>{{ object.created|timetag }}</dd>
         {% with object.revisions.count as revisions %}
@@ -109,7 +112,9 @@
             <dt>{% trans "Revisions" %}</dt><dd>{{ revisions|add:1 }}</dd>
           {% endif %}
         {% endwith %}
-        <dt>{% trans "Type" %}</dt><dd title="{{ object.media_type }}">{{ object.media_type|truncatechars:16 }}</dd>
+        {% if object.media_type %}
+          <dt>{% trans "Type" %}</dt><dd title="{{ object.media_type }}">{{ object.media_type|truncatechars:16 }}</dd>
+        {% endif %}
       </dl>
 
       {% if object.license %}
