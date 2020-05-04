@@ -48,8 +48,8 @@ from .mixins import (
 from .rss import ListFeed
 from .models import Category, License, Gallery, Resource, Tag
 from .forms import (
-    GalleryForm, GalleryMoveForm, AddLinkForm,
-    ResourceForm, ResourceBaseForm, ResourceAddForm, ResourcePasteForm, ResourceLinkForm
+    GalleryForm, GalleryMoveForm, AddLinkForm, RenameResourceForm,
+    ResourceForm, ResourceBaseForm, ResourceAddForm, ResourcePasteForm
 )
 
 class GalleryMixin(object):
@@ -99,6 +99,7 @@ class EditResource(OwnerUpdateMixin, UpdateView):
 
 
 class CheckResource(SingleObjectMixin, RedirectView):
+    """Contest checking, confirm resources are correct"""
     model = Resource
 
     def get_redirect_url(self, *args, **kwargs):
@@ -132,6 +133,17 @@ class PublishResource(OwnerUpdateMixin, DetailView):
         messages.info(self.request, _('Resource now Published'))
         return redirect(item.get_absolute_url())
 
+class RenameResource(OwnerUpdateMixin, UpdateView):
+    """Rename the resource's download name"""
+    template_name = 'resources/resource_rename.html'
+    form_class = RenameResourceForm
+    model = Resource
+
+    def get_form_kwargs(self):
+        # Allow url links to specify the new filename
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = {'new_name': self.request.GET.get('new_name')}
+        return kwargs
 
 class MoveResource(OwnerUpdateMixin, UpdateView):
     """Any owner of a resource and a gallery can move resources into them"""

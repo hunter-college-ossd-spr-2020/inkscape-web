@@ -15,7 +15,19 @@
           <td>{{ item.release.release_date|date:"c"|default:"dev" }}</td>
           <td>
             {% for rp in item.platforms %}
-              <a href="{{ rp.get_resource_url }}">{{ rp.platform.name }}</a>
+              {% if rp.resource %}
+                <a href="{{ rp.get_resource_url }}">{{ rp.resource.filename }}</a>
+                {% if perms.releases.change_release and rp.get_expected_filename %}
+                  {% if rp.get_expected_filename != rp.get_resource_filename %}
+                    (<a href="{% url "rename_resource" pk=rp.resource.pk %}?new_name={{ rp.get_expected_filename }}" title="{% trans "Filename isn't in the expected format" %}">rename</a>)
+                  {% endif %}
+                {% endif %}
+                {% if rp.resource.signature %}
+                  (<a href="{{ rp.resource.signature.url }}">sig</a>)
+                {% endif %}
+              {% else %}
+                <a href="{{ rp.get_resource_url }}">{% trans "External Link" %}</a>
+              {% endif %}
             {% endfor %}
           </td>
         </tr>

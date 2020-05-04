@@ -31,7 +31,7 @@ from .views import (
     DeleteGallery, EditGallery, DeleteResource, EditResource, PublishResource,
     MoveResource, DownloadReadme, VoteResource, DownloadResource,
     UploadJson, TagsJson, QuotaJson, ResourcesJson, GalleryJson, UnpublishedGallery,
-    CheckResource, ResourceParade, GalleryParade,
+    CheckResource, ResourceParade, GalleryParade, RenameResource,
 )
 
 def resource_search(*args, lst=ResourceList, feed=ResourceFeed,
@@ -102,6 +102,7 @@ urlpatterns = [ # pylint: disable=invalid-name
             url(r'^del/$', DeleteResource.as_view(), name='delete_resource'),
             url(r'^pub/$', PublishResource.as_view(), name='publish_resource'),
             url(r'^edit/$', EditResource.as_view(), name='edit_resource'),
+            url(r'^rename/$', RenameResource.as_view(), name='rename_resource'),
             url(r'^view/$', DownloadResource.as_view(), name='view_resource'),
             url(r'^move/(?P<source>\d+)/$', MoveResource.as_view(), name='resource.move'),
             url(r'^copy/$', MoveResource.as_view(), name='resource.copy'),

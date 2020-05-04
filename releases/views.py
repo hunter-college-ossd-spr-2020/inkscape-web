@@ -232,7 +232,7 @@ class PlatformView(DetailView):
             for platformrelease in platform.releases.all():
                 if pre_release is not None and pre_release != platformrelease.release.is_prerelease:
                     continue
-                if not can_see_draft or platformrelease.release.is_draft:
+                if not can_see_draft and platformrelease.release.is_draft:
                     continue
 
                 if platformrelease.download or platformrelease.resource:

@@ -209,6 +209,8 @@ class Platform(Model):
         help_text=_("If supplied, this text will appear after the tabs,"
                     " but before the release notes. Will propergate to"
                     " all child platforms that do not have their own."))
+    file_template = CharField(max_length=255, blank=True, null=True,\
+        help_text=_("Re-write the download filename to use this python format template."))
 
     match_family = CharField(max_length=32, db_index=True,\
             help_text=_('User agent os match, whole string.'), **null)
@@ -383,9 +385,21 @@ class ReleasePlatform(Model):
         return self.download
 
     def get_resource_filename(self):
-        if self.resource and resource.download:
-            return self.resource.download.name
-        return _('Link')
+        if self.resource and self.resource.download:
+            return self.resource.filename()
+        return None
+
+    def get_expected_filename(self):
+        if self.resource and self.resource.download and self.platform.file_template:
+            try:
+                return self.platform.file_template.format(
+                    release=self.release,
+                    platform=self.platform,
+                    project=self.release.project
+                )
+            except ValueError:
+                pass
+        return None
 
     @property
     def parent(self):

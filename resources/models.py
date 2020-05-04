@@ -26,6 +26,7 @@ __all__ = ('License', 'Category', 'Resource', 'ResourceMirror',
            'Tag', 'TagCategory')
 
 import os
+from uuid import uuid4
 
 from django.db.models import *
 from django.utils.timezone import now
@@ -41,10 +42,12 @@ from inkscape.fields import ResizedImageField
 
 from .storage import resource_storage
 from .slugify import set_slug
-from .utils import *
+from .utils import (
+    cached, upto, static, syntaxer, get_aspect,
+    hash_verify, gpg_verify, sha1,
+    MimeType, FileEx
+)
 from .video_url import video_detect
-
-from uuid import uuid4
 
 # Thread-safe current user middleware getter.
 from cms.utils.permissions import get_current_user as get_user
@@ -455,10 +458,60 @@ class Resource(Model):
         return ret
 
     def filename(self):
+        """Return just the filename part of the download filename"""
         return os.path.basename(self.download.name)
 
     def rendering_name(self):
+        """Same as filename but for the rendering filename"""
         return os.path.basename(self.rendering.name)
+
+    def rename_download(self, filename, commit=True):
+        """Rename the download filename"""
+        if self.filename() == filename:
+            raise ValueError("Can't rename file, filename hasn't changed.")
+        if '/' in filename or '\\' in filename:
+            raise ValueError("Will not rename file with special characters.")
+
+        old_url = self.download.url
+        new_path = os.path.join(os.path.dirname(self.download.path), filename)
+        new_name = os.path.join(os.path.dirname(self.download.name), filename)
+
+        # Check for an existing file that isn't the same file
+        if os.path.isfile(new_path) and sha1(new_path) != sha1(self.download.path):
+            try:
+                orig = Resource.objects.get(download=new_name)
+                url = orig.get_absolute_url()
+                link = f"<a href='{url}'>{orig}</a>"
+                raise ValueError(_("Can't rename file, file with that name already exists: ") + link)
+            except Resource.DoesNotExist:
+                # This filename was uploaded previously and has since been deleted. Move it out the way
+                trash_heap = os.path.join(os.path.dirname(new_path), 'trash')
+                trash_path = os.path.join(trash_heap, filename)
+                # There's a danger of over-writing an existing trash item
+                os.rename(new_path, trash_path)
+
+        if commit:
+            # Rename the file on disk first
+            os.rename(self.download.path, new_path)
+
+        # Next, rename the filename is ALL resources that point to this one
+        for obj in Resource.objects.filter(download=self.download.name):
+            if not commit and obj.user != self.user:
+                # Test user permission to rename the same file in multiple resources
+                url = obj.get_absolute_url()
+                link = f"<a href='{url}'>{obj}</a>"
+                raise ValueError(_("Can't rename file, filename is owned by multiple users: ") + link)
+            if commit:
+                obj.download.name = new_name
+                obj.save()
+
+        if commit:
+            # Clear fastly cache
+            from inkscape.fastly_cache import FastlyCache
+            cache = FastlyCache()
+            cache.purge(old_url)
+
+        return new_path
 
     @property
     def file(self):
@@ -924,14 +977,15 @@ class VoteManager(Manager):
 class Vote(Model):
     """Vote for a resource in some way"""
     resource = ForeignKey(Resource, related_name='votes')
-    voter    = ForeignKey(settings.AUTH_USER_MODEL, related_name='favorites')
+    voter = ForeignKey(settings.AUTH_USER_MODEL, related_name='favorites')
 
     objects = VoteManager()
 
 
 class Quota(Model):
-    group    = OneToOneField(Group, related_name='quotas', **null)
-    size     = IntegerField(_("Quota Size (KiB)"), default=1024)
+    """How much disk space can each group use"""
+    group = OneToOneField(Group, related_name='quotas', **null)
+    size = IntegerField(_("Quota Size (KiB)"), default=1024)
 
     def __str__(self):
         return str(self.group)

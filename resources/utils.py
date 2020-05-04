@@ -27,6 +27,7 @@ and segregated forms and provides a way to get icons for them.
 
 import os
 import mimetypes
+import hashlib
 
 from pygments import highlight, lexers, formatters
 from pygments.util import ClassNotFound
@@ -220,7 +221,6 @@ class MimeType(object):
 
 def hash_verify(sig_type, sig, data):
     """Verify the signature against the data (for example md5)"""
-    import hashlib
     sig.file.open()
     sig.file.seek(0)
     digest = sig.file.read().split(b' ')[0].strip().decode('ascii')
@@ -228,6 +228,13 @@ def hash_verify(sig_type, sig, data):
     for chunk in data.chunks():
         hasher.update(chunk)
     return hasher.hexdigest() == digest
+
+def sha1(filename):
+    """Get the sha1 hash for a filename"""
+    hasher = hashlib.sha1()
+    with open(filename, 'rb') as fhl:
+        hasher.update(fhl.read())
+    return hasher.hexdigest()
 
 def gpg_verify(user, sig, data):
     """

@@ -26,6 +26,7 @@ from django.forms import (
     ModelForm, ModelChoiceField, ValidationError, ClearableFileInput,
     ChoiceField, CharField, BooleanField, Textarea
 )
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now
 from django.utils.text import slugify
@@ -517,7 +518,30 @@ class ResourceAddForm(ResourceBaseForm):
                                                 .replace('_', ' ').replace('-', ' ')
         return self.cleaned_data['name']
 
+class RenameResourceForm(ModelForm):
+    """Allow renaming of resources"""
+    new_name = CharField(label=_('New Filename'), required=True)
 
+    class Meta():
+        model = Resource
+        fields = []
+
+    def get_initial_for_field(self, field, field_name):
+        # No other fields, so just always return filename
+        ret = super().get_initial_for_field(field, field_name)
+        return ret or self.instance.filename()
+
+    def clean_new_name(self):
+        name = self.cleaned_data['new_name']
+        try:
+            self.instance.rename_download(name, commit=False)
+        except ValueError as err:
+            raise ValidationError(mark_safe(str(err)))
+        return name
+
+    def save(self, **kwargs):
+        self.instance.rename_download(self.cleaned_data['new_name'])
+        return self.instance
 
 class MirrorAddForm(ModelForm):
     class Meta:
