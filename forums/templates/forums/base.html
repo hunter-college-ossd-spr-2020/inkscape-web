@@ -43,7 +43,8 @@
           <form action="{% url "forums:search" %}" class="pull-right forums-search">
             <div class="input-append">
               {% block "search" %}{% endblock %}
-              <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}"><button class="btn sr-btn" type="button"><i class="glyphicon glyphicon-search"></i></button>
+              <input type="text" class="sr-input" name="q" value="{{ request.GET.q }}" placeholder="{% trans "Search" %}">
+              <button class="btn sr-btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
             </div>
           </form>
           {% endblock "search-block" %}
