@@ -219,6 +219,7 @@ body{
   border-top: $borders;
   grid-area: breadcrumb;
   padding: 0;
+  font-size: 16px;
   margin:0 $gutters 0 ($gutters*4);
   
   a {
