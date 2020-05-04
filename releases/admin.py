@@ -101,7 +101,8 @@ class ReleasePlatformAdmin(ModelAdmin):
     """Customised release-platform administration editing"""
     form = ReleasePlatformForm
     list_display = ('__str__', 'download', 'resource', 'is_translated')
-    list_filter = ('release', 'release__status')
+    list_filter = ('release', 'platform', 'release__status')
+    raw_id_fields = ('resource',)
     inlines = (ReleasePlatformTranslationsInline,)
 
     def is_translated(self, obj):
