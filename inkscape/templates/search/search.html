@@ -24,7 +24,7 @@
                 {% if result.model_name == 'title' %}
               <div class="result page">
                 <h3><a href="{{ result.object.page.get_absolute_url }}">{{ result.object.title }}</a></h3>
-                <p>{{ result.get_stored_fields.excerpt }}</p>
+                <p>{{ result.get_stored_fields.excerpt[1:n-1] }}</p>
               </div>
                 {% else %}
               <div class="result news">
