@@ -250,8 +250,8 @@ class ResourcesJson(View):
             for qey in request.GET.getlist('q'):
                 if qey and '://' in qey:
                     try:
-                        qey = parse_any_url(qey, self.request.user)
-                    except ValueError as err:
+                        qey = str(parse_any_url(qey, self.request.user).pk)
+                    except (ValueError, AttributeError, KeyError) as err:
                         context['error'] = str(err)
                         qey = ''
                     except RemoteError as err:
