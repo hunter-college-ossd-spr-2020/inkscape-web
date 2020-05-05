@@ -22,7 +22,7 @@ Administration for releases app
 """
 
 from django.utils.translation import get_language
-from django.contrib.admin import site, ModelAdmin, StackedInline
+from django.contrib.admin import site, ModelAdmin, StackedInline, TabularInline
 
 from .forms import (
     PlatformForm, ReleaseForm, ReleasePlatformForm,
@@ -31,7 +31,7 @@ from .forms import (
     ReleasePlatformTranslationInlineFormSet,
 )
 from .models import (
-    Project, Platform, Release, ReleaseStatus, ReleasePlatform,
+    Project, Platform, Release, ReleaseStatus, ReleasePlatform, DownloadMirror,
     ReleaseTranslation, PlatformTranslation, ReleasePlatformTranslation,
 )
 
@@ -97,13 +97,17 @@ class ReleasePlatformTranslationsInline(StackedInline):
     def get_formset(self, request, obj=None, **kwargs):
         return ReleasePlatformTranslationInlineFormSet
 
+class DownloadMirrorInline(TabularInline):
+    model = DownloadMirror
+    extra = 1
+
 class ReleasePlatformAdmin(ModelAdmin):
     """Customised release-platform administration editing"""
     form = ReleasePlatformForm
     list_display = ('__str__', 'download', 'resource', 'is_translated')
     list_filter = ('release', 'platform', 'release__status')
     raw_id_fields = ('resource',)
-    inlines = (ReleasePlatformTranslationsInline,)
+    inlines = (DownloadMirrorInline, ReleasePlatformTranslationsInline,)
 
     def is_translated(self, obj):
         """Returns true if this is translated into one's selected language"""
