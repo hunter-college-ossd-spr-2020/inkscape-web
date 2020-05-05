@@ -123,7 +123,7 @@ class SearchView(BaseView):
     def __call__(self, request):
         language = get_language_from_request(request)
         self.searchqueryset = SearchQuerySet().filter(language=language)
-        return BaseView.__call__(self, request)
+        return super().__call__(request)
 
 class SearchJson(SearchView):
     template = "search/search.json"
