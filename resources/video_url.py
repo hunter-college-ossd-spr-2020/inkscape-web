@@ -128,12 +128,12 @@ def parse_any_url(query, user):
                     obj.tags.add(Tag.objects.get_or_create(name=tag.lower())[0])
             return obj
 
-    if query.rsplit('.', 1)[-1] in ('png', 'svg', 'jpeg', 'jpg'):
+    if query.rsplit('.', 1)[-1] in ('png', 'svg', 'jpeg', 'jpg', 'gif'):
         # Linked image on another website
         filename = query.split('?')[0].split('/')[-1]
 
         for match in Resource.objects.filter(link=query):
-            return str(match.pk)
+            return match
 
         if user.is_authenticated():
             # Create a new image link object in our resource database.
@@ -145,4 +145,5 @@ def parse_any_url(query, user):
                 link=query, owner=False, published=False)
             ret.save()
             return ret
-    return None
+
+    raise ValueError(f"Can't find or upload: {query}")
