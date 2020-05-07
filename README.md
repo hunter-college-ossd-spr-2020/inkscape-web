@@ -11,6 +11,7 @@ Getting the Website Code
 
  Option B (better):
     Create an ssh key if you don't have one yet, and upload your public ssh key to gitlab
+    <br>
     (instructions: https://docs.gitlab.com/ee/gitlab-basics/create-your-ssh-keys.html), then:
  ```sh
     $ git clone git@gitlab.com:inkscape/inkscape-web.git
