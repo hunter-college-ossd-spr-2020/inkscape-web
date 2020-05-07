@@ -5,33 +5,43 @@ Getting the Website Code
 ========================
 
  Option A:
+ ```sh
     $ git clone https://gitlab.com/inkscape/inkscape-web.git
+ ```
+
  Option B (better):
     Create an ssh key if you don't have one yet, and upload your public ssh key to gitlab
     (instructions: https://docs.gitlab.com/ee/gitlab-basics/create-your-ssh-keys.html), then:
+ ```sh
     $ git clone git@gitlab.com:inkscape/inkscape-web.git
-
+ ```
 Running the website locally for Ubuntu Operating System:
+```sh
+  $ pip install -r requirements (if you are using python3(3.7+), you can use pip3 instead of pip)
+  $ ./utils/init
+  $ ./utils/manage makemigrations
+  $ ./utils/manage migrate) $ ./utils/manage runserver
 
- 1) $ pip install -r requirements (if you are using python3(3.7+), you can use pip3 instead of pip)
- 2) $ ./utils/init
- 3) $ ./utils/manage makemigrations
- 4) $ ./utils/manage migrate
- 5) $ ./utils/manage runserver
- 6) Open http://localhost:8000/ in your web browser (recommendation: Firefox or Chrome)
- 7) Log in with username "admin" and password "123456"
+  Open http://localhost:8000/ in your web browser (recommendation: Firefox or Chrome)
+  Log in with username "admin" and password "123456"
+```
+
 
 Updating the Website Code:
-
- 1) git pull
- 2) ./utils/update
+```sh
+   $ git pull
+   $ ./utils/update
+```
 
 Updating the CMS Content:
-
- 1) ./utils/refresh-cms
-
+```sh
+   $ ./utils/refresh-cms
+```
 Regenerating the virtual environment (may be needed after system upgrade
 or if you change the path name):
+```sh
+   $ rm -rf pythonenv
+   $ ./utils/init
+```
 
- 1) rm -rf pythonenv
- 2) ./utils/init
+You can visit the inkscape website wiki by clicking the following [link](https://wiki.inkscape.org/wiki/index.php/WebSite)
