@@ -34,3 +34,5 @@ Here are some important links:
 Local Development
 ================
 Please reference the README for information on building Inkscape-web
+
+For more information, you can visit the Inkscape-wiki [here](https://wiki.inkscape.org/wiki/index.php/WebSite#Website_Development)
