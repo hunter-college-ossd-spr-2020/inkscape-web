@@ -2,6 +2,7 @@ These instructions are subject to change, please email doctormo@gmail.com if
 you are having issues getting a local instance working.
 
 Getting the Website Code
+========================
 
  Option A:
     $ git clone https://gitlab.com/inkscape/inkscape-web.git
