@@ -80,10 +80,15 @@ class ResizedImageFieldFile(ImageFieldFile):
         return '.'.join(parts)
 
     def save(self, name, content, save=True):
-        new_content = BytesIO()
         content.file.seek(0)
+        try:
+            self.save_resized(name, Image.open(content.file), save=save)
+        except OSError:
+            pass
 
-        img = Image.open(content.file)
+    def save_resized(self, name, img, save=True):
+        """Resize the image using PIL"""
+        new_content = BytesIO()
 
         if hasattr(img, '_getexif') and img._getexif():
             exif = dict(img._getexif().items())
@@ -97,7 +102,7 @@ class ResizedImageFieldFile(ImageFieldFile):
         if img.size[0] < self.field.minimum[0] or \
            img.size[1] < self.field.minimum[1]:
             ret = img.resize(self.field.minimum, Image.ANTIALIAS)
-            img.im   = ret.im
+            img.im = ret.im
             img.mode = ret.mode
             img.size = self.field.minimum
 
@@ -105,8 +110,8 @@ class ResizedImageFieldFile(ImageFieldFile):
 
         new_content = ContentFile(new_content.getvalue())
         new_name = self._update_ext(name, self.field.format.lower())
-
         super(ResizedImageFieldFile, self).save(new_name, new_content, save)
+
 
 
 class ResizedImageField(ImageField):

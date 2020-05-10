@@ -44,6 +44,15 @@
     {% endif %}
   </div>
 
+      {% if object.mirrors.all %}
+        <h2>{% trans "Available Mirrors" %}</h2>
+        <ul>
+          {% for mirror in object.mirrors.all %}
+            <li>{{ mirror }}: <a href="{{ mirror.download }}">{{ mirror.download }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
   <hr/>
 
   <h1>{% trans "Support Inkscape" %}</h1>

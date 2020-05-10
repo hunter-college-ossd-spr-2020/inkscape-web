@@ -70,7 +70,7 @@ class CMSCategoryPlugin(CMSPluginBase):
 
 class CMSGalleryPlugin(CMSCategoryPlugin):
     model = GalleryPlugin
-    name  = _('Inkscope Team Gallery')
+    name  = _('Inkscape Team Gallery')
     form  = GalleryForm
 
 

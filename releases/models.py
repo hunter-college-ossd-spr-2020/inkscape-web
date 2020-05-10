@@ -417,6 +417,16 @@ class ReleasePlatform(Model):
         return self.platform.instructions
 
 
+class DownloadMirror(Model):
+    """A download mirror for the file"""
+    name = CharField(_('Mirror Name'), max_length=64)
+    release = ForeignKey(ReleasePlatform, related_name='mirrors')
+    download = URLField(_('Download Link'))
+
+    def __str__(self):
+        return self.name
+
+
 class ReleasePlatformTranslation(Model):
     release_platform = ForeignKey(ReleasePlatform, related_name='translations')
     language = CharField(_("Language"), max_length=8, choices=OTHER_LANGS, db_index=True,
